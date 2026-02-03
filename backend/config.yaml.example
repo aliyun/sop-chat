@@ -1,0 +1,36 @@
+# SOP Chat Unified Configuration File Example
+# Copy this file as config.yaml and fill in the actual configuration
+
+# Global configuration (supports reading from environment variables)
+global:
+  # Method 1: Direct value
+  # accessKeyId: your-access-key-id
+  # Method 2: Use environment variable reference (recommended)
+  accessKeyId: "$ACCESS_KEY_ID"      # Supports $VAR or ${VAR} format
+  accessKeySecret: "$ACCESS_KEY_SECRET"  # If environment variable does not exist, keep as is
+  endpoint: "cms.cn-hangzhou.aliyuncs.com"          # If empty or environment variable does not exist, will read from corresponding environment variable
+  port: 8080                         # Service listening port (if 0, will read from PORT environment variable, default: 8080)
+
+# Authentication configuration
+auth:
+  # Authentication method: local
+  method: local
+  
+  # JWT configuration
+  jwtSecretKey: your-secret-key-change-in-production  # Please change in production
+  jwtExpiresIn: 24h  # Token expiration time, e.g.: 24h, 1h, 30m
+  
+  # Local authentication configuration
+  # Note: local.user and local.roles must be configured for the system to work
+  # Without proper configuration, the server will fail to start
+  local:
+    user:
+      - name: admin
+        # password field stores the MD5 hashed password
+        # Example: echo -n "admin" | md5sum
+        password: 21232f297a57a5a743894a0e4a801fc3  # MD5 hash of "admin"
+    
+    roles:
+      - name: admin
+        user:  # List of users under this role
+          - admin

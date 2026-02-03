@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "employees": "数字员工",
+    "createEmployee": "创建员工",
+    "logout": "退出登录",
+    "settings": "设置"
+  },
+  "login": {
+    "title": "登录",
+    "username": "用户名",
+    "password": "密码",
+    "loginButton": "登录",
+    "loggingIn": "登录中...",
+    "loginFailed": "登录失败"
+  },
+  "employeeSelector": {
+    "title": "选择数字员工",
+    "selectToStart": "请选择一个助手开始对话",
+    "noEmployees": "暂无员工",
+    "createFirst": "请先创建员工",
+    "loading": "加载中...",
+    "loadFailed": "加载失败"
+  },
+  "chat": {
+    "sendMessage": "发送",
+    "inputPlaceholder": "输入消息...",
+    "newChat": "新建对话",
+    "chatHistory": "对话历史",
+    "noChatHistory": "暂无对话历史",
+    "loadingHistory": "加载中...",
+    "typing": "输入中...",
+    "shareChat": "分享对话",
+    "copyLink": "复制链接",
+    "linkCopied": "链接已复制",
+    "copyFailed": "复制失败"
+  },
+  "createEmployee": {
+    "title": "创建数字员工",
+    "name": "员工名称",
+    "namePlaceholder": "例如: sop-customer-service",
+    "nameHelp": "只能包含小写字母、数字和连字符，必须以 sop- 开头",
+    "displayName": "显示名称",
+    "displayNamePlaceholder": "例如: 客服助手",
+    "description": "描述",
+    "descriptionPlaceholder": "员工描述（可选）",
+    "roleArn": "角色 ARN",
+    "roleArnPlaceholder": "角色名称或完整 ARN",
+    "roleArnHelp": "可以输入角色名称（如 my-role）或完整 ARN",
+    "defaultRule": "默认规则",
+    "defaultRulePlaceholder": "默认规则（可选）",
+    "sopKnowledges": "SOP 知识库",
+    "addKnowledge": "添加知识库",
+    "knowledgeType": "类型",
+    "knowledgeTypeOss": "OSS",
+    "knowledgeTypeYunxiao": "云效",
+    "knowledgeTypeBuiltin": "内置",
+    "removeKnowledge": "移除",
+    "cancel": "取消",
+    "create": "创建",
+    "creating": "创建中...",
+    "createSuccess": "创建成功",
+    "createFailed": "创建失败"
+  },
+  "employeeSettings": {
+    "title": "员工设置",
+    "basicInfo": "基本信息",
+    "displayName": "显示名称",
+    "description": "描述",
+    "defaultRule": "默认规则",
+    "knowledges": "知识库配置",
+    "sopKnowledges": "SOP 知识库",
+    "noKnowledges": "暂无知识库",
+    "addKnowledge": "添加知识库",
+    "save": "保存",
+    "saving": "保存中...",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败",
+    "deleteEmployee": "删除员工",
+    "deleteConfirm": "确定要删除此员工吗？",
+    "deleting": "删除中...",
+    "deleteSuccess": "删除成功",
+    "deleteFailed": "删除失败"
+  },
+  "shareChat": {
+    "title": "分享对话",
+    "loading": "加载中...",
+    "loadFailed": "加载失败",
+    "notFound": "对话不存在"
+  },
+  "common": {
+    "confirm": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭",
+    "retry": "重试",
+    "loading": "加载中...",
+    "loadMore": "加载更多",
+    "noData": "暂无数据",
+    "error": "错误",
+    "success": "成功",
+    "failed": "失败"
+  },
+  "errors": {
+    "networkError": "网络错误",
+    "serverError": "服务器错误",
+    "unauthorized": "未授权",
+    "forbidden": "无权限",
+    "notFound": "未找到",
+    "unknown": "未知错误"
+  }
+}

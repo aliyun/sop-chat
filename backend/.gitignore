@@ -1,0 +1,9 @@
+.env
+sop-chat-cli
+sop-chat-api
+config.yaml  # 统一配置文件（可能包含敏感信息）
+
+# 前端构建产物（构建时生成）
+internal/embed/frontend/*
+!internal/embed/frontend/.gitkeep
+!internal/embed/frontend/placeholder.txt

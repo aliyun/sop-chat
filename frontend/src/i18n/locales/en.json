@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "employees": "Digital Employees",
+    "createEmployee": "Create Employee",
+    "logout": "Logout",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed"
+  },
+  "employeeSelector": {
+    "title": "Select Digital Employee",
+    "selectToStart": "Select an assistant to start conversation",
+    "noEmployees": "No employees",
+    "createFirst": "Please create your first employee",
+    "loading": "Loading...",
+    "loadFailed": "Failed to load"
+  },
+  "chat": {
+    "sendMessage": "Send",
+    "inputPlaceholder": "Type a message...",
+    "newChat": "New Chat",
+    "chatHistory": "Chat History",
+    "noChatHistory": "No chat history",
+    "loadingHistory": "Loading...",
+    "typing": "Typing...",
+    "shareChat": "Share Chat",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied",
+    "copyFailed": "Copy failed"
+  },
+  "createEmployee": {
+    "title": "Create Digital Employee",
+    "name": "Employee Name",
+    "namePlaceholder": "e.g. sop-customer-service",
+    "nameHelp": "Only lowercase letters, numbers and hyphens, must start with sop-",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "e.g. Customer Service Assistant",
+    "description": "Description",
+    "descriptionPlaceholder": "Employee description (optional)",
+    "roleArn": "Role ARN",
+    "roleArnPlaceholder": "Role name or full ARN",
+    "roleArnHelp": "You can enter a role name (e.g. my-role) or a full ARN",
+    "defaultRule": "Default Rule",
+    "defaultRulePlaceholder": "Default rule (optional)",
+    "sopKnowledges": "SOP Knowledges",
+    "addKnowledge": "Add Knowledge",
+    "knowledgeType": "Type",
+    "knowledgeTypeOss": "OSS",
+    "knowledgeTypeYunxiao": "Yunxiao",
+    "knowledgeTypeBuiltin": "Built-in",
+    "removeKnowledge": "Remove",
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating...",
+    "createSuccess": "Created successfully",
+    "createFailed": "Failed to create"
+  },
+  "employeeSettings": {
+    "title": "Employee Settings",
+    "basicInfo": "Basic Information",
+    "displayName": "Display Name",
+    "description": "Description",
+    "defaultRule": "Default Rule",
+    "knowledges": "Knowledge Configuration",
+    "sopKnowledges": "SOP Knowledges",
+    "noKnowledges": "No knowledges",
+    "addKnowledge": "Add Knowledge",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Failed to save",
+    "deleteEmployee": "Delete Employee",
+    "deleteConfirm": "Are you sure you want to delete this employee?",
+    "deleting": "Deleting...",
+    "deleteSuccess": "Deleted successfully",
+    "deleteFailed": "Failed to delete"
+  },
+  "shareChat": {
+    "title": "Shared Chat",
+    "loading": "Loading...",
+    "loadFailed": "Failed to load",
+    "notFound": "Chat not found"
+  },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "noData": "No data",
+    "error": "Error",
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "errors": {
+    "networkError": "Network error",
+    "serverError": "Server error",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "notFound": "Not found",
+    "unknown": "Unknown error"
+  }
+}

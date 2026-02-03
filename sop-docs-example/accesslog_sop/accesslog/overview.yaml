@@ -1,0 +1,69 @@
+description: 这是一个nginx访问日志
+
+query_step:
+  - project 为etl-dev logstore为accesslog
+
+fields:
+  - name: client_ip
+    desc: 客户端访问IP
+
+  - name: http_host
+    desc: 被访问主机
+
+  - name: http_user_agent
+    desc: 客户端访问的UA
+ 
+  - name: request_length
+    desc: 请求长度
+
+  - name: request_method
+    desc: 请求的Method
+
+  - name: request_time
+    desc: 请求耗时
+
+  - name: request_uri
+    desc: 请求的URI
+
+  - name: upstream_addr
+    desc: 请求的Nginx Upstream的地址
+
+  - name: upstream_response_time
+    desc: upstream的响应时间
+
+query_sqls:
+  - name: PV/UV统计
+    query: |
+      * | SELECT 
+           count(1) as pv,
+           approx_distinct(client_ip) as uv
+  - name: 响应时间分析
+    query: |
+      * | SELECT 
+            avg(request_time) as avg_request_time,
+            avg(upstream_response_time) as avg_upstream_time,
+            max(request_time) as max_request_time,
+            percentile(request_time, 0.95) as p95_request_time
+
+   - name: 慢请求分析
+     query: |
+       * | SELECT 
+            client_ip,
+            request_uri,
+            request_time,
+            upstream_response_time
+        FROM log 
+        WHERE cast(request_time as double) > 1.0
+        ORDER BY request_time DESC 
+        LIMIT 50
+
+    - name: 识别访问频率最高的客户端IP
+      query:
+        * | SELECT 
+             client_ip,
+             count(1) as access_count,
+             avg(cast(request_time as double)) as avg_response_time
+         FROM log 
+         GROUP BY client_ip 
+         ORDER BY access_count DESC 
+         LIMIT 30
