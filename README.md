@@ -1,6 +1,6 @@
 # SOP Chat
 
-An intelligent Q&A system powered by Alibaba Cloud SOP Agent, featuring a modern web interface and RESTful API for seamless human-AI interaction.
+A client application for Alibaba Cloud SOP Agent, providing a modern web interface and RESTful API for interacting with AI-powered digital employees.
 
 ## Features
 

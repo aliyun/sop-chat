@@ -1,0 +1,166 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Cache Node modules
+      uses: actions/cache@v4
+      with:
+        path: frontend/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+
+    - name: Copy frontend to embed directory
+      run: |
+        mkdir -p backend/internal/embed/frontend
+        cp -r frontend/dist/* backend/internal/embed/frontend/
+
+    - name: Install Go dependencies
+      run: |
+        cd backend
+        go mod download
+
+    - name: Run Go tests
+      run: |
+        cd backend
+        go test -v ./...
+
+    - name: Build backend binaries
+      run: |
+        cd backend
+        go build -v -o sop-chat-server ./cmd/sop-chat-api
+        go build -v -o sop-chat-cli ./cmd/sop-chat-cli
+
+    - name: Upload artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: sop-chat-binaries-linux-amd64
+        path: |
+          backend/sop-chat-server
+          backend/sop-chat-cli
+        retention-days: 7
+
+  build-multiplatform:
+    name: Build Multi-Platform
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm ci
+        npm run build
+
+    - name: Copy frontend to embed directory
+      run: |
+        mkdir -p backend/internal/embed/frontend
+        cp -r frontend/dist/* backend/internal/embed/frontend/
+
+    - name: Build for ${{ matrix.goos }}-${{ matrix.goarch }}
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+        CGO_ENABLED: 0
+      run: |
+        cd backend
+        mkdir -p ../dist/${{ matrix.goos }}-${{ matrix.goarch }}
+        
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          go build -o ../dist/${{ matrix.goos }}-${{ matrix.goarch }}/sop-chat-server.exe ./cmd/sop-chat-api
+          go build -o ../dist/${{ matrix.goos }}-${{ matrix.goarch }}/sop-chat-cli.exe ./cmd/sop-chat-cli
+        else
+          go build -o ../dist/${{ matrix.goos }}-${{ matrix.goarch }}/sop-chat-server ./cmd/sop-chat-api
+          go build -o ../dist/${{ matrix.goos }}-${{ matrix.goarch }}/sop-chat-cli ./cmd/sop-chat-cli
+        fi
+
+    - name: Create release archive
+      run: |
+        cd dist/${{ matrix.goos }}-${{ matrix.goarch }}
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          zip -r ../../sop-chat-${{ matrix.goos }}-${{ matrix.goarch }}.zip .
+        else
+          tar -czf ../../sop-chat-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz .
+        fi
+
+    - name: Upload release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./sop-chat-${{ matrix.goos }}-${{ matrix.goarch }}.${{ matrix.goos == 'windows' && 'zip' || 'tar.gz' }}
+        asset_name: sop-chat-${{ matrix.goos }}-${{ matrix.goarch }}.${{ matrix.goos == 'windows' && 'zip' || 'tar.gz' }}
+        asset_content_type: ${{ matrix.goos == 'windows' && 'application/zip' || 'application/gzip' }}
