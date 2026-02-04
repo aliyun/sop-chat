@@ -29,8 +29,8 @@ cp -r frontend/dist/* backend/internal/embed/frontend/
 # Build backend
 echo "Step 3/3: Building backend..."
 cd backend
-go build -o sop-chat-api ./cmd/sop-chat-api
+go build -o sop-chat-server ./cmd/sop-chat-api
 go build -o sop-chat-cli ./cmd/sop-chat-cli
 cd ..
 
-echo "Build complete! Binary files located at: backend/sop-chat-api"
+echo "Build complete! Binary files located at: backend/sop-chat-server"

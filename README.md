@@ -50,7 +50,7 @@ An intelligent Q&A system powered by Alibaba Cloud SOP Agent, featuring a modern
 
 **Key Components:**
 - **SOP Chat Frontend**: React-based web interface
-- **SOP Chat API**: Go backend with authentication and session management
+- **SOP Chat Server**: Go backend with authentication and session management
 - **SOP Agent**: AI agent with role-based capabilities (Alibaba Cloud CMS)
 - **ReAct Loop**: Agent reasoning framework for tool usage
 - **Knowledge Sources**: SOP documentation and SLS/OpenAPI integrations
@@ -210,14 +210,14 @@ make build
 ```
 
 **Output:**
-- Single platform: `backend/sop-chat-api`
-- Multi-platform: `dist/linux/sop-chat-api`, `dist/darwin/sop-chat-api`, `dist/darwin/sop-chat-api-arm64`
+- Single platform: `backend/sop-chat-server`
+- Multi-platform: `dist/linux/sop-chat-server`, `dist/darwin/sop-chat-server`, `dist/darwin/sop-chat-server-arm64`
 
 **Run the binary:**
 
 ```bash
 cd backend
-./sop-chat-api -c config.yaml -p 8080
+./sop-chat-server -c config.yaml -p 8080
 ```
 
 **Command-line options:**
@@ -232,7 +232,7 @@ If you need to build frontend and backend separately:
 ```bash
 # Backend
 cd backend
-go build -o sop-chat-api cmd/sop-chat-api/main.go
+go build -o sop-chat-server cmd/sop-chat-api/main.go
 
 # Frontend
 cd frontend
@@ -312,7 +312,7 @@ data: {"type":"done"}
 sop-chat/
 ├── backend/
 │   ├── cmd/
-│   │   ├── sop-chat-api/    # API server
+│   │   ├── sop-chat-api/    # Server binary
 │   │   └── sop-chat-cli/    # CLI tools
 │   ├── internal/            # Internal packages
 │   └── pkg/sopchat/         # Core SDK

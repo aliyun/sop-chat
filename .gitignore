@@ -1,0 +1,25 @@
+# 构建产物
+dist/
+backend/sop-chat-api
+backend/sop-chat-server
+
+# 前端构建产物
+frontend/dist/
+
+# 配置文件（可能包含敏感信息）
+backend/config.yaml
+
+# 环境变量文件
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
