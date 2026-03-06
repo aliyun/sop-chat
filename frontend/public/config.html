@@ -804,7 +804,7 @@ function makeDingTalkBotCard(bot, idx) {
       '</div>' +
       '<div class="field field-full">' +
         '<label>默认数字员工 ID（EmployeeId）</label>' +
-        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="your-employee-id">' +
+        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
         '<span class="hint">未命中路由规则时使用此员工</span>' +
       '</div>' +
       '<details class="field field-full" style="padding:0;border:none;background:none"' + ((bot.conversationRoutes || []).length > 0 ? ' open' : '') + '>' +
@@ -858,7 +858,7 @@ function makeDingTalkBotCard(bot, idx) {
 
 function addDingTalkBot() {
   const container = document.getElementById('dt-bots-list');
-  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true }, container.children.length));
+  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
 }
 
 function removeDingTalkBot(btn) {
@@ -976,7 +976,7 @@ function makeFeishuBotCard(bot, idx) {
       '</div>' +
       '<div class="field field-full">' +
         '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
-        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="your-employee-id">' +
+        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
         '<label>Verification Token <span class="hint">（WebSocket 模式可留空）</span></label>' +
@@ -1022,7 +1022,7 @@ function makeFeishuBotCard(bot, idx) {
 
 function addFeishuBot() {
   const container = document.getElementById('feishu-bots-list');
-  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true }, container.children.length));
+  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
 }
 
 function removeFeishuBot(btn) {
@@ -1112,7 +1112,7 @@ function makeWeComBotCard(bot, idx) {
       '</div>' +
       '<div class="field field-full">' +
         '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
-        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="your-employee-id">' +
+        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
         '<label>回调 Token <span style="color:var(--red)">*</span></label>' +
@@ -1156,7 +1156,7 @@ function makeWeComBotCard(bot, idx) {
 
 function addWeComBot() {
   const container = document.getElementById('wecom-bots-list');
-  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback' }, container.children.length));
+  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback', employeeName: 'apsara-ops' }, container.children.length));
 }
 
 function removeWeComBot(btn) {
