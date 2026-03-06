@@ -1,36 +1,107 @@
-# SOP Chat Unified Configuration File Example
-# Copy this file as config.yaml and fill in the actual configuration
+# SOP Chat 统一配置文件示例
+# 复制此文件为 config.yaml 并填入实际配置
 
-# Global configuration (supports reading from environment variables)
+# ─── 全局配置 ─────────────────────────────────────────────────────────────────
 global:
-  # Method 1: Direct value
-  # accessKeyId: your-access-key-id
-  # Method 2: Use environment variable reference (recommended)
-  accessKeyId: "$ACCESS_KEY_ID"      # Supports $VAR or ${VAR} format
-  accessKeySecret: "$ACCESS_KEY_SECRET"  # If environment variable does not exist, keep as is
-  endpoint: "cms.cn-hangzhou.aliyuncs.com"          # If empty or environment variable does not exist, will read from corresponding environment variable
-  port: 8080                         # Service listening port (if 0, will read from PORT environment variable, default: 8080)
+  # 支持直接填值或环境变量引用（$VAR / ${VAR}），变量不存在时保留原字面量
+  accessKeyId: "$ACCESS_KEY_ID"
+  accessKeySecret: "$ACCESS_KEY_SECRET"
+  endpoint: "cms.cn-hangzhou.aliyuncs.com"
+  port: 8080          # 监听端口，0 时读取 PORT 环境变量，默认 8080
+  timeZone: "Asia/Shanghai"
+  language: "zh"      # zh | en
 
-# Authentication configuration
+# ─── 认证配置 ─────────────────────────────────────────────────────────────────
 auth:
-  # Authentication method: local
-  method: local
-  
-  # JWT configuration
-  jwtSecretKey: your-secret-key-change-in-production  # Please change in production
-  jwtExpiresIn: 24h  # Token expiration time, e.g.: 24h, 1h, 30m
-  
-  # Local authentication configuration
-  # Note: local.user and local.roles must be configured for the system to work
-  # Without proper configuration, the server will fail to start
-  local:
-    user:
-      - name: admin
-        # password field stores the MD5 hashed password
-        # Example: echo -n "admin" | md5sum
-        password: 21232f297a57a5a743894a0e4a801fc3  # MD5 hash of "admin"
-    
-    roles:
-      - name: admin
-        user:  # List of users under this role
-          - admin
+  # 鉴权链（有序列表）：builtin | ldap | oidc
+  # 登录时按顺序尝试，第一个成功即返回 Token
+  # 为空时登录功能关闭，所有受保护接口均不可访问（不推荐）
+  methods: [builtin]
+  # 链式示例（builtin 优先，找不到再走 LDAP）：
+  # methods: [builtin, ldap]
+
+  # JWT 令牌设置
+  jwt:
+    secretKey: your-secret-key-change-in-production  # 生产环境务必修改
+    expiresIn: 24h    # 令牌有效期，如 24h、1h、30m
+
+  # 内置用户密码加盐（可选）
+  # 存储公式：MD5(passwordSalt + plaintext_password)，为空时退化为 MD5(plaintext_password)
+  # passwordSalt: "your-site-secret"
+
+  # 内置账号（builtin 方式专用）
+  # 密码生成：echo -n "yourpassword" | md5sum
+  # 配置了 passwordSalt 后需重新生成：echo -n "${passwordSalt}yourpassword" | md5sum
+  builtinUsers:
+    - name: admin
+      password: 21232f297a57a5a743894a0e4a801fc3  # "admin" 的 MD5
+
+  # 全局角色（所有认证方式共用；LDAP/OIDC 未来按映射规则写入此处）
+  roles:
+    - name: admin
+      user:
+        - admin
+
+  # LDAP 认证（method: ldap 时启用）
+  # ldap:
+  #   host: ldap.example.com
+  #   port: 389             # 明文 389，TLS 636
+  #   useTLS: false
+  #   bindDN: "cn=readonly,dc=example,dc=com"
+  #   bindPassword: "$LDAP_BIND_PASSWORD"
+  #   baseDN: "ou=people,dc=example,dc=com"
+  #   userFilter: "(uid={username})"
+  #   usernameAttr: uid     # 用于匹配用户名的属性
+  #   displayAttr: cn       # 显示名属性
+  #   emailAttr: mail
+
+  # OIDC / OAuth2 认证（method: oidc 时启用）
+  # 兼容 Keycloak、Dex、Okta、Azure AD 等标准 OIDC Provider
+  # oidc:
+  #   issuerURL: "https://accounts.example.com"
+  #   clientId: "$OIDC_CLIENT_ID"
+  #   clientSecret: "$OIDC_CLIENT_SECRET"
+  #   redirectURL: "http://your-server:8080/api/auth/oidc/callback"
+  #   scopes: [openid, profile, email]
+  #   usernameClaim: preferred_username  # 从哪个 claim 提取用户名
+
+# ─── 通知渠道配置（可选）────────────────────────────────────────────────────────
+# 所有 IM / 消息渠道统一在 channels 下管理，新增渠道只需追加子字段
+# 钉钉支持多实例：每个条目对接一个数字员工（clientId 唯一标识一个实例）
+# channels:
+#   dingtalk:
+#     - enabled: true
+#       clientId: "$DINGTALK_CLIENT_ID_1"
+#       clientSecret: "$DINGTALK_CLIENT_SECRET_1"
+#       employeeName: "employee-name-1"
+#       conciseReply: true        # 开启后回复内容会更简洁，适合 IM 阅读
+#       allowedGroupUsers:        # 群用户白名单（钉钉 senderNick）：限制群聊中可 @ 机器人提问的用户；为空则允许所有群成员
+#         - "张三"
+#         - "李四"
+#       allowedDirectUsers:       # 单聊用户白名单（钉钉 senderNick）：限制可与机器人单聊的用户；为空则允许所有人单聊
+#         - "张三"
+#       allowedConversations:     # 群白名单（conversationTitle）：为空则所有群均可；单聊不受此限制
+#         - "研发一群"
+#         - "SRE 值班群"
+#     - enabled: true
+#       clientId: "$DINGTALK_CLIENT_ID_2"
+#       clientSecret: "$DINGTALK_CLIENT_SECRET_2"
+#       employeeName: "employee-name-2"
+#   # 待实现：
+#   # wecom:
+#   #   - enabled: false
+#   #     corpId: ...
+#   # slack:
+#   #   - enabled: false
+#   #     botToken: ...
+
+# ─── OpenAI 兼容接口（可选）─────────────────────────────────────────────────────
+# 接口路径：POST /openai/v1/chat/completions、GET /openai/v1/models
+# 请求中的 model 字段映射为数字员工名称（employeeName）
+# 客户端鉴权方式：Authorization: Bearer <apiKey>
+# 不配置 apiKeys 或省略此节时，接口无需鉴权即可访问
+# openai:
+#   enabled: true
+#   apiKeys:
+#     - "sk-your-secret-key-1"
+#     - "sk-your-secret-key-2"

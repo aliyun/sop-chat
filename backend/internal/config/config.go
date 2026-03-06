@@ -1,6 +1,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -17,6 +19,66 @@ type Config struct {
 
 	// 认证配置
 	Auth AuthConfig `yaml:"auth"`
+
+	// 通知渠道配置（可选）：钉钉、企业微信、Slack 等
+	Channels *ChannelsConfig `yaml:"channels,omitempty"`
+
+	// OpenAI 兼容接口配置（可选）
+	OpenAI *OpenAICompatConfig `yaml:"openai,omitempty"`
+}
+
+// ChannelsConfig 通知渠道配置（聚合所有 IM/消息渠道）
+// 新增渠道时在此结构体中追加字段即可，无需修改顶层 Config
+type ChannelsConfig struct {
+	// 支持多个钉钉机器人，每个对接一个数字员工（clientId 唯一标识一个实例）
+	DingTalk []DingTalkConfig `yaml:"dingtalk,omitempty"`
+	// 预留扩展字段（未实现）：
+	// WeCom   []WeComConfig   `yaml:"wecom,omitempty"`
+	// Slack   []SlackConfig   `yaml:"slack,omitempty"`
+	// Lark    []LarkConfig    `yaml:"lark,omitempty"`
+	// Webhook []WebhookConfig `yaml:"webhook,omitempty"`
+}
+
+// OpenAICompatConfig OpenAI 兼容接口配置
+type OpenAICompatConfig struct {
+	// 是否启用 API Key 鉴权；false 时保留配置但不校验 key
+	Enabled bool `yaml:"enabled"`
+	// API 密钥列表，客户端通过 Authorization: Bearer <key> 方式认证
+	APIKeys []string `yaml:"apiKeys,omitempty"`
+}
+
+// ConversationRoute 群名称路由规则：将特定群的消息路由到指定数字员工
+type ConversationRoute struct {
+	ConversationTitle string `yaml:"conversationTitle"` // 群名称（精确匹配）
+	EmployeeName      string `yaml:"employeeName"`      // 路由到的数字员工
+}
+
+// DingTalkConfig 钉钉机器人配置
+type DingTalkConfig struct {
+	// 是否启用钉钉机器人；false 时保留配置但不启动 Stream 连接
+	Enabled      bool   `yaml:"enabled"`
+	Name         string `yaml:"name,omitempty"` // 机器人显示名称（仅用于标识，不影响功能）
+	ClientId     string `yaml:"clientId"`        // 企业内部应用 AppKey（唯一标识）
+	ClientSecret string `yaml:"clientSecret"`    // 企业内部应用 AppSecret
+	EmployeeName string `yaml:"employeeName"`    // 默认数字员工名称
+	// 开启后，发送给大模型的消息会附加精简指令，要求回复简短、适合 IM 阅读
+	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// 群用户白名单（钉钉 senderNick）；限制群聊中可 @ 机器人提问的用户；为空时允许所有群成员
+	AllowedGroupUsers []string `yaml:"allowedGroupUsers,omitempty"`
+	// 单聊用户白名单（钉钉 senderNick）；限制可与机器人单聊的用户；为空时允许所有人单聊
+	AllowedDirectUsers []string `yaml:"allowedDirectUsers,omitempty"`
+	// 群白名单（conversationTitle）；为空时允许所有群；有值时仅允许列出的群，单聊不受此限制
+	AllowedConversations []string `yaml:"allowedConversations,omitempty"`
+	// 群名称路由：按群名将消息路由到不同的数字员工；匹配不到时使用顶层 employeeName
+	ConversationRoutes []ConversationRoute `yaml:"conversationRoutes,omitempty"`
+}
+
+// CredsEqual 判断凭据和员工名是否与另一个配置相同（用于热重载时判断是否需要重启）
+func (d *DingTalkConfig) CredsEqual(other *DingTalkConfig) bool {
+	if other == nil {
+		return false
+	}
+	return d.ClientSecret == other.ClientSecret && d.EmployeeName == other.EmployeeName
 }
 
 // GlobalConfig 全局配置
@@ -24,26 +86,46 @@ type GlobalConfig struct {
 	AccessKeyId     string `yaml:"accessKeyId"`
 	AccessKeySecret string `yaml:"accessKeySecret"`
 	Endpoint        string `yaml:"endpoint"`
-	Port            int    `yaml:"port"`     // 服务监听端口
+	Host            string `yaml:"host"` // 服务监听地址，默认 0.0.0.0
+	Port            int    `yaml:"port"` // 服务监听端口，默认 8080
 	TimeZone        string `yaml:"timeZone"` // 时区设置
 	Language        string `yaml:"language"` // 语言设置
 }
 
 // AuthConfig 认证配置
+// methods 为有序鉴权链，登录时依次尝试直到第一个成功。
+// 为空时登录功能关闭，所有受保护 API 均不可访问。
 type AuthConfig struct {
-	Method       string       `yaml:"method"`
-	JWTSecretKey string       `yaml:"jwtSecretKey"`
-	JWTExpiresIn string       `yaml:"jwtExpiresIn"` // 例如: "24h", "1h"
-	DataDir      string       `yaml:"dataDir"`
-	Local        *LocalConfig `yaml:"local,omitempty"`
-	LDAP         *LDAPConfig  `yaml:"ldap,omitempty"`
-	OIDC         *OIDCConfig  `yaml:"oidc,omitempty"`
+	// 鉴权链（有序列表）：builtin | ldap | oidc
+	// 为空时登录关闭，提示用户在管理后台配置
+	Methods []string  `yaml:"methods"`
+	JWT     JWTConfig `yaml:"jwt"`
+
+	// 内置用户密码加盐：stored = MD5(passwordSalt + plaintext)
+	// 为空时退化为 MD5(plaintext)，向后兼容
+	PasswordSalt string `yaml:"passwordSalt,omitempty"`
+
+	// 内置账号（builtin 方式专用）
+	BuiltinUsers []UserConfig `yaml:"builtinUsers,omitempty"`
+
+	// 全局角色定义（所有认证方式共用；LDAP/OIDC 未来按映射规则写入此处）
+	Roles []RoleConfig `yaml:"roles,omitempty"`
+
+	LDAP *LDAPConfig `yaml:"ldap,omitempty"`
+	OIDC *OIDCConfig `yaml:"oidc,omitempty"`
 }
 
-// LocalConfig 本地认证配置
+// JWTConfig JWT 令牌配置
+type JWTConfig struct {
+	SecretKey string `yaml:"secretKey"`
+	ExpiresIn string `yaml:"expiresIn"` // 例如: "24h", "1h", "30m"
+}
+
+// LocalConfig 本地认证配置（用于 auth 包桥接，不直接映射 YAML）
 type LocalConfig struct {
-	Users []UserConfig `yaml:"user"`
-	Roles []RoleConfig `yaml:"roles"`
+	Users        []UserConfig
+	Roles        []RoleConfig
+	PasswordSalt string // 从 AuthConfig.PasswordSalt 注入
 }
 
 // UserConfig 用户配置
@@ -58,14 +140,63 @@ type RoleConfig struct {
 	Users []string `yaml:"user"`
 }
 
-// LDAPConfig LDAP 配置（未来支持）
+// LDAPConfig LDAP 认证配置
 type LDAPConfig struct {
-	// TODO: 实现 LDAP 配置
+	Host         string `yaml:"host"`           // LDAP 服务器地址，如 ldap.example.com
+	Port         int    `yaml:"port"`           // 端口，明文默认 389，TLS 默认 636
+	UseTLS       bool   `yaml:"useTLS"`         // 是否使用 TLS（LDAPS）
+	BindDN       string `yaml:"bindDN"`         // 查询用 DN，如 cn=readonly,dc=example,dc=com
+	BindPassword string `yaml:"bindPassword"`   // 查询用密码
+	BaseDN       string `yaml:"baseDN"`         // 用户搜索根，如 ou=people,dc=example,dc=com
+	UserFilter   string `yaml:"userFilter"`     // 用户搜索过滤器，如 (uid={username})
+	UsernameAttr string `yaml:"usernameAttr"`   // 用户名属性，默认 uid
+	DisplayAttr  string `yaml:"displayAttr"`    // 显示名属性，默认 cn
+	EmailAttr    string `yaml:"emailAttr"`      // 邮箱属性，默认 mail
 }
 
-// OIDCConfig OIDC 配置（未来支持）
+// OIDCConfig OIDC / OAuth2 认证配置
+// 兼容标准 OIDC Provider（Keycloak、Dex、Okta、Azure AD 等）
 type OIDCConfig struct {
-	// TODO: 实现 OIDC 配置
+	IssuerURL    string   `yaml:"issuerURL"`              // Provider 地址，如 https://accounts.example.com
+	ClientID     string   `yaml:"clientId"`               // OAuth2 Client ID
+	ClientSecret string   `yaml:"clientSecret"`           // OAuth2 Client Secret
+	RedirectURL  string   `yaml:"redirectURL"`            // 回调地址，如 http://your-server/api/auth/oidc/callback
+	Scopes       []string `yaml:"scopes,omitempty"`       // 默认: [openid, profile, email]
+	UsernameClaim string  `yaml:"usernameClaim,omitempty"` // 用于提取用户名的 claim，默认 preferred_username
+}
+
+// randomHex 生成 n 字节的随机十六进制字符串
+func randomHex(n int) string {
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		// 极端情况下随机数生成失败，使用固定占位符并提示用户修改
+		return "please-change-this-secret-key"
+	}
+	return hex.EncodeToString(b)
+}
+
+// DefaultConfig 返回一个可直接使用的最小默认配置：
+// - 凭据为空（用户需通过配置 UI 填写）
+// - auth.methods 为空（登录功能关闭，配置后重启或热重载生效）
+// - JWT secretKey 随机生成，避免各实例共用同一密钥
+func DefaultConfig() *Config {
+	return &Config{
+		Global: GlobalConfig{
+			Host:     "0.0.0.0",
+			Port:     8080,
+			Endpoint: "cms.cn-hangzhou.aliyuncs.com",
+			TimeZone: "Asia/Shanghai",
+			Language: "zh",
+		},
+		Auth: AuthConfig{
+			Methods:      []string{"builtin"},
+			PasswordSalt: randomHex(16),
+			JWT: JWTConfig{
+				SecretKey: randomHex(32),
+				ExpiresIn: "24h",
+			},
+		},
+	}
 }
 
 // LoadConfig 从文件加载统一配置
@@ -144,11 +275,34 @@ func (c *Config) expandEnvVars() {
 	c.Global.AccessKeyId = expandEnvVar(c.Global.AccessKeyId)
 	c.Global.AccessKeySecret = expandEnvVar(c.Global.AccessKeySecret)
 	c.Global.Endpoint = expandEnvVar(c.Global.Endpoint)
+	c.Global.Host = expandEnvVar(c.Global.Host)
 
 	// 展开 Auth 配置中的环境变量
-	c.Auth.JWTSecretKey = expandEnvVar(c.Auth.JWTSecretKey)
-	c.Auth.JWTExpiresIn = expandEnvVar(c.Auth.JWTExpiresIn)
-	c.Auth.DataDir = expandEnvVar(c.Auth.DataDir)
+	c.Auth.JWT.SecretKey = expandEnvVar(c.Auth.JWT.SecretKey)
+	c.Auth.JWT.ExpiresIn = expandEnvVar(c.Auth.JWT.ExpiresIn)
+	c.Auth.PasswordSalt = expandEnvVar(c.Auth.PasswordSalt)
+	if c.Auth.LDAP != nil {
+		c.Auth.LDAP.BindPassword = expandEnvVar(c.Auth.LDAP.BindPassword)
+	}
+	if c.Auth.OIDC != nil {
+		c.Auth.OIDC.ClientSecret = expandEnvVar(c.Auth.OIDC.ClientSecret)
+	}
+
+	// 展开渠道配置中的环境变量
+	if c.Channels != nil {
+		for i := range c.Channels.DingTalk {
+			c.Channels.DingTalk[i].ClientId = expandEnvVar(c.Channels.DingTalk[i].ClientId)
+			c.Channels.DingTalk[i].ClientSecret = expandEnvVar(c.Channels.DingTalk[i].ClientSecret)
+			c.Channels.DingTalk[i].EmployeeName = expandEnvVar(c.Channels.DingTalk[i].EmployeeName)
+		}
+	}
+
+	// 展开 OpenAI 配置中的环境变量
+	if c.OpenAI != nil {
+		for i, key := range c.OpenAI.APIKeys {
+			c.OpenAI.APIKeys[i] = expandEnvVar(key)
+		}
+	}
 }
 
 // expandEnvVar 展开单个字符串中的环境变量引用
@@ -226,23 +380,22 @@ func (c *Config) GetAuthConfig() *AuthConfig {
 
 // GetYAMLConfig 获取 YAML 配置（用于兼容旧的 YAML 配置加载方式）
 func (c *Config) GetYAMLConfig() *YAMLConfigForAuth {
-	if c.Auth.Local == nil {
-		return nil
-	}
 	return &YAMLConfigForAuth{
-		Method: c.Auth.Method,
-		Local:  c.Auth.Local,
-		LDAP:   c.Auth.LDAP,
-		OIDC:   c.Auth.OIDC,
+		Local: &LocalConfig{
+			Users:        c.Auth.BuiltinUsers,
+			Roles:        c.Auth.Roles,
+			PasswordSalt: c.Auth.PasswordSalt,
+		},
+		LDAP: c.Auth.LDAP,
+		OIDC: c.Auth.OIDC,
 	}
 }
 
 // YAMLConfigForAuth 用于传递给 auth 包的配置结构
 type YAMLConfigForAuth struct {
-	Method string
-	Local  *LocalConfig
-	LDAP   *LDAPConfig
-	OIDC   *OIDCConfig
+	Local *LocalConfig
+	LDAP  *LDAPConfig
+	OIDC  *OIDCConfig
 }
 
 // ClientConfig 客户端配置（兼容原有结构）
@@ -253,24 +406,69 @@ type ClientConfig struct {
 }
 
 // GetPort 获取端口配置（优先级: 配置文件 > 环境变量 > 默认值）
-// 返回端口号（int），如果未配置则返回 0
 func (c *Config) GetPort() int {
 	port := c.Global.Port
 	if port == 0 {
-		// 尝试从环境变量读取
 		portStr := os.Getenv("PORT")
 		if portStr != "" {
-			// 解析环境变量中的端口号
 			if parsedPort, err := strconv.Atoi(portStr); err == nil {
 				port = parsedPort
 			}
 		}
-		// 如果仍然为 0，使用默认值
 		if port == 0 {
 			port = 8080
 		}
 	}
 	return port
+}
+
+// GetHost 获取监听地址（优先级: 配置文件 > 环境变量 LISTEN_HOST > 默认值 0.0.0.0）
+func (c *Config) GetHost() string {
+	if c.Global.Host != "" {
+		return c.Global.Host
+	}
+	if h := os.Getenv("LISTEN_HOST"); h != "" {
+		return h
+	}
+	return "0.0.0.0"
+}
+
+// GetListenAddr 返回完整的监听地址，格式为 host:port
+func (c *Config) GetListenAddr() string {
+	return fmt.Sprintf("%s:%d", c.GetHost(), c.GetPort())
+}
+
+// SaveConfig 将 Config 结构体序列化为 YAML 并持久化到文件
+func SaveConfig(configPath string, cfg *Config) error {
+	data, err := yaml.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("序列化配置失败: %w", err)
+	}
+	if err := os.WriteFile(configPath, data, 0644); err != nil {
+		return fmt.Errorf("写入配置文件失败: %w", err)
+	}
+	return nil
+}
+
+// ReadRawConfig 读取配置文件的原始文本内容（用于配置 UI 展示）
+func ReadRawConfig(configPath string) (string, error) {
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("读取配置文件失败: %w", err)
+	}
+	return string(data), nil
+}
+
+// SaveRawConfig 将原始 YAML 文本写入配置文件，保存前验证 YAML 格式合法性
+func SaveRawConfig(configPath string, content string) error {
+	var cfg Config
+	if err := yaml.Unmarshal([]byte(content), &cfg); err != nil {
+		return fmt.Errorf("YAML 格式无效: %w", err)
+	}
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		return fmt.Errorf("写入配置文件失败: %w", err)
+	}
+	return nil
 }
 
 // GetTimeZone 获取时区配置（如果未配置则返回默认值 "Asia/Shanghai"）

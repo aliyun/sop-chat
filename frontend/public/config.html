@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SOP Chat · 配置管理</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --surface:#ffffff;
+  --surface2:#f5f7ff;
+  --surface3:#eef0ff;
+  --border:rgba(102,126,234,0.15);
+  --border2:rgba(102,126,234,0.28);
+  --text:#2d3748;
+  --text2:#4a5568;
+  --text3:#718096;
+  --accent:#667eea;
+  --accent2:#764ba2;
+  --accent-glow:rgba(102,126,234,0.18);
+  --green:#276749;--green-bg:#f0fff4;--green-bd:rgba(56,161,105,.3);
+  --red:#c53030;--red-bg:#fff5f5;--red-bd:rgba(197,48,48,.3);
+  --blue:#2b6cb0;--blue-bg:#ebf8ff;--blue-bd:rgba(43,108,176,.3);
+  --yellow:#b7791f;--yellow-bg:#fffff0;--yellow-bd:rgba(183,121,31,.3);
+  --radius:8px;--radius-lg:12px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto','PingFang SC',system-ui,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%) fixed;color:var(--text);display:flex;flex-direction:column;height:100vh;font-size:14px;line-height:1.5}
+
+/* ── Header ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(102,126,234,0.15)}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px var(--accent-glow)}
+.h-title{font-size:15px;font-weight:600;color:var(--text)}
+.h-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* ── Tab bar ── */
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:stretch;gap:0;position:sticky;top:56px;z-index:99;overflow-x:auto;box-shadow:0 2px 6px rgba(102,126,234,0.08)}
+.tab-bar::-webkit-scrollbar{height:0}
+.tab-btn{height:44px;padding:0 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text3);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s,border-color .15s;flex-shrink:0}
+.tab-btn:hover{color:var(--text2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── Save bar ── */
+.save-bar{background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);padding:7px 1.5rem;display:flex;align-items:center;gap:10px;backdrop-filter:blur(8px)}
+#status-msg{font-size:13px;padding:4px 12px;border-radius:6px;display:none;align-items:center;gap:6px}
+.s-success{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+.s-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.s-loading{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd)}
+.s-warning{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-bd)}
+.spacer{flex:1}
+
+/* ── Buttons ── */
+.btn{height:34px;padding:0 14px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .12s,transform .1s,box-shadow .12s;white-space:nowrap;flex-shrink:0}
+.btn svg{flex-shrink:0}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 8px var(--accent-glow)}
+.btn-primary:hover:not(:disabled){opacity:.9;transform:translateY(-1px);box-shadow:0 4px 14px var(--accent-glow)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface2);color:var(--accent);border-color:rgba(102,126,234,0.4)}
+.btn-danger{background:rgba(197,48,48,.07);color:#c53030;border:1px solid rgba(197,48,48,.22)}
+.btn-danger:hover{background:rgba(197,48,48,.13)}
+.btn-sm{height:28px;padding:0 10px;font-size:12px}
+.btn-icon{width:28px;height:28px;padding:0;justify-content:center}
+
+/* ── Layout ── */
+.scroll-container{flex:1;overflow-y:auto;overflow-x:hidden}
+main{padding:1.5rem;max-width:860px;width:100%;margin:0 auto}
+
+/* ── Tab panels ── */
+.tab-panel{display:none;flex-direction:column;gap:1.25rem}
+.tab-panel.active{display:flex}
+
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 4px 20px rgba(102,126,234,0.1)}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.card-title-icon{font-size:15px}
+
+/* ── Toggle switch ── */
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:#cbd5e0;border-radius:99px;cursor:pointer;transition:background .2s}
+.toggle input:checked + .toggle-track{background:var(--accent)}
+.toggle-thumb{position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.18)}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(18px)}
+.toggle-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px}
+.toggle-row-label{font-size:13px;font-weight:500;flex:1;color:var(--text)}
+.toggle-row-desc{font-size:12px;color:var(--text3)}
+
+/* ── Form fields ── */
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.field-grid{grid-template-columns:1fr}}
+.field-full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;font-weight:500;color:var(--text2)}
+.field .hint{font-size:11px;color:var(--text3);margin-top:2px}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-wrap input{flex:1}
+.eye-btn{position:absolute;right:8px;background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;display:flex;align-items:center}
+.eye-btn:hover{color:var(--accent)}
+input[type=text],input[type=password],input[type=number],select{
+  width:100%;background:#fff;color:var(--text);border:2px solid rgba(102,126,234,0.15);
+  border-radius:var(--radius);padding:7px 10px;font-size:13px;font-family:inherit;
+  outline:none;transition:border-color .15s,box-shadow .15s}
+input[type=password]{padding-right:36px}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+input:disabled,select:disabled{opacity:.5;cursor:not-allowed;background:#f7f9ff}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+
+/* ── Divider ── */
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* ── Dynamic list ── */
+.list-section{display:flex;flex-direction:column;gap:8px}
+.list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.list-label{font-size:12px;font-weight:500;color:var(--text2)}
+.list-row{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px}
+.list-row input{background:#fff}
+.list-row .flex1{flex:1;min-width:0}
+.user-row{flex-wrap:wrap;gap:8px}
+.user-row .name-field{flex:0 0 160px;min-width:0}
+.user-row .hash-display{flex:1;min-width:120px;font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:var(--text3);background:#f7f9ff;border:1px solid var(--border);border-radius:6px;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+.user-row .pwd-change{display:flex;align-items:center;gap:6px}
+.new-pwd-wrap{display:flex;align-items:center;gap:6px;flex:1;min-width:140px}
+.tag-input-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1}
+.tag{display:inline-flex;align-items:center;gap:4px;background:rgba(102,126,234,.1);color:#5a67d8;border:1px solid rgba(102,126,234,.25);border-radius:5px;padding:2px 8px;font-size:12px}
+.tag button{background:none;border:none;cursor:pointer;color:#667eea;display:flex;padding:0;opacity:.6}
+.tag button:hover{opacity:1}
+.tag-input{background:none!important;border:none!important;outline:none!important;box-shadow:none!important;padding:4px!important;min-width:80px;width:auto;flex:1}
+.role-row{flex-direction:column;align-items:stretch;gap:8px}
+.role-name-row{display:flex;align-items:center;gap:8px}
+
+/* ── Methods list ── */
+.methods-add-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.methods-add-row select{width:auto;flex:1}
+.method-row{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px}
+.method-idx{font-size:11px;color:var(--text3);width:16px;text-align:right;flex-shrink:0;font-family:'SF Mono',monospace}
+.method-chip{background:var(--surface3);border:1px solid var(--border2);border-radius:5px;padding:2px 9px;font-size:12px;font-family:'SF Mono','Fira Code',monospace;color:var(--accent2);flex-shrink:0}
+.method-desc{flex:1;font-size:12px;color:var(--text3)}
+.method-move{display:flex;flex-direction:column;gap:2px}
+.method-move button{width:20px;height:16px;padding:0;font-size:11px;line-height:1;border-radius:3px;border:1px solid var(--border2);background:#fff;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.method-move button:hover{background:var(--surface3);color:var(--accent)}
+
+/* ── DingTalk bot card ── */
+.dt-bot-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:12px}
+.dt-bot-header{display:flex;align-items:center;gap:10px}
+.dt-bot-num{width:20px;height:20px;background:var(--accent);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dt-bot-type{font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(43,108,176,.1);color:#2b6cb0;border:1px solid rgba(43,108,176,.25);font-family:'SF Mono',monospace;flex-shrink:0}
+.dt-bot-title{font-size:13px;font-weight:500;flex:1;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.field summary::-webkit-details-marker{display:none}
+details.field[open] .dt-route-arrow{transform:rotate(90deg)}
+.dt-bot-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.dt-bot-fields{grid-template-columns:1fr}}
+
+/* ── Info badges ── */
+.badge-hot{font-size:11px;padding:2px 7px;border-radius:4px;background:rgba(39,103,73,.08);color:#276749;border:1px solid rgba(56,161,105,.3);font-family:'SF Mono',monospace}
+.badge-cold{font-size:11px;padding:2px 7px;border-radius:4px;background:rgba(183,121,31,.08);color:#b7791f;border:1px solid rgba(183,121,31,.3);font-family:'SF Mono',monospace}
+.reload-note{padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--text3);line-height:1.8}
+.reload-note strong{color:var(--text2)}
+
+/* ── Spinner ── */
+.spinner{width:14px;height:14px;border:2px solid rgba(102,126,234,.25);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(102,126,234,0.25);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">&#9881;</div>
+  <div>
+    <div class="h-title">SOP Chat 配置管理</div>
+    <div class="h-sub">修改配置后点击保存，大部分配置立即生效无需重启</div>
+  </div>
+  <div class="h-right">
+    <a class="btn btn-ghost btn-sm" id="login-link" href="/" target="_blank" style="text-decoration:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      前台登录
+    </a>
+    <button class="btn btn-ghost btn-sm" onclick="loadConfig()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+      刷新
+    </button>
+  </div>
+</header>
+
+<!-- ── Tab bar ── -->
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn active" data-tab="global" onclick="switchTab('global')">&#128279; 基础设置</button>
+  <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')">&#128272; 认证</button>
+  <button class="tab-btn" data-tab="users" onclick="switchTab('users')">&#128101; 用户和角色</button>
+  <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')">&#129302; Channels（机器人）</button>
+  <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')">&#129504; OpenAI 兼容接口</button>
+</nav>
+
+<!-- ── Save bar ── -->
+<div class="save-bar">
+  <div id="status-msg"></div>
+  <div class="spacer"></div>
+  <button class="btn btn-primary" id="save-btn" onclick="saveConfig()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    保存并应用
+  </button>
+</div>
+
+<div class="scroll-container">
+<main>
+
+<!-- ── Tab 1: Global ── -->
+<div class="tab-panel active" id="panel-global">
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> 阿里云 CMS 凭证</div>
+    <div class="field-grid">
+      <div class="field">
+        <label>AccessKeyId <span style="color:var(--red)">*</span></label>
+        <input type="text" id="g-akid" placeholder="your-access-key-id" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>AccessKeySecret <span style="color:var(--red)">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="g-aks" placeholder="your-access-key-secret" autocomplete="new-password">
+          <button class="eye-btn" onclick="toggleEye('g-aks',this)" tabindex="-1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field field-full">
+        <label>Endpoint（服务地址）</label>
+        <input type="text" id="g-endpoint" placeholder="cms.cn-hangzhou.aliyuncs.com">
+        <span class="hint">不填则使用默认地址</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">&#9881;</span> 服务器设置</div>
+    <div class="field-grid">
+      <div class="field">
+        <label>监听地址 Host</label>
+        <input type="text" id="g-host" placeholder="0.0.0.0">
+        <span class="hint">留空默认 0.0.0.0，修改后需重启生效</span>
+      </div>
+      <div class="field">
+        <label>端口 Port</label>
+        <input type="number" id="g-port" min="1" max="65535" placeholder="8080">
+        <span class="hint">修改后需重启生效</span>
+      </div>
+      <div class="field">
+        <label>语言 Language</label>
+        <select id="g-lang">
+          <option value="zh">中文 (zh)</option>
+          <option value="en">English (en)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>时区 TimeZone</label>
+        <input type="text" id="g-tz" placeholder="Asia/Shanghai">
+      </div>
+    </div>
+  </div>
+  <div class="reload-note">
+    <strong>保存后立即生效：</strong>
+    <span class="badge-hot">accessKeyId</span>
+    <span class="badge-hot">accessKeySecret</span>
+    <span class="badge-hot">endpoint</span>
+    <span class="badge-hot">timeZone</span>
+    <span class="badge-hot">language</span>
+    &nbsp;
+    <strong>需重启：</strong>
+    <span class="badge-cold">host</span>
+    <span class="badge-cold">port</span>
+  </div>
+</div>
+
+<!-- ── Tab 2: Auth ── -->
+<div class="tab-panel" id="panel-auth">
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">&#128272;</span> 鉴权链</div>
+    <div class="list-section">
+      <div class="methods-add-row">
+        <select id="method-select">
+          <option value="">选择认证方式...</option>
+          <option value="builtin">builtin（内置账号）</option>
+          <option value="ldap">ldap（LDAP，待实现）</option>
+          <option value="oidc">oidc（OpenID Connect，待实现）</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="addMethod()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          添加
+        </button>
+      </div>
+      <div id="methods-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      <p style="font-size:11px;color:var(--text3);margin-top:4px">列表顺序即尝试顺序。<strong style="color:var(--text2)">列表为空时登录关闭</strong>，所有受保护接口均返回 503。</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">&#128273;</span> JWT 认证设置</div>
+    <div class="field-grid">
+      <div class="field">
+        <label>JWT 密钥 <span style="color:var(--red)">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="a-jwt-key" autocomplete="new-password" placeholder="请设置一个随机密钥">
+          <button class="eye-btn" onclick="toggleEye('a-jwt-key',this)" tabindex="-1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Token 有效期</label>
+        <input type="text" id="a-jwt-exp" placeholder="24h">
+        <span class="hint">支持 24h、1h30m、7d 等格式</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">&#128274;</span> 内置账号密码盐</div>
+    <div class="field">
+      <label>密码盐 PasswordSalt</label>
+      <div class="input-wrap">
+        <input type="password" id="a-salt" autocomplete="new-password" placeholder="sop">
+        <button class="eye-btn" onclick="toggleEye('a-salt',this)" tabindex="-1">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <span class="hint">设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)</span>
+    </div>
+  </div>
+  <div class="reload-note">
+    <strong>保存后立即生效：</strong>
+    <span class="badge-hot">methods</span>
+    <span class="badge-hot">passwordSalt</span>
+    &nbsp;
+    <strong>需重启：</strong>
+    <span class="badge-cold">jwtSecretKey</span>
+    <span class="badge-cold">jwtExpiresIn</span>
+    &nbsp;（修改密钥后，已登录 Token 仍有效至过期）
+  </div>
+</div>
+
+<!-- ── Tab 3: Users ── -->
+<div class="tab-panel" id="panel-users">
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">&#128101;</span> 内置用户
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addUser()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加用户
+      </button>
+    </div>
+    <div id="users-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">密码以 MD5 哈希形式存储。修改密码时输入明文，点击"确认"后自动计算哈希（含盐，与<strong>认证</strong>页的密码盐保持一致）。</p>
+  </div>
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">&#127959;</span> 角色与权限
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addRole()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加角色
+      </button>
+    </div>
+    <div id="roles-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">在角色输入框中输入用户名后按回车添加。系统内置 <span class="badge-cold">admin</span> 角色用于管理员权限。角色为全局概念，未来 LDAP/OIDC 用户也将映射至此。</p>
+  </div>
+  <div class="reload-note">
+    <strong>保存后立即生效：</strong>
+    <span class="badge-hot">用户列表</span>
+    <span class="badge-hot">密码</span>
+    <span class="badge-hot">角色分配</span>
+  </div>
+</div>
+
+<!-- ── Tab 4: Channels ── -->
+<div class="tab-panel" id="panel-dingtalk">
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">&#129302;</span> 消息渠道
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addDingTalkBot()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加钉钉机器人
+      </button>
+    </div>
+    <div id="dt-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
+  </div>
+  <div class="reload-note">
+    <strong>保存后立即生效：</strong>
+    <span class="badge-hot">channels.*</span>
+  </div>
+  <div style="padding:13px 16px;background:#ebf8ff;border:1px solid rgba(43,108,176,.25);border-radius:var(--radius-lg);font-size:12px;line-height:1.9;color:#2c5282">
+    <div style="font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:6px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      如何在钉钉开发者后台获取 AppKey / AppSecret？
+    </div>
+    <ol style="padding-left:18px;color:#2b6cb0">
+      <li>前往 <a href="https://open-dev.dingtalk.com/" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600;text-decoration:underline">钉钉开发者后台</a>，创建一个<strong>企业内部应用</strong></li>
+      <li>在应用能力页添加 <strong>「机器人」</strong> 能力</li>
+      <li>在机器人配置中，将消息接收模式设置为 <strong>Stream 模式</strong></li>
+      <li>在应用凭证页复制 <strong>AppKey（ClientId）</strong> 和 <strong>AppSecret（ClientSecret）</strong></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ── Tab 5: OpenAPI ── -->
+<div class="tab-panel" id="panel-openai">
+  <div class="card">
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-row-label">启用 API Key 鉴权</div>
+        <div class="toggle-row-desc">未启用时，/openai/v1/... 接口无需鉴权即可访问</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="openai-enabled" onchange="onOpenAIToggle()">
+        <span class="toggle-track"></span>
+        <span class="toggle-thumb"></span>
+      </label>
+    </div>
+    <div class="list-header">
+      <span class="list-label">API 密钥列表</span>
+      <button class="btn btn-ghost btn-sm" id="openai-add-btn" onclick="addApiKey()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加密钥
+      </button>
+    </div>
+    <div id="apikeys-list" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">客户端通过 <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">Authorization: Bearer &lt;key&gt;</code> 方式认证</p>
+    <div id="openai-endpoint-box" style="display:none;margin-top:14px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 14px">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">接口 Base URL（填入兼容客户端）</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <code id="openai-base-url" style="flex:1;font-size:12px;font-family:'SF Mono','Fira Code',monospace;color:var(--accent2);word-break:break-all"></code>
+        <button class="btn btn-ghost btn-sm" onclick="copyBaseUrl()" id="openai-copy-btn" title="复制">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="reload-note">
+    <strong>保存后立即生效：</strong>
+    <span class="badge-hot">openai.apiKeys</span>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── Tiny MD5 (Parvez Anandam, MIT) ──────────────────────────────────────────
+function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k,I,G,H,x){d=K(d,K(K((F&k)|(~F&I),G),x));return K(L(d,H),F)}function q(d,F,k,I,G,H,x){d=K(d,K(K((F&I)|(k&~I),G),x));return K(L(d,H),F)}function p(d,F,k,I,G,H,x){d=K(d,K(K(F^k^I,G),x));return K(L(d,H),F)}function n(d,F,k,I,G,H,x){d=K(d,K(K(k^(F|~I),G),x));return K(L(d,H),F)}function u(G){var F,k=G.length,H=k+8;var d=(H-(H%64))/64;var I=(d+1)*16;var x=Array(I-1);var F=0;var G2=0;while(G2<k){var H2=(G2-(G2%4))/4;F=G2%4*8;x[H2]=(x[H2])|(G.charCodeAt(G2)<<F);G2++}var H2=(G2-(G2%4))/4;F=G2%4*8;x[H2]=x[H2]|(128<<F);x[I-2]=k<<3;x[I-1]=k>>>29;return x}function m(x){var k="";var F,G;for(var d=0;d<4;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}var G=Array(),k,d,F,H,x,G2,k2,d2,F2;var H2=1732584193,p2=4023233417,q2=2562383102,n2=271733878;s=unescape(encodeURIComponent(s));G=u(s);for(k=0;k<G.length;k+=16){d=H2;F=p2;x=q2;H=n2;H2=r(H2,p2,q2,n2,G[k+0],7,3614090360);n2=r(n2,H2,p2,q2,G[k+1],12,3905402710);q2=r(q2,n2,H2,p2,G[k+2],17,606105819);p2=r(p2,q2,n2,H2,G[k+3],22,3250441966);H2=r(H2,p2,q2,n2,G[k+4],7,4118548399);n2=r(n2,H2,p2,q2,G[k+5],12,1200080426);q2=r(q2,n2,H2,p2,G[k+6],17,2821735955);p2=r(p2,q2,n2,H2,G[k+7],22,4249261313);H2=r(H2,p2,q2,n2,G[k+8],7,1770035416);n2=r(n2,H2,p2,q2,G[k+9],12,2336552879);q2=r(q2,n2,H2,p2,G[k+10],17,4294925233);p2=r(p2,q2,n2,H2,G[k+11],22,2304563134);H2=r(H2,p2,q2,n2,G[k+12],7,1804603682);n2=r(n2,H2,p2,q2,G[k+13],12,4254626195);q2=r(q2,n2,H2,p2,G[k+14],17,2792965006);p2=r(p2,q2,n2,H2,G[k+15],22,1236535329);H2=q(H2,p2,q2,n2,G[k+1],5,4129170786);n2=q(n2,H2,p2,q2,G[k+6],9,3225465664);q2=q(q2,n2,H2,p2,G[k+11],14,643717713);p2=q(p2,q2,n2,H2,G[k+0],20,3921069994);H2=q(H2,p2,q2,n2,G[k+5],5,3593408605);n2=q(n2,H2,p2,q2,G[k+10],9,38016083);q2=q(q2,n2,H2,p2,G[k+15],14,3634488961);p2=q(p2,q2,n2,H2,G[k+4],20,3889429448);H2=q(H2,p2,q2,n2,G[k+9],5,568446438);n2=q(n2,H2,p2,q2,G[k+14],9,3275163606);q2=q(q2,n2,H2,p2,G[k+3],14,4107603335);p2=q(p2,q2,n2,H2,G[k+8],20,1163531501);H2=q(H2,p2,q2,n2,G[k+13],5,2850285829);n2=q(n2,H2,p2,q2,G[k+2],9,4243563512);q2=q(q2,n2,H2,p2,G[k+7],14,1735328473);p2=q(p2,q2,n2,H2,G[k+12],20,2368359562);H2=p(H2,p2,q2,n2,G[k+5],4,4294588738);n2=p(n2,H2,p2,q2,G[k+8],11,2272392833);q2=p(q2,n2,H2,p2,G[k+11],16,1839030562);p2=p(p2,q2,n2,H2,G[k+14],23,4259657740);H2=p(H2,p2,q2,n2,G[k+1],4,2763975236);n2=p(n2,H2,p2,q2,G[k+4],11,1272893353);q2=p(q2,n2,H2,p2,G[k+7],16,4139469664);p2=p(p2,q2,n2,H2,G[k+10],23,3200236656);H2=p(H2,p2,q2,n2,G[k+13],4,681279174);n2=p(n2,H2,p2,q2,G[k+0],11,3936430074);q2=p(q2,n2,H2,p2,G[k+3],16,3572445317);p2=p(p2,q2,n2,H2,G[k+6],23,76029189);H2=p(H2,p2,q2,n2,G[k+9],4,3654602809);n2=p(n2,H2,p2,q2,G[k+12],11,3873151461);q2=p(q2,n2,H2,p2,G[k+15],16,530742520);p2=p(p2,q2,n2,H2,G[k+2],23,3299628645);H2=n(H2,p2,q2,n2,G[k+0],6,4096336452);n2=n(n2,H2,p2,q2,G[k+7],10,1126891415);q2=n(q2,n2,H2,p2,G[k+14],15,2878612391);p2=n(p2,q2,n2,H2,G[k+5],21,4237533241);H2=n(H2,p2,q2,n2,G[k+12],6,1700485571);n2=n(n2,H2,p2,q2,G[k+3],10,2399980690);q2=n(q2,n2,H2,p2,G[k+10],15,4293915773);p2=n(p2,q2,n2,H2,G[k+1],21,2240044497);H2=n(H2,p2,q2,n2,G[k+8],6,1873313359);n2=n(n2,H2,p2,q2,G[k+15],10,4264355552);q2=n(q2,n2,H2,p2,G[k+6],15,2734768916);p2=n(p2,q2,n2,H2,G[k+13],21,1309151649);H2=n(H2,p2,q2,n2,G[k+4],6,4149444226);n2=n(n2,H2,p2,q2,G[k+11],10,3174756917);q2=n(q2,n2,H2,p2,G[k+2],15,718787259);p2=n(p2,q2,n2,H2,G[k+9],21,3951481745);H2=K(H2,d);p2=K(p2,F);q2=K(q2,x);n2=K(n2,H)}return(m(H2)+m(p2)+m(q2)+m(n2)).toLowerCase()}
+// ─────────────────────────────────────────────────────────────────────────────
+
+const token = new URLSearchParams(window.location.search).get('token') || '';
+let currentData = null;
+
+// ── Tab switching ─────────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === id);
+  });
+  document.querySelectorAll('.tab-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === 'panel-' + id);
+  });
+}
+
+// ── Password eye toggle ───────────────────────────────────────────────────
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  toggleEyeEl(inp, btn);
+}
+function toggleEyeEl(inp, btn) {
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.innerHTML = show
+    ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+// ── OpenAI toggle ─────────────────────────────────────────────────────────
+function onOpenAIToggle() {
+  const on = document.getElementById('openai-enabled').checked;
+  document.getElementById('openai-add-btn').disabled = !on;
+  document.querySelectorAll('#apikeys-list input').forEach(inp => inp.disabled = !on);
+  document.querySelectorAll('#apikeys-list button').forEach(btn => btn.disabled = !on);
+  const box = document.getElementById('openai-endpoint-box');
+  box.style.display = on ? 'block' : 'none';
+  if (on) {
+    document.getElementById('openai-base-url').textContent = window.location.origin + '/openai/v1';
+  }
+}
+
+function copyBaseUrl() {
+  const url = document.getElementById('openai-base-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('openai-copy-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 已复制';
+    setTimeout(() => { btn.innerHTML = orig; }, 1800);
+  }).catch(() => showStatus('error', '复制失败，请手动复制'));
+}
+
+// ── Status messages ───────────────────────────────────────────────────────
+function showStatus(type, msg) {
+  const el = document.getElementById('status-msg');
+  el.className = 's-' + type;
+  el.style.display = 'inline-flex';
+  if (type === 'loading') {
+    el.innerHTML = '<div class="spinner"></div>' + msg;
+  } else {
+    el.textContent = msg;
+    setTimeout(() => { el.style.display = 'none'; }, 6000);
+  }
+}
+
+// ── Auth methods list ─────────────────────────────────────────────────────
+const METHOD_LABELS = {
+  builtin: '内置账号（builtinUsers）',
+  ldap:    'LDAP 认证（待实现）',
+  oidc:    'OpenID Connect（待实现）',
+};
+
+function renderMethods(methods) {
+  const container = document.getElementById('methods-list');
+  container.innerHTML = '';
+  (methods || []).forEach((m, i) => container.appendChild(makeMethodRow(m, i)));
+}
+
+function makeMethodRow(method, idx) {
+  const div = document.createElement('div');
+  div.className = 'method-row';
+  div.dataset.method = method;
+  div.innerHTML =
+    '<span class="method-idx">' + (idx + 1) + '</span>' +
+    '<span class="method-chip">' + esc(method) + '</span>' +
+    '<span class="method-desc">' + esc(METHOD_LABELS[method] || method) + '</span>' +
+    '<div class="method-move">' +
+      '<button onclick="moveMethod(this,-1)" title="上移">&#9650;</button>' +
+      '<button onclick="moveMethod(this,1)" title="下移">&#9660;</button>' +
+    '</div>' +
+    '<button class="btn btn-danger btn-icon btn-sm" onclick="removeMethod(this)" title="移除">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+    '</button>';
+  return div;
+}
+
+function addMethod() {
+  const sel = document.getElementById('method-select');
+  const method = sel.value;
+  if (!method) return;
+  const existing = Array.from(document.querySelectorAll('#methods-list [data-method]')).map(el => el.dataset.method);
+  if (existing.includes(method)) { showStatus('error', '该认证方式已在列表中'); return; }
+  const container = document.getElementById('methods-list');
+  container.appendChild(makeMethodRow(method, container.children.length));
+  sel.value = '';
+  renumberMethods();
+}
+
+function removeMethod(btn) {
+  btn.closest('[data-method]').remove();
+  renumberMethods();
+}
+
+function moveMethod(btn, dir) {
+  const row = btn.closest('[data-method]');
+  const container = document.getElementById('methods-list');
+  const rows = Array.from(container.children);
+  const idx = rows.indexOf(row);
+  const target = rows[idx + dir];
+  if (!target) return;
+  if (dir === -1) container.insertBefore(row, target);
+  else container.insertBefore(target, row);
+  renumberMethods();
+}
+
+function renumberMethods() {
+  document.querySelectorAll('#methods-list [data-method]').forEach((el, i) => {
+    el.querySelector('.method-idx').textContent = i + 1;
+  });
+}
+
+function collectMethods() {
+  return Array.from(document.querySelectorAll('#methods-list [data-method]')).map(el => el.dataset.method);
+}
+
+// ── User list ─────────────────────────────────────────────────────────────
+function renderUsers(users) {
+  const container = document.getElementById('users-list');
+  container.innerHTML = '';
+  (users || []).forEach((u, i) => {
+    container.appendChild(makeUserRow(u.name, u.password, i));
+  });
+}
+
+function makeUserRow(name, hash, idx) {
+  const div = document.createElement('div');
+  div.className = 'list-row user-row';
+  div.dataset.idx = idx;
+  const shortHash = hash ? hash.substring(0, 16) + '...' : '(无密码)';
+  div.innerHTML =
+    '<div class="name-field">' +
+      '<input type="text" placeholder="用户名" value="' + esc(name) + '" data-field="username" style="width:100%">' +
+    '</div>' +
+    '<div class="hash-display" title="当前密码哈希: ' + esc(hash) + '">' + shortHash + '</div>' +
+    '<input type="hidden" data-field="hash" value="' + esc(hash) + '">' +
+    '<div class="pwd-change">' +
+      '<div class="new-pwd-wrap" style="display:none">' +
+        '<input type="text" placeholder="新密码(明文)" data-field="newpwd" autocomplete="new-password" style="width:100%">' +
+        '<button class="btn btn-ghost btn-sm" onclick="confirmPwd(this)">确认</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="cancelPwd(this)">取消</button>' +
+      '</div>' +
+      '<button class="btn btn-ghost btn-sm change-btn" onclick="showPwdInput(this)">修改密码</button>' +
+    '</div>' +
+    '<button class="btn btn-danger btn-icon" onclick="removeUser(this)" title="删除用户">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>' +
+    '</button>';
+  return div;
+}
+
+function addUser() {
+  const container = document.getElementById('users-list');
+  container.appendChild(makeUserRow('', '', container.children.length));
+}
+
+function removeUser(btn) {
+  btn.closest('.user-row').remove();
+}
+
+function showPwdInput(btn) {
+  const row = btn.closest('.user-row');
+  row.querySelector('.new-pwd-wrap').style.display = 'flex';
+  row.querySelector('.hash-display').style.display = 'none';
+  btn.style.display = 'none';
+}
+
+function confirmPwd(btn) {
+  const row = btn.closest('.user-row');
+  const newPwd = row.querySelector('[data-field=newpwd]').value.trim();
+  if (newPwd) {
+    const salt = document.getElementById('a-salt') ? document.getElementById('a-salt').value : '';
+    const hashed = md5(salt + newPwd);
+    row.querySelector('[data-field=hash]').value = hashed;
+    row.querySelector('.hash-display').textContent = hashed.substring(0, 16) + '…';
+    row.querySelector('.hash-display').title = '当前密码哈希: ' + hashed;
+  }
+  cancelPwd(btn);
+}
+
+function cancelPwd(btn) {
+  const row = btn.closest('.user-row');
+  row.querySelector('.new-pwd-wrap').style.display = 'none';
+  row.querySelector('[data-field=newpwd]').value = '';
+  row.querySelector('.hash-display').style.display = '';
+  row.querySelector('.change-btn').style.display = '';
+}
+
+function collectUsers() {
+  const rows = document.querySelectorAll('#users-list .user-row');
+  return Array.from(rows).map(row => ({
+    name: row.querySelector('[data-field=username]').value.trim(),
+    password: row.querySelector('[data-field=hash]').value.trim(),
+  })).filter(u => u.name);
+}
+
+// ── Role list ─────────────────────────────────────────────────────────────
+function renderRoles(roles) {
+  const container = document.getElementById('roles-list');
+  container.innerHTML = '';
+  (roles || []).forEach(r => container.appendChild(makeRoleRow(r.name, r.users)));
+}
+
+function makeRoleRow(name, users) {
+  const div = document.createElement('div');
+  div.className = 'list-row role-row';
+  const tagsHtml = (users || []).map(u => makeUserTag(u)).join('');
+  div.innerHTML =
+    '<div class="role-name-row">' +
+      '<input type="text" placeholder="角色名，如 admin" value="' + esc(name) + '" data-field="rolename" style="width:160px;flex-shrink:0">' +
+      '<span style="font-size:12px;color:var(--text3);margin-left:4px">包含用户:</span>' +
+      '<div class="spacer"></div>' +
+      '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.role-row\').remove()" title="删除角色">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+      '</button>' +
+    '</div>' +
+    '<div class="tag-input-wrap" data-role-users>' +
+      tagsHtml +
+      '<input class="tag-input" type="text" placeholder="输入用户名后回车" onkeydown="roleTagKey(event,this)">' +
+    '</div>';
+  return div;
+}
+
+function makeUserTag(username) {
+  return '<span class="tag"><span>' + esc(username) + '</span><button type="button" onclick="this.parentElement.remove()" title="移除"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
+}
+
+function roleTagKey(e, inp) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const v = inp.value.trim();
+    if (v) {
+      inp.insertAdjacentHTML('beforebegin', makeUserTag(v));
+      inp.value = '';
+    }
+  }
+}
+
+function addRole() {
+  document.getElementById('roles-list').appendChild(makeRoleRow('', []));
+}
+
+function collectRoles() {
+  return Array.from(document.querySelectorAll('#roles-list .role-row')).map(row => {
+    const name = row.querySelector('[data-field=rolename]').value.trim();
+    const users = Array.from(row.querySelectorAll('[data-role-users] .tag span:first-child')).map(el => el.textContent.trim());
+    return { name, users };
+  }).filter(r => r.name);
+}
+
+// ── DingTalk bot list ─────────────────────────────────────────────────────
+function renderDingTalkBots(bots) {
+  const container = document.getElementById('dt-bots-list');
+  container.innerHTML = '';
+  (bots || []).forEach((bot, i) => container.appendChild(makeDingTalkBotCard(bot, i)));
+}
+
+function makeDingTalkBotCard(bot, idx) {
+  const div = document.createElement('div');
+  div.className = 'dt-bot-card';
+  const checkedAttr = bot.enabled ? 'checked' : '';
+  div.innerHTML =
+    '<div class="dt-bot-header">' +
+      '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
+      '<span class="dt-bot-type">DingTalk</span>' +
+      '<div class="dt-bot-title">' + esc(bot.name || bot.clientId || '未配置') + '</div>' +
+      '<label class="toggle" style="margin-left:auto">' +
+        '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
+        '<span class="toggle-track"></span>' +
+        '<span class="toggle-thumb"></span>' +
+      '</label>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeDingTalkBot(this)">删除</button>' +
+    '</div>' +
+    '<div class="dt-bot-fields">' +
+      '<div class="field field-full">' +
+        '<label>机器人名称</label>' +
+        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="例如：HR 助手、IT 支持机器人" autocomplete="off" oninput="onDtBotNameInput(this)">' +
+        '<span class="hint">仅用于在此页面标识，不影响功能</span>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>AppKey（ClientId）</label>' +
+        '<input type="text" data-field="clientId" value="' + esc(bot.clientId || '') + '" placeholder="dingxxxxxxxxxxxx" autocomplete="off" oninput="onDtBotClientIdInput(this)">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>AppSecret（ClientSecret）</label>' +
+        '<div class="input-wrap">' +
+          '<input type="password" data-field="clientSecret" value="' + esc(bot.clientSecret || '') + '" autocomplete="new-password">' +
+          '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<label>默认数字员工 ID（EmployeeId）</label>' +
+        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="your-employee-id">' +
+        '<span class="hint">未命中路由规则时使用此员工</span>' +
+      '</div>' +
+      '<details class="field field-full" style="padding:0;border:none;background:none"' + ((bot.conversationRoutes || []).length > 0 ? ' open' : '') + '>' +
+        '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
+          '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '群名称路由' +
+          '<span class="hint" style="font-weight:400;font-size:12px">（不同群对接不同数字员工时使用）</span>' +
+        '</summary>' +
+        '<div style="padding:8px 0 4px">' +
+          '<div data-dt-routes style="display:flex;flex-direction:column;gap:6px">' +
+            (bot.conversationRoutes || []).map(r => makeDtRouteRow(r.conversationTitle, r.employeeName)).join('') +
+          '</div>' +
+          '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addDtRoute(this)">+ 添加路由</button>' +
+        '</div>' +
+      '</details>' +
+      '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
+        '<label class="toggle">' +
+          '<input type="checkbox" data-field="conciseReply"' + (bot.conciseReply ? ' checked' : '') + '>' +
+          '<span class="toggle-track"></span>' +
+          '<span class="toggle-thumb"></span>' +
+        '</label>' +
+        '<div style="display:flex;flex-direction:column;gap:2px">' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
+          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<label>单聊用户白名单 <span class="hint" style="font-weight:400">（单聊场景生效；留空则允许所有人单聊）</span></label>' +
+        '<div class="tag-input-wrap" data-dt-allowed-direct-users>' +
+          (bot.allowedDirectUsers || []).map(u => makeDtTag(u)).join('') +
+          '<input class="tag-input" type="text" placeholder="输入钉钉昵称后回车" onkeydown="dtTagKey(event,this)">' +
+        '</div>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<label>群用户白名单 <span class="hint" style="font-weight:400">（群聊 @ 机器人时生效；留空则允许所有群成员）</span></label>' +
+        '<div class="tag-input-wrap" data-dt-allowed-group-users>' +
+          (bot.allowedGroupUsers || []).map(u => makeDtTag(u)).join('') +
+          '<input class="tag-input" type="text" placeholder="输入钉钉昵称后回车" onkeydown="dtTagKey(event,this)">' +
+        '</div>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<label>群白名单 <span class="hint" style="font-weight:400">（按群名限制可使用的群；留空则所有群均可；单聊不受此限制）</span></label>' +
+        '<div class="tag-input-wrap" data-dt-allowed-convs>' +
+          (bot.allowedConversations || []).map(c => makeDtTag(c)).join('') +
+          '<input class="tag-input" type="text" placeholder="输入群名称后回车" onkeydown="dtTagKey(event,this)">' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  return div;
+}
+
+function addDingTalkBot() {
+  const container = document.getElementById('dt-bots-list');
+  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true }, container.children.length));
+}
+
+function removeDingTalkBot(btn) {
+  const card = btn.closest('.dt-bot-card');
+  card.remove();
+  renumberDtBots();
+}
+
+function onDtBotNameInput(inp) {
+  const card = inp.closest('.dt-bot-card');
+  const titleEl = card.querySelector('.dt-bot-title');
+  const clientId = card.querySelector('[data-field=clientId]').value.trim();
+  titleEl.textContent = inp.value.trim() || clientId || '未配置';
+}
+function onDtBotClientIdInput(inp) {
+  const card = inp.closest('.dt-bot-card');
+  const titleEl = card.querySelector('.dt-bot-title');
+  const name = card.querySelector('[data-field=name]').value.trim();
+  titleEl.textContent = name || inp.value.trim() || '未配置';
+}
+
+function renumberDtBots() {
+  document.querySelectorAll('#dt-bots-list .dt-bot-card').forEach((card, i) => {
+    card.querySelector('.dt-bot-num').textContent = i + 1;
+  });
+}
+
+// 通用 tag 渲染与输入处理（群用户白名单、单聊用户白名单、群白名单共用）
+function makeDtTag(name) {
+  return '<span class="tag"><span>' + esc(name) + '</span><button type="button" onclick="this.parentElement.remove()" title="移除"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
+}
+function dtTagKey(e, inp) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  const name = inp.value.trim().replace(/,+$/, '');
+  if (!name) return;
+  inp.insertAdjacentHTML('beforebegin', makeDtTag(name));
+  inp.value = '';
+}
+
+function makeDtRouteRow(conversationTitle, employeeName) {
+  return '<div class="list-row" style="gap:6px;align-items:center">' +
+    '<input type="text" class="flex1" placeholder="群名称（精确匹配）" value="' + esc(conversationTitle || '') + '" data-dt-route-title>' +
+    '<span style="color:var(--text3);font-size:12px;flex-shrink:0">→</span>' +
+    '<input type="text" class="flex1" placeholder="数字员工 ID" value="' + esc(employeeName || '') + '" data-dt-route-employee>' +
+    '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="删除路由">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+function addDtRoute(btn) {
+  const wrap = btn.previousElementSibling;
+  wrap.insertAdjacentHTML('beforeend', makeDtRouteRow('', ''));
+}
+
+function collectDingTalkBots() {
+  return Array.from(document.querySelectorAll('#dt-bots-list .dt-bot-card')).map(card => ({
+    enabled:      card.querySelector('[data-field=enabled]').checked,
+    name:         card.querySelector('[data-field=name]').value.trim(),
+    clientId:     card.querySelector('[data-field=clientId]').value.trim(),
+    clientSecret: card.querySelector('[data-field=clientSecret]').value.trim(),
+    employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    allowedGroupUsers:    Array.from(card.querySelectorAll('[data-dt-allowed-group-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
+    allowedDirectUsers:   Array.from(card.querySelectorAll('[data-dt-allowed-direct-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
+    allowedConversations: Array.from(card.querySelectorAll('[data-dt-allowed-convs] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
+    conversationRoutes:   Array.from(card.querySelectorAll('[data-dt-routes] .list-row')).map(row => ({
+      conversationTitle: row.querySelector('[data-dt-route-title]').value.trim(),
+      employeeName:      row.querySelector('[data-dt-route-employee]').value.trim(),
+    })).filter(r => r.conversationTitle && r.employeeName),
+  }));
+}
+
+// ── API Key list ──────────────────────────────────────────────────────────
+function renderApiKeys(keys) {
+  const container = document.getElementById('apikeys-list');
+  container.innerHTML = '';
+  (keys || []).forEach(k => addApiKeyRow(k));
+}
+
+function addApiKey() {
+  addApiKeyRow('');
+}
+
+function addApiKeyRow(value) {
+  const enabled = document.getElementById('openai-enabled').checked;
+  const dis = enabled ? '' : 'disabled';
+  const div = document.createElement('div');
+  div.className = 'list-row';
+  div.innerHTML =
+    '<input type="text" class="flex1" placeholder="sk-your-api-key" value="' + esc(value) + '" ' + dis + '>' +
+    '<button class="btn btn-danger btn-icon" onclick="this.parentElement.remove()" ' + dis + ' title="删除">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+    '</button>';
+  document.getElementById('apikeys-list').appendChild(div);
+}
+
+function collectApiKeys() {
+  return Array.from(document.querySelectorAll('#apikeys-list .list-row input')).map(i => i.value.trim()).filter(Boolean);
+}
+
+// ── Populate form from data ───────────────────────────────────────────────
+function populate(data) {
+  currentData = data;
+  const g = data.global || {};
+  setVal('g-akid', g.accessKeyId);
+  setVal('g-aks', g.accessKeySecret);
+  setVal('g-endpoint', g.endpoint);
+  setVal('g-host', g.host || '0.0.0.0');
+  setVal('g-port', g.port || 8080);
+  setVal('g-tz', g.timeZone || 'Asia/Shanghai');
+  setVal('g-lang', g.language || 'zh');
+
+  const a = data.auth || {};
+  renderMethods(a.methods || []);
+  setVal('a-jwt-key', a.jwtSecretKey);
+  setVal('a-jwt-exp', a.jwtExpiresIn || '24h');
+  setVal('a-salt', a.passwordSalt || '');
+  renderUsers((a.local || {}).users);
+  renderRoles((a.local || {}).roles);
+
+  renderDingTalkBots(data.dingtalk || []);
+
+  document.getElementById('openai-enabled').checked = !!data.openaiEnabled;
+  renderApiKeys((data.openai || {}).apiKeys);
+  onOpenAIToggle();
+}
+
+function setVal(id, v) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = (v === null || v === undefined) ? '' : v;
+}
+
+// ── Collect form into payload ─────────────────────────────────────────────
+function collect() {
+  const oaiOn = document.getElementById('openai-enabled').checked;
+  const users = collectUsers();
+  const roles = collectRoles();
+  return {
+    global: {
+      accessKeyId:     val('g-akid'),
+      accessKeySecret: val('g-aks'),
+      endpoint:        val('g-endpoint'),
+      host:            val('g-host') || '0.0.0.0',
+      port:            parseInt(val('g-port')) || 8080,
+      timeZone:        val('g-tz') || 'Asia/Shanghai',
+      language:        val('g-lang') || 'zh',
+    },
+    auth: {
+      methods:      collectMethods(),
+      jwtSecretKey: val('a-jwt-key'),
+      jwtExpiresIn: val('a-jwt-exp') || '24h',
+      passwordSalt: val('a-salt'),
+      local: { users, roles },
+    },
+    dingtalk:      collectDingTalkBots(),
+    openaiEnabled: oaiOn,
+    openai:        { apiKeys: collectApiKeys() },
+  };
+}
+
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Load config from server ───────────────────────────────────────────────
+async function loadConfig() {
+  showStatus('loading', '正在加载配置...');
+  try {
+    const res = await fetch('/config-ui/api/config?token=' + encodeURIComponent(token));
+    const data = await res.json();
+    if (!res.ok) { showStatus('error', '❌ ' + (data.error || '加载失败')); return; }
+    populate(data);
+    document.getElementById('status-msg').style.display = 'none';
+  } catch(e) {
+    showStatus('error', '❌ 网络错误: ' + e.message);
+  }
+}
+
+// ── Save config ───────────────────────────────────────────────────────────
+async function saveConfig() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 保存中...';
+  showStatus('loading', '正在保存并应用配置...');
+  try {
+    const res = await fetch('/config-ui/api/config?token=' + encodeURIComponent(token), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(collect()),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showStatus('error', '❌ ' + (data.error || '保存失败'));
+    } else if (data.warning) {
+      showStatus('warning', '⚠️ ' + data.message);
+    } else {
+      showStatus('success', '✅ ' + (data.message || '保存成功'));
+    }
+  } catch(e) {
+    showStatus('error', '❌ 网络错误: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 保存并应用';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveConfig(); }
+});
+
+loadConfig();
+</script>
+</body>
+</html>

@@ -1,13 +1,18 @@
 package api
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
+	"sync"
+
 	"sop-chat/internal/auth"
 	"sop-chat/internal/client"
 	"sop-chat/internal/config"
+	"sop-chat/internal/dingtalk"
 	"sop-chat/internal/embed"
 	"sop-chat/pkg/sopchat"
 
@@ -19,17 +24,33 @@ import (
 )
 
 type Server struct {
+	mu             sync.RWMutex
 	config         *client.Config
-	globalConfig   *config.Config // 添加全局配置的引用
+	globalConfig   *config.Config
+	configPath     string // 配置文件实际路径，用于配置 UI 读写
+	configUIToken  string // 配置 UI 访问令牌（启动时随机生成）
 	router         *gin.Engine
 	authProvider   auth.Provider
-	authMode       auth.AuthMode
+	authModes      []auth.AuthMode
 	jwtManager     *auth.JWTManager
 	userStore      auth.UserStore
 	authMiddleware *auth.AuthMiddleware
+
+	// 钉钉机器人生命周期管理（支持多实例热启停，keyed by clientId）
+	dingtalkMu   sync.Mutex
+	dingtalkBots map[string]*dingtalk.Bot
 }
 
-func NewServer(config *client.Config, globalConfig *config.Config) (*Server, error) {
+// generateConfigUIToken 生成随机的配置 UI 访问令牌
+func generateConfigUIToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func NewServer(cfg *client.Config, globalConfig *config.Config, configPath string) (*Server, error) {
 	// 创建 Gin 引擎
 	router := gin.Default()
 
@@ -39,10 +60,17 @@ func NewServer(config *client.Config, globalConfig *config.Config) (*Server, err
 	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 	router.Use(cors.New(corsConfig))
 
+	token, err := generateConfigUIToken()
+	if err != nil {
+		return nil, fmt.Errorf("生成配置 UI 令牌失败: %w", err)
+	}
+
 	server := &Server{
-		config:       config,
-		globalConfig: globalConfig,
-		router:       router,
+		config:        cfg,
+		globalConfig:  globalConfig,
+		configPath:    configPath,
+		configUIToken: token,
+		router:        router,
 	}
 
 	// 初始化认证系统
@@ -53,77 +81,82 @@ func NewServer(config *client.Config, globalConfig *config.Config) (*Server, err
 	// 注册路由
 	server.setupRoutes()
 
+	// 启动所有已启用的钉钉机器人
+	if globalConfig != nil && globalConfig.Channels != nil && len(globalConfig.Channels.DingTalk) > 0 {
+		if cmsClientCfg, err := globalConfig.ToClientConfig(); err == nil {
+			server.syncDingTalkBots(globalConfig.Channels.DingTalk, cmsClientCfg)
+		} else {
+			log.Printf("警告: 无法获取 CMS 配置，钉钉机器人未启动: %v", err)
+		}
+	}
+
 	return server, nil
 }
 
 // initAuth 初始化认证系统
 func (s *Server) initAuth() error {
-	// 加载认证配置
 	authConfig, err := auth.LoadAuthConfig()
 	if err != nil {
 		return fmt.Errorf("failed to load auth config: %w", err)
 	}
 
-	s.authMode = authConfig.Mode
+	s.authModes = authConfig.Modes
 
-	// 如果认证模式是 disabled，跳过初始化
-	if s.authMode == auth.AuthModeDisabled {
-		log.Println("Authentication disabled (development mode)")
+	// 始终创建 JWT 管理器（即使 methods 为空，token 验证中间件仍然生效）
+	s.jwtManager = auth.NewJWTManager(authConfig.JWTSecretKey, authConfig.JWTExpiresIn)
+
+	if len(s.authModes) == 0 {
+		// 登录功能关闭：不注册任何 Provider，JWT 中间件仍要求 token，
+		// 但没有人能通过 /login 拿到 token，所以所有受保护接口均不可访问。
+		log.Println("⚠️  auth.methods 为空，登录功能已关闭，所有受保护接口不可访问")
+		s.authMiddleware = auth.NewAuthMiddleware(nil)
 		return nil
 	}
 
-	// 创建 JWT 管理器
-	s.jwtManager = auth.NewJWTManager(authConfig.JWTSecretKey, authConfig.JWTExpiresIn)
-
-	// 根据认证模式创建相应的提供者
-	switch s.authMode {
-	case auth.AuthModeLocal:
-		// Only use YAML configuration for user storage
-		var userStore auth.UserStore
-
-		// Use unified config YAML configuration
-		if authConfig.YAMLConfig != nil && authConfig.YAMLConfig.Local != nil {
-			// Create user storage from unified config
-			log.Printf("🔍 Loading users from unified config")
-			yamlStore, err := auth.NewYAMLUserStoreFromConfig(authConfig.YAMLConfig)
-			if err != nil {
-				return fmt.Errorf("failed to load users from unified config: %w. Please ensure local.user and local.roles are properly configured in config.yaml", err)
+	// 为鉴权链中每个模式创建对应的 Provider
+	providers := make([]auth.Provider, 0, len(s.authModes))
+	for _, mode := range s.authModes {
+		switch mode {
+		case auth.AuthModeBuiltin:
+			var userStore auth.UserStore
+			if authConfig.YAMLConfig != nil && authConfig.YAMLConfig.Local != nil {
+				log.Printf("🔍 加载内置用户（统一配置）")
+				yamlStore, err := auth.NewYAMLUserStoreFromConfig(authConfig.YAMLConfig)
+				if err != nil {
+					return fmt.Errorf("加载内置用户失败: %w，请确保 config.yaml 中已配置 auth.builtinUsers 和 auth.roles", err)
+				}
+				userStore = yamlStore
+				s.userStore = userStore
+				log.Printf("✅ builtin 认证就绪（统一配置）")
+			} else if authConfig.YAMLConfigPath != "" {
+				log.Printf("🔍 加载内置用户（YAML 文件: %s）", authConfig.YAMLConfigPath)
+				yamlStore, err := auth.NewYAMLUserStore(authConfig.YAMLConfigPath)
+				if err != nil {
+					return fmt.Errorf("加载 YAML 配置失败 %s: %w", authConfig.YAMLConfigPath, err)
+				}
+				userStore = yamlStore
+				s.userStore = userStore
+				log.Printf("✅ builtin 认证就绪（YAML 文件）")
+			} else {
+				return fmt.Errorf("未找到内置用户配置，请在 config.yaml 中配置 auth.builtinUsers")
 			}
-			userStore = yamlStore
-			log.Printf("✅ Local authentication mode enabled (unified config)")
-		} else if authConfig.YAMLConfigPath != "" {
-			// Load from legacy YAML config file
-			log.Printf("🔍 Attempting to load YAML config file: %s", authConfig.YAMLConfigPath)
-			yamlStore, err := auth.NewYAMLUserStore(authConfig.YAMLConfigPath)
-			if err != nil {
-				return fmt.Errorf("failed to load YAML config from %s: %w. Please ensure the config file exists and is properly formatted", authConfig.YAMLConfigPath, err)
-			}
-			userStore = yamlStore
-			log.Printf("✅ Local authentication mode enabled (YAML config)")
-		} else {
-			// No configuration provided
-			return fmt.Errorf("no user configuration found. Please configure local.user and local.roles in config.yaml")
+			providers = append(providers, auth.NewLocalAuthProvider(userStore, s.jwtManager))
+
+		case auth.AuthModeLDAP:
+			// TODO: 实现 LDAP 认证提供者
+			return auth.ErrUnsupportedAuthMode
+
+		case auth.AuthModeOIDC:
+			// TODO: 实现 OIDC 认证提供者
+			return auth.ErrUnsupportedAuthMode
+
+		default:
+			return auth.ErrUnsupportedAuthMode
 		}
-
-		s.userStore = userStore
-
-		// Create local authentication provider
-		s.authProvider = auth.NewLocalAuthProvider(userStore, s.jwtManager)
-
-	case auth.AuthModeLDAP:
-		// TODO: 实现 LDAP 认证提供者
-		return auth.ErrUnsupportedAuthMode
-
-	case auth.AuthModeOIDC:
-		// TODO: 实现 OIDC 认证提供者
-		return auth.ErrUnsupportedAuthMode
-
-	default:
-		return auth.ErrUnsupportedAuthMode
 	}
 
-	// 创建认证中间件
-	s.authMiddleware = auth.NewAuthMiddleware(s.authProvider, s.authMode)
+	s.authProvider = auth.NewChainProvider(providers, s.jwtManager)
+	s.authMiddleware = auth.NewAuthMiddleware(s.authProvider)
 
 	return nil
 }
@@ -190,6 +223,19 @@ func (s *Server) setupRoutes() {
 		}
 	}
 
+	// OpenAI 兼容接口（/openai/v1/...），使用独立的 API key 认证
+	openaiV1 := s.router.Group("/openai/v1")
+	openaiV1.Use(s.openAIAuthMiddleware())
+	{
+		openaiV1.GET("/models", s.handleOpenAIListModels)
+		openaiV1.POST("/chat/completions", s.handleOpenAIChatCompletions)
+	}
+
+	// 配置管理 UI（使用独立的 token 认证，与业务认证系统隔离）
+	s.router.GET("/config-ui", s.handleConfigUIPage)
+	s.router.GET("/config-ui/api/config", s.configUITokenMiddleware(), s.handleGetConfig)
+	s.router.POST("/config-ui/api/config", s.configUITokenMiddleware(), s.handleSaveConfig)
+
 	// 静态文件服务（前端资源）
 	frontendFS := embed.GetFrontendFS()
 	if frontendFS != nil {
@@ -210,8 +256,10 @@ func (s *Server) setupRoutes() {
 		s.router.NoRoute(func(c *gin.Context) {
 			path := c.Request.URL.Path
 
-			// 如果请求的是 API 路由，返回 404
-			if len(path) >= 4 && path[:4] == "/api" {
+			// 如果请求的是 API、OpenAI 或配置 UI 路由，返回 404
+			if (len(path) >= 4 && path[:4] == "/api") ||
+				(len(path) >= 7 && path[:7] == "/openai") ||
+				(len(path) >= 10 && path[:10] == "/config-ui") {
 				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
@@ -260,17 +308,149 @@ func (s *Server) Run(addr string) error {
 	return s.router.Run(addr)
 }
 
+// GetConfigUIToken 返回配置 UI 访问令牌
+func (s *Server) GetConfigUIToken() string {
+	return s.configUIToken
+}
+
+// syncDingTalkBots 将运行中的机器人与新配置列表对齐：
+// 新增或凭据变更的实例会被（重）启动，旧配置中已移除的实例会被停止。
+func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, cmsConfig *config.ClientConfig) {
+	s.dingtalkMu.Lock()
+	defer s.dingtalkMu.Unlock()
+
+	if s.dingtalkBots == nil {
+		s.dingtalkBots = make(map[string]*dingtalk.Bot)
+	}
+
+	// 收集新配置中所有启用的 clientId（作为目标集合）
+	newEnabled := make(map[string]config.DingTalkConfig)
+	for _, dt := range newConfigs {
+		if dt.Enabled && dt.ClientId != "" && dt.ClientSecret != "" && dt.EmployeeName != "" {
+			newEnabled[dt.ClientId] = dt
+		}
+	}
+
+	// 停止已不在新配置中（或已禁用）的实例
+	for clientId, bot := range s.dingtalkBots {
+		if _, ok := newEnabled[clientId]; !ok {
+			log.Printf("停止钉钉机器人: clientId=%s", clientId)
+			bot.Stop()
+			delete(s.dingtalkBots, clientId)
+		}
+	}
+
+	// 启动或重启有变化的实例
+	for clientId, dtCfg := range newEnabled {
+		dtCopy := dtCfg // 避免循环变量逃逸
+		if existing, ok := s.dingtalkBots[clientId]; ok {
+			// 已存在：检查凭据或员工名是否变化
+			if !dtCopy.CredsEqual(existing.Config()) {
+				log.Printf("重启钉钉机器人（配置变更）: clientId=%s, employee=%s", clientId, dtCopy.EmployeeName)
+				existing.Stop()
+				delete(s.dingtalkBots, clientId)
+			} else {
+				// 凭据未变，但其他字段（如 allowedUsers、conciseReply）可能已更新，热更新配置
+				existing.UpdateConfig(&dtCopy)
+				continue
+			}
+		}
+		log.Printf("启动钉钉机器人: clientId=%s, employee=%s", clientId, dtCopy.EmployeeName)
+		bot := dingtalk.NewBot(&dtCopy, cmsConfig)
+		if err := bot.Start(); err != nil {
+			log.Printf("警告: 钉钉机器人启动失败 (clientId=%s): %v", clientId, err)
+			continue
+		}
+		s.dingtalkBots[clientId] = bot
+	}
+}
+
+// stopAllDingTalkBots 停止所有运行中的钉钉机器人
+func (s *Server) stopAllDingTalkBots() {
+	s.dingtalkMu.Lock()
+	defer s.dingtalkMu.Unlock()
+	for clientId, bot := range s.dingtalkBots {
+		bot.Stop()
+		delete(s.dingtalkBots, clientId)
+	}
+}
+
+// reloadConfig 热重载配置：从文件重新读取并更新内存中的配置，无需重启服务
+func (s *Server) reloadConfig() error {
+	if s.configPath == "" {
+		return fmt.Errorf("未设置配置文件路径，无法热重载")
+	}
+
+	newGlobalConfig, _, err := config.LoadConfig(s.configPath)
+	if err != nil {
+		return fmt.Errorf("重新加载配置文件失败: %w", err)
+	}
+
+	// 重建客户端配置（global.accessKeyId / accessKeySecret / endpoint）
+	// 凭据未填写时允许继续（部分功能不可用），不阻断热重载
+	newClientConfig, err := newGlobalConfig.ToClientConfig()
+	if err != nil {
+		log.Printf("提示: 凭据未配置，部分功能不可用（%v）", err)
+		newClientConfig = &config.ClientConfig{}
+	}
+
+	// 热更新用户存储（auth.users / auth.roles）
+	if s.userStore != nil {
+		type yamlReloader interface {
+			ReloadFromYAMLConfig(*auth.YAMLConfig) error
+		}
+		if r, ok := s.userStore.(yamlReloader); ok {
+			newYAMLConfig := auth.ConvertYAMLConfig(newGlobalConfig.GetYAMLConfig())
+			if err := r.ReloadFromYAMLConfig(newYAMLConfig); err != nil {
+				log.Printf("警告: 热更新用户配置失败: %v", err)
+			}
+		}
+	}
+
+	// 钉钉机器人热同步（多实例）
+	var newDTConfigs []config.DingTalkConfig
+	if newGlobalConfig.Channels != nil {
+		newDTConfigs = newGlobalConfig.Channels.DingTalk
+	}
+	s.syncDingTalkBots(newDTConfigs, newClientConfig)
+
+	// 原子替换配置指针
+	s.mu.Lock()
+	s.globalConfig = newGlobalConfig
+	s.config = &client.Config{
+		AccessKeyId:     newClientConfig.AccessKeyId,
+		AccessKeySecret: newClientConfig.AccessKeySecret,
+		Endpoint:        newClientConfig.Endpoint,
+	}
+	s.mu.Unlock()
+
+	log.Printf("✅ 配置热重载完成")
+	return nil
+}
+
 // createClient 为每个请求创建一个新的客户端实例
 func (s *Server) createClient() (*sopchat.Client, error) {
-	return client.NewCMSClient(s.config)
+	s.mu.RLock()
+	cfg := s.config
+	s.mu.RUnlock()
+	if cfg == nil || cfg.AccessKeyId == "" {
+		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 global.accessKeyId 和 global.accessKeySecret")
+	}
+	return client.NewCMSClient(cfg)
 }
 
 // createCMSClient 创建 SDK 的 CMS 客户端（用于直接调用 SDK）
 func (s *Server) createCMSClient() (*cmsclient.Client, error) {
+	s.mu.RLock()
+	cfg := s.config
+	s.mu.RUnlock()
+	if cfg == nil || cfg.AccessKeyId == "" {
+		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 global.accessKeyId 和 global.accessKeySecret")
+	}
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:     tea.String(s.config.AccessKeyId),
-		AccessKeySecret: tea.String(s.config.AccessKeySecret),
-		Endpoint:        tea.String(s.config.Endpoint),
+		AccessKeyId:     tea.String(cfg.AccessKeyId),
+		AccessKeySecret: tea.String(cfg.AccessKeySecret),
+		Endpoint:        tea.String(cfg.Endpoint),
 	}
 	return cmsclient.NewClient(cmsConfig)
 }

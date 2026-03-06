@@ -4,8 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
-	"strconv"
+	"os/signal"
+	"strings"
+	"syscall"
 
 	"sop-chat/internal/api"
 	"sop-chat/internal/client"
@@ -59,41 +62,153 @@ func main() {
 		log.Printf("使用配置文件: %s", configPath)
 	}
 
-	// 加载统一配置以获取端口配置
+	// 加载统一配置（如果文件不存在则自动创建默认配置）
 	var finalPort int
+	var isFirstRun bool
 	unifiedConfig, actualPath, err := config.LoadConfig(configPath)
-	if err == nil {
-		log.Printf("加载配置文件: %s", actualPath)
-		// 从配置文件读取端口
-		finalPort = unifiedConfig.GetPort()
-	} else {
-		log.Printf("警告: 无法加载配置文件 %s: %v，将使用环境变量或默认值", configPath, err)
-		// 如果统一配置文件不存在，从环境变量或默认值读取
-		portStr := os.Getenv("PORT")
-		if portStr != "" {
-			if parsedPort, err := strconv.Atoi(portStr); err == nil {
-				finalPort = parsedPort
-			} else {
-				log.Fatalf("环境变量 PORT 包含无效的端口号: %s", portStr)
-			}
+	if err != nil {
+		isFirstRun = true
+		log.Printf("提示: 未找到配置文件 %s，将自动创建默认配置", configPath)
+		unifiedConfig = config.DefaultConfig()
+		actualPath = configPath
+		if saveErr := config.SaveConfig(configPath, unifiedConfig); saveErr != nil {
+			log.Printf("警告: 无法创建默认配置文件 %s: %v（将在内存中使用默认配置）", configPath, saveErr)
 		} else {
-			finalPort = 8080
+			log.Printf("已创建默认配置文件: %s，请通过配置 UI 填写凭据和认证设置", configPath)
+			// 重新加载刚写入的文件以获取规范化的绝对路径
+			if cfg, absPath, loadErr := config.LoadConfig(configPath); loadErr == nil {
+				unifiedConfig = cfg
+				actualPath = absPath
+			}
+		}
+	} else {
+		log.Printf("加载配置文件: %s", actualPath)
+	}
+	finalPort = unifiedConfig.GetPort()
+
+	// 首次运行（无配置文件）时自动探测可用端口，避免因端口占用直接报错退出
+	if isFirstRun {
+		if port, found := findAvailablePort(finalPort, 20); found {
+			if port != finalPort {
+				log.Printf("端口 %d 已被占用，自动切换到端口 %d", finalPort, port)
+			}
+			finalPort = port
+		} else {
+			log.Fatalf("无法在端口 %d~%d 范围内找到可用端口，请手动在 config.yaml 中指定端口", unifiedConfig.GetPort(), unifiedConfig.GetPort()+19)
 		}
 	}
 
-	// 加载客户端配置
-	clientConfig, err := client.LoadConfig()
-	if err != nil {
-		log.Fatalf("加载配置失败: %v", err)
-	}
+	listenAddr := fmt.Sprintf("%s:%d", unifiedConfig.GetHost(), finalPort)
 
-	// 启动 API 服务器
-	server, err := api.NewServer(clientConfig, unifiedConfig)
+	// 加载客户端配置（凭据未配置时返回空 Config，不阻塞启动）
+	clientConfig, _ := client.LoadConfig()
+
+	// 启动 API 服务器（钉钉机器人的启动/停止由 server 内部管理）
+	server, err := api.NewServer(clientConfig, unifiedConfig, actualPath)
 	if err != nil {
 		log.Fatalf("初始化服务器失败: %v", err)
 	}
-	log.Printf("启动 API 服务器，监听端口 %d", finalPort)
-	if err := server.Run(fmt.Sprintf(":%d", finalPort)); err != nil {
+
+	// 打印配置 UI 访问链接（带 token，防止未授权访问）
+	token := server.GetConfigUIToken()
+	// printConfigUI 打印配置管理 UI 访问链接
+	printConfigUI := func() {
+		log.Printf("╔══════════════════════════════════════════════════════════════╗")
+		log.Printf("║  ⚙  配置管理 UI（仅本次启动有效，请勿分享此链接）            ║")
+		if unifiedConfig.GetHost() == "0.0.0.0" {
+			for _, ip := range localAddresses() {
+				log.Printf("║  http://%s:%d/config-ui?token=%s", ip, finalPort, token)
+			}
+		} else {
+			log.Printf("║  http://%s:%d/config-ui?token=%s", unifiedConfig.GetHost(), finalPort, token)
+		}
+		log.Printf("╚══════════════════════════════════════════════════════════════╝")
+	}
+
+	printConfigUI()
+
+	// 捕获 SIGINT（Ctrl+C）：第一次提醒配置 UI 地址，第二次才真正退出
+	go func() {
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+
+		<-sigCh
+		log.Printf("收到退出信号，再按一次 Ctrl+C 确认退出")
+		printConfigUI()
+
+		<-sigCh
+		log.Printf("确认退出")
+		os.Exit(0)
+	}()
+
+	log.Printf("启动 API 服务器，监听地址 %s", listenAddr)
+	if err := server.Run(listenAddr); err != nil {
 		log.Fatalf("服务器启动失败: %v", err)
 	}
+}
+
+// findAvailablePort 从 startPort 开始向后依次尝试最多 maxTries 个端口，
+// 返回第一个可以成功 listen 的端口号。仅用于首次运行时的自动端口探测。
+func findAvailablePort(startPort, maxTries int) (int, bool) {
+	for i := 0; i < maxTries; i++ {
+		port := startPort + i
+		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+		if err == nil {
+			ln.Close()
+			return port, true
+		}
+	}
+	return 0, false
+}
+
+// localAddresses 返回本机所有真实 IPv4 单播地址，过滤掉常见 Docker / 虚拟网桥接口。
+// 过滤规则：接口名前缀匹配 docker、br-、veth、virbr、vmnet、vboxnet、tun、tap。
+func localAddresses() []string {
+	skipPrefixes := []string{"docker", "br-", "veth", "virbr", "vmnet", "vboxnet", "tun", "tap"}
+
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return []string{"localhost"}
+	}
+
+	var addrs []string
+	for _, iface := range ifaces {
+		// 跳过 down 状态和 loopback（loopback 单独追加 localhost）
+		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		name := strings.ToLower(iface.Name)
+		skip := false
+		for _, prefix := range skipPrefixes {
+			if strings.HasPrefix(name, prefix) {
+				skip = true
+				break
+			}
+		}
+		if skip {
+			continue
+		}
+
+		ifAddrs, err := iface.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, addr := range ifAddrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+			// 只保留 IPv4 单播地址
+			if ip == nil || ip.IsLoopback() || ip.To4() == nil {
+				continue
+			}
+			addrs = append(addrs, ip.String())
+		}
+	}
+
+	// 始终把 localhost 放在最前面，方便本地访问
+	return append([]string{"localhost"}, addrs...)
 }

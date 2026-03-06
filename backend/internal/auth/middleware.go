@@ -11,26 +11,25 @@ import (
 // AuthMiddleware 认证中间件
 type AuthMiddleware struct {
 	provider Provider
-	mode     AuthMode
 }
 
 // NewAuthMiddleware 创建认证中间件
-func NewAuthMiddleware(provider Provider, mode AuthMode) *AuthMiddleware {
-	return &AuthMiddleware{
-		provider: provider,
-		mode:     mode,
-	}
+func NewAuthMiddleware(provider Provider) *AuthMiddleware {
+	return &AuthMiddleware{provider: provider}
 }
 
 // RequireAuth 要求认证的中间件
 func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 如果认证模式是 disabled，跳过认证
-		if m.mode == AuthModeDisabled {
-			c.Next()
+		// provider 为 nil 表示 methods 为空，登录功能已关闭
+		if m.provider == nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "认证未配置，请在管理后台设置 auth.methods",
+			})
+			c.Abort()
 			return
 		}
-		
+
 		// 从请求头获取 token
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -75,10 +74,6 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 // OptionalAuth 可选认证的中间件（如果提供了 token 则验证，否则继续）
 func (m *AuthMiddleware) OptionalAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if m.mode == AuthModeDisabled {
-			c.Next()
-			return
-		}
 		
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {

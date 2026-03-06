@@ -22,6 +22,14 @@ type LoginResponse struct {
 
 // handleLogin 处理登录请求
 func (s *Server) handleLogin(c *gin.Context) {
+	// methods 为空时登录功能关闭
+	if len(s.authModes) == 0 {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error": "认证未配置，请在管理后台设置 auth.methods",
+		})
+		return
+	}
+
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -31,7 +39,7 @@ func (s *Server) handleLogin(c *gin.Context) {
 		return
 	}
 
-	// 使用认证提供者验证用户
+	// 使用认证链验证用户
 	user, err := s.authProvider.Authenticate(c.Request.Context(), req.Username, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{

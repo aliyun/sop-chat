@@ -8,18 +8,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// YAMLConfig YAML 配置文件结构
+// YAMLConfig YAML 配置文件结构（legacy 路径使用）
 type YAMLConfig struct {
-	Method string       `yaml:"method"`
+	Method string       `yaml:"method"` // legacy: "local" 等价于 "builtin"
 	Local  *LocalConfig `yaml:"local,omitempty"`
 	LDAP   *LDAPConfig  `yaml:"ldap,omitempty"`
 	OIDC   *OIDCConfig  `yaml:"oidc,omitempty"`
 }
 
-// LocalConfig 本地认证配置
+// LocalConfig 内置用户配置（由 config 包注入，不直接映射 YAML）
 type LocalConfig struct {
-	Users []UserConfig `yaml:"user"`
-	Roles []RoleConfig `yaml:"roles"`
+	PasswordSalt string       // 密码加盐：MD5(salt+password)，空则不加盐
+	Users        []UserConfig `yaml:"user"`
+	Roles        []RoleConfig `yaml:"roles"`
 }
 
 // UserConfig 用户配置
@@ -34,14 +35,28 @@ type RoleConfig struct {
 	Users []string `yaml:"user"`
 }
 
-// LDAPConfig LDAP 配置（未来支持）
+// LDAPConfig LDAP 认证配置
 type LDAPConfig struct {
-	// TODO: 实现 LDAP 配置
+	Host         string `yaml:"host"`
+	Port         int    `yaml:"port"`
+	UseTLS       bool   `yaml:"useTLS"`
+	BindDN       string `yaml:"bindDN"`
+	BindPassword string `yaml:"bindPassword"`
+	BaseDN       string `yaml:"baseDN"`
+	UserFilter   string `yaml:"userFilter"`
+	UsernameAttr string `yaml:"usernameAttr"`
+	DisplayAttr  string `yaml:"displayAttr"`
+	EmailAttr    string `yaml:"emailAttr"`
 }
 
-// OIDCConfig OIDC 配置（未来支持）
+// OIDCConfig OIDC / OAuth2 认证配置
 type OIDCConfig struct {
-	// TODO: 实现 OIDC 配置
+	IssuerURL     string   `yaml:"issuerURL"`
+	ClientID      string   `yaml:"clientId"`
+	ClientSecret  string   `yaml:"clientSecret"`
+	RedirectURL   string   `yaml:"redirectURL"`
+	Scopes        []string `yaml:"scopes,omitempty"`
+	UsernameClaim string   `yaml:"usernameClaim,omitempty"`
 }
 
 // LoadYAMLConfig 从文件加载 YAML 配置

@@ -11,146 +11,76 @@ import (
 
 // Config 认证配置
 type Config struct {
-	Mode           AuthMode      // 认证模式
+	Modes          []AuthMode    // 鉴权链（有序），为空表示登录关闭
 	JWTSecretKey   string        // JWT 密钥
 	JWTExpiresIn   time.Duration // JWT 过期时间
-	DataDir        string        // 数据目录（用于存储用户数据）
 	YAMLConfigPath string        // YAML 配置文件路径（兼容旧配置）
 	YAMLConfig     *YAMLConfig   // YAML 配置（统一配置模式下使用）
 }
 
-// LoadAuthConfig 从统一配置文件或环境变量加载认证配置
+// parseAuthMode 解析认证模式字符串，兼容历史值 "local" → AuthModeBuiltin
+func parseAuthMode(s string) (AuthMode, error) {
+	switch AuthMode(s) {
+	case AuthModeBuiltin:
+		return AuthModeBuiltin, nil
+	case "local": // 向后兼容
+		return AuthModeBuiltin, nil
+	case AuthModeLDAP:
+		return AuthModeLDAP, nil
+	case AuthModeOIDC:
+		return AuthModeOIDC, nil
+	default:
+		return "", fmt.Errorf("无效的认证模式: %q，支持的值: builtin, ldap, oidc", s)
+	}
+}
+
+// LoadAuthConfig 从统一配置文件加载认证配置。
+// main.go 在调用 NewServer 之前会确保 config.yaml 已存在（不存在则自动创建默认文件），
+// 因此此处只需读取统一配置，不再有旧版 auth.yaml 回退逻辑。
 func LoadAuthConfig() (*Config, error) {
-	// 首先尝试从统一配置文件加载
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		configPath = "config.yaml"
 	}
-	
+
 	unifiedConfig, actualPath, err := config.LoadConfig(configPath)
-	if err == nil {
-		// 成功加载统一配置，转换为认证配置
-		authConfigData := unifiedConfig.GetAuthConfig()
-		
-		// 认证模式
-		modeStr := authConfigData.Method
-		if modeStr == "" {
-			modeStr = os.Getenv("AUTH_MODE")
-			if modeStr == "" {
-				modeStr = "local"
-			}
-		}
-		mode := AuthMode(modeStr)
+	if err != nil {
+		// 极端情况：文件刚被创建但尚未写入（或权限问题），使用内置默认值
+		log.Printf("⚠️  无法读取配置文件 (%v)，使用内置默认认证配置（登录关闭）", err)
+		return &Config{
+			Modes:        []AuthMode{},
+			JWTSecretKey: "default-secret-key-change-in-production",
+			JWTExpiresIn: 24 * time.Hour,
+		}, nil
+	}
 
-		// 验证认证模式
-		switch mode {
-		case AuthModeLocal, AuthModeLDAP, AuthModeOIDC, AuthModeDisabled:
-			// 有效模式
-		default:
-			return nil, fmt.Errorf("无效的认证模式: %s，支持的模式: local, ldap, oidc, disabled", modeStr)
-		}
+	authConfigData := unifiedConfig.GetAuthConfig()
 
-		// JWT 配置
-		jwtSecretKey := authConfigData.JWTSecretKey
-		if jwtSecretKey == "" {
-			jwtSecretKey = os.Getenv("JWT_SECRET_KEY")
-			if jwtSecretKey == "" {
-				jwtSecretKey = "default-secret-key-change-in-production"
-			}
-		}
-
-		jwtExpiresInStr := authConfigData.JWTExpiresIn
-		if jwtExpiresInStr == "" {
-			jwtExpiresInStr = os.Getenv("JWT_EXPIRES_IN")
-			if jwtExpiresInStr == "" {
-				jwtExpiresInStr = "24h"
-			}
-		}
-
-		jwtExpiresIn, err := time.ParseDuration(jwtExpiresInStr)
+	// 解析鉴权链
+	modes := make([]AuthMode, 0, len(authConfigData.Methods))
+	for _, m := range authConfigData.Methods {
+		mode, err := parseAuthMode(m)
 		if err != nil {
-			return nil, fmt.Errorf("无效的 JWT 过期时间格式: %w", err)
+			return nil, err
 		}
-
-		// 数据目录
-		dataDir := authConfigData.DataDir
-		if dataDir == "" {
-			dataDir = os.Getenv("AUTH_DATA_DIR")
-			if dataDir == "" {
-				dataDir = "./data"
-			}
-		}
-
-		authConfig := &Config{
-			Mode:           mode,
-			JWTSecretKey:   jwtSecretKey,
-			JWTExpiresIn:   jwtExpiresIn,
-			DataDir:        dataDir,
-			YAMLConfigPath: "",
-		}
-
-		// 转换 YAML 配置（用于从统一配置加载用户）
-		if yamlConfigForAuth := unifiedConfig.GetYAMLConfig(); yamlConfigForAuth != nil {
-			authConfig.YAMLConfig = convertYAMLConfig(yamlConfigForAuth)
-		}
-
-		log.Printf("📄 使用统一配置文件: %s", actualPath)
-		log.Printf("✅ 从统一配置读取认证模式: %s", authConfig.Mode)
-		return authConfig, nil
-	}
-
-	// 如果统一配置文件不存在，回退到旧的 YAML 配置方式
-	log.Printf("⚠️  统一配置文件不存在，回退到旧的配置方式")
-	
-	// 读取 YAML 配置文件路径
-	yamlConfigPath := os.Getenv("AUTH_YAML_PATH")
-	if yamlConfigPath == "" {
-		yamlConfigPath = "backend/auth.yaml"
-	}
-
-	// 尝试加载 YAML 配置以确定认证模式
-	var mode AuthMode
-	var modeStr string
-
-	// 首先尝试从 YAML 文件读取认证模式
-	yamlConfig, actualPath, err := LoadYAMLConfig(yamlConfigPath)
-	if err == nil && yamlConfig.Method != "" {
-		modeStr = yamlConfig.Method
-		mode = AuthMode(modeStr)
-		log.Printf("📄 使用 YAML 配置文件: %s", actualPath)
-		log.Printf("✅ 从 YAML 配置读取认证模式: %s", modeStr)
-		// 更新为实际找到的路径
-		yamlConfigPath = actualPath
-	} else {
-		// 如果 YAML 文件不存在或无法读取，从环境变量读取
-		if err != nil {
-			log.Printf("⚠️  无法加载 YAML 配置文件 (%v)，将使用环境变量配置", err)
-		}
-		modeStr = os.Getenv("AUTH_MODE")
-		if modeStr == "" {
-			modeStr = "local"
-		}
-		mode = AuthMode(modeStr)
-		log.Printf("✅ 从环境变量读取认证模式: %s", modeStr)
-	}
-
-	// 验证认证模式
-	switch mode {
-	case AuthModeLocal, AuthModeLDAP, AuthModeOIDC, AuthModeDisabled:
-		// 有效模式
-	default:
-		return nil, fmt.Errorf("无效的认证模式: %s，支持的模式: local, ldap, oidc, disabled", modeStr)
+		modes = append(modes, mode)
 	}
 
 	// JWT 配置
-	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+	jwtSecretKey := authConfigData.JWT.SecretKey
 	if jwtSecretKey == "" {
-		jwtSecretKey = "default-secret-key-change-in-production"
+		jwtSecretKey = os.Getenv("JWT_SECRET_KEY")
+		if jwtSecretKey == "" {
+			jwtSecretKey = "default-secret-key-change-in-production"
+		}
 	}
 
-	jwtExpiresInStr := os.Getenv("JWT_EXPIRES_IN")
+	jwtExpiresInStr := authConfigData.JWT.ExpiresIn
 	if jwtExpiresInStr == "" {
-		jwtExpiresInStr = "24h"
+		jwtExpiresInStr = os.Getenv("JWT_EXPIRES_IN")
+		if jwtExpiresInStr == "" {
+			jwtExpiresInStr = "24h"
+		}
 	}
 
 	jwtExpiresIn, err := time.ParseDuration(jwtExpiresInStr)
@@ -158,19 +88,26 @@ func LoadAuthConfig() (*Config, error) {
 		return nil, fmt.Errorf("无效的 JWT 过期时间格式: %w", err)
 	}
 
-	// 数据目录
-	dataDir := os.Getenv("AUTH_DATA_DIR")
-	if dataDir == "" {
-		dataDir = "./data"
-	}
-
-	return &Config{
-		Mode:           mode,
+	authConfig := &Config{
+		Modes:          modes,
 		JWTSecretKey:   jwtSecretKey,
 		JWTExpiresIn:   jwtExpiresIn,
-		DataDir:        dataDir,
-		YAMLConfigPath: yamlConfigPath,
-	}, nil
+		YAMLConfigPath: "",
+	}
+	authConfig.YAMLConfig = convertYAMLConfig(unifiedConfig.GetYAMLConfig())
+
+	log.Printf("📄 使用统一配置文件: %s", actualPath)
+	if len(modes) == 0 {
+		log.Printf("⚠️  auth.methods 为空，登录功能已关闭，请通过配置 UI 设置")
+	} else {
+		log.Printf("✅ 认证链: %v", modes)
+	}
+	return authConfig, nil
+}
+
+// ConvertYAMLConfig 将 config 包的配置转换为 auth 包的配置（供外部包使用）
+func ConvertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
+	return convertYAMLConfig(cfg)
 }
 
 // convertYAMLConfig 将 config 包的配置转换为 auth 包的配置
@@ -178,15 +115,14 @@ func convertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
 	if cfg == nil {
 		return nil
 	}
-	
-	result := &YAMLConfig{
-		Method: cfg.Method,
-	}
-	
+
+	result := &YAMLConfig{}
+
 	if cfg.Local != nil {
 		result.Local = &LocalConfig{
-			Users: make([]UserConfig, len(cfg.Local.Users)),
-			Roles: make([]RoleConfig, len(cfg.Local.Roles)),
+			PasswordSalt: cfg.Local.PasswordSalt,
+			Users:        make([]UserConfig, len(cfg.Local.Users)),
+			Roles:        make([]RoleConfig, len(cfg.Local.Roles)),
 		}
 		for i, u := range cfg.Local.Users {
 			result.Local.Users[i] = UserConfig{
@@ -201,14 +137,32 @@ func convertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
 			}
 		}
 	}
-	
+
 	if cfg.LDAP != nil {
-		result.LDAP = &LDAPConfig{}
+		result.LDAP = &LDAPConfig{
+			Host:         cfg.LDAP.Host,
+			Port:         cfg.LDAP.Port,
+			UseTLS:       cfg.LDAP.UseTLS,
+			BindDN:       cfg.LDAP.BindDN,
+			BindPassword: cfg.LDAP.BindPassword,
+			BaseDN:       cfg.LDAP.BaseDN,
+			UserFilter:   cfg.LDAP.UserFilter,
+			UsernameAttr: cfg.LDAP.UsernameAttr,
+			DisplayAttr:  cfg.LDAP.DisplayAttr,
+			EmailAttr:    cfg.LDAP.EmailAttr,
+		}
 	}
-	
+
 	if cfg.OIDC != nil {
-		result.OIDC = &OIDCConfig{}
+		result.OIDC = &OIDCConfig{
+			IssuerURL:     cfg.OIDC.IssuerURL,
+			ClientID:      cfg.OIDC.ClientID,
+			ClientSecret:  cfg.OIDC.ClientSecret,
+			RedirectURL:   cfg.OIDC.RedirectURL,
+			Scopes:        cfg.OIDC.Scopes,
+			UsernameClaim: cfg.OIDC.UsernameClaim,
+		}
 	}
-	
+
 	return result
 }

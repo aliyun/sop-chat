@@ -158,7 +158,33 @@ func (s *YAMLUserStore) ListUsers() ([]*StoredUser, error) {
 	return users, nil
 }
 
-// ValidatePassword 验证密码（支持 MD5 哈希）
+// ReloadFromYAMLConfig 从新的 YAMLConfig 重新加载用户（支持热更新，无需重启）
+func (s *YAMLUserStore) ReloadFromYAMLConfig(yamlConfig *YAMLConfig) error {
+	if yamlConfig == nil || yamlConfig.Local == nil {
+		return fmt.Errorf("本地认证配置不存在")
+	}
+
+	// 在临时 store 中预加载新用户，验证配置合法性
+	tempStore := &YAMLUserStore{
+		config: yamlConfig,
+		users:  make(map[string]*StoredUser),
+	}
+	if err := tempStore.loadFromConfig(); err != nil {
+		return fmt.Errorf("重新加载用户失败: %w", err)
+	}
+
+	// 原子地替换配置和用户映射
+	s.mu.Lock()
+	s.config = yamlConfig
+	s.users = tempStore.users
+	s.mu.Unlock()
+
+	log.Printf("✅ 热更新完成，已加载 %d 个用户", len(tempStore.users))
+	return nil
+}
+
+// ValidatePassword 验证密码
+// 哈希公式：MD5(passwordSalt + plaintext)，salt 为空时退化为 MD5(plaintext)
 func (s *YAMLUserStore) ValidatePassword(username, password string) (bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -168,17 +194,14 @@ func (s *YAMLUserStore) ValidatePassword(username, password string) (bool, error
 		return false, fmt.Errorf("用户 %s 不存在", username)
 	}
 
-	// 计算输入密码的 MD5 哈希
-	hash := md5.Sum([]byte(password))
-	passwordHash := hex.EncodeToString(hash[:])
-
-	// 比较哈希值（不区分大小写，因为 MD5 哈希通常是小写的）
-	storedHash := strings.ToLower(user.PasswordHash)
-	inputHash := strings.ToLower(passwordHash)
-
-	if inputHash == storedHash {
-		return true, nil
+	// 计算输入密码的 MD5 哈希（含 salt）
+	salt := ""
+	if s.config.Local != nil {
+		salt = s.config.Local.PasswordSalt
 	}
+	hash := md5.Sum([]byte(salt + password))
+	inputHash := strings.ToLower(hex.EncodeToString(hash[:]))
+	storedHash := strings.ToLower(user.PasswordHash)
 
-	return false, nil
+	return inputHash == storedHash, nil
 }
