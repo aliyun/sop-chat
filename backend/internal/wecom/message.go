@@ -121,6 +121,58 @@ func (m *MessageManager) SendMarkdownToUser(ctx context.Context, userID, content
 		},
 	})
 }
+// SendWebhookText 通过群机器人 Webhook 发送文本消息
+func SendWebhookText(ctx context.Context, webhookURL, content string) error {
+	return sendWebhookMessage(ctx, webhookURL, &webhookMessageRequest{
+		MsgType: "text",
+		Text:    &textContent{Content: content},
+	})
+}
+
+// SendWebhookMarkdown 通过群机器人 Webhook 发送 Markdown 消息
+func SendWebhookMarkdown(ctx context.Context, webhookURL, content string) error {
+	return sendWebhookMessage(ctx, webhookURL, &webhookMessageRequest{
+		MsgType:  "markdown",
+		Markdown: &markdownContent{Content: content},
+	})
+}
+
+// sendWebhookMessage 发送 Webhook 消息（包级私有）
+func sendWebhookMessage(ctx context.Context, webhookURL string, msg *webhookMessageRequest) error {
+	bodyBytes, err := json.Marshal(msg)
+	if err != nil {
+		return fmt.Errorf("序列化 Webhook 消息失败: %w", err)
+	}
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookURL, bytes.NewReader(bodyBytes))
+	if err != nil {
+		return fmt.Errorf("创建 Webhook 请求失败: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("发送 Webhook 请求失败: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("读取 Webhook 响应失败: %w", err)
+	}
+
+	var result baseResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return fmt.Errorf("解析 Webhook 响应失败: %w", err)
+	}
+
+	if result.ErrCode != 0 {
+		return fmt.Errorf("Webhook 发送失败: code=%d, msg=%s", result.ErrCode, result.ErrMsg)
+	}
+
+	return nil
+}
 
 // sendMessage 发送应用消息
 func (m *MessageManager) sendMessage(ctx context.Context, msg *sendMessageRequest) (string, error) {
@@ -187,6 +239,11 @@ type sendMessageResponse struct {
 	InvalidParty string `json:"invalidparty,omitempty"`
 	InvalidTag   string `json:"invalidtag,omitempty"`
 	MsgID        string `json:"msgid,omitempty"`
+}
+type webhookMessageRequest struct {
+	MsgType  string           `json:"msgtype"`
+	Text     *textContent     `json:"text,omitempty"`
+	Markdown *markdownContent `json:"markdown,omitempty"`
 }
 
 type textContent struct {

@@ -23,3 +23,9 @@ backend/config.yaml
 # OS
 .DS_Store
 Thumbs.db
+
+# Debug binaries
+backend/__debug_bin*
+
+# Logs
+backend/logs/

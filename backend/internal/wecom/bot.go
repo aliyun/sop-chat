@@ -189,6 +189,18 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 			log.Printf("[WeCom] 发送 Markdown 失败，降级为文本: %v", err)
 			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, replyText)
 		}
+
+		// 如果配置了群机器人 Webhook，同步推送到群聊
+		if webhookURL := cfg.WebhookURL; webhookURL != "" {
+			if err := SendWebhookMarkdown(workCtx, webhookURL, wecomMd); err != nil {
+				log.Printf("[WeCom] Webhook 发送 Markdown 失败，降级为文本: %v", err)
+				if textErr := SendWebhookText(workCtx, webhookURL, replyText); textErr != nil {
+					log.Printf("[WeCom] Webhook 文本降级也失败: %v", textErr)
+				}
+			} else {
+				log.Printf("[WeCom] Webhook 推送成功 to=%s", webhookURL)
+			}
+		}
 	}
 
 	if !b.enqueueWork(key, work) {

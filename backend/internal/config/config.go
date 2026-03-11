@@ -122,6 +122,28 @@ type WeComConfig struct {
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
 	// 用户白名单（企业微信 userid）；为空时允许所有用户
 	AllowedUsers []string `yaml:"allowedUsers,omitempty"`
+	// 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
+	WebhookURL string `yaml:"webhookUrl,omitempty"`
+	// AI 助手群机器人长连接配置（从企业微信管理后台 AI 助手页面获取）
+	BotLongConn *WeComBotLongConnConfig `yaml:"botLongConn,omitempty"`
+}
+
+// WeComBotLongConnConfig 企业微信 AI 助手群机器人长连接配置
+type WeComBotLongConnConfig struct {
+	// 是否启用长连接群机器人
+	Enabled bool `yaml:"enabled"`
+	// 机器人 ID（从企业微信管理后台 AI 助手页面获取）
+	BotID string `yaml:"botId"`
+	// 机器人 Secret（从企业微信管理后台 AI 助手页面获取）
+	BotSecret string `yaml:"botSecret"`
+	// WebSocket 连接地址（默认 wss://openws.work.weixin.qq.com）
+	URL string `yaml:"url,omitempty"`
+	// 心跳间隔（秒，默认 30）
+	PingIntervalSec int `yaml:"pingIntervalSec,omitempty"`
+	// 重连延迟（秒，默认 5）
+	ReconnectDelaySec int `yaml:"reconnectDelaySec,omitempty"`
+	// 最大重连延迟（秒，默认 60）
+	MaxReconnectDelaySec int `yaml:"maxReconnectDelaySec,omitempty"`
 }
 
 // CredsEqual 判断凭据和员工名是否与另一个配置相同（用于热重载时判断是否需要重启）
@@ -145,14 +167,31 @@ func (w *WeComConfig) CredsEqual(other *WeComConfig) bool {
 	if other == nil {
 		return false
 	}
-	return w.CorpID == other.CorpID &&
-		w.Secret == other.Secret &&
-		w.Token == other.Token &&
-		w.EncodingAESKey == other.EncodingAESKey &&
-		w.AgentID == other.AgentID &&
-		w.CallbackPort == other.CallbackPort &&
-		w.CallbackPath == other.CallbackPath &&
-		w.EmployeeName == other.EmployeeName
+	if w.CorpID != other.CorpID ||
+		w.Secret != other.Secret ||
+		w.Token != other.Token ||
+		w.EncodingAESKey != other.EncodingAESKey ||
+		w.AgentID != other.AgentID ||
+		w.CallbackPort != other.CallbackPort ||
+		w.CallbackPath != other.CallbackPath ||
+		w.EmployeeName != other.EmployeeName {
+		return false
+	}
+	// 比较长连接配置
+	wLC := w.BotLongConn
+	oLC := other.BotLongConn
+	if (wLC == nil) != (oLC == nil) {
+		return false
+	}
+	if wLC != nil && oLC != nil {
+		if wLC.Enabled != oLC.Enabled ||
+			wLC.BotID != oLC.BotID ||
+			wLC.BotSecret != oLC.BotSecret ||
+			wLC.URL != oLC.URL {
+			return false
+		}
+	}
+	return true
 }
 
 // GlobalConfig 全局配置
@@ -378,6 +417,12 @@ func (c *Config) expandEnvVars() {
 			c.Channels.WeCom[i].CorpID = expandEnvVar(c.Channels.WeCom[i].CorpID)
 			c.Channels.WeCom[i].Secret = expandEnvVar(c.Channels.WeCom[i].Secret)
 			c.Channels.WeCom[i].EmployeeName = expandEnvVar(c.Channels.WeCom[i].EmployeeName)
+			c.Channels.WeCom[i].WebhookURL = expandEnvVar(c.Channels.WeCom[i].WebhookURL)
+			if c.Channels.WeCom[i].BotLongConn != nil {
+				c.Channels.WeCom[i].BotLongConn.BotID = expandEnvVar(c.Channels.WeCom[i].BotLongConn.BotID)
+				c.Channels.WeCom[i].BotLongConn.BotSecret = expandEnvVar(c.Channels.WeCom[i].BotLongConn.BotSecret)
+				c.Channels.WeCom[i].BotLongConn.URL = expandEnvVar(c.Channels.WeCom[i].BotLongConn.URL)
+			}
 		}
 	}
 

@@ -49,6 +49,10 @@ type Server struct {
 	// 企业微信机器人生命周期管理（keyed by corpId:agentId）
 	wecomMu   sync.Mutex
 	wecomBots map[string]*wecom.Bot
+
+	// 企业微信长连接群机器人生命周期管理（keyed by botId）
+	wecomLongConnMu   sync.Mutex
+	wecomLongConnBots map[string]*wecom.LongConnBot
 }
 
 // generateConfigUIToken 生成随机的配置 UI 访问令牌
@@ -107,6 +111,7 @@ func NewServer(cfg *client.Config, globalConfig *config.Config, configPath strin
 			// 启动企业微信机器人
 			if len(globalConfig.Channels.WeCom) > 0 {
 				server.syncWeComBots(globalConfig.Channels.WeCom, cmsClientCfg)
+				server.syncWeComLongConnBots(globalConfig.Channels.WeCom, cmsClientCfg)
 			}
 		}
 	}
@@ -557,6 +562,64 @@ func (s *Server) stopAllWeComBots() {
 	}
 }
 
+// syncWeComLongConnBots 将运行中的企业微信长连接群机器人与新配置列表对齐
+func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComConfig, cmsConfig *config.ClientConfig) {
+	s.wecomLongConnMu.Lock()
+	defer s.wecomLongConnMu.Unlock()
+
+	if s.wecomLongConnBots == nil {
+		s.wecomLongConnBots = make(map[string]*wecom.LongConnBot)
+	}
+
+	// 收集新配置中所有启用的长连接 bot（keyed by botId）
+	newEnabled := make(map[string]config.WeComConfig)
+	for _, wc := range newConfigs {
+		if wc.Enabled && wc.BotLongConn != nil && wc.BotLongConn.Enabled &&
+			wc.BotLongConn.BotID != "" && wc.BotLongConn.BotSecret != "" &&
+			wc.EmployeeName != "" {
+			newEnabled[wc.BotLongConn.BotID] = wc
+		}
+	}
+
+	// 停止已不在新配置中的实例
+	for botID, bot := range s.wecomLongConnBots {
+		if _, ok := newEnabled[botID]; !ok {
+			log.Printf("停止企业微信长连接机器人: botId=%s", botID)
+			bot.Stop()
+			delete(s.wecomLongConnBots, botID)
+		}
+	}
+
+	// 启动或重启有变化的实例
+	for botID, wcCfg := range newEnabled {
+		wcCopy := wcCfg
+		if existing, ok := s.wecomLongConnBots[botID]; ok {
+			existingCfg := existing.Config()
+			if existingCfg.CredsEqual(&wcCopy) {
+				existing.UpdateConfig(&wcCopy)
+				continue
+			}
+			log.Printf("重启企业微信长连接机器人（配置变更）: botId=%s", botID)
+			existing.Stop()
+			delete(s.wecomLongConnBots, botID)
+		}
+		log.Printf("启动企业微信长连接机器人: botId=%s employee=%s", botID, wcCopy.EmployeeName)
+		bot := wecom.NewLongConnBot(&wcCopy, cmsConfig)
+		bot.Start()
+		s.wecomLongConnBots[botID] = bot
+	}
+}
+
+// stopAllWeComLongConnBots 停止所有运行中的企业微信长连接群机器人
+func (s *Server) stopAllWeComLongConnBots() {
+	s.wecomLongConnMu.Lock()
+	defer s.wecomLongConnMu.Unlock()
+	for botID, bot := range s.wecomLongConnBots {
+		bot.Stop()
+		delete(s.wecomLongConnBots, botID)
+	}
+}
+
 // reloadConfig 热重载配置：从文件重新读取并更新内存中的配置，无需重启服务
 func (s *Server) reloadConfig() error {
 	if s.configPath == "" {
@@ -601,6 +664,7 @@ func (s *Server) reloadConfig() error {
 	s.syncDingTalkBots(newDTConfigs, newClientConfig)
 	s.syncFeishuBots(newFTConfigs, newClientConfig)
 	s.syncWeComBots(newWCConfigs, newClientConfig)
+	s.syncWeComLongConnBots(newWCConfigs, newClientConfig)
 
 	// 原子替换配置指针
 	s.mu.Lock()
