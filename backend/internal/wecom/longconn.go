@@ -76,7 +76,7 @@ type longConnStreamReplyBody struct {
 // LongConnBot 企业微信 AI 助手群机器人长连接管理器
 type LongConnBot struct {
 	mu        sync.RWMutex
-	cfg       *config.WeComConfig
+	cfg       *config.WeComBotConfig
 	cmsConfig *config.ClientConfig
 
 	conn              *websocket.Conn
@@ -98,28 +98,28 @@ type LongConnBot struct {
 }
 
 // NewLongConnBot 创建长连接机器人实例
-func NewLongConnBot(wcConfig *config.WeComConfig, cmsConfig *config.ClientConfig) *LongConnBot {
+func NewLongConnBot(wbConfig *config.WeComBotConfig, cmsConfig *config.ClientConfig) *LongConnBot {
 	return &LongConnBot{
-		cfg:       wcConfig,
+		cfg:       wbConfig,
 		cmsConfig: cmsConfig,
 		stopCh:    make(chan struct{}),
 	}
 }
 
 // Config 返回当前配置快照
-func (b *LongConnBot) Config() *config.WeComConfig {
+func (b *LongConnBot) Config() *config.WeComBotConfig {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 	return b.cfg
 }
 
 // UpdateConfig 热更新配置
-func (b *LongConnBot) UpdateConfig(newCfg *config.WeComConfig) {
+func (b *LongConnBot) UpdateConfig(newCfg *config.WeComBotConfig) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.cfg = newCfg
 	log.Printf("[WeCom-LongConn] 配置已热更新: botId=%s employee=%s",
-		newCfg.BotLongConn.BotID, newCfg.EmployeeName)
+		newCfg.BotID, newCfg.EmployeeName)
 }
 
 // Start 启动长连接
@@ -127,7 +127,7 @@ func (b *LongConnBot) Start() {
 	b.shouldRun = true
 	go b.connectLoop()
 	log.Printf("[WeCom-LongConn] 启动: botId=%s employee=%s",
-		b.cfg.BotLongConn.BotID, b.cfg.EmployeeName)
+		b.cfg.BotID, b.cfg.EmployeeName)
 }
 
 // Stop 停止长连接
@@ -178,7 +178,7 @@ func (b *LongConnBot) connectLoop() {
 
 // reconnectDelay 计算重连延迟（指数退避）
 func (b *LongConnBot) reconnectDelay() time.Duration {
-	cfg := b.Config().BotLongConn
+	cfg := b.Config()
 	base := defaultReconnectDelay
 	if cfg.ReconnectDelaySec > 0 {
 		base = time.Duration(cfg.ReconnectDelaySec) * time.Second
@@ -197,9 +197,8 @@ func (b *LongConnBot) reconnectDelay() time.Duration {
 // connect 建立 WebSocket 连接并进入消息循环
 func (b *LongConnBot) connect() error {
 	cfg := b.Config()
-	lc := cfg.BotLongConn
 
-	wsURL := lc.URL
+	wsURL := cfg.URL
 	if wsURL == "" {
 		wsURL = defaultLongConnURL
 	}
@@ -221,8 +220,8 @@ func (b *LongConnBot) connect() error {
 	reqID := fmt.Sprintf("%s_%d", cmdSubscribe, time.Now().UnixMilli())
 	b.subscribeReqID = reqID
 	subscribeBody, _ := json.Marshal(map[string]string{
-		"bot_id": lc.BotID,
-		"secret": lc.BotSecret,
+		"bot_id": cfg.BotID,
+		"secret": cfg.BotSecret,
 	})
 	err = b.sendFrame(&longConnFrame{
 		Cmd:     cmdSubscribe,
@@ -297,7 +296,7 @@ func (b *LongConnBot) sendFrame(frame *longConnFrame) error {
 
 // pingLoop 心跳循环
 func (b *LongConnBot) pingLoop(done chan struct{}) {
-	cfg := b.Config().BotLongConn
+	cfg := b.Config()
 	interval := defaultPingInterval
 	if cfg.PingIntervalSec > 0 {
 		interval = time.Duration(cfg.PingIntervalSec) * time.Second

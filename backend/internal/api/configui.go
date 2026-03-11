@@ -59,13 +59,14 @@ code{background:#eef0ff;padding:2px 6px;border-radius:4px;font-size:.8rem}</styl
 
 // configUIResponse 是返回给前端的结构化配置数据（不暴露文件路径）
 type configUIResponse struct {
-	Global        configUIGlobal     `json:"global"`
-	Auth          configUIAuth       `json:"auth"`
-	DingTalk      []configUIDingTalk `json:"dingtalk"`
-	Feishu        []configUIFeishu   `json:"feishu"`
-	WeCom         []configUIWeCom    `json:"wecom"`
-	OpenAIEnabled bool               `json:"openaiEnabled"`
-	OpenAI        configUIOpenAI     `json:"openai"`
+	Global        configUIGlobal      `json:"global"`
+	Auth          configUIAuth        `json:"auth"`
+	DingTalk      []configUIDingTalk  `json:"dingtalk"`
+	Feishu        []configUIFeishu    `json:"feishu"`
+	WeCom         []configUIWeCom     `json:"wecom"`
+	WeComBot      []configUIWeComBot  `json:"wecomBot"`
+	OpenAIEnabled bool                `json:"openaiEnabled"`
+	OpenAI        configUIOpenAI      `json:"openai"`
 }
 
 type configUIGlobal struct {
@@ -147,6 +148,14 @@ type configUIWeCom struct {
 	AllowedUsers   []string `json:"allowedUsers"`
 }
 
+type configUIWeComBot struct {
+	Enabled      bool   `json:"enabled"`
+	BotID        string `json:"botId"`
+	BotSecret    string `json:"botSecret"`
+	EmployeeName string `json:"employeeName"`
+	ConciseReply bool   `json:"conciseReply"`
+}
+
 type configUIOpenAI struct {
 	APIKeys []string `json:"apiKeys"`
 }
@@ -163,6 +172,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			DingTalk: []configUIDingTalk{},
 			Feishu:   []configUIFeishu{},
 			WeCom:    []configUIWeCom{},
+			WeComBot: []configUIWeComBot{},
 			OpenAI:   configUIOpenAI{APIKeys: []string{}},
 		})
 		return
@@ -275,6 +285,22 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 		}
 	} else {
 		resp.WeCom = []configUIWeCom{}
+	}
+
+	// 企业微信群聊机器人配置（独立渠道）
+	if cfg.Channels != nil && len(cfg.Channels.WeComBot) > 0 {
+		resp.WeComBot = make([]configUIWeComBot, len(cfg.Channels.WeComBot))
+		for i, wb := range cfg.Channels.WeComBot {
+			resp.WeComBot[i] = configUIWeComBot{
+				Enabled:      wb.Enabled,
+				BotID:        wb.BotID,
+				BotSecret:    wb.BotSecret,
+				EmployeeName: wb.EmployeeName,
+				ConciseReply: wb.ConciseReply,
+			}
+		}
+	} else {
+		resp.WeComBot = []configUIWeComBot{}
 	}
 
 	// 始终读取 OpenAI 字段（即使 enabled=false，密钥也应保留显示）
@@ -428,6 +454,25 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					EmployeeName:   wc.EmployeeName,
 					ConciseReply:   wc.ConciseReply,
 					AllowedUsers:   allowedUsers,
+				})
+			}
+		}
+	}
+
+	// 企业微信群聊机器人配置（独立渠道）
+	if len(req.WeComBot) > 0 {
+		if cfg.Channels == nil {
+			cfg.Channels = &config.ChannelsConfig{}
+		}
+		cfg.Channels.WeComBot = make([]config.WeComBotConfig, 0, len(req.WeComBot))
+		for _, wb := range req.WeComBot {
+			if wb.BotID != "" || wb.BotSecret != "" || wb.EmployeeName != "" {
+				cfg.Channels.WeComBot = append(cfg.Channels.WeComBot, config.WeComBotConfig{
+					Enabled:      wb.Enabled,
+					BotID:        wb.BotID,
+					BotSecret:    wb.BotSecret,
+					EmployeeName: wb.EmployeeName,
+					ConciseReply: wb.ConciseReply,
 				})
 			}
 		}

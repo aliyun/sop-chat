@@ -109,14 +109,21 @@ auth:
 #       conciseReply: true
 #       allowedUsers: []                  # 企业微信 userid 白名单，为空则允许所有用户
 #       webhookUrl: ""                    # 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
-#       botLongConn:                      # AI 助手群机器人长连接配置（从企业微信管理后台 AI 助手页面获取）
+#       # 旧版嵌套配置（向后兼容，推荐使用下方独立 wecomBot 节点）
+#       botLongConn:
 #         enabled: true
-#         botId: "$WECOM_BOT_ID"          # 机器人 ID
-#         botSecret: "$WECOM_BOT_SECRET"  # 机器人 Secret
-#         # url: "wss://openws.work.weixin.qq.com"  # WebSocket 地址（默认值，通常无需修改）
-#         # pingIntervalSec: 30           # 心跳间隔（秒）
-#         # reconnectDelaySec: 5          # 重连基础延迟（秒，指数退避）
-#         # maxReconnectDelaySec: 60      # 最大重连延迟（秒）
+#         botId: "$WECOM_BOT_ID"
+#         botSecret: "$WECOM_BOT_SECRET"
+#   wecomBot:                             # 企业微信群聊机器人（独立渠道，WebSocket 长连接）
+#     - enabled: true
+#       botId: "$WECOM_BOT_ID"            # 机器人 ID（从企业微信管理后台 AI 助手页面获取）
+#       botSecret: "$WECOM_BOT_SECRET"    # 机器人 Secret
+#       employeeName: "employee-name-1"   # 默认数字员工名称
+#       conciseReply: true
+#       # url: "wss://openws.work.weixin.qq.com"  # WebSocket 地址（默认值，通常无需修改）
+#       # pingIntervalSec: 30             # 心跳间隔（秒）
+#       # reconnectDelaySec: 5            # 重连基础延迟（秒，指数退避）
+#       # maxReconnectDelaySec: 60        # 最大重连延迟（秒）
 
 # ─── OpenAI 兼容接口（可选）─────────────────────────────────────────────────────
 # 接口路径：POST /openai/v1/chat/completions、GET /openai/v1/models

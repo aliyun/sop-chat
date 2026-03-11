@@ -417,14 +417,14 @@ details.field[open] .dt-route-arrow{transform:rotate(90deg)}
     </div>
   </div>
 
-  <!-- ── WeCom ── -->
+  <!-- ── WeCom App ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128172;</span> 企业微信机器人
+      <span class="card-title-icon">&#128172;</span> 企业微信应用
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWeComBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加企业微信机器人
+        添加企业微信应用
       </button>
     </div>
     <div id="wecom-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -435,6 +435,28 @@ details.field[open] .dt-route-arrow{transform:rotate(90deg)}
         <li>在应用详情页获取 <strong>企业ID（CorpID）</strong>、<strong>AgentID</strong>、<strong>Secret</strong></li>
         <li>在「接收消息」中设置回调 URL（需公网 IP），填写自定义 <strong>Token</strong> 和 <strong>EncodingAESKey</strong></li>
         <li>回调路径默认为 <code>/wecom/callback</code>，与本服务部署在同一端口</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ── WeCom Bot (群聊机器人) ── -->
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">&#129302;</span> 企业微信机器人
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addWeComGroupBot()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加企业微信机器人
+      </button>
+    </div>
+    <div id="wecom-group-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
+      <div style="font-weight:600;margin-bottom:4px">如何获取群聊机器人凭据？</div>
+      <ol style="padding-left:18px;margin:0;color:#2b6cb0">
+        <li>前往 <a href="https://work.weixin.qq.com/wework_admin/frame#/smartBot" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">企业微信管理后台 → AI 助手</a> 页面</li>
+        <li>点击 <a href="https://work.weixin.qq.com/wework_admin/frame#/aiHelper/create" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">创建 AI 助手，选择“API模式”，而非普通模式（默认）</a>，或选择已有的群机器人</li>
+        <li>在机器人详情页复制 <strong>机器人 ID（BotID）</strong> 和 <strong>机器人 Secret（BotSecret）</strong></li>
+        <li>机器人通过 WebSocket 长连接接入，无需公网 IP</li>
       </ol>
     </div>
   </div>
@@ -1289,6 +1311,94 @@ function collectWeComBots() {
   }));
 }
 
+// ── WeCom Group Bot list (企业微信群聊机器人) ─────────────────────────────
+function renderWeComGroupBots(bots) {
+  const container = document.getElementById('wecom-group-bots-list');
+  container.innerHTML = '';
+  (bots || []).forEach((bot, i) => container.appendChild(makeWeComGroupBotCard(bot, i)));
+}
+
+function makeWeComGroupBotCard(bot, idx) {
+  const div = document.createElement('div');
+  div.className = 'dt-bot-card';
+  const checkedAttr = bot.enabled ? 'checked' : '';
+  div.innerHTML =
+    '<div class="dt-bot-header">' +
+      '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
+      '<span class="dt-bot-type" style="background:rgba(43,108,176,.1);color:#2b6cb0">WeComBot</span>' +
+      '<div class="dt-bot-title">' + esc(bot.botId || '未配置') + '</div>' +
+      '<label class="toggle" style="margin-left:auto">' +
+        '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
+        '<span class="toggle-track"></span>' +
+        '<span class="toggle-thumb"></span>' +
+      '</label>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComGroupBot(this)">删除</button>' +
+    '</div>' +
+    '<div class="dt-bot-fields">' +
+      '<div class="field">' +
+        '<label>机器人 ID（BotID）<span style="color:var(--red)">*</span></label>' +
+        '<input type="text" data-field="botId" value="' + esc(bot.botId || '') + '" placeholder="aibXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" oninput="onWeComGroupBotIdInput(this)">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>机器人 Secret（BotSecret）<span style="color:var(--red)">*</span></label>' +
+        '<div class="input-wrap">' +
+          '<input type="password" data-field="botSecret" value="' + esc(bot.botSecret || '') + '" autocomplete="new-password">' +
+          '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
+        '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
+        '<label class="toggle">' +
+          '<input type="checkbox" data-field="conciseReply"' + (bot.conciseReply ? ' checked' : '') + '>' +
+          '<span class="toggle-track"></span>' +
+          '<span class="toggle-thumb"></span>' +
+        '</label>' +
+        '<div style="display:flex;flex-direction:column;gap:2px">' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
+          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  return div;
+}
+
+function addWeComGroupBot() {
+  const container = document.getElementById('wecom-group-bots-list');
+  container.appendChild(makeWeComGroupBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
+}
+
+function removeWeComGroupBot(btn) {
+  btn.closest('.dt-bot-card').remove();
+  renumberWeComGroupBots();
+}
+
+function onWeComGroupBotIdInput(inp) {
+  const card = inp.closest('.dt-bot-card');
+  const titleEl = card.querySelector('.dt-bot-title');
+  titleEl.textContent = inp.value.trim() || '未配置';
+}
+
+function renumberWeComGroupBots() {
+  document.querySelectorAll('#wecom-group-bots-list .dt-bot-card').forEach((card, i) => {
+    card.querySelector('.dt-bot-num').textContent = i + 1;
+  });
+}
+
+function collectWeComGroupBots() {
+  return Array.from(document.querySelectorAll('#wecom-group-bots-list .dt-bot-card')).map(card => ({
+    enabled:      card.querySelector('[data-field=enabled]').checked,
+    botId:        card.querySelector('[data-field=botId]').value.trim(),
+    botSecret:    card.querySelector('[data-field=botSecret]').value.trim(),
+    employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+  }));
+}
+
 // ── API Key list ──────────────────────────────────────────────────────────
 function renderApiKeys(keys) {
   const container = document.getElementById('apikeys-list');
@@ -1340,6 +1450,7 @@ function populate(data) {
   renderDingTalkBots(data.dingtalk || []);
   renderFeishuBots(data.feishu || []);
   renderWeComBots(data.wecom || []);
+  renderWeComGroupBots(data.wecomBot || []);
 
   document.getElementById('openai-enabled').checked = !!data.openaiEnabled;
   renderApiKeys((data.openai || {}).apiKeys);
@@ -1380,6 +1491,7 @@ function collect() {
     dingtalk:      collectDingTalkBots(),
     feishu:        collectFeishuBots(),
     wecom:         collectWeComBots(),
+    wecomBot:      collectWeComGroupBots(),
     openaiEnabled: oaiOn,
     openai:        { apiKeys: collectApiKeys() },
   };
