@@ -163,6 +163,9 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
 
+		// 立即发送"思考中"提示，让用户知道消息已收到
+		_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "💭 思考中...")
+
 		threadId, err := b.getOrCreateThreadId(msg.FromUserName, cfg.EmployeeName)
 		if err != nil {
 			log.Printf("[WeCom] 创建线程失败: %v", err)

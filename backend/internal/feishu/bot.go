@@ -206,6 +206,9 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
 
+		// 立即发送"思考中"提示，让用户知道消息已收到
+		b.sendText(workCtx, chatID, "💭 思考中...")
+
 		threadId, err := b.getOrCreateThreadId(chatID, senderOpenID, cfg.EmployeeName)
 		if err != nil {
 			log.Printf("[Feishu] 创建线程失败: %v", err)
