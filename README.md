@@ -9,6 +9,7 @@
   - **钉钉** — 基于 DingTalk Stream SDK，无需公网 IP，支持群内 @机器人 及单聊
   - **飞书** — 基于飞书 WebSocket 长连接，无需公网 IP，支持群聊与单聊
   - **企业微信** — 基于回调模式，支持应用消息接收
+- **定时任务（Cron）** — 支持配置多个定时任务，定期向指定数字员工发起提问，并将回答自动推送至钉钉、飞书或企业微信 Webhook
 - **OpenAI 兼容接口** — 暴露 `/openai/v1/chat/completions` 接口，方便使用 Cherry Studio、ChatBox 等兼容 OpenAI 协议的聊天客户端直接接入
 - **可视化配置管理** — 内置 `/config` 页面，启动后直接在浏览器中完成所有配置，无需手动编辑文件
 - **用户认证** — 基于 JWT 的本地用户管理，支持角色权限
@@ -36,14 +37,7 @@ chmod +x sop-chat-server
 ./sop-chat-server
 ```
 
-启动后在终端会输出后台配置的链接地址
-
-保存后重启服务即可生效。
-
-> **命令行参数：**
-> - `-c / -config`：指定配置文件路径（默认 `config.yaml`）
-> - `-p / -port`：指定监听端口（默认 `8080`）
-> - `-h / -help`：显示帮助
+** 启动后在终端会输出后台配置的链接地址** 根据配置页面进行配置
 
 ---
 
@@ -204,6 +198,7 @@ npm run dev
 | 钉钉机器人 | 通过 DingTalk Stream SDK 接入，无需公网 IP，支持串行会话隔离 |
 | 飞书机器人 | 通过飞书 WebSocket 长连接接入，无需公网 IP，支持群聊与单聊 |
 | 企业微信机器人 | 通过回调 Webhook 接入，支持应用消息，需公网可达 |
+| 定时任务调度器 | 基于 cron 表达式定时提问数字员工，结果推送至 Webhook |
 | OpenAI 兼容接口 | 暴露标准 `/openai/v1/chat/completions`，可对接第三方工具 |
 
 ---
@@ -222,6 +217,7 @@ sop-chat/
 │   │   ├── config/            # 配置结构
 │   │   ├── dingtalk/          # 钉钉机器人
 │   │   ├── feishu/            # 飞书机器人
+│   │   ├── scheduler/         # 定时任务调度器（cron）
 │   │   └── wecom/             # 企业微信机器人
 │   └── pkg/sopchat/           # SOP Agent SDK 封装
 └── frontend/
@@ -229,6 +225,47 @@ sop-chat/
         ├── components/        # React 组件
         └── services/          # API 客户端
 ```
+
+---
+
+## 定时任务（Cron）
+
+定时任务允许你按计划自动向指定数字员工发起提问，并将回答推送至钉钉、飞书或企业微信群机器人 Webhook。
+
+在配置管理 UI 的 **「定时任务」** 标签页中可直接管理，也可手动编辑 `config.yaml`：
+
+```yaml
+scheduledTasks:
+  - name: daily-standup          # 任务唯一标识
+    enabled: true
+    cron: "0 9 * * 1-5"          # 工作日 09:00，标准 5 字段 cron 表达式
+    prompt: "今天有哪些需要关注的告警？"
+    employeeName: apsara-ops     # 数字员工名称
+    webhook:
+      type: dingtalk             # 平台：dingtalk | feishu | wecom
+      url: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+      msgType: text              # text | markdown（钉钉/飞书）；text | markdown | post（飞书）
+```
+
+**cron 表达式说明（5 字段，秒级可选）：**
+
+| 示例 | 含义 |
+|------|------|
+| `*/5 * * * *` | 每 5 分钟 |
+| `*/15 * * * *` | 每 15 分钟 |
+| `0 9 * * *` | 每天 09:00 |
+| `0 9 * * 1-5` | 工作日 09:00 |
+| `0 9,18 * * 1-5` | 工作日 09:00 和 18:00 |
+
+**支持的 Webhook 类型：**
+
+| type | 说明 |
+|------|------|
+| `dingtalk` | 钉钉自定义机器人，支持 `text` / `markdown` 消息类型 |
+| `feishu` | 飞书自定义机器人，支持 `text` / `post` / `markdown` 消息类型 |
+| `wecom` | 企业微信群机器人，支持 `text` / `markdown` 消息类型 |
+
+> 在配置管理 UI 中可对任务进行**立即触发测试**，无需等待定时到来即可验证配置是否正确。
 
 ---
 
