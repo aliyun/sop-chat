@@ -68,6 +68,3 @@ cp -r sop-chat/skills/generate-sls-sop <上表中的目标路径>
 npx skills remove generate-sls-sop -g
 ```
 
-## License
-
-MIT
