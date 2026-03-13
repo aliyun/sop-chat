@@ -1,0 +1,1233 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "使用量和费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071199577",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 7.045454545454546,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 10.05,
+        "xPos": -0.05,
+        "yPos": 11.4887333,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from instance_bill group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+            "tokenQuery": "* | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from instance_bill group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199577",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "付费类型详情（本月）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071199578",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "占比",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比上月(折后费用)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比上月(原始消费)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "消费趋势",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "line"
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 3.5227273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.739409999999999,
+        "yPos": 7.96590906363636,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  productname as \"付费类型\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"占比\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar)as \"同比上月(折后费用)\",\n  round(diffgross [1], 3) as \"原始消费(元)\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar)as \"同比上月(原始消费)\",\n  (days) as \"消费趋势\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(PretaxAmount) as days\n        from(\n            select\n              SubscriptionType as ProductName,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              SubscriptionType,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  productname as \"付费类型\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"占比\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar)as \"同比上月(折后费用)\",\n  round(diffgross [1], 3) as \"原始消费(元)\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar)as \"同比上月(原始消费)\",\n  (days) as \"消费趋势\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(PretaxAmount) as days\n        from(\n            select\n              SubscriptionType as ProductName,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              SubscriptionType,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199578",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1671070855134-90173",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchFilter": "",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "name",
+                      "value": "异常产品名称"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "异常产品名称",
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "异常账单时间点，点击产品名称查看右详情",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071199579",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 3.5227273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 4.7459626,
+        "xPos": 0.006119172599999985,
+        "yPos": 19.17171572727273,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select name as \"异常产品名称\", date_format(from_unixtime(r.t),'%Y-%m-%d %H:%i:%s') as \"异常时间点\",round(r.d,3) as \"实际费用\", round(r.pred,3) as \"预期正常费用\", round( r.pred-r.d,3) as \"异常差额\" from(select res.name,filter(cast(zip(res.ts, res.probs,res.ds,res.preds) as array(row(t double, prob double, d double, pred double))), r -> r.prob >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, filter(array_distinct(array_agg(ProductCode) over()),x -> x is not null) as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from instance_bill group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(r) order by r.t desc",
+            "tokenQuery": "* | select name as \"异常产品名称\", date_format(from_unixtime(r.t),'%Y-%m-%d %H:%i:%s') as \"异常时间点\",round(r.d,3) as \"实际费用\", round(r.pred,3) as \"预期正常费用\", round( r.pred-r.d,3) as \"异常差额\" from(select res.name,filter(cast(zip(res.ts, res.probs,res.ds,res.preds) as array(row(t double, prob double, d double, pred double))), r -> r.prob >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, filter(array_distinct(array_agg(ProductCode) over()),x -> x is not null) as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from instance_bill group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(r) order by r.t desc"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-80d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199579",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "异常详情",
+        "fixedTime": false,
+        "height": 3.5227273,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.31,
+        "xPos": 4.74,
+        "yPos": 19.15909072727273,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "*| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from instance_bill where ProductCode='oss' group by time order by time)) limit 10000",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "tokenQuery": "ProductCode:${name}| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from log group by time order by time)) limit 10000",
+        "tokenQueryMap": {
+          "0": "*| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from instance_bill where ProductCode='${{name|oss}}' group by time order by time)) limit 10000"
+        },
+        "tokens": [
+          {
+            "end": 15,
+            "key": "name",
+            "mode": "global",
+            "start": 12,
+            "value": "oss"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199580",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "昨日消费明细",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071199583",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "同比-1天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "background"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "colorSchame"
+                ],
+                "value": {
+                  "color": "#0070cc",
+                  "schema": "threshold"
+                }
+              },
+              {
+                "optionKeys": [
+                  "thresholdOption",
+                  "thresholds"
+                ],
+                "value": [
+                  {
+                    "color": "transparent",
+                    "rule": ">",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgb(92 ,183 ,74)",
+                    "rule": "<",
+                    "value": -10
+                  },
+                  {
+                    "color": "rgb(232, 136, 147)",
+                    "rule": ">",
+                    "value": 10
+                  }
+                ]
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "0.0",
+                    "replaceIcon": "",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "产品费用占比",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比-2天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比-3天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 6.806818000000001,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 4.7446446,
+        "xPos": 0.00870255199999999,
+        "yPos": 4.6819153,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  productname as \"产品名称\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"产品费用占比\",\n    cast(\n      coalesce(round(diffreal [5] * 100 -100), 2) as varchar\n    )as \"同比-1天\",\n    cast(\n      round(coalesce(diffreal [6] * 100 -100, 2)) as varchar\n    ) as \"同比-2天\",\n    cast(\n      round(coalesce(diffreal [7] * 100 -100), 2) as varchar\n    ) as \"同比-3天\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount)\n        FROM          instance_bill\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  productname as \"产品名称\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"产品费用占比\",\n    cast(\n      coalesce(round(diffreal [5] * 100 -100), 2) as varchar\n    )as \"同比-1天\",\n    cast(\n      round(coalesce(diffreal [6] * 100 -100, 2)) as varchar\n    ) as \"同比-2天\",\n    cast(\n      round(coalesce(diffreal [7] * 100 -100), 2) as varchar\n    ) as \"同比-3天\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount)\n        FROM          instance_bill\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "daybeforeyesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199583",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "付费类型详情（昨日）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071199584",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "占比",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比-1天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比-2天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比-3天",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 3.2727273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.739409999999999,
+        "yPos": 4.693278936363636,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  item as \"付费类型\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"占比\",\n    cast(round(diffreal [5] * 100 -100, 2) as varchar)as \"同比-1天\",\n    cast(round(diffreal [6] * 100 -100, 2) as varchar)as \"同比-2天\",\n    cast(round(diffreal [7] * 100 -100, 2) as varchar)as \"同比-3天\"\nfrom(\n    select\n      item,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          item,\n          sum(PretaxAmount) as PretaxAmount\n        FROM          instance_bill\n        group by\n          item\n      )\n    group by\n      item\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  item as \"付费类型\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"占比\",\n    cast(round(diffreal [5] * 100 -100, 2) as varchar)as \"同比-1天\",\n    cast(round(diffreal [6] * 100 -100, 2) as varchar)as \"同比-2天\",\n    cast(round(diffreal [7] * 100 -100, 2) as varchar)as \"同比-3天\"\nfrom(\n    select\n      item,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          item,\n          sum(PretaxAmount) as PretaxAmount\n        FROM          instance_bill\n        group by\n          item\n      )\n    group by\n      item\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199584",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "本月产品明细",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-16542189653430501668691095990",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "30天费用趋势",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "line"
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比上月(折后费用)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "background"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "colorSchame"
+                ],
+                "value": {
+                  "color": "#0070cc",
+                  "schema": "threshold"
+                }
+              },
+              {
+                "optionKeys": [
+                  "thresholdOption",
+                  "thresholds"
+                ],
+                "value": [
+                  {
+                    "color": "transparent",
+                    "rule": ">",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgb(92 ,183 ,74)",
+                    "rule": "<",
+                    "value": -10
+                  },
+                  {
+                    "color": "rgb(232, 136, 147)",
+                    "rule": ">",
+                    "value": 10
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "同比上月(原始消费)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "产品费用占比",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 4.738733481818182,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 10.01313789359392,
+        "xPos": 0.008702552000000603,
+        "yPos": -0.05681818181818182,
+        "zIndex": 18
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*|\nselect\n  productname as \"产品名称\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"产品费用占比\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar) as \"同比上月(折后费用)\",\n  round(diffgross [1], 3) as \"原始消费(元)\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar) as \"同比上月(原始消费)\",\n  (days) as \"30天费用趋势\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(pretaxAmount) as days\n        from(\n            select\n              productname,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              productname,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "*|\nselect\n  productname as \"产品名称\",\n  round(diffreal [1], 3) as \"折后费用(元)\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"产品费用占比\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar) as \"同比上月(折后费用)\",\n  round(diffgross [1], 3) as \"原始消费(元)\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar) as \"同比上月(原始消费)\",\n  (days) as \"30天费用趋势\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(pretaxAmount) as days\n        from(\n            select\n              productname,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              productname,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671071199585",
+      "type": "tablepro"
+    }
+  ],
+  "dashboardName": "dashboard-1671070855134-90173",
+  "description": "",
+  "displayName": "产品账单明细(v2)"
+}

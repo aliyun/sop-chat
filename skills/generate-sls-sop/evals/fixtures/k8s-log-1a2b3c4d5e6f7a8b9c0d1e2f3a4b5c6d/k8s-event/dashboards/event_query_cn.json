@@ -1,0 +1,806 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "事件数/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "事件总数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.8068181,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.79,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.13,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 3.75,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "* | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "start": "-86400s",
+        "tokenQuery": "* | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572611310047",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "事件数/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "警告事件数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.8068181,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.79,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.13,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 5.5795455,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Warning | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "start": "-86400s",
+        "tokenQuery": "level : Warning | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572611347773",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "事件数/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "错误事件数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.8181819,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.75,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.89,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 5.5795455,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Error | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "start": "-86400s",
+        "tokenQuery": "level : Error | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572611369379",
+      "type": "number"
+    },
+    {
+      "action": {
+        "总数": {
+          "type": "disabled"
+        },
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "总数": 171,
+          "等级": 171,
+          "类型": 171,
+          "组件": 171,
+          "详细内容": 1498
+        },
+        "displayName": "重要事件统计",
+        "height": 4.6477275,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(255,249,223,1)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(252,198,200,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "width": 9.9,
+        "xPos": 0.13,
+        "yPos": 7.6136365,
+        "zIndex": 1
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "not level:normal | SELECT level as \"等级\", reason as \"类型\", component as \"组件\", count(1) as \"总数\", arbitrary(message) as \"详细内容\" from log group by level, reason, component order by \"总数\" desc",
+        "start": "-86400s",
+        "tokenQuery": "not level:normal | SELECT level as \"等级\", reason as \"类型\", component as \"组件\", count(1) as \"总数\", arbitrary(message) as \"详细内容\" from log group by level, reason, component order by \"总数\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572611927323",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Namespace": {},
+        "Pod名": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Namespace": 151,
+          "Pod名": 151,
+          "总数": 151,
+          "等级": 151,
+          "类型": 151,
+          "组件": 151,
+          "详细内容采样": 1264
+        },
+        "displayName": "Pod重要事件统计",
+        "height": 4.7045455,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(255,249,223,1)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "width": 9.9,
+        "xPos": 0.13000005,
+        "yPos": 12.443182,
+        "zIndex": 4
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.involvedObject.kind : Pod not  level: Normal | SELECT level as \"等级\", reason as \"类型\", component as \"组件\", \"object-namespace\"  as \"Namespace\", \"object-name\" as \"Pod名\", count(1) as \"总数\", arbitrary(message) as \"详细内容采样\" from log group by level, reason, component, \"object-namespace\", \"object-name\"  order by \"总数\" desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "not level:normal | SELECT level as \"等级\", reason as \"类型\", component as \"组件\", count(1) as \"总数\", arbitrary(message) as \"详细内容\" from log group by level, reason, component order by \"总数\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612304197",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "事件数/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "普通事件数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.8181819,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.75,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.89,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 3.75,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Normal | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "start": "-86400s",
+        "tokenQuery": "level : Error | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612463255",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "namespace",
+        "filterData": [
+          {
+            "alias": "Namespace",
+            "key": "eventId.involvedObject.namespace",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.8857445,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.4828844,
+        "xPos": 0.2510397,
+        "yPos": 2.4122062,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.involvedObject.namespace\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612690916",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "name",
+        "filterData": [
+          {
+            "alias": "Name",
+            "key": "eventId.involvedObject.name",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.8636364,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.53,
+        "xPos": 2.7303083,
+        "yPos": 2.409091,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.involvedObject.name\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612753931",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "kind",
+        "filterData": [
+          {
+            "alias": "事件目标",
+            "key": "eventId.involvedObject.kind",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.87219876,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.4828844,
+        "xPos": 0.2510397,
+        "yPos": 1.4728779,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.involvedObject.kind\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612814955",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "reason",
+        "filterData": [
+          {
+            "alias": "事件类型",
+            "key": "eventId.reason",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.8636364,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.53,
+        "xPos": 2.7303083,
+        "yPos": 0.5113636,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.reason\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572612908068",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "level",
+        "filterData": [
+          {
+            "alias": "事件等级",
+            "key": "level",
+            "list": [
+              "Normal",
+              "Warning",
+              "Error"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.87219876,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.4828844,
+        "xPos": 0.2510397,
+        "yPos": 0.52076435,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.reason\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572613046253",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "Time": {},
+        "reason": {},
+        "总数": {}
+      },
+      "display": {
+        "displayName": "Top 10重要事件趋势",
+        "height": 3.6363637,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 6.41,
+        "xAxis": [
+          "Time"
+        ],
+        "xPos": 3.61,
+        "yAxis": [
+          "reason"
+        ],
+        "yPos": 3.75,
+        "zAxis": "总数",
+        "zIndex": 2
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "not level :Normal  | select Time, \"reason\", \"总数\" from (select time_series(__time__, '1h', '%m-%d %H', '0') as Time , reason as reason, count(1) as \"总数\" from log group by Time, reason  order by Time asc )  HAVING reason is not null and  reason in (select reason from log where reason != 'Normal' group by reason order by count(1) desc limit 10) limit 10000",
+        "start": "-86400s",
+        "tokenQuery": "* | select Time, Level, \"总数\" from (select time_series(__time__, '1h', '%Y-%m-%d %H:%i:%S', '0') as Time , level as Level, count(1) as \"总数\" from log group by Time, Level   order by Time asc ) having Level is not null limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572613648637",
+      "type": "colorblock"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "host",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "hostname",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.875,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.5362415,
+        "xPos": 2.7240667,
+        "yPos": 1.4686376,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"hostname\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572613959431",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "重要事件分布",
+        "formatType": "number",
+        "height": 3.5227273,
+        "margin": [
+          "auto",
+          0,
+          "auto",
+          103
+        ],
+        "pieLabelType": "type_percent",
+        "pieType": "normal",
+        "showBackground": true,
+        "showBorder": true,
+        "showLegend": false,
+        "showTitle": true,
+        "width": 4.65,
+        "xAxis": [
+          "reason"
+        ],
+        "xPos": 5.38,
+        "yAxis": [
+          "总数"
+        ],
+        "yPos": 0.03409091,
+        "zIndex": 3
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "not level : normal | select case when rnk > 19 then '其他' else reason end as reason , sum(\"总数\") as \"总数\" from(select * ,row_number() over(order by \"总数\" desc )as rnk from(  select reason as reason, count(1) as \"总数\" from log group by  reason order by \"总数\" desc )) group by reason order by \"总数\" desc limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "not level : normal | select reason as reason, count(1) as \"总数\" from log group by  reason order by \"总数\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572614709629",
+      "type": "pie"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 123,
+          "Namespace": 123,
+          "Pod名": 123,
+          "time": 123,
+          "事件源": 123,
+          "事件目标": 123,
+          "总数": 123,
+          "目标Namespace": 123,
+          "目标名": 123,
+          "等级": 123,
+          "类型": 123,
+          "组件": 123,
+          "详细内容": 1199,
+          "详细内容采样": 123
+        },
+        "displayName": "最近100条事件",
+        "height": 5.0795455,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(255,249,223,1)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "width": 9.9,
+        "xPos": 0.14342287,
+        "yPos": 17.34091,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "* | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\", \"object-namespace\" as \"目标Namespace\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1572616688033",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "事件数/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "按条件搜索",
+        "fontColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "fontSize": 10,
+        "formatType": "number",
+        "height": 3.534091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 5.247651,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.13026856,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 0.022727273,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Normal | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "start": "-86400s",
+        "tokenQuery": "level : Error | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577255451915",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "event_query_cn",
+  "description": "",
+  "displayName": "Kubernetes事件查询"
+}

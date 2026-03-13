@@ -1,0 +1,800 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "containerRuntime版本": {
+          "type": "disabled"
+        },
+        "kernel版本": {
+          "type": "disabled"
+        },
+        "kubelet版本": {
+          "type": "disabled"
+        },
+        "kubeproxy版本": {
+          "type": "disabled"
+        },
+        "可分配CPU": {
+          "type": "disabled"
+        },
+        "可分配Pod": {
+          "type": "disabled"
+        },
+        "可分配内存": {
+          "type": "disabled"
+        },
+        "最近活跃时间": {
+          "type": "disabled"
+        },
+        "节点名": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "活跃节点列表",
+        "height": 3.6818182,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 10.034782,
+        "xPos": -0.05,
+        "yPos": 2.6363637,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system |  select  regexp_extract(\"user.username\", '^system:node:(.*)', 1) as \"节点名\", date_format(from_unixtime(max(__time__)), '%Y-%m-%d %T' ) as \"最近活跃时间\", max_by( \"responseObject.status.allocatable.cpu\", __time__) as \"可分配CPU\", max_by( \"responseObject.status.allocatable.memory\", __time__) as \"可分配内存\" , max_by( \"responseObject.status.allocatable.pods\", __time__) as \"可分配Pod\", max_by( \"responseObject.status.nodeInfo.kubeletVersion\", __time__) as \"kubelet版本\" , max_by( \"responseObject.status.nodeInfo.kubeproxyVersion\", __time__) as \"kubeproxy版本\" , max_by( \"responseObject.status.nodeInfo.containerRuntimeVersion\", __time__) as \"containerRuntime版本\" , max_by( \"responseObject.status.nodeInfo.kernelVersion\", __time__) as \"kernel版本\"   from log group by \"节点名\" order by \"最近活跃时间\" DESC",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system |  select  regexp_extract(\"user.username\", '^system:node:(.*)', 1) as \"节点名\", date_format(from_unixtime(max(__time__)), '%Y-%m-%d %T' ) as \"最近活跃时间\", max_by( \"responseObject.status.allocatable.cpu\", __time__) as \"可分配CPU\", max_by( \"responseObject.status.allocatable.memory\", __time__) as \"可分配内存\" , max_by( \"responseObject.status.allocatable.pods\", __time__) as \"可分配Pod\", max_by( \"responseObject.status.nodeInfo.kubeletVersion\", __time__) as \"kubelet版本\" , max_by( \"responseObject.status.nodeInfo.kubeproxyVersion\", __time__) as \"kubeproxy版本\" , max_by( \"responseObject.status.nodeInfo.containerRuntimeVersion\", __time__) as \"containerRuntime版本\" , max_by( \"responseObject.status.nodeInfo.kernelVersion\", __time__) as \"kernel版本\"   from log group by \"节点名\" order by \"最近活跃时间\" DESC",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550195960815",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": " ",
+        "filterData": [
+          {
+            "alias": "状态码（可选）",
+            "filterMode": false,
+            "key": "responseStatus.code",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.59090906,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.127174,
+        "xPos": 6.1989126,
+        "yPos": -0.05681818181818182,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550196170605",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "Label": {
+          "type": "disabled"
+        },
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作类型": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "Label操作列表",
+        "height": 4.340909,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.1,
+        "xPos": 4.9445653,
+        "yPos": 6.2045455,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\",  json_extract(requestObject, '$.metadata.labels') as Label, \ncase when requestObject like '%null%' or requestObject like '%false%' then '删除' else '增加/修改' end as \"操作类型\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log where json_extract(requestObject, '$.metadata.labels') is not null  order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\",  json_extract(requestObject, '$.metadata.labels') as Label, \ncase when requestObject like '%null%' or requestObject like '%false%' then '删除' else '增加/修改' end as \"操作类型\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log where json_extract(requestObject, '$.metadata.labels') is not null  order by \"操作时间\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550197621000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作类型": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "cordon/uncordon列表",
+        "height": 4.3295455,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.002174,
+        "xPos": -0.05,
+        "yPos": 6.215910399999999,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \ncase when requestObject like '%null%' or requestObject like '%false%' then 'uncordon' else 'cordon' end as \"操作类型\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log where json_extract(requestObject, '$.spec.unschedulable') is not null   order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \ncase when requestObject like '%null%' or requestObject like '%false%' then 'uncordon' else 'cordon' end as \"操作类型\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log where json_extract(requestObject, '$.spec.unschedulable') is not null   order by \"操作时间\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550197946809",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "更新内容": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "taint操作列表",
+        "height": 4.5227275,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.105435,
+        "xPos": 4.9419565,
+        "yPos": 10.454544,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\",  \njson_extract(requestObject, '$.spec.taints') as \"更新内容\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\"  from log where json_extract(requestObject, '$.spec.taints') is not null   order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\",  \njson_extract(requestObject, '$.spec.taints') as \"更新内容\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\"  from log where json_extract(requestObject, '$.spec.taints') is not null   order by \"操作时间\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550199602988",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": " ",
+        "filterData": [
+          {
+            "alias": "",
+            "filterMode": true,
+            "key": "节点名（可选）",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.57954544,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.4970589,
+        "xPos": 3.720204799999999,
+        "yPos": -0.05681818181818182,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system |  select  DISTINCT ( regexp_extract(\"user.username\", '^system:node:(.*)', 1) ) as \"节点名\" ",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550201396535",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "Node详细更新列表",
+        "height": 5.443182,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 10.040217,
+        "xPos": -0.05,
+        "yPos": 14.909091,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \nrequestObject as \"详细内容\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log  order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", regexp_extract( \"requestURI\", 'nodes/([^/\\?]+)', 1) as \"节点\", \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \nrequestObject as \"详细内容\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log  order by \"操作时间\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550204822641",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550204884214",
+        "height": 2.090909,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3MDM0NzExNjA0IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjI0NTciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNjA1LjA5IDE4Ni4xODJINDE4LjkxdjY1MS42MzZoMTg2LjE4VjE4Ni4xODJ6IG00Ni41NDYgMHY2NTEuNjM2aDE2Mi45MWEyMy4yNzMgMjMuMjczIDAgMCAwIDIzLjI3Mi0yMy4yNzN2LTYwNS4wOWEyMy4yNzMgMjMuMjczIDAgMCAwLTIzLjI3My0yMy4yNzNINjUxLjYzNnogbS0yNzkuMjcyIDBoLTE2Mi45MWEyMy4yNzMgMjMuMjczIDAgMCAwLTIzLjI3MiAyMy4yNzN2NjA1LjA5YTIzLjI3MyAyMy4yNzMgMCAwIDAgMjMuMjczIDIzLjI3M2gxNjIuOTA5VjE4Ni4xODJ6IG00NjUuNDU0LTQ2LjU0NmE0Ni41NDUgNDYuNTQ1IDAgMCAxIDQ2LjU0NiA0Ni41NDZ2NjUxLjYzNmE0Ni41NDUgNDYuNTQ1IDAgMCAxLTQ2LjU0NiA0Ni41NDZIMTg2LjE4MmE0Ni41NDUgNDYuNTQ1IDAgMCAxLTQ2LjU0Ni00Ni41NDZWMTg2LjE4MmE0Ni41NDUgNDYuNTQ1IDAgMCAxIDQ2LjU0Ni00Ni41NDZoNjUxLjYzNnogbS01NTguNTQ1IDE2Mi45MWEyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ2IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDV6IG0wIDY5LjgxOGEyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ2IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDZ6IG0wIDY5LjgxOGEyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ2IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDZ6TTI1NiA1MzUuMjcyaDQ2LjU0NWEyMy4yNzMgMjMuMjczIDAgMCAxIDAgNDYuNTQ2SDI1NmEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMCAxODYuMTgzaDQ2LjU0NWEyMy4yNzMgMjMuMjczIDAgMCAxIDAgNDYuNTQ1SDI1NmEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMC05My4wOTFoNDYuNTQ1YTIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDVIMjU2YTIzLjI3MyAyMy4yNzMgMCAwIDEgMC00Ni41NDV6IG0yMzIuNzI3LTkzLjA5MWg0Ni41NDZhMjMuMjczIDIzLjI3MyAwIDAgMSAwIDQ2LjU0NWgtNDYuNTQ2YTIzLjI3MyAyMy4yNzMgMCAwIDEgMC00Ni41NDV6IG0wIDE4Ni4xODJoNDYuNTQ2YTIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDVoLTQ2LjU0NmEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMC05My4wOTFoNDYuNTQ2YTIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDVoLTQ2LjU0NmEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMjMyLjcyOC05My4wOTFINzY4YTIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDVoLTQ2LjU0NWEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMCAxODYuMTgySDc2OEEyMy4yNzMgMjMuMjczIDAgMCAxIDc2OCA3NjhoLTQ2LjU0NWEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1eiBtMC05My4wOTFINzY4YTIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDVoLTQ2LjU0NWEyMy4yNzMgMjMuMjczIDAgMCAxIDAtNDYuNTQ1ek01MTIgMzAyLjU0NUEyMy4yNzMgMjMuMjczIDAgMSAxIDUxMiAyNTZhMjMuMjczIDIzLjI3MyAwIDAgMSAwIDQ2LjU0NXogbTAgNjkuODE5YTIzLjI3MyAyMy4yNzMgMCAxIDEgMC00Ni41NDYgMjMuMjczIDIzLjI3MyAwIDAgMSAwIDQ2LjU0NnogbTAgNjkuODE4YTIzLjI3MyAyMy4yNzMgMCAxIDEgMC00Ni41NDYgMjMuMjczIDIzLjI3MyAwIDAgMSAwIDQ2LjU0NnogbTIzMi43MjctMTM5LjYzN2EyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ1IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDV6IG0wIDY5LjgxOWEyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ2IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDZ6IG0wIDY5LjgxOGEyMy4yNzMgMjMuMjczIDAgMSAxIDAtNDYuNTQ2IDIzLjI3MyAyMy4yNzMgMCAwIDEgMCA0Ni41NDZ6IiBmaWxsPSIjMjFBM0REIiBwLWlkPSIyNDU4Ij48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 1.1869565,
+        "xPos": 0.13641298,
+        "yPos": 0.24431819,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550204884214",
+      "type": "svg"
+    },
+    {
+      "action": {
+        "namespace": {
+          "type": "disabled"
+        },
+        "pod": {
+          "type": "disabled"
+        },
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "drain/eviction列表",
+        "height": 4.5227275,
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.002174,
+        "xPos": -0.05,
+        "yPos": 10.465911,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "eviction and objectRef.resource: pods  and verb: create     | SELECT date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.namespace\" as namespace,  \"objectRef.name\" as pod, \n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", \"responseStatus.code\" as \"状态码\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", auditID as \"事件ID\" from log   order by \"操作时间\" desc",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550210837525",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "个",
+        "description": "本周/同比上周",
+        "descriptionSize": 12,
+        "displayName": "活跃节点",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 2.1136363,
+        "numberType": "compare",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "个",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.2847826,
+        "xAxis": [
+          "总数"
+        ],
+        "xPos": 1.4819565,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5227272,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system |  select diff[1] as \"总数\", (diff[1] - diff[2]) as inc from (select compare( total , 86400) as diff from( select count(DISTINCT \"user.username\") as total   from log))",
+        "start": "-604800s",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system |  select diff[1] as \"总数\", (diff[1] - diff[2]) as inc from (select compare( total , 86400) as diff from( select count(DISTINCT \"user.username\") as total   from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211560166",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "个",
+        "description": "本周/同比上周",
+        "descriptionSize": 12,
+        "displayName": "新增节点",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 2.1136363,
+        "numberType": "compare",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "个",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.2847826,
+        "xAxis": [
+          "总数"
+        ],
+        "xPos": 2.6956522,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5113636,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and  (verb : create ) |  select diff[1] as \"总数\", (diff[1] - diff[2]) as inc from (select compare( total , 86400) as diff from( select count(DISTINCT \"user.username\") as total   from log))",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211604174",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "个",
+        "description": "本周/同比上周",
+        "descriptionSize": 12,
+        "displayName": "删除节点",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 2.1136363,
+        "numberType": "compare",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "个",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.2847826,
+        "xAxis": [
+          "总数"
+        ],
+        "xPos": 3.912826,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5113636,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and  (verb : delete ) |  select diff[1] as \"总数\", (diff[1] - diff[2]) as inc from (select compare( total , 86400) as diff from( select count(DISTINCT \"user.username\") as total   from log))",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211728285",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "个",
+        "description": "本周/同比上周",
+        "descriptionSize": 12,
+        "displayName": "更新节点操作账号",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 2.1136363,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "numberType": "compare",
+        "pieType": "ring",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "个",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.2847826,
+        "xAxis": [
+          "操作账号"
+        ],
+        "xPos": 5.136304,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 0.5113636,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  |  select  CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  as \"操作账号\", count(1) as total group by \"操作账号\"",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211747159",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "更新节点操作账号",
+        "fixedTime": false,
+        "height": 2.1136363,
+        "showBackground": false,
+        "showBorder": false,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": false,
+        "width": 1.648913,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 8.377173,
+        "yAxis": [
+          "t"
+        ],
+        "yPos": 0.5,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  |  select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000 ) group by country limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211897533",
+      "type": "world-map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "更新节点操作账号",
+        "fixedTime": false,
+        "height": 2.1022727,
+        "showBackground": false,
+        "showBorder": false,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": false,
+        "width": 1.447826,
+        "xAxis": [
+          "p"
+        ],
+        "xPos": 6.874348,
+        "yAxis": [
+          "T"
+        ],
+        "yPos": 0.52272725,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes  and   (verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  |   select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000) group by p  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550211985429",
+      "type": "map"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "子账号ID（可选）",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.5681818,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.585294,
+        "xPos": 1.3014703,
+        "yPos": -0.05681818181818182,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551505863090",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_node_op_cn",
+  "description": "",
+  "displayName": "Kubernetes节点操作审计"
+}
