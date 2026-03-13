@@ -1,9 +1,10 @@
 # generate-sls-sop
 
-将 SLS project 或本地数据目录转换为结构化的 overview.md SOP 文档。
+将 SLS project 或本地数据目录转换为结构化的 SOP 文档（overview.md）或 SKILL 文档（SKILL.md）。
 
 ## 功能概览
 
+- **双格式输出**：支持 SOP（overview.md）与 SKILL（SKILL.md）两种输出格式，SKILL 适用于 Agent 技能文档
 - **自动拉取数据**：从阿里云 SLS 拉取 index、dashboard、alert、saved_search、scheduled_sql
 - **智能精选查询**：LLM 从候选池中精选有代表性的查询，自动去重、脱敏、分类、标注
 - **参考文档融合**：首次生成或重跑时，可指定已有 SOP 文档作为参考，其中的查询优先保留
@@ -16,11 +17,13 @@
 
 ## 快速开始
 
-以**存放 SOP 文档的项目仓库**作为 workspace 打开，然后对 Agent 说：
+以**存放 SOP/SKILL 文档的项目仓库**作为 workspace 打开，然后对 Agent 说：
 
-- `帮我生成 <project-name> 的 SOP 文档` -- 从 SLS 拉取
-- `帮我从 .input/my-project/ 生成 SOP` -- 从本地数据
-- `继续上次的 SOP 生成` -- 断点续跑
+- `帮我生成 <project-name> 的 SOP 文档` -- 从 SLS 拉取（SOP 格式）
+- `帮我生成 <project-name> 的 SKILL 文档` -- 从 SLS 拉取（SKILL 格式）
+- `帮我从 .input/my-project/ 生成 SOP` -- 从本地数据（SOP）
+- `帮我从 .input/my-project/ 生成 SKILL` -- 从本地数据（SKILL）
+- `继续上次的 SOP 生成` / `继续上次的 SKILL 生成` -- 断点续跑
 - `帮我生成 <project-name> 的 SOP 文档，并验证查询语法` -- 开启查询验证
 - `对已生成的 SOP 做质量审计` -- 质量审计（建议新会话）
 
