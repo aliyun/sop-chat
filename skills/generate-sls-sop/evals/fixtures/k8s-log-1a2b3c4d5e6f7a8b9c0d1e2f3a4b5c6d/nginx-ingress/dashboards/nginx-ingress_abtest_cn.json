@@ -1,0 +1,1681 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "PV/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "PV",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*    | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count_if(proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' ) as pv from log))",
+        "start": "-60s",
+        "tokenQuery": "${ServiceA}  | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count(1) as pv from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceA|*}}    | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count_if(proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' ) as pv from log))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030939",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "平均延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.454545405454545,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceA}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceA|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030940",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟成功率/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "成功率（code<400）",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 3.262353600000001,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "proxy_upstream_name:* | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceA}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from log))",
+        "tokenQueryMap": {
+          "0": "proxy_upstream_name:${{ServiceA|*}} | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030941",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟成功率/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "5XX比例",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.6223535,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "proxy_upstream_name:*    | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from ( select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceA}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from log))",
+        "tokenQueryMap": {
+          "0": "proxy_upstream_name:${{ServiceA|*}}    | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from ( select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030942",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "流量对比(MB)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "_col3"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 3.295086500414079,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 6.375000287272727,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "* | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time,  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as proxy_upstream_name,  round((sum(body_bytes_sent) + sum(request_length)) / 1024.0 / 1024.0, 3)    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time,  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as proxy_upstream_name,  round((sum(body_bytes_sent) + sum(request_length)) / 1024.0 / 1024.0, 3)    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030943",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "PV对比",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 6.375000287272727,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "*  | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  count(1) as value ,arbitrary(__time__) as time_t     group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  count(1) as value ,arbitrary(__time__) as time_t     group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030944",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "平均延迟对比（ms）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 6.634776000828157,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 6.375000287272727,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "*  | select date_format(from_unixtime(__time__ - __time__ % 60), '%Y-%m-%d %H:%i') as time,  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as proxy_upstream_name,  avg(request_time) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select date_format(from_unixtime(__time__ - __time__ % 60), '%Y-%m-%d %H:%i') as time,  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as proxy_upstream_name,  avg(request_time) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030945",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "P95延迟对比（ms）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.7613637,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.371833510077847,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 9.090910741818185,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "*  | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.95) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.95) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030946",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "成功率对比(code<400)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 3.659090905454545,
+        "zIndex": 18
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "*  | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  case when count(1) = 0 then 100 else  count_if(status < 400) * 100.0 / count(1) end  as value    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  case when count(1) = 0 then 100 else  count_if(status < 400) * 100.0 / count(1) end  as value    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030947",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "5XX率对比",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 3.295086500414079,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 3.659090905454545,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "*  | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1)  as value    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}}  | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1)  as value    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030948",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "key": "ServiceA",
+            "list": [],
+            "type": "token"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": -0.05,
+        "yPos": 0.4204545454545454,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030949",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "key": "ServiceB",
+            "list": [],
+            "type": "token"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 2.4923536,
+        "yPos": 0.4204545454545454,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030950",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "PV/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "PV",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 5.0194127,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count_if(proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' ) as pv from log))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceB}  | select diff[1] as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count(1) as pv from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( pv , 3600) as diff from (select count_if(proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' ) as pv from log))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030952",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟成功率/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "5XX比例",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.662059999999999,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceB}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status >= 500 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030953",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "P99延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.6223535,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.454545405454545,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*    | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceA}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceA|*}}    | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030954",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟成功率/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "成功率（code<400）",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.310000999999998,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 1.329545505454546,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceB}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select sum(case when status < 400 then 1 else 0 end) / 0.01 / count(1)  as latency from (select status from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030955",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "P9999延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 3.262353600000001,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.454545405454545,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceA}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceA|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceA|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030956",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "平均延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 5.026765999999999,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.454545405454545,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceB}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select avg(request_time) / 0.001 as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030957",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "P99延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.672647,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.454545405454545,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "${ServiceB}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.99) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030958",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "延迟/同比上小时",
+        "descriptionSize": 12,
+        "displayName": "P9999延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.2045455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.319999999999999,
+        "yAxis": [
+          "inc"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 2.443181805454546,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '*' )))",
+        "start": "-60s",
+        "tokenQuery": "proxy_upstream_name:${ServiceB}  | select round(diff[1], 3) as total, round((diff[2] - diff[1]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from log))",
+        "tokenQueryMap": {
+          "0": "${{ServiceB|*}}  | select round(diff[1], 3) as total, round((diff[1] - diff[2]) / diff[2] / 0.01, 2) as inc from(select compare( latency , 3600) as diff from (select round(approx_percentile(request_time, 0.9999) / 0.001, 3) as latency from (select request_time from log where proxy_alternative_upstream_name is null or proxy_alternative_upstream_name = '' or proxy_alternative_upstream_name = '${{ServiceB|*}}' )))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030959",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "note",
+        "height": 0.5,
+        "markdownStr": "<font color=blue><b>ServiceA</b></font>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.225,
+        "xPos": 2.3100006,
+        "yPos": 0.9659090454545456,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030960",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "note",
+        "height": 0.5,
+        "markdownStr": "<font color=green><b>ServiceB</b></font>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.225,
+        "xPos": 7.193823999999999,
+        "yPos": 0.9318181654545458,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030961",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "P99延迟对比（ms）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.7613637,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.371833510077847,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 3.289342311320084,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 9.090910741818185,
+        "zIndex": 23
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "* | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.99) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}} | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.99) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030962",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "404率对比",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.377577699171843,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 6.634776000828157,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 3.659090905454545,
+        "zIndex": 24
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "* | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1)  as value    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}} | select arbitrary(__time__) as time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1)  as value    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030963",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "P9999延迟对比（ms）",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "always"
+        },
+        "height": 2.7613637,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "proxy_upstream_name",
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKey": "value"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.371833510077847,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 6.623287622640166,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 9.090910741818185,
+        "zIndex": 25
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "nginx-ingress",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "* | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.9999) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440",
+            "tokenQuery": "${{ServiceA|default-http-svc1-80}} or ${{ServiceB|default-http-svc2-80}} | select date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as  proxy_upstream_name,  approx_percentile(request_time, 0.9999) * 1000.0 as value,arbitrary(__time__) as time_t    group by time, proxy_upstream_name  order by time_t  limit 1440"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-60m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030964",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "URL",
+            "key": "url",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.4152174,
+        "xPos": 7.618823999999998,
+        "yPos": 0.4204545454545454,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT url from ( select  (url_extract_path(url))  as url, count(1) as total from log  group by url  order by total desc   limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030965",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.7985294,
+        "xPos": 4.898427999999999,
+        "yPos": 0.4204545454545454,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT host from ( select  host  as host, count(1) as total from log  group by host  order by total desc   limit 100 ) having host is not null ",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561037030966",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "nginx-ingress_abtest_cn",
+  "description": "",
+  "displayName": "Ingress蓝绿发布监控中心"
+}

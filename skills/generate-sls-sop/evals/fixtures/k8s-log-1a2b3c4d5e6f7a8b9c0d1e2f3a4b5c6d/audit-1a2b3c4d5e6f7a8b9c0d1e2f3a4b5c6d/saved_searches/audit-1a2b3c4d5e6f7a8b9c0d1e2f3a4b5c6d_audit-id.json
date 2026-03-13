@@ -1,0 +1,14 @@
+{
+  "displayName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+  "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+  "savedsearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+  "searchQuery": "auditID:*",
+  "tokenQuery": "auditID:${id}",
+  "tokens": [
+    {
+      "key": "id",
+      "value": "*"
+    }
+  ],
+  "topic": ""
+}

@@ -1,0 +1,1580 @@
+{
+  "attribute": {
+    "remark": "修改图表",
+    "type": "free",
+    "update": 1695008031861,
+    "version": "81902293"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Top Logstore by Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.840909090909091,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 5,
+        "xPos": 4.99205410988707,
+        "yPos": 32.86363636363635,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls |\nselect\n  Project as Logstore,\n  concat(cast(round(diff1 [1], 3) as varchar), '(GB)') as \"Indexing Traffic\",\n  concat(\n    cast(round(diffindexPack [1], 3) as varchar),\n    '(GB)'\n  ) as \"Indexing Traffic After Deduction by Resource Plan\",\n  concat(\n    cast(round(diff2 [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage\",\n  concat(\n    cast(round(diffStorPack [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage After Deduction by Resource Plan\",\n  round(diff3 [1], 3) as \"Expenses\",\n  concat(\n    cast(round(diff3 [3] * 100 -100, 3) as varchar),\n    '%'\n  ) as \"Compared With Last Month\"\nfrom(\n    select\n      project,\n      compare(indexUsage, 2592000) as diff1,\n      compare(storageusage, 2592000) as diff2,\n      compare(\"Expenses\", 2592000) as diff3,\n      compare(indexUsagePackge, 2592000) as diffindexPack,\n      compare(storageUsagePackge, 2592000) as diffStorPack\n    from(\n        select\n          project,\n          sum(\"Expenses\") as \"Expenses\",\n          sum(indexUsage) as indexUsage,\n          sum(indexUsagePackge) as indexUsagePackge,\n          max_by(storageUsage, __time__) as storageUsage,\n          max_by(storageUsagePackge, __time__) as storageUsagePackge\n        from(\n            select\n              array_join(slice(split(InstanceId, ';'), 2, 2), ',') as project,\n              sum(PretaxAmount) as \"Expenses\",\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsage,\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%'then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsagePackge,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsage,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsagePackge,\n              __time__\n            FROM              log\n            group by\n              project,\n              __time__\n          )\n        group by\n          project\n      )\n    group by\n      project\n  )\norder by\n  \"Expenses\" desc\nlimit\n  1000",
+            "tokenQuery": "* and instance_bill and productcode:sls |\nselect\n  Project as Logstore,\n  concat(cast(round(diff1 [1], 3) as varchar), '(GB)') as \"Indexing Traffic\",\n  concat(\n    cast(round(diffindexPack [1], 3) as varchar),\n    '(GB)'\n  ) as \"Indexing Traffic After Deduction by Resource Plan\",\n  concat(\n    cast(round(diff2 [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage\",\n  concat(\n    cast(round(diffStorPack [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage After Deduction by Resource Plan\",\n  round(diff3 [1], 3) as \"Expenses\",\n  concat(\n    cast(round(diff3 [3] * 100 -100, 3) as varchar),\n    '%'\n  ) as \"Compared With Last Month\"\nfrom(\n    select\n      project,\n      compare(indexUsage, 2592000) as diff1,\n      compare(storageusage, 2592000) as diff2,\n      compare(\"Expenses\", 2592000) as diff3,\n      compare(indexUsagePackge, 2592000) as diffindexPack,\n      compare(storageUsagePackge, 2592000) as diffStorPack\n    from(\n        select\n          project,\n          sum(\"Expenses\") as \"Expenses\",\n          sum(indexUsage) as indexUsage,\n          sum(indexUsagePackge) as indexUsagePackge,\n          max_by(storageUsage, __time__) as storageUsage,\n          max_by(storageUsagePackge, __time__) as storageUsagePackge\n        from(\n            select\n              array_join(slice(split(InstanceId, ';'), 2, 2), ',') as project,\n              sum(PretaxAmount) as \"Expenses\",\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsage,\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%'then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsagePackge,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsage,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsagePackge,\n              __time__\n            FROM              log\n            group by\n              project,\n              __time__\n          )\n        group by\n          project\n      )\n    group by\n      project\n  )\norder by\n  \"Expenses\" desc\nlimit\n  1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967943",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Read/Write Traffic in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.5,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.04999999999999988,
+        "yPos": 21.02272727272728,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%'  or BillingItem like '%Read/write Traffic%')  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%'  or BillingItem like '%Read/write Traffic%')  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967944",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Storage Space Usage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.215909090909091,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Usage"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "allValues"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2.02,
+        "xPos": 4.046367041198502,
+        "yPos": 0.1818181818181819,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%') group by t )",
+            "tokenQuery": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%') group by t )"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967945",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Indexing Traffic",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.215909090909091,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Usage"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "allValues"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2.02,
+        "xPos": 6.021446869826814,
+        "yPos": 0.1818181818181821,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t from log where (BillingItem like '%索引流量%' or BillingItem like '%Index Size%' or BillingItem like '%Traffic of Indexing Time Series Data%')  group by t )",
+            "tokenQuery": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t from log where (BillingItem like '%索引流量%' or BillingItem like '%Index Size%' or BillingItem like '%Traffic of Indexing Time Series Data%')  group by t )"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967946",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Read/Write Traffic",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.215909090909091,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Usage"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "allValues"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2.02,
+        "xPos": 8.02691822087189,
+        "yPos": 0.1818181818181819,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') group by t )",
+            "tokenQuery": "* and instance_bill and productcode:sls |select round(max_by(usage,t),3) as \"Usage\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') group by t )"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967947",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967948",
+        "height": 3.011363636363637,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Date",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 9.981398252184768,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.05636704119850164,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 2.397727272727273,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select date_format(__time__,'%b %e, %Y')  as \"Date\",   round(sum(PretaxAmount),3) as \"Expenses\" from log group by \"Date\" order by \"Date\"   limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select date_format(__time__,'%b %e, %Y')  as \"Date\",   round(sum(PretaxAmount),3) as \"Expenses\" from log group by \"Date\" order by \"Date\"   limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967948",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses by Read/Write Traffic in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967949",
+        "height": 2.409090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.04999999999999988,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 18.63636363636364,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%'  or BillingItem like '%Read/write Traffic%' )  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%'  or BillingItem like '%Read/write Traffic%' )  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967949",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 1.784090909090909,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.05636704119850164,
+        "yPos": 5.40909090909091,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select date_format(__time__,'%b %e, %Y')  as \"Date\",   round(sum(PretaxAmount),3) as \"Expenses\" from log group by \"Date\" order by \"Date\"   limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select date_format(__time__,'%b %e, %Y')  as \"Date\",   round(sum(PretaxAmount),3) as \"Expenses\" from log group by \"Date\" order by \"Date\"   limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967950",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Indexing Traffic in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.5,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.04999999999999988,
+        "yPos": 16.18181818181818,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%索引流量%' or BillingItem like '%Index%')   group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%索引流量%' or BillingItem like '%Index%')   group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967951",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Top Project",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.852272727272728,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 5,
+        "xPos": 0.03776529338327057,
+        "yPos": 32.86363636363635,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls |\nselect\n  Project,\n  concat(cast(round(diff1 [1], 3) as varchar), '(GB)') as \"Indexing Traffic\",\n  concat(\n    cast(round(diffindexPack [1], 3) as varchar),\n    '(GB)'\n  ) as \"Indexing Traffic After Deduction by Resource Plan\",\n  concat(cast(round(diff2 [1], 3) as varchar), ' (GB*day)') as \"Storage Space Usage\",\n  concat(\n    cast(round(diffStorPack [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage After Deduction by Resource Plan\",\n  round(diff3 [1], 3) as \"Expenses\",\n  concat(cast(round(diff3 [3] * 100 -100, 3) as varchar), '%') as \"Compared With Last Month\"\nfrom(\n    select\n      project,\n      compare(indexUsage, 2592000) as diff1,\n      compare(storageusage, 2592000) as diff2,\n      compare(\"Expenses\", 2592000) as diff3,\n      compare(indexUsagePackge, 2592000) as diffindexPack,\n      compare(storageUsagePackge, 2592000) as diffStorPack\n    from(\n        select\n          project,\n          sum(\"Expenses\") as \"Expenses\",\n          sum(indexUsage) as indexUsage,\n          sum(indexUsagePackge) as indexUsagePackge,\n          max_by(storageUsage, __time__) as storageUsage,\n          max_by(storageUsagePackge, __time__) as storageUsagePackge\n        from(\n            select\n              split_part(InstanceId, ';', 2) as project,\n              sum(PretaxAmount) as \"Expenses\",\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsage,\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsagePackge,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsage,\n              sum(\n                case\n                  when  BillingItem like '%存储空间%' or BillingItem like '%Storage%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsagePackge,\n              __time__\n            FROM              log\n            group by\n              project,\n              __time__\n          )\n        group by\n          project\n      )\n    group by\n      project\n  )\norder by\n  \"Expenses\" desc\nlimit\n  1000",
+            "tokenQuery": "* and instance_bill and productcode:sls |\nselect\n  Project,\n  concat(cast(round(diff1 [1], 3) as varchar), '(GB)') as \"Indexing Traffic\",\n  concat(\n    cast(round(diffindexPack [1], 3) as varchar),\n    '(GB)'\n  ) as \"Indexing Traffic After Deduction by Resource Plan\",\n  concat(cast(round(diff2 [1], 3) as varchar), ' (GB*day)') as \"Storage Space Usage\",\n  concat(\n    cast(round(diffStorPack [1], 3) as varchar),\n    ' (GB*day)'\n  ) as \"Storage Space Usage After Deduction by Resource Plan\",\n  round(diff3 [1], 3) as \"Expenses\",\n  concat(cast(round(diff3 [3] * 100 -100, 3) as varchar), '%') as \"Compared With Last Month\"\nfrom(\n    select\n      project,\n      compare(indexUsage, 2592000) as diff1,\n      compare(storageusage, 2592000) as diff2,\n      compare(\"Expenses\", 2592000) as diff3,\n      compare(indexUsagePackge, 2592000) as diffindexPack,\n      compare(storageUsagePackge, 2592000) as diffStorPack\n    from(\n        select\n          project,\n          sum(\"Expenses\") as \"Expenses\",\n          sum(indexUsage) as indexUsage,\n          sum(indexUsagePackge) as indexUsagePackge,\n          max_by(storageUsage, __time__) as storageUsage,\n          max_by(storageUsagePackge, __time__) as storageUsagePackge\n        from(\n            select\n              split_part(InstanceId, ';', 2) as project,\n              sum(PretaxAmount) as \"Expenses\",\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsage,\n              sum(\n                case\n                  when BillingItem like '%索引流量%' or BillingItem like '%Index%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as indexUsagePackge,\n              sum(\n                case\n                  when BillingItem like '%存储空间%' or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsage,\n              sum(\n                case\n                  when  BillingItem like '%存储空间%' or BillingItem like '%Storage%' then DeductedByResourcePackage / 1024./ 1024 / 1024\n                  else 0\n                end\n              ) as storageUsagePackge,\n              __time__\n            FROM              log\n            group by\n              project,\n              __time__\n          )\n        group by\n          project\n      )\n    group by\n      project\n  )\norder by\n  \"Expenses\" desc\nlimit\n  1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967952",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Indexing Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967953",
+        "height": 2.329545454545455,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.03776529338327057,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 13.95454545454545,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%索引流量%' or BillingItem like '%Index%')   group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%索引流量%' or BillingItem like '%Index%')   group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967953",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Billing Items (After Deduction from Resource Plan)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.034090909090909,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.04999999999999988,
+        "yPos": 7.193181818181819,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select  \"Billing Item\"  , concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select  BillingItem   \"Billing Item\"  , arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log  group by  \"Billing Item\"  order by  \"Expenses\" desc limit 1000)",
+            "tokenQuery": "* and instance_bill and productcode:sls | select  \"Billing Item\"  , concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select  BillingItem   \"Billing Item\"  , arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log  group by  \"Billing Item\"  order by  \"Expenses\" desc limit 1000)"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967954",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses by Read/Write Times in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967955",
+        "height": 2.204545454545455,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.04999999999999988,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 23.51136363636364,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where ( BillingItem like '%读写次数%' or BillingItem like '%Read Write Count%' or BillingItem like '%Reads/write Times%')   group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where ( BillingItem like '%读写次数%' or BillingItem like '%Read Write Count%' or BillingItem like '%Reads/write Times%')   group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967955",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Storage Usage in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.5,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.04999999999999988,
+        "yPos": 11.55681818181818,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%')  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%')  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967956",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses Yesterday",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.215909090909091,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "Expenses/Day-to-Day Increase",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "Expenses Today"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2.02,
+        "xPos": 0.05636704119850164,
+        "yPos": 0.1818181818181819,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls| select round(di[1],3) as \"Expenses Today\",di[2] as \"Expenses Yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+            "tokenQuery": "* and instance_bill and productcode:sls| select round(di[1],3) as \"Expenses Today\",di[2] as \"Expenses Yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967957",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Storage Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967958",
+        "height": 2.465909090909091,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0499999999999992,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 9.136363636363637,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,   \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%')  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,   \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%')  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967958",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses This Month",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.215909090909091,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "Expenses/Month-on-Month Increase",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "Expenses Today"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2.02,
+        "xPos": 2.038789013732833,
+        "yPos": 0.1818181818181819,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select round(di[1],3) as \"Expenses Today\",di[2] as \"Expenses Yesterday\",di[3]*100-100 as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+            "tokenQuery": "* and instance_bill and productcode:sls | select round(di[1],3) as \"Expenses Today\",di[2] as \"Expenses Yesterday\",di[3]*100-100 as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967959",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Shard Usage in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666009967960",
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.04999999999999918,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 28.0909090909091,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where ( BillingItem like '%shard%' or BillingItem like '%Shard%')  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where ( BillingItem like '%shard%' or BillingItem like '%Shard%')  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666009967960",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Shard Usage in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.113636363636364,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.05228013029315916,
+        "yPos": 30.74999999999998,
+        "zIndex": 18
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%shard%' or BillingItem like '%Shard%')  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select   t,  concat(cast(\"Usage\" as varchar),\"Unit\") as \"Usage\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t,   arbitrary(UsageUnit)\"Unit\",round(sum(Usage),3) as \"Usage\",  round(sum(PretaxAmount),3) as \"Expenses\" from log where  (BillingItem like '%shard%' or BillingItem like '%Shard%')  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967961",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Read/Write Times in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.5,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 0.04999999999999918,
+        "yPos": 25.63636363636365,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and productcode:sls | select t, concat(cast(\"Usage\" as varchar),'One million times') as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t, arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\", round(sum(DeductedByResourcePackage/1000/1000),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%读写次数%' or BillingItem like '%Read Write Count%' or BillingItem like '%Reads/write Times%')  group by t order by t )limit 1000",
+            "tokenQuery": "* and instance_bill and productcode:sls | select t, concat(cast(\"Usage\" as varchar),'One million times') as \"Usage\",concat(cast(\"Usage Deduction by Resource Plan\" as varchar),\"Unit\") as \"Usage Deduction by Resource Plan\" , \"Expenses\" from(select date_format(__time__,'%b %e, %Y') as t, arbitrary(UsageUnit)\"Unit\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"Usage\", round(sum(DeductedByResourcePackage/1000/1000),3) as \"Usage Deduction by Resource Plan\", round(sum(PretaxAmount),3) as \"Expenses\" from log where (BillingItem like '%读写次数%' or BillingItem like '%Read Write Count%' or BillingItem like '%Reads/write Times%')  group by t order by t )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666009967962",
+      "type": "tablepro"
+    }
+  ],
+  "dashboardName": "dashboard-1668148376074-300870",
+  "description": "",
+  "displayName": "Log Service Bill Analysis（v1）"
+}

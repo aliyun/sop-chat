@@ -1,0 +1,3043 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "配置失败(ProvisioningFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 12.30681818181819,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376452",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "挂载失败(FailedMount)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 12.30681818181819,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason: FailedMount |\nSELECT\n  cast(diff [1] as bigint) as today,\n  cast((diff [1]-diff [2]) as bigint) as lastday,\n  hostname,\n  kind,\n  namespace,\n  name,\n  message,\n  reason\nFROM  (\n    SELECT\n      compare(total, 86400) as diff,\n      arbitrary(hostname) as hostname,\n      arbitrary(kind) as kind,\n      arbitrary(namespace) as namespace,\n      arbitrary(name) as name,\n      arbitrary(message) as message,\n      arbitrary(reason) as reason\n    FROM      (\n        SELECT\n          COUNT(*) as total,\n          max_by(\"object-kind\", __time__) as kind,\n          max_by(\"object-namespace\", __time__) as namespace,\n          max_by(\"object-name\", __time__) as name,\n          max_by(\"message\", __time__) as message,\n          max_by(\"hostname\", __time__) as hostname,\n          max_by(\"eventId.reason\", __time__) as reason\n        FROM          log\n      )\n  )",
+        "start": "today",
+        "tokenQuery": "eventId.reason: FailedMount |\nSELECT\n  cast(diff [1] as bigint) as today,\n  cast((diff [1]-diff [2]) as bigint) as lastday,\n  hostname,\n  kind,\n  namespace,\n  name,\n  message,\n  reason\nFROM  (\n    SELECT\n      compare(total, 86400) as diff,\n      arbitrary(hostname) as hostname,\n      arbitrary(kind) as kind,\n      arbitrary(namespace) as namespace,\n      arbitrary(name) as name,\n      arbitrary(message) as message,\n      arbitrary(reason) as reason\n    FROM      (\n        SELECT\n          COUNT(*) as total,\n          max_by(\"object-kind\", __time__) as kind,\n          max_by(\"object-namespace\", __time__) as namespace,\n          max_by(\"object-name\", __time__) as name,\n          max_by(\"message\", __time__) as message,\n          max_by(\"hostname\", __time__) as hostname,\n          max_by(\"eventId.reason\", __time__) as reason\n        FROM          log\n      )\n  )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376453",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "性能慢(SlowIO)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 12.30681818181819,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : SlowIO |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : Failed and eventId.message : ImagePullBackOff |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376457",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "分配IP失败(AllocIPFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 14.68181818181819,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AllocIPFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376459",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "资源申请失败(AllocResourceFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 14.68181818181819,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AllocResourceFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376460",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "请求异常(ResourceInvalid)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 14.68181818181819,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ResourceInvalid |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376461",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "路由创建失败(CreateRouteFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.340909090909092,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : CreateRouteFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376462",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "接入节点失败(AddNodeFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 8.015252854812397,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.340909090909092,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AddNodeFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376463",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "SLB创建失败(SyncLoadBalancerFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.340909090909092,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : SyncLoadBalancerFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376464",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "修复失败(NLC.AutoRepairTask.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.993633540372671,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 2.761363636363634,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.AutoRepairTask.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376465",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ECS重启失败(NLC.Task.RestartECS.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 1.136363636363644,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.RestartECS.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376466",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "排水失败(NLC.Task.DrainNode.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.962888198757764,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 2.761363636363634,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.DrainNode.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376467",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "设备忙(DeviceBusy)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.998939641109298,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 12.30681818181819,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DeviceBusy |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : Failed and eventId.message : ImagePullBackOff |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376468",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "停止响应(IOHang)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 8.015252854812397,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 12.30681818181819,
+        "zIndex": 28
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : IOHang |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : Failed and eventId.message : ImagePullBackOff |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376469",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "虚拟模式变更(VirtualModeChanged)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 16.27272727272728,
+        "zIndex": 29
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : VirtualModeChanged |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376470",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "配置错误(ParseFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.998939641109298,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 14.68181818181819,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ParseFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376471",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "资源回收失败(DisposeResourceFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 8.015252854812397,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 14.68181818181819,
+        "zIndex": 31
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DisposeResourceFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376472",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "配置检查(ConfigCheck)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 16.27272727272728,
+        "zIndex": 32
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ConfigCheck |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376473",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "分配IP(AllocIPSucceed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 16.27272727272728,
+        "zIndex": 33
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AllocIPSucceed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376474",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "路由同步失败(SyncRouteFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.998939641109298,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.340909090909092,
+        "zIndex": 34
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : SyncRouteFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376475",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "SLB删除失败(DeleteLoadBalancerFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.340909090909092,
+        "zIndex": 35
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DeleteLoadBalancerFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376476",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.3,
+          "b": 27,
+          "g": 2,
+          "r": 208
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(208,2,27,0.3)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "删除节点失败(DeleteNodeFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035797498302818,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 9.909090909090912,
+        "zIndex": 36
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DeleteNodeFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376477",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "SLB不可用(UnAvailableLoadBalancer)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035797498302818,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.967363566818315,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 9.909090909090912,
+        "zIndex": 37
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : UnAvailableLoadBalancer |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376478",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(245,166,35,0.4)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "注释已更改(AnnotationChanged)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035797498302818,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.984727133636631,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 9.909090909090912,
+        "zIndex": 38
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AnnotationChanged |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376479",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0.4,
+          "b": 35,
+          "g": 166,
+          "r": 245
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "服务规格变更(ServiceSpecChanged)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035797498302818,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 6.002090700454946,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 9.909090909090912,
+        "zIndex": 39
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ServiceSpecChanged |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376480",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "重载失败(RELOAD)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 18.64772727272728,
+        "zIndex": 41
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : RELOAD |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376482",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "执行命令失败(NLC.Task.RunCommand.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 6.005745341614908,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 2.761363636363634,
+        "zIndex": 42
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.RunCommand.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376483",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "执行命令成功(NLC.Task.RunCommand.Success)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035122776916521,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 5.943181818181824,
+        "zIndex": 43
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.RunCommand.Success |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376484",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "未知操作(NLC.Task.Operation.NotFound)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 4.352272727272732,
+        "zIndex": 44
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.Operation.NotFound |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376485",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "销毁节点成功(NLC.Task.DestroyNode.Success)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035122776916521,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.983377690864036,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 5.943181818181824,
+        "zIndex": 45
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.DestroyNode.Success |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376486",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "销毁节点失败(NLC.Task.DestroyNode.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 7.999999999999999,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 2.761363636363634,
+        "zIndex": 46
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.DestroyNode.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376487",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "URL模式未执行(NLC.Task.URL.Mode.Unimplemented)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 2.761363636363634,
+        "zIndex": 47
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.URL.Mode.Unimplemented |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376488",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "空任务指令(NLC.Task.EmptyTaskCommand)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 4.352272727272732,
+        "zIndex": 48
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.EmptyTaskCommand |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376489",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "尝试重启ECS(NLC.Task.TryRestartECS)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.998939641109298,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 1.136363636363644,
+        "zIndex": 49
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.TryRestartECS |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376490",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ECS重启等待节点就绪失败(NLC.Task.RestartECS.WaitNodeReady.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 1.136363636363644,
+        "zIndex": 50
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.RestartECS.WaitNodeReady.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376491",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ECS重启成功(NLC.Task.RestartECS.Success)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.982626427406198,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 4.352272727272732,
+        "zIndex": 51
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.RestartECS.Success |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376492",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "排水成功(NLC.Task.DrainNode.Success)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.035122776916521,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966688845432018,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 5.943181818181824,
+        "zIndex": 52
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.DrainNode.Success |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376493",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ECS重置成功(NLC.Task.ResetECS.Success)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.998939641109298,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 4.352272727272732,
+        "zIndex": 53
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.ResetECS.Success |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376494",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "修复完成(NLC.AutoRepairTask.Complete)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 8.015252854812397,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 4.352272727272732,
+        "zIndex": 54
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.AutoRepairTask.Complete |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376495",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "跳过Hash未变更升级(NLC.Task.Upgrade.HashNotChanged.Skip)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 8.015252854812397,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 1.136363636363644,
+        "zIndex": 55
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.Upgrade.HashNotChanged.Skip |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376496",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ECS重置失败(NLC.Task.ResetECS.Fail)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.034747145187602,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.966313213703099,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 1.136363636363644,
+        "zIndex": 56
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NLC.Task.ResetECS.Fail |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1615174376497",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 123,
+          "Namespace": 123,
+          "Pod名": 123,
+          "time": 123,
+          "事件源": 123,
+          "事件目标": 123,
+          "总数": 123,
+          "目标Namespace": 123,
+          "目标名": 123,
+          "等级": 123,
+          "类型": 123,
+          "组件": 123,
+          "详细内容": 1199,
+          "详细内容采样": 123
+        },
+        "displayName": "事件列表",
+        "fixedTime": false,
+        "height": 7.670454545454546,
+        "indexScreening": false,
+        "pageSize": 10,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "Host": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "time": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "事件源": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "事件目标": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "目标Namespace": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "目标名": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "等级": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": true,
+            "highlightRules": [
+              {
+                "color": "rgba(255,249,223,1)",
+                "key": "等级",
+                "rule": "=",
+                "threshold": "Warning",
+                "wholeline": true
+              },
+              {
+                "color": "rgba(244,68,74,0.5)",
+                "key": "等级",
+                "rule": "=",
+                "threshold": "Error"
+              }
+            ],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "类型": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "详细内容": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 10.07271487039563,
+        "xPos": -0.05,
+        "yPos": 23.95454547272728,
+        "zIndex": 57
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : xxabxx and eventId.involvedObject.namespace : * | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\", \"object-namespace\" as \"目标Namespace\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 1000",
+        "start": "-604800s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokenQueryMap": {
+          "0": "eventId.reason : ${{eventID|xxabxx}} and eventId.involvedObject.namespace : ${{namespace|*}} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\", \"object-namespace\" as \"目标Namespace\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 1000"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1622528635672",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "访问OpenApi失败(AccessACRApiFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 20.92045454545455,
+        "zIndex": 61
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AccessACRApiFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1628166663973",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "解析配置失败(ParseConfigMapFailed)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.967363566818315,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 20.92045454545455,
+        "zIndex": 62
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ParseConfigMapFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1628166667157",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "ServiceAccount关联密钥(PatchServiceAccount)",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.590909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.05,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.984727133636631,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 20.92045454545455,
+        "zIndex": 63
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : PatchServiceAccount |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : ProvisioningFailed |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1628166671936",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "event_core_cn",
+  "description": "",
+  "displayName": "Kubernetes核心组件事件监控"
+}

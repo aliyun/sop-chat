@@ -1,0 +1,915 @@
+{
+  "attribute": {
+    "remark": "修改图表",
+    "type": "free",
+    "update": 1696856350277,
+    "version": "51323320"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ECS资源个数",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.306818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "个",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月实例个数/同比上月增加个数",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "this"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "customUnit": "个",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2,
+        "xPos": -0.05,
+        "yPos": 0.875,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productCode='ecs' and tag like '%%'))",
+            "tokenQuery": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productCode='ecs' and tag like '${{Tag|%%}}'))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466919",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "RDS",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.306818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "个",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月实例个数/同比上月增加个数",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "this"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "customUnit": "个",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2,
+        "xPos": 2.021460674157303,
+        "yPos": 0.875,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='rds' and tag like '%%'))",
+            "tokenQuery": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='rds' and tag like '${{Tag|%%}}'))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466920",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "OSS",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.306818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "个",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月实例个数/同比上月增加个数",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "this"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "customUnit": "个",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2,
+        "xPos": 4.011460674157303,
+        "yPos": 0.875,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='oss' and tag like '%%'))",
+            "tokenQuery": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='oss' and tag like '${{Tag|%%}}'))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466921",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "SLB",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.306818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "个",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月实例个数/同比上月增加个数",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "this"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "customUnit": "个",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2,
+        "xPos": 6.001460674157304,
+        "yPos": 0.875,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='slb' and tag like '%%' ))",
+            "tokenQuery": "* | select a[1] as this, a[2] as last_month, a[1]-a[2] from(select compare(a, 2592000) as a from(select count(distinct instanceid) as a from instance_bill where productcode='slb' and tag like '${{Tag|%%}}' ))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466922",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Tag分摊成本",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.681818181818182,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 5,
+        "xPos": -0.05,
+        "yPos": 8.147727272727272,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select tag , round(sum(PretaxAmount),3) as \"费用\" from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr , PretaxAmount  from instance_bill where tag like '%%') ,unnest(arr) as t(tag)  where tag like '%%' group by  tag limit 1000",
+            "tokenQuery": "* | select tag , round(sum(PretaxAmount),3) as \"费用\" from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr , PretaxAmount  from instance_bill where tag like '${{Tag|%%}}') ,unnest(arr) as t(tag)  where tag like '${{Tag|%%}}' group by  tag limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466923",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "按照Tag分摊",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671091466924",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 4.954545454545454,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "tag",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "金额"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 9.957142857142856,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 3.147727272727273,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(__time__,'%Y-%m-%d') as t, round(sum(PretaxAmount),3) as \"金额\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from instance_bill where tag like '%%'),unnest(arr) as t(tag)  where tag like '%%' group by t,tag order by t limit 1000",
+            "tokenQuery": "* | select date_format(__time__,'%Y-%m-%d') as t, round(sum(PretaxAmount),3) as \"金额\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from instance_bill where tag like '${{Tag|%%}}'),unnest(arr) as t(tag)  where tag like '${{Tag|%%}}' group by t,tag order by t limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466924",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "总成本",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.306818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月总成本/同比增加",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "_col0"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": 2,
+        "width": 2,
+        "xPos": 7.991460674157304,
+        "yPos": 0.875,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*|select  round(d[1],3),round(d[2],3) ,round(d[3]*100-100,3)  from(select compare(total,2592000) as d from(select sum(PretaxAmount) as total from instance_bill where  tag like '%%' ))",
+            "tokenQuery": "*|select  round(d[1],3),round(d[2],3) ,round(d[3]*100-100,3)  from(select compare(total,2592000) as d from(select sum(PretaxAmount) as total from instance_bill where  tag like '${{Tag|%%}}' ))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466925",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "各Region分摊",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 3.011363636363636,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 6.8,
+        "xPos": 3.180218438132458,
+        "yPos": 13.82954545454546,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select Region, round(sum(PretaxAmount),3) as \"金额\" from instance_bill where productcode='ecs' and tag like '%%' group by region order by \"金额\" desc limit 100",
+            "tokenQuery": "* | select Region, round(sum(PretaxAmount),3) as \"金额\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by region order by \"金额\" desc limit 100"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671091466926",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "使用量和费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.795454545454546,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 9.95,
+        "xPos": -0.05,
+        "yPos": 16.77272727272727,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from instance_bill where tag like '%%' group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+            "tokenQuery": "* | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from instance_bill where tag like '${{Tag|%%}}' group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466927",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Tag",
+        "filterData": [
+          {
+            "key": "Tag",
+            "list": [],
+            "showType": "select",
+            "type": "token"
+          }
+        ],
+        "height": 1,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.6527950310559,
+        "xPos": -0.05,
+        "yPos": -0.04545454545454546,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "aliyun_bill",
+        "query": "* | select concat('%', tag,'%') as tag from(select distinct(tag)   from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr   from instance_bill ) ,unnest(arr) as t(tag))  order by tag ",
+        "start": "-3d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466928",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "不同NickName费用(Top1000)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.681818181818182,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 5,
+        "xPos": 4.981460674157304,
+        "yPos": 8.147727272727272,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select NickName, round(sum(PretaxAmount),3)   as \"金额\" from instance_bill where productcode='ecs' and tag like '%%' group by NickName order by  \"金额\" desc limit 1000",
+            "tokenQuery": "* |select NickName, round(sum(PretaxAmount),3)   as \"金额\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by NickName order by  \"金额\" desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466929",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "各Region费用百分比",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671091466930",
+        "height": 3.011363636363636,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "PieChart",
+          "labelType": "type_percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "amount",
+            "showFieldKey": "Region"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3.174534161490683,
+        "xPos": -0.05,
+        "yPos": 13.82954545454546,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select Region, sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '%%' group by region order by amount desc limit 100",
+            "tokenQuery": "* | select Region, sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by region order by amount desc limit 100"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671091466930",
+      "type": "piepro"
+    }
+  ],
+  "dashboardName": "dashboard-1671091444745-913342",
+  "description": "",
+  "displayName": "资源成本分摊"
+}

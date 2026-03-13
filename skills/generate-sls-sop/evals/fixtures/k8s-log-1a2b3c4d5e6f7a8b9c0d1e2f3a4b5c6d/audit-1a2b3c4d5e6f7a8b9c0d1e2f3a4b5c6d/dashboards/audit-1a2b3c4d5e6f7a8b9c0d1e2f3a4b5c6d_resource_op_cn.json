@@ -1,0 +1,4049 @@
+{
+  "attribute": {
+    "type": "grid"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": " Namespace（可选）",
+            "key": "objectRef.namespace",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 1,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 48
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create or verb : patch or verb : update or verb : put or verb:delete | select DISTINCT ( case when \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end )  as ns  HAVING ns != '__all__'  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694493",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "子账号ID（可选）",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 1,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 0,
+        "zIndex": 48
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694494",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "计算",
+        "height": 1,
+        "markdownStr": "**计算资源 : Deployment StatefulSet CronJob DaemonSet Job Pod**",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 23,
+        "xPos": 0,
+        "yPos": 1,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694495",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Deployment创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694496",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 2,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:deployments  and objectRef.resource : deployments and (verb : create )  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:deployments  and objectRef.resource : deployments and (verb : create )  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694496",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Deployment删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694497",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 2,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:deployments  and objectRef.resource : deployments and (verb : delete ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:deployments  and objectRef.resource : deployments and (verb : delete ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694497",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Deployment访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694498",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 2,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:deployments  and objectRef.resource : deployments and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:deployments  and objectRef.resource : deployments and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694498",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Deployment更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694499",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 2,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:deployments  and objectRef.resource : deployments and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:deployments  and objectRef.resource : deployments and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694499",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "StatefulSet创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694500",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 10,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : create ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : create ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694500",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "StatefulSet更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694501",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 10,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : patch or verb:update ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : patch or verb:update ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694501",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "StatefulSet删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694502",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 10,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : delete ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : delete ) not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694502",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "StatefulSet访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694503",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 10,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:StatefulSets  and objectRef.resource : StatefulSets and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694503",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "CronJob访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694504",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 18,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : get  or verb : list or verb : watch ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '_all_namespaces_' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns",
+            "tokenQuery": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : get  or verb : list or verb : watch ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '_all_namespaces_' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694504",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "CronJob创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694505",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 18,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : create ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns",
+            "tokenQuery": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : create ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694505",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "CronJon更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694506",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 18,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : update or verb : put or verb : patch ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns",
+            "tokenQuery": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : update or verb : put or verb : patch ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694506",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "CronJob删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694507",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 18,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : delete ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns",
+            "tokenQuery": "requestURI:cronjobs not user.username: serviceaccount and objectRef.resource : cronjobs and (verb : delete ) NOT   user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694507",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "DaemonSet访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694508",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 26,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694508",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "DaemonSet创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694509",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 26,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : create ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : create ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694509",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "DaemonSet更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694510",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 26,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694510",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "DaemonSet删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694511",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 26,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : delete ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:DaemonSets  and objectRef.resource : DaemonSets and (verb : delete ) not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694511",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Job更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694512",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 34,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:jobs  and objectRef.resource : jobs and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:jobs  and objectRef.resource : jobs and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694512",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Job删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694513",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 34,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:jobs  and objectRef.resource : jobs and (verb : delete ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:jobs  and objectRef.resource : jobs and (verb : delete ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694513",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Job访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694514",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 34,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:jobs  and objectRef.resource : jobs and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:jobs  and objectRef.resource : jobs and (verb : get or verb : list or verb : watch ) not objectRef.subresource : status NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694514",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Job创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694515",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 34,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:jobs  and objectRef.resource : jobs and (verb : create ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:jobs  and objectRef.resource : jobs and (verb : create ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694515",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Pod创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694516",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 42,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : create )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 6  group by ns",
+            "tokenQuery": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : create )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 6  group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694516",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Pod更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694517",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 42,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 7  group by ns",
+            "tokenQuery": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 7  group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694517",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Pod删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694518",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 42,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : delete )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 7  group by ns",
+            "tokenQuery": "level:  RequestResponse and requestURI:pods  and objectRef.resource : pods and (verb : delete )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log where cardinality(split(split(requestURI, '?', 2)[1], '/')) = 7  group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694518",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Pod访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694519",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 42,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:pods  and objectRef.resource : pods and (verb : get  or verb : list or verb : watch ) NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:pods  and objectRef.resource : pods and (verb : get  or verb : list or verb : watch ) NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694519",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "网络",
+        "height": 1,
+        "markdownStr": "**网络资源 : Service Ingress**",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 23,
+        "xPos": 0,
+        "yPos": 50,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694520",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Service创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694521",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 51,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Services  and objectRef.resource : Services and (verb : create ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Services  and objectRef.resource : Services and (verb : create ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694521",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Service更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694522",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 51,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Services  and objectRef.resource : Services and (verb : patch or verb : update or verb : put ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Services  and objectRef.resource : Services and (verb : patch or verb : update or verb : put ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694522",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Service删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694523",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 51,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Services  and objectRef.resource : Services and (verb : delete ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Services  and objectRef.resource : Services and (verb : delete ) not objectRef.subresource : status | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694523",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Service访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694524",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 51,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Services  and objectRef.resource : Services and (verb : get or verb : list or verb : watch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Services  and objectRef.resource : Services and (verb : get or verb : list or verb : watch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694524",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Ingress创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694525",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 59,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ingresses and objectRef.resource : ingresses and (verb : create )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ingresses and objectRef.resource : ingresses and (verb : create )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694525",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Ingress更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694526",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 59,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ingresses and objectRef.resource : ingresses and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ingresses and objectRef.resource : ingresses and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694526",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Ingress删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694527",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 59,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ingresses and objectRef.resource : ingresses and (verb : delete )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ingresses and objectRef.resource : ingresses and (verb : delete )   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694527",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Ingress访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694528",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 59,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ingresses and objectRef.resource : ingresses and (verb : list or verb : get or verb : watch )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ingresses and objectRef.resource : ingresses and (verb : list or verb : get or verb : watch )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694528",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "存储",
+        "height": 1,
+        "markdownStr": "**存储资源 : ConfigMap Secret PersistentVolumeClaim**",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 23,
+        "xPos": 0,
+        "yPos": 67,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694529",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ConfigMap更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694530",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 68,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : update or verb : put or verb:patch)  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : update or verb : put or verb:patch)  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694530",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ConfigMap删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694531",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 68,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : delete)  not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : delete)  not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694531",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ConfigMap访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694532",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 68,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : list or verb:watch or verb : get )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : list or verb:watch or verb : get )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694532",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ConfigMap创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694533",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 68,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : create)  not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:ConfigMaps and objectRef.resource : ConfigMaps and (verb : create)  not objectRef.subresource : status   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694533",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Secret创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694534",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 76,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Secrets and objectRef.resource : Secrets and (verb : create )  not objectRef.subresource : status    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Secrets and objectRef.resource : Secrets and (verb : create )  not objectRef.subresource : status    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694534",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Secret删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694535",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 76,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Secrets and objectRef.resource : Secrets and (verb : delete )  not objectRef.subresource : status    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Secrets and objectRef.resource : Secrets and (verb : delete )  not objectRef.subresource : status    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694535",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Secret访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694536",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 76,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Secrets and objectRef.resource : Secrets and (verb : list or verb:watch or verb : get )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Secrets and objectRef.resource : Secrets and (verb : list or verb:watch or verb : get )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694536",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Secret更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694537",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 76,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:Secrets and objectRef.resource : Secrets and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:Secrets and objectRef.resource : Secrets and (verb : update or verb : put or verb : patch )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694537",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "PersistentVolumeClaim创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 84,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "PersistentVolumeClaim更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 84,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "PersistentVolumeClaim删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 84,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "PersistentVolumeClaim访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 84,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:persistentvolumeclaims and objectRef.resource : persistentvolumeclaims and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Role创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 93,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:roles and objectRef.resource : roles and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:roles and objectRef.resource : roles and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671765252044",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Role更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 93,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:roles and objectRef.resource : roles and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:roles and objectRef.resource : roles and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671765256706",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Role删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 93,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:roles and objectRef.resource : roles and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:roles and objectRef.resource : roles and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671765258767",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Role访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 93,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:roles and objectRef.resource : roles and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:roles and objectRef.resource : roles and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671765262698",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRole创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 101,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671777529356",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRole更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 101,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671777533247",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRole删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 101,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671777535218",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRole访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 101,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterroles and objectRef.resource : clusterroles and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671777537314",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "RoleBinding创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 109,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778105732",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "RoleBinding更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 109,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778108976",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "RoleBinding删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 109,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778111348",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "RoleBinding访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 109,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:rolebindings and objectRef.resource : rolebindings and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778113783",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRoleBinding创建",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694538",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 117,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : create )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778198586",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRoleBinding更新",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694539",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 117,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : update or verb : put or verb : patch ) not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778349241",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRoleBinding删除",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694540",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 117,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : delete )    | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778375165",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "ClusterRoleBinding访问",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671764694541",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 117,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "requestURI:clusterrolebindings and objectRef.resource : clusterrolebindings and (verb : get or verb : watch or verb : list )  not objectRef.subresource : status  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cf785830a13234473be6af8d03dd1a22e1671778404030",
+      "type": "piepro"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_resource_op_cn",
+  "description": "",
+  "displayName": "Kubernetes资源操作概览"
+}
