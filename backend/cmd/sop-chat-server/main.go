@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"sop-chat/internal/api"
 	"sop-chat/internal/client"
@@ -117,28 +118,34 @@ func main() {
 		log.Printf("║  ⚙  配置管理 UI（仅本次启动有效，请勿分享此链接）            ║")
 		if unifiedConfig.GetHost() == "0.0.0.0" {
 			for _, ip := range localAddresses() {
-				log.Printf("║  http://%s:%d/config-ui?token=%s", ip, finalPort, token)
+				log.Printf("║  http://%s:%d/admin-ui?token=%s", ip, finalPort, token)
 			}
 		} else {
-			log.Printf("║  http://%s:%d/config-ui?token=%s", unifiedConfig.GetHost(), finalPort, token)
+			log.Printf("║  http://%s:%d/admin-ui?token=%s", unifiedConfig.GetHost(), finalPort, token)
 		}
 		log.Printf("╚══════════════════════════════════════════════════════════════╝")
 	}
 
 	printConfigUI()
 
-	// 捕获 SIGINT（Ctrl+C）：第一次提醒配置 UI 地址，第二次才真正退出
+	// 捕获 SIGINT（Ctrl+C）：
+	// - 首次或距上次超过 10s：打印配置 UI 地址，等待下一次
+	// - 10s 内连续两次：确认退出
 	go func() {
 		sigCh := make(chan os.Signal, 1)
 		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
-		<-sigCh
-		log.Printf("收到退出信号，再按一次 Ctrl+C 确认退出")
-		printConfigUI()
-
-		<-sigCh
-		log.Printf("确认退出")
-		os.Exit(0)
+		var lastSig time.Time
+		for range sigCh {
+			now := time.Now()
+			if !lastSig.IsZero() && now.Sub(lastSig) <= 10*time.Second {
+				log.Printf("确认退出")
+				os.Exit(0)
+			}
+			lastSig = now
+			log.Printf("收到退出信号，10s 内再按一次 Ctrl+C 确认退出")
+			printConfigUI()
+		}
 	}()
 
 	log.Printf("启动 API 服务器，监听地址 %s", listenAddr)

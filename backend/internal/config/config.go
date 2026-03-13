@@ -43,6 +43,8 @@ type ScheduledTaskConfig struct {
 	Prompt string `yaml:"prompt"`
 	// 目标数字员工名称
 	EmployeeName string `yaml:"employeeName"`
+	// 启用简洁输出：向 Prompt 末尾追加简化输出指令，适合 IM 场景
+	ConciseReply bool `yaml:"conciseReply,omitempty"`
 	// Webhook 配置：任务结果的发送目标
 	Webhook WebhookConfig `yaml:"webhook"`
 }

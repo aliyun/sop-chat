@@ -64,7 +64,7 @@ function Login() {
             请在命令终端中找到配置管理 UI 地址（服务启动时已打印），在浏览器中打开后完成相关配置。
           </p>
           <p className="setup-required-path">
-            形如：<code>http://&lt;host&gt;:&lt;port&gt;/config-ui?token=...</code>
+            形如：<code>http://&lt;host&gt;:&lt;port&gt;/admin-ui?token=...</code>
           </p>
         </div>
       </div>

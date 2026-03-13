@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SOP Chat · 配置管理</title>
+<title>智能问答助手 · 配置管理</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -201,7 +201,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <header>
   <div class="logo">&#9881;</div>
   <div>
-    <div class="h-title">SOP Chat 配置管理</div>
+    <div class="h-title">智能问答助手 配置管理</div>
     <div class="h-sub">修改配置后点击保存，大部分配置立即生效无需重启</div>
   </div>
   <div class="h-right">
@@ -419,9 +419,9 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
       <div style="font-weight:600;margin-bottom:4px">如何获取 AppKey / AppSecret？</div>
       <ol style="padding-left:18px;margin:0;color:#2b6cb0">
-        <li>前往 <a href="https://open-dev.dingtalk.com/" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">钉钉开发者后台</a>，创建企业内部应用</li>
-        <li>添加「机器人」能力，消息接收模式选 <strong>Stream 模式</strong></li>
-        <li>在应用凭证页复制 <strong>AppKey</strong> 和 <strong>AppSecret</strong></li>
+        <li>前往 <a href="https://open-dev.dingtalk.com/" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">钉钉开发者后台</a>，在开发者后台，在一键自动创建OpenClaw机器人处点击立即创建。</li>
+        <li>平台已自动预设OpenClaw机器人信息，可根据业务需要修改配置后，单击确定进行创建。</li>
+        <li>在创建成功后，复制并保存应用的Client ID和Client Secret。</li>
       </ol>
     </div>
   </div>
@@ -447,6 +447,28 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     </div>
   </div>
 
+  <!-- ── WeCom Bot (群聊机器人) ── -->
+  <div class="card">
+    <div class="card-title">
+      <span class="card-title-icon">&#129302;</span> 企业微信机器人
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addWeComGroupBot()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加企业微信机器人
+      </button>
+    </div>
+    <div id="wecom-group-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
+      <div style="font-weight:600;margin-bottom:4px">如何获取群聊机器人凭据？</div>
+      <ol style="padding-left:18px;margin:0;color:#2b6cb0">
+        <li>前往 <a href="https://work.weixin.qq.com/wework_admin/frame#/smartBot" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">企业微信管理后台 → 管理工具 -> 智能机器人</a> 页面</li>
+        <li>点击 <a href="https://work.weixin.qq.com/wework_admin/frame#/aiHelper/create" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">创建 智能机器人，选择“API模式”，而非普通模式（默认）</a>，或选择已有的群机器人</li>
+        <li>在机器人详情页复制 <strong>机器人 ID（BotID）</strong> 和 <strong>机器人 Secret（BotSecret）</strong></li>
+        <li>机器人通过 WebSocket 长连接接入，无需公网 IP</li>
+      </ol>
+    </div>
+  </div>
+
   <!-- ── WeCom App ── -->
   <div class="card">
     <div class="card-title">
@@ -465,28 +487,6 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <li>在应用详情页获取 <strong>企业ID（CorpID）</strong>、<strong>AgentID</strong>、<strong>Secret</strong></li>
         <li>在「接收消息」中设置回调 URL（需公网 IP），填写自定义 <strong>Token</strong> 和 <strong>EncodingAESKey</strong></li>
         <li>回调路径默认为 <code>/wecom/callback</code>，与本服务部署在同一端口</li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- ── WeCom Bot (群聊机器人) ── -->
-  <div class="card">
-    <div class="card-title">
-      <span class="card-title-icon">&#129302;</span> 企业微信机器人
-      <div class="spacer"></div>
-      <button class="btn btn-ghost btn-sm" onclick="addWeComGroupBot()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加企业微信机器人
-      </button>
-    </div>
-    <div id="wecom-group-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
-    <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
-      <div style="font-weight:600;margin-bottom:4px">如何获取群聊机器人凭据？</div>
-      <ol style="padding-left:18px;margin:0;color:#2b6cb0">
-        <li>前往 <a href="https://work.weixin.qq.com/wework_admin/frame#/smartBot" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">企业微信管理后台 → AI 助手</a> 页面</li>
-        <li>点击 <a href="https://work.weixin.qq.com/wework_admin/frame#/aiHelper/create" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">创建 AI 助手，选择“API模式”，而非普通模式（默认）</a>，或选择已有的群机器人</li>
-        <li>在机器人详情页复制 <strong>机器人 ID（BotID）</strong> 和 <strong>机器人 Secret（BotSecret）</strong></li>
-        <li>机器人通过 WebSocket 长连接接入，无需公网 IP</li>
       </ol>
     </div>
   </div>
@@ -642,7 +642,7 @@ async function testAK() {
   showTestAKResult('loading', '正在向 apsara-ops 发送测试请求，请稍候（最长 60s）…');
 
   try {
-    const res = await fetch('/config-ui/api/test-ak?token=' + encodeURIComponent(token), {
+    const res = await fetch('/admin-ui/api/test-ak?token=' + encodeURIComponent(token), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accessKeyId: akid, accessKeySecret: aks, endpoint: val('g-endpoint') }),
@@ -1633,6 +1633,14 @@ function makeTaskCard(task, idx, expanded) {
       '<div class="field field-full">' +
         '<label>Prompt（发送给数字员工的问题）<span style="color:var(--red)"> *</span></label>' +
         '<textarea class="prompt-input" data-field="prompt" placeholder="请总结昨日工作进展和今日计划">' + esc(task.prompt || '') + '</textarea>' +
+        '<div style="margin-top:8px;display:flex;align-items:center;gap:8px">' +
+          '<label class="toggle" title="开启后在 Prompt 末尾追加「简化最终输出 适合聊天工具上阅读」">' +
+            '<input type="checkbox" data-field="conciseReply"' + (task.conciseReply ? ' checked' : '') + '>' +
+            '<span class="toggle-track"></span>' +
+            '<span class="toggle-thumb"></span>' +
+          '</label>' +
+          '<span style="font-size:12px;color:var(--text2)">简洁输出 <span class="hint">（追加指令让回复更简短，适合 IM 阅读）</span></span>' +
+        '</div>' +
       '</div>' +
       '<div class="field field-full" style="margin-bottom:0">' +
         '<div class="webhook-section">' +
@@ -1649,9 +1657,7 @@ function makeTaskCard(task, idx, expanded) {
           '<div class="field">' +
             '<label>消息类型</label>' +
             '<select data-field="webhookMsgType" onchange="onMsgTypeChange(this)">' +
-              '<option value="text"'     + (whMsg === 'text'     ? ' selected' : '') + '>text（纯文本）</option>' +
-              '<option value="markdown"' + (whMsg === 'markdown' ? ' selected' : '') + '>markdown（钉钉/企业微信）</option>' +
-              '<option value="post"'     + (whMsg === 'post'     ? ' selected' : '') + '>post（飞书富文本）</option>' +
+              buildMsgTypeOptions(whType, whMsg) +
             '</select>' +
           '</div>' +
           '<div class="field field-full">' +
@@ -1685,6 +1691,7 @@ function addScheduledTask() {
     enabled: true,
     cron: '0 9 * * 1-5',
     employeeName: 'apsara-ops',
+    conciseReply: true,
     webhook: { type: 'dingtalk', msgType: 'text' },
   }, container.children.length, true));
 }
@@ -1724,16 +1731,38 @@ function fillCron(chip, value) {
   }
 }
 
+// 各平台支持的消息类型
+const WEBHOOK_MSG_TYPES = {
+  dingtalk: [
+    { value: 'text',     label: 'text（纯文本）' },
+    { value: 'markdown', label: 'markdown（Markdown）' },
+  ],
+  wecom: [
+    { value: 'text',     label: 'text（纯文本）' },
+    { value: 'markdown', label: 'markdown（Markdown）' },
+  ],
+  feishu: [
+    { value: 'text',     label: 'text（纯文本）' },
+    { value: 'post',     label: 'post（富文本）' },
+  ],
+};
+
+function buildMsgTypeOptions(platform, selected) {
+  const types = WEBHOOK_MSG_TYPES[platform] || WEBHOOK_MSG_TYPES.dingtalk;
+  // 如果当前选中值在新列表中不存在，回退到第一个
+  const validValues = types.map(t => t.value);
+  const current = validValues.includes(selected) ? selected : types[0].value;
+  return types.map(t =>
+    '<option value="' + t.value + '"' + (t.value === current ? ' selected' : '') + '>' + t.label + '</option>'
+  ).join('');
+}
+
 function onWebhookTypeChange(sel) {
-  // 自动选择推荐的 msgType
   const card = sel.closest('.task-card');
   const msgSel = card.querySelector('[data-field=webhookMsgType]');
   if (!msgSel) return;
-  if (sel.value === 'feishu' && msgSel.value === 'markdown') {
-    msgSel.value = 'post';
-  } else if ((sel.value === 'dingtalk' || sel.value === 'wecom') && msgSel.value === 'post') {
-    msgSel.value = 'markdown';
-  }
+  // 重建 options，保留当前选中值（如果新平台不支持则回退到第一项）
+  msgSel.innerHTML = buildMsgTypeOptions(sel.value, msgSel.value);
   onMsgTypeChange(msgSel);
 }
 
@@ -1751,6 +1780,7 @@ function collectScheduledTasks() {
     cron:         card.querySelector('[data-field=cron]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
@@ -1770,6 +1800,7 @@ async function triggerTask(btn) {
     name:         card.querySelector('[data-field=name]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
+    conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
@@ -1787,7 +1818,7 @@ async function triggerTask(btn) {
   showTaskResult(resultEl, 'loading', '正在向数字员工发送请求，请稍候…');
 
   try {
-    const res = await fetch('/config-ui/api/trigger-task?token=' + encodeURIComponent(token), {
+    const res = await fetch('/admin-ui/api/trigger-task?token=' + encodeURIComponent(token), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(task),
@@ -1798,13 +1829,18 @@ async function triggerTask(btn) {
     } else {
       let msg = '✅ 数字员工回复：\n' + (data.reply || '（空）');
       if (task.webhook.url) {
-        msg += data.webhookSent
-          ? '\n\n✅ Webhook 已成功推送'
-          : '\n\n⚠️ Webhook 推送失败：' + (data.webhookErr || '未知错误');
+        if (data.webhookSent) {
+          msg += '\n\n✅ Webhook 推送成功';
+        } else {
+          msg += '\n\n⚠️ Webhook 推送失败：' + (data.webhookErr || '未知错误');
+        }
+        if (data.webhookRaw) {
+          msg += '\n平台响应：' + data.webhookRaw;
+        }
       } else {
         msg += '\n\n（未填写 Webhook URL，跳过推送）';
       }
-      showTaskResult(resultEl, 'success', msg);
+      showTaskResult(resultEl, data.webhookSent || !task.webhook.url ? 'success' : 'error', msg);
     }
   } catch(e) {
     showTaskResult(resultEl, 'error', '❌ 网络错误: ' + e.message);
@@ -1837,7 +1873,7 @@ function showTaskResult(el, type, msg) {
 async function loadConfig() {
   showStatus('loading', '正在加载配置...');
   try {
-    const res = await fetch('/config-ui/api/config?token=' + encodeURIComponent(token));
+    const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token));
     const data = await res.json();
     if (!res.ok) { showStatus('error', '❌ ' + (data.error || '加载失败')); return; }
     populate(data);
@@ -1854,7 +1890,7 @@ async function doSave() {
   btn.innerHTML = '<div class="spinner"></div> 保存中...';
   showStatus('loading', '正在保存并应用配置...');
   try {
-    const res = await fetch('/config-ui/api/config?token=' + encodeURIComponent(token), {
+    const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(collect()),

@@ -78,6 +78,7 @@ type configUIScheduledTask struct {
 	Cron         string          `json:"cron"`
 	Prompt       string          `json:"prompt"`
 	EmployeeName string          `json:"employeeName"`
+	ConciseReply bool            `json:"conciseReply"`
 	Webhook      configUIWebhook `json:"webhook"`
 }
 
@@ -345,6 +346,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Cron:         t.Cron,
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
+				ConciseReply: t.ConciseReply,
 				Webhook: configUIWebhook{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -541,6 +543,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Cron:         t.Cron,
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
+				ConciseReply: t.ConciseReply,
 				Webhook: config.WebhookConfig{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -610,7 +613,11 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 	done := make(chan triggerResult, 1)
 
 	go func() {
-		reply, err := scheduler.QueryEmployee(clientCfg, req.EmployeeName, req.Prompt)
+		prompt := req.Prompt
+		if req.ConciseReply {
+			prompt += "\n\n简化最终输出 适合聊天工具上阅读"
+		}
+		reply, err := scheduler.QueryEmployee(clientCfg, req.EmployeeName, prompt)
 		done <- triggerResult{reply: reply, err: err}
 	}()
 
@@ -627,18 +634,21 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		// 如果填了 Webhook URL，顺便推送
 		webhookSent := false
 		var webhookErr string
+		var webhookRaw string
 		if req.Webhook.URL != "" {
-			if err := scheduler.SendToWebhook(config.WebhookConfig{
+			raw, err := scheduler.SendToWebhook(config.WebhookConfig{
 				Type:    req.Webhook.Type,
 				URL:     req.Webhook.URL,
 				MsgType: req.Webhook.MsgType,
 				Title:   req.Webhook.Title,
-			}, res.reply); err != nil {
+			}, res.reply)
+			webhookRaw = raw
+			if err != nil {
 				webhookErr = err.Error()
-				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q: %v", req.Name, err)
+				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q: %v（平台响应: %s）", req.Name, err, raw)
 			} else {
 				webhookSent = true
-				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q type=%s", req.Name, req.Webhook.Type)
+				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q type=%s 平台响应: %s", req.Name, req.Webhook.Type, raw)
 			}
 		}
 
@@ -647,6 +657,7 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 			"reply":       res.reply,
 			"webhookSent": webhookSent,
 			"webhookErr":  webhookErr,
+			"webhookRaw":  webhookRaw,
 		})
 
 	case <-time.After(3 * time.Minute):

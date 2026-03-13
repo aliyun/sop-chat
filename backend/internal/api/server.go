@@ -282,11 +282,11 @@ func (s *Server) setupRoutes() {
 	s.router.Any("/wecom/*path", s.handleWeComCallback)
 
 	// 配置管理 UI（使用独立的 token 认证，与业务认证系统隔离）
-	s.router.GET("/config-ui", s.handleConfigUIPage)
-	s.router.GET("/config-ui/api/config", s.configUITokenMiddleware(), s.handleGetConfig)
-	s.router.POST("/config-ui/api/config", s.configUITokenMiddleware(), s.handleSaveConfig)
-	s.router.POST("/config-ui/api/test-ak", s.configUITokenMiddleware(), s.handleTestAK)
-	s.router.POST("/config-ui/api/trigger-task", s.configUITokenMiddleware(), s.handleTriggerTask)
+	s.router.GET("/admin-ui", s.handleConfigUIPage)
+	s.router.GET("/admin-ui/api/config", s.configUITokenMiddleware(), s.handleGetConfig)
+	s.router.POST("/admin-ui/api/config", s.configUITokenMiddleware(), s.handleSaveConfig)
+	s.router.POST("/admin-ui/api/test-ak", s.configUITokenMiddleware(), s.handleTestAK)
+	s.router.POST("/admin-ui/api/trigger-task", s.configUITokenMiddleware(), s.handleTriggerTask)
 
 	// 静态文件服务（前端资源）
 	frontendFS := embed.GetFrontendFS()
@@ -311,7 +311,7 @@ func (s *Server) setupRoutes() {
 			// 如果请求的是 API、OpenAI 或配置 UI 路由，返回 404
 			if (len(path) >= 4 && path[:4] == "/api") ||
 				(len(path) >= 7 && path[:7] == "/openai") ||
-				(len(path) >= 10 && path[:10] == "/config-ui") {
+				(len(path) >= 9 && path[:9] == "/admin-ui") {
 				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
