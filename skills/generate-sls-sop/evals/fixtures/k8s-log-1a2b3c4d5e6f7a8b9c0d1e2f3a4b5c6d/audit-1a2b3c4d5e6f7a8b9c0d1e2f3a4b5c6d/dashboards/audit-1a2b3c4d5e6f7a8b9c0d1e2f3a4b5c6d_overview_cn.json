@@ -1,0 +1,1444 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本周/环比上周",
+        "descriptionSize": 12,
+        "displayName": "API Server重定向次数",
+        "fixedTime": false,
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 1.227272689159091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 14,
+        "width": 1.526316225766873,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 8.479565774233128,
+        "yAxis": [
+          "_col1"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 0.5000000108409091,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "responseStatus.code>300 and responseStatus.code<400 not responseStatus.code:304 |  select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log ))",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c157b9effe9b745bda7ef7cc342ed3e841663572903093",
+      "type": "number"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "blank": false,
+          "dashboardStaticToken": [],
+          "filterInherit": false,
+          "savedSearchName": "audit-c1da7292306ff43a3be4f7c3fa6432e44_audit-id",
+          "searchFilter": "",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "tokenInherit": false,
+          "type": "NewSearch"
+        },
+        "操作": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "protocol": "http",
+          "slsEncode": false,
+          "slsLinkParam": false,
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "解决方案": {
+          "customProtocol": "https",
+          "link": "help.aliyun.com/document_detail/452574.html",
+          "protocol": "custom",
+          "slsEncode": false,
+          "slsLinkParam": false,
+          "type": "NewLink"
+        },
+        "资源路径": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Kubernetes CVE-2022-3172 安全风险",
+        "fixedTime": false,
+        "height": 4.102272727272728,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "解决方案": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源路径": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 10.09597099113618,
+        "xPos": -0.05,
+        "yPos": 19.715909,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "responseStatus.code>300 and responseStatus.code<400 not responseStatus.code:304 | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \n\"responseStatus.code\" as \"状态码\", \nrequestURI as \"资源路径\",\nverb as \"操作\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", '解决方案' as \"解决方案\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : \"secrets\" AND   verb:get not user.username : \"system:apiserver\" not user.username:system\\:node\\:* | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \nregexp_extract(requestURI, '([^\\?]*)', 1) as \"保密字典\", \n\"responseStatus.code\" as \"状态码\", \n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c157b9effe9b745bda7ef7cc342ed3e841663572976424",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本周/环比上周",
+        "descriptionSize": 12,
+        "displayName": "非法访问次数",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "height": 1.181818278318182,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.444974044360547,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 4.164757719537517,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.5227272216818183,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "not responseStatus.code : 200 |  select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log where \"responseStatus.code\" = 401 or \"responseStatus.code\" = 403) )",
+        "start": "-604800s",
+        "tokenQuery": "not responseStatus.code : 200 |  select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log where \"responseStatus.code\" = 401 or \"responseStatus.code\" = 403) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1541939209000",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本周/环比上周",
+        "descriptionSize": 12,
+        "displayName": "创建事件数",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "height": 1.2159091,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.444974044360547,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 5.556923835630013,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.5113636000000003,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager |  select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log ))",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1541939749000",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "子账号操作分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.840909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "操作账号"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.5,
+        "xPos": -0.05,
+        "yPos": 1.7045455,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-c157b9effe9b745bda7ef7cc342ed3e84",
+            "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager |  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\" HAVING \"操作账号\" != 'kubernetes-admin'  limit 10000",
+            "tokenQuery": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager |  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\" HAVING \"操作账号\" != 'kubernetes-admin'  limit 10000"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1541940026000",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547282104031",
+        "height": 1.4886364,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3MTc3Nzg4NjAzIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjE3OTUiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDQwLjMyIDU5NS42MjY2NjdhMTguMzQ2NjY3IDE4LjM0NjY2NyAwIDAgMC0xNy4wNjY2NjctMTQuMDhoLTMuODRsLTEwNC41MzMzMzMgMTcuNDkzMzMzQTIwOC42NCAyMDguNjQgMCAwIDAgMzk4LjkzMzMzMyA3MDRsNDAuNTMzMzM0LTk3LjcwNjY2N2ExNy4wNjY2NjcgMTcuMDY2NjY3IDAgMCAwIDAuODUzMzMzLTEwLjY2NjY2NnpNNDA1Ljc2IDUyMC41MzMzMzNhMTcuNDkzMzMzIDE3LjQ5MzMzMyAwIDAgMCA4Ljk2LTYuNCAxNy45MiAxNy45MiAwIDAgMC0yLjEzMzMzMy0yNC43NDY2NjZMMzMzLjIyNjY2NyA0MTguNTZhMjA3Ljc4NjY2NyAyMDcuNzg2NjY3IDAgMCAwLTI5LjQ0IDEzMS44NGwxMDEuNTQ2NjY2LTI5LjQ0eiBtMTM3LjgxMzMzMy05My44NjY2NjZhMTguNzczMzMzIDE4Ljc3MzMzMyAwIDAgMCAzLjg0IDEwLjI0IDE3LjkyIDE3LjkyIDAgMCAwIDI0Ljc0NjY2NyAzLjQxMzMzM2gwLjQyNjY2N2w4Ni4xODY2NjYtNjEuMDEzMzMzQTIwNy43ODY2NjcgMjA3Ljc4NjY2NyAwIDAgMCA1MzcuNiAzMjEuMjhsNS45NzMzMzMgMTA1LjM4NjY2N3ogbS02MC41ODY2NjYgMTI1LjAxMzMzM2wyOS40NCAxNC4wOCAyOS40NC0xNC4wOCA3LjI1MzMzMy0zMS41NzMzMzMtMjAuNDgtMjUuMTczMzM0aC0zMi40MjY2NjdsLTIwLjA1MzMzMyAyNS4xNzMzMzQgNy4yNTMzMzMgMzEuNTczMzMzeiBtLTMwLjcyLTExMC45MzMzMzNhMTcuMDY2NjY3IDE3LjA2NjY2NyAwIDAgMCAxMC4yNCAzLjQxMzMzMyAxNy45MiAxNy45MiAwIDAgMCAxNy45Mi0xNy4wNjY2NjdoMC40MjY2NjZsNS45NzMzMzQtMTA1LjgxMzMzM2EyMTguMDI2NjY3IDIxOC4wMjY2NjcgMCAwIDAtMjEuNzYgMy44NCAyMDYuNTA2NjY3IDIwNi41MDY2NjcgMCAwIDAtOTkuODQgNTQuMTg2NjY3bDg3LjA0IDYxLjQ0eiBtMjM4LjA4LTIxLjc2bC03OC45MzMzMzQgNzAuODI2NjY2YTE5LjIgMTkuMiAwIDAgMC01LjU0NjY2NiA5LjM4NjY2NyAxNy40OTMzMzMgMTcuNDkzMzMzIDAgMCAwIDEyLjggMjAuOTA2NjY3bDEwMS45NzMzMzMgMjkuNDRhMjA5LjA2NjY2NyAyMDkuMDY2NjY3IDAgMCAwLTQuMjY2NjY3LTY3Ljg0IDE5Ny45NzMzMzMgMTk3Ljk3MzMzMyAwIDAgMC0yNS42LTYzLjU3MzMzNHoiIGZpbGw9IiMwMDhCREIiIHAtaWQ9IjE3OTYiPjwvcGF0aD48cGF0aCBkPSJNOTk1Ljg0IDYxMy45NzMzMzNMOTEyLjY0IDI1MS43MzMzMzNhNjMuNTczMzMzIDYzLjU3MzMzMyAwIDAgMC0zNC45ODY2NjctNDMuNTJsLTMzNy40OTMzMzMtMTYwLjg1MzMzM2E2NS43MDY2NjcgNjUuNzA2NjY3IDAgMCAwLTU1Ljg5MzMzMyAwTDE0Ni4zNDY2NjcgMjA4LjY0YTY0Ljg1MzMzMyA2NC44NTMzMzMgMCAwIDAtMzQuOTg2NjY3IDQzLjUyTDI4LjE2IDYxMy45NzMzMzNhNjMuNTczMzMzIDYzLjU3MzMzMyAwIDAgMCA4LjUzMzMzMyA0OS4wNjY2NjdsMy44NCA1LjEyIDIzMy4zODY2NjcgMjkwLjU2YTY0Ljg1MzMzMyA2NC44NTMzMzMgMCAwIDAgNTAuMzQ2NjY3IDIzLjg5MzMzM2gzNzQuNjEzMzMzYTY1LjcwNjY2NyA2NS43MDY2NjcgMCAwIDAgNTAuMzQ2NjY3LTIzLjg5MzMzM2wyMzMuMzg2NjY2LTI5MC41NmE2NC44NTMzMzMgNjQuODUzMzMzIDAgMCAwIDEyLjgtNTQuNjEzMzMzeiBtLTEyOC40MjY2NjctNC4yNjY2NjZhMjEuMzMzMzMzIDIxLjMzMzMzMyAwIDAgMS0yNi4wMjY2NjYgMTQuOTMzMzMzaC0wLjg1MzMzNGwtNS4xMi0xLjI4YTE3MS41MiAxNzEuNTIgMCAwIDEtMTcuOTItNi44MjY2NjcgMjE1LjQ2NjY2NyAyMTUuNDY2NjY3IDAgMCAwLTM0Ljk4NjY2Ni0xMC4yNCAxNi4yMTMzMzMgMTYuMjEzMzMzIDAgMCAwLTExLjUyIDQuMjY2NjY3bC04LjUzMzMzNC0xLjI4YTI2Mi40IDI2Mi40IDAgMCAxLTExNi40OCAxNDYuMzQ2NjY3IDUzLjc2IDUzLjc2IDAgMCAwIDMuNDEzMzM0IDguMTA2NjY2IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMS4yOCAxMS45NDY2NjcgMTg1LjYgMTg1LjYgMCAwIDAgMTcuOTIgMzIgMTY1Ljk3MzMzMyAxNjUuOTczMzMzIDAgMCAxIDExLjA5MzMzMyAxNi4yMTMzMzNsMi41NiA1LjU0NjY2N2EyMC40OCAyMC40OCAwIDEgMS0zNi42OTMzMzMgMTcuNDkzMzMzbC0yLjk4NjY2Ny02LjRhMTM0LjgyNjY2NyAxMzQuODI2NjY3IDAgMCAxLTUuOTczMzMzLTE4Ljc3MzMzMyAyMDQuMzczMzMzIDIwNC4zNzMzMzMgMCAwIDAtMTQuMDgtMzQuMTMzMzMzIDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMTAuMjQtNi40bC00LjI2NjY2Ny03LjY4YTI2Ny41MiAyNjcuNTIgMCAwIDEtMzQuNTYgMTAuMjQgMjU5Ljg0IDI1OS44NCAwIDAgMS0xNTEuNDY2NjY3LTExLjA5MzMzNGwtNC4yNjY2NjYgOC4xMDY2NjdhMTUuNzg2NjY3IDE1Ljc4NjY2NyAwIDAgMC04LjUzMzMzNCA0LjI2NjY2N2MtNy4yNTMzMzMgOC41MzMzMzMtMTAuMjQgMjIuNjEzMzMzLTE1Ljc4NjY2NiAzNi4yNjY2NjZhMTQ2LjM0NjY2NyAxNDYuMzQ2NjY3IDAgMCAxLTUuOTczMzM0IDE4Ljc3MzMzNGwtMi41NiA1LjEyYTIwLjQ4IDIwLjQ4IDAgMSAxLTM2LjI2NjY2Ni0xNy40OTMzMzRsMi41Ni01LjU0NjY2NmExMzAuNTYgMTMwLjU2IDAgMCAxIDExLjA5MzMzMy0xNi4yMTMzMzQgMTk2LjY5MzMzMyAxOTYuNjkzMzMzIDAgMCAwIDE4LjM0NjY2Ny0zMi44NTMzMzMgMjAuNDggMjAuNDggMCAwIDAtMS43MDY2NjctMTEuNTJsMy44NC04Ljk2YTI2Mi44MjY2NjcgMjYyLjgyNjY2NyAwIDAgMS0xMTYuNDgtMTQ1LjQ5MzMzM2wtOC45NiAxLjI4YTI0Ljc0NjY2NyAyNC43NDY2NjcgMCAwIDAtMTEuNTItNC4yNjY2NjcgMTcwLjY2NjY2NyAxNzAuNjY2NjY3IDAgMCAwLTM0Ljk4NjY2NyAxMC4yNCAxMzAuNTYgMTMwLjU2IDAgMCAxLTE3LjkyIDYuODI2NjY3bC01LjEyIDEuMjhoLTAuODUzMzMzYTIwLjQ4IDIwLjQ4IDAgMSAxLTguOTYtMzkuMjUzMzM0aDAuNDI2NjY3bDUuNTQ2NjY2LTEuMjhhMTczLjY1MzMzMyAxNzMuNjUzMzMzIDAgMCAxIDE5LjItMS4yOCAxOTMuMjggMTkzLjI4IDAgMCAwIDM2LjI2NjY2Ny01Ljk3MzMzM2MzLjQxMzMzMy0xLjI4IDYuNC01Ljk3MzMzMyA4LjUzMzMzMy04LjUzMzMzM2w4LjUzMzMzNC0yLjU2YTI2MS4xMiAyNjEuMTIgMCAwIDEgNDAuOTYtMTgyLjE4NjY2N2wtNi40LTUuNTQ2NjY3YTI0LjMyIDI0LjMyIDAgMCAwLTMuODQtMTEuNTIgMTg0LjMyIDE4NC4zMiAwIDAgMC0yOS44NjY2NjctMjAuOTA2NjY2IDE3NC45MzMzMzMgMTc0LjkzMzMzMyAwIDAgMS0xNi42NC05LjgxMzMzNGwtNC4yNjY2NjctMy40MTMzMzNoLTAuNDI2NjY2YTIxLjMzMzMzMyAyMS4zMzMzMzMgMCAwIDEtNS4xMi0yOS44NjY2NjcgMTkuMiAxOS4yIDAgMCAxIDE0LjkzMzMzMy02LjQgMjYuMDI2NjY3IDI2LjAyNjY2NyAwIDAgMSAxNC4wOCA1LjEybDQuMjY2NjY3IDMuNDEzMzM0YTE3Ny45MiAxNzcuOTIgMCAwIDEgMTMuMjI2NjY2IDE0LjA4IDE2OS44MTMzMzMgMTY5LjgxMzMzMyAwIDAgMCAyNy43MzMzMzQgMjQuNzQ2NjY2IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAgMTEuOTQ2NjY2IDEuMjhsNy4yNTMzMzQgNS4xMmEyNjAuMjY2NjY3IDI2MC4yNjY2NjcgMCAwIDEgMTMxLjg0LTc1LjUyIDI2NC45NiAyNjQuOTYgMCAwIDEgMzYuMjY2NjY2LTUuNTQ2NjY2di04LjUzMzMzNGEyMS43NiAyMS43NiAwIDAgMCA2LjQtMTAuMjQgMTc3LjkyIDE3Ny45MiAwIDAgMC0yLjEzMzMzMy0zNi42OTMzMzMgMTYwLjg1MzMzMyAxNjAuODUzMzMzIDAgMCAxLTIuNTYtMTkuMnYtNS41NDY2NjdjMC0xMi4zNzMzMzMgOC45Ni0yMi42MTMzMzMgMjAuMDUzMzMzLTIyLjYxMzMzM3MyMC4wNTMzMzMgMTAuMjQgMjAuMDUzMzM0IDIyLjYxMzMzM1YxOTJhMTQ3LjIgMTQ3LjIgMCAwIDEtMi41NiAxOS4yIDE3Ny45MiAxNzcuOTIgMCAwIDAtMi4xMzMzMzQgMzYuNjkzMzMzIDE1LjM2IDE1LjM2IDAgMCAwIDYuODI2NjY3IDEwLjI0YzAgMS4yOCAwLjQyNjY2NyA2LjQgMC40MjY2NjcgOC45NmEyNjQuNTMzMzMzIDI2NC41MzMzMzMgMCAwIDEgMTY3LjY4IDgxLjA2NjY2N2w3LjY4LTUuNTQ2NjY3YTIxLjMzMzMzMyAyMS4zMzMzMzMgMCAwIDAgMTEuOTQ2NjY2LTEuMjggMjEyLjkwNjY2NyAyMTIuOTA2NjY3IDAgMCAwIDI3LjMwNjY2Ny0yNC43NDY2NjYgMTQyLjA4IDE0Mi4wOCAwIDAgMSAxMy4yMjY2NjctMTQuMDhsNC4yNjY2NjYtMy40MTMzMzRhMjEuNzYgMjEuNzYgMCAwIDEgMzAuMjkzMzM0IDEuNzA2NjY3YzcuMjUzMzMzIDguNTMzMzMzIDQuNjkzMzMzIDIyLjE4NjY2Ny01LjEyIDI5Ljg2NjY2N2wtNC4yNjY2NjcgMy40MTMzMzNjLTUuNTQ2NjY3IDQuMjY2NjY3LTExLjA5MzMzMyA2LjQtMTYuNjQgOS44MTMzMzNhMTg0LjMyIDE4NC4zMiAwIDAgMC0yOS44NjY2NjcgMjAuOTA2NjY3IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMy44NCAxMS41MmwtNy4yNTMzMzMgNi40YTI2NC4xMDY2NjcgMjY0LjEwNjY2NyAwIDAgMSAzNy45NzMzMzMgODcuNDY2NjY3IDI1OC4xMzMzMzMgMjU4LjEzMzMzMyAwIDAgMSA0LjI2NjY2NyA5NC4yOTMzMzNsOC4xMDY2NjcgMi41NmMxLjI4IDIuMTMzMzMzIDQuMjY2NjY3IDcuMjUzMzMzIDguNTMzMzMzIDguNTMzMzMzYTE5My4yOCAxOTMuMjggMCAwIDAgMzYuMjY2NjY3IDUuOTczMzM0IDE3My42NTMzMzMgMTczLjY1MzMzMyAwIDAgMSAxOS4yIDEuMjhsNS45NzMzMzMgMS4yOGMxMS45NDY2NjcgMy40MTMzMzMgMTkuNjI2NjY3IDE0LjA4IDE3LjQ5MzMzMyAyNC43NDY2NjZ6IiBmaWxsPSIjMDA4QkRCIiBwLWlkPSIxNzk3Ij48L3BhdGg+PHBhdGggZD0iTTUyNy43ODY2NjcgNjM0LjAyNjY2N2ExOC4zNDY2NjcgMTguMzQ2NjY3IDAgMCAwLTguMTA2NjY3LTcuNjggMTYuNjQgMTYuNjQgMCAwIDAtOC41MzMzMzMtMS43MDY2NjcgMTguMzQ2NjY3IDE4LjM0NjY2NyAwIDAgMC0xNC45MzMzMzQgOS4zODY2NjdsLTUxLjIgOTIuNTg2NjY2YTIwOC4yMTMzMzMgMjA4LjIxMzMzMyAwIDAgMCAxMTMuOTIgNS45NzMzMzQgMTk0LjEzMzMzMyAxOTQuMTMzMzMzIDAgMCAwIDIwLjQ4LTUuNTQ2NjY3bC01MS4yLTkzLjAxMzMzM3ogbTc2LjM3MzMzMy01Mi40OGgtNC4yNjY2NjdhMTcuOTIgMTcuOTIgMCAwIDAtMTUuNzg2NjY2IDI0Ljc0NjY2NmgtMC40MjY2NjdsNDAuOTYgOTguNTZhMjA3LjM2IDIwNy4zNiAwIDAgMCA4NC4wNTMzMzMtMTA1LjgxMzMzM2wtMTA0Ljk2LTE3LjQ5MzMzM3oiIGZpbGw9IiMwMDhCREIiIHAtaWQ9IjE3OTgiPjwvcGF0aD48L3N2Zz4=",
+        "version": 2,
+        "width": 1.1294118,
+        "xPos": 0.002352940999999999,
+        "yPos": 0.022727273,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547282104031",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "Markdown文本",
+        "height": 0.5568181818181818,
+        "markdownStr": "#### [帮助文档](https://www.alibabacloud.com/help/doc-detail/91406.htm)",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.2617648,
+        "xPos": 8.47,
+        "yPos": 0.04545454545454546,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547282126237",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本周/环比上周",
+        "descriptionSize": 12,
+        "displayName": "删除事件数",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "height": 1.2272727,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.57239263803681,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 6.94908995172251,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.5,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager |  select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log ))",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547282587184",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "子账号ID（可选）",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 3.57,
+        "yPos": 0.045454547,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551504932498",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "事件总数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.581831052383199,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 1.1255883,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.5,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*| select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log ) )",
+        "start": "-604800s",
+        "tokenQuery": "*| select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select count(1) as total from log ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541407109000",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "删除事件分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.840909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "_col1",
+            "showFieldKey": "resource"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.7691176,
+        "xPos": 2.390267755223881,
+        "yPos": 1.7045455,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-c157b9effe9b745bda7ef7cc342ed3e84",
+            "query": "verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT \"objectRef.resource\" as resource, count(1) group by resource",
+            "tokenQuery": "verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | SELECT \"objectRef.resource\" as resource, count(1) group by resource"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541411046000",
+      "type": "piepro"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "删除事件列表",
+        "height": 4.193182,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.06,
+        "xPos": 4.986765,
+        "yPos": 15.522727,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager    | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager    | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541412133000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "命令": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "命令执行列表",
+        "height": 4.193182,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.0852942,
+        "xPos": -0.05,
+        "yPos": 11.431818,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create and objectRef.subresource:exec and stage:  ResponseStarted | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\",  regexp_extract(\"requestURI\", '([^\\?]*)/exec\\?.*', 1)as \"资源\",  regexp_extract(\"requestURI\", '\\?(.*)', 1)as \"命令\" ,\"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "verb : create and objectRef.subresource:exec and stage:  ResponseStarted | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\",  regexp_extract(\"requestURI\", '([^\\?]*)/exec\\?.*', 1)as \"资源\",  regexp_extract(\"requestURI\", '\\?(.*)', 1)as \"命令\" ,\"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541412308000",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "操作轨迹",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "never"
+        },
+        "height": 2.8181818,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "ActionType",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "count"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 4.9206524,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 5.123913,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 1.7272727,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-c157b9effe9b745bda7ef7cc342ed3e84",
+            "query": "level: RequestResponse  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | select case when \"ActionType\" is null then '无' else \"ActionType\" end as \"ActionType\", t, count  from ( SELECT time_series(__time__, '1h', '%y-%m-%d %H', '0') as t, verb as ActionType, count(1) as count from log group by t, verb   order by t  limit 10000 )  limit 10000",
+            "tokenQuery": "level: RequestResponse  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   | select case when \"ActionType\" is null then '无' else \"ActionType\" end as \"ActionType\", t, count  from ( SELECT time_series(__time__, '1h', '%y-%m-%d %H', '0') as t, verb as ActionType, count(1) as count from log group by t, verb   order by t  limit 10000 )  limit 10000"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541414002000",
+      "type": "aggpro"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "保密字典": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "保密字典访问",
+        "height": 4.193182,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.09,
+        "xPos": -0.05,
+        "yPos": 15.511364,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"secrets\" AND   verb:get not user.username : \"system:apiserver\" not user.username:system\\:node\\:* | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \nregexp_extract(requestURI, '([^\\?]*)', 1) as \"保密字典\", \n\"responseStatus.code\" as \"状态码\", \n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : \"secrets\" AND   verb:get not user.username : \"system:apiserver\" not user.username:system\\:node\\:* | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \nregexp_extract(requestURI, '([^\\?]*)', 1) as \"保密字典\", \n\"responseStatus.code\" as \"状态码\", \n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1541430342000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "命令": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "Attach执行列表",
+        "height": 4.193182,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.06,
+        "xPos": 4.98,
+        "yPos": 11.431818,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create and objectRef.subresource:attach and objectRef.resource: pods  | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\",  regexp_extract(\"requestURI\", '([^\\?]*)/attach\\?.*', 1)as \"资源\",  regexp_extract(\"requestURI\", '\\?(.*)', 1)as \"命令\" ,\"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "verb : create and objectRef.subresource:attach and objectRef.resource: pods  | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\",  regexp_extract(\"requestURI\", '([^\\?]*)/attach\\?.*', 1)as \"资源\",  regexp_extract(\"requestURI\", '\\?(.*)', 1)as \"命令\" ,\"responseStatus.code\" as \"状态码\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543891765000",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "公网访问地域分布",
+        "fixedTime": false,
+        "height": 3.1477273,
+        "showBackground": true,
+        "showBorder": true,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 4.9235296,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 5.123913,
+        "yAxis": [
+          "t"
+        ],
+        "yPos": 4.4772725,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* | select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000 ) group by country limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "* | select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' limit 10000 ) group by country limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543892560000",
+      "type": "world-map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "公网访问地域分布",
+        "fixedTime": false,
+        "height": 3.1363637,
+        "showBackground": true,
+        "showBorder": true,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.203261,
+        "xAxis": [
+          "p"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "T"
+        ],
+        "yPos": 4.4772725,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* | select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000) group by p  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "* | select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet'  limit 10000) group by p  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543892578000",
+      "type": "map"
+    },
+    {
+      "action": {
+        "国家": {
+          "type": "disabled"
+        },
+        "失败率%": {
+          "type": "disabled"
+        },
+        "市": {
+          "type": "disabled"
+        },
+        "是否高危IP": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${源地址}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "省": {
+          "type": "disabled"
+        },
+        "访问次数": {
+          "type": "disabled"
+        },
+        "运营商": {
+          "type": "disabled"
+        },
+        "非法访问次数": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "公网访问列表",
+        "fixedTime": false,
+        "height": 3.875,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "国家": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "失败率%": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "市": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "是否高危IP": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "省": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "访问次数": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "运营商": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "非法访问次数": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 10.055882,
+        "xPos": -0.05,
+        "yPos": 7.613637,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* | select ip as \"源地址\", total as \"访问次数\", round(rate * 100, 2) as \"失败率%\", failCount as \"非法访问次数\", CASE when security_check_ip(ip) = 1 then 'yes' else 'no' end  as \"是否高危IP\",  ip_to_country(ip) as \"国家\", ip_to_province(ip) as \"省\", ip_to_city(ip) as \"市\", ip_to_provider(ip) as \"运营商\" from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total,\nsum(CASE WHEN \"responseStatus.code\" < 400 then 0 \nELSE 1 END) * 1.0 / count(1) as rate,\ncount_if(\"responseStatus.code\" = 403) as failCount\nfrom log  group by ip limit 10000) where ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) ORDER by \"访问次数\" desc limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543893428000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本周/环比上周",
+        "descriptionSize": 12,
+        "displayName": "公网访问次数",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "height": 1.1931819,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.56295422369042,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 2.654611424115148,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.5113636000000003,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* | select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select  sum(total) as total  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) != 'intranet'))",
+        "start": "-604800s",
+        "tokenQuery": "* | select diff[1], round((diff[1] - diff[2]) / diff[2] * 100 , 2 ) from (select compare( total , 86400) as diff from( select  sum(total) as total  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) != 'intranet'))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543897735000",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": " Namespace（可选）",
+            "key": "objectRef.namespace",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.55,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 1.12,
+        "yPos": 0.045454547,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create or verb : patch or verb : update or verb : put or verb:delete | select DISTINCT ( case when \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end )  as ns  HAVING ns != '__all__'  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543900705000",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": "状态码（可选）",
+            "key": "responseStatus.code",
+            "list": [
+              "404",
+              "403",
+              "200",
+              "201",
+              "202"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.5568182,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 6.01,
+        "yPos": 0.045454547,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1544176947000",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_overview_cn",
+  "description": "",
+  "displayName": "Kubernetes审计中心概览V1.5"
+}

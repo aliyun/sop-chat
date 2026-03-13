@@ -1,0 +1,1299 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550129490999",
+        "height": 2.0681818,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUwMTI3NjUwNDg4IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEyMTkgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjI4OTAiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjM4LjA4NTkzNzUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik0yMTMuNTI4MzgxIDk5Mi4xNTg0NzZhMzUuODg4NzYyIDM1Ljg4ODc2MiAwIDAgMS0zNi4wMzUwNDgtMzUuNjkzNzE0di04Ny41NzYzODFjMC04Ny40Nzg4NTcgMjYuNDc3NzE0LTE3MS42NDE5MDUgNzYuNTU2MTkxLTI0My41MTY5NTJhNDMzLjM0NzA0OCA0MzMuMzQ3MDQ4IDAgMCAxIDE5Ni4yMTc5MDUtMTU1LjUwMTcxNWwxMy4wNjgxOS01LjE2ODc2Mi0xMS4wNjg5NTItOC42Nzk2MTlhMjUyLjczMjk1MiAyNTIuNzMyOTUyIDAgMCAxLTk4LjQ5OTA0OC0yMDAuMTY3NjE5YzAtMTQwLjQzNDI4NiAxMTUuMDc4MDk1LTI1NC42MzQ2NjcgMjU2LjQ4NzYxOS0yNTQuNjM0NjY2IDE0MS4zMTIgMCAyNTYuMzQxMzMzIDExNC4yNDkxNDMgMjU2LjM0MTMzMyAyNTQuNjM0NjY2YTI1Mi43MzI5NTIgMjUyLjczMjk1MiAwIDAgMS05OC40MDE1MjMgMjAwLjE2NzYxOWwtMTEuMTE3NzE1IDguNjc5NjE5IDEzLjA2ODE5MSA1LjE2ODc2MmE0MzMuMzQ3MDQ4IDQzMy4zNDcwNDggMCAwIDEgMTk2LjI2NjY2NiAxNTUuNTAxNzE1IDQyMy45ODQ3NjIgNDIzLjk4NDc2MiAwIDAgMSA3Ni41MDc0MjkgMjQzLjUxNjk1MnY4Ny41NzYzODFhMzUuODg4NzYyIDM1Ljg4ODc2MiAwIDAgMS0zNS45ODYyODYgMzUuNjkzNzE0SDIxMy41MjgzODF6TTM3LjIwNTMzMyA4NjAuNzkzOTA1YTM1Ljg4ODc2MiAzNS44ODg3NjIgMCAwIDEtMzYuMDM1MDQ3LTM1LjY5MzcxNXYtNjcuNzc5MDQ3YTM0MC4xMTQyODYgMzQwLjExNDI4NiAwIDAgMSAxODUuMTk3NzE0LTMwMy41NDI4NTdsOS40MTEwNDgtNC44NzYxOTEtNy4xMTkyMzgtNy44MDE5MDVhMjA5LjU3ODY2NyAyMDkuNTc4NjY3IDAgMCAxLTU1LjI0NzIzOS0xNDEuNDA5NTIzYzAtMTE1LjA3ODA5NSA5My4yODE1MjQtMjA4Ljg5NiAyMDguNjUyMTkxLTIxMC44OTUyMzhsLTIuMTk0Mjg2IDMuNTU5NjE5YTI2OS4zNjA3NjIgMjY5LjM2MDc2MiAwIDAgMC00MC45NiA3Ni40MDk5MDQgMTM4Ljg3MzkwNSAxMzguODczOTA1IDAgMCAwLTkzLjQ3NjU3MSAxMzAuOTI1NzE1YzAgNTQuNTE1ODEgMzIuMzc3OTA1IDEwNC4zNTA0NzYgODIuNDA3NjE5IDEyNi45MjcyMzhsMC4yNDM4MDkgMC4wOTc1MjQgMC4yNDM4MSAwLjA5NzUyM2MxNC45MjExNDMgNS42MDc2MTkgMjQuNTI3MjM4IDE4LjUyOTUyNCAyNC41MjcyMzggMzIuOTYzMDQ4IDAgMTQuNzI2MDk1LTEwLjMzNzUyNCAyOC4xMzU2MTktMjUuODQzODEgMzMuNDAxOTA1bC04LjE5MiAxLjk1MDQ3NkEyNzAuNDgyMjg2IDI3MC40ODIyODYgMCAwIDAgNzMuMTQyODU3IDc1Ny4zNjk5MDV2MzEuOTg3ODA5aDQyLjA4MTUyNGE0NDQuNDE2IDQ0NC40MTYgMCAwIDAtNy4xMTkyMzggNzEuNDg0OTUzSDM3LjIwNTMzM3ogbTEwNzQuNTY2MDk2IDBhNDQ0LjIyMDk1MiA0NDQuMjIwOTUyIDAgMCAwLTcuMTE5MjM5LTcxLjQzNjE5MWg0Mi4wODE1MjR2LTMxLjk4NzgwOWEyNzAuNDMzNTI0IDI3MC40MzM1MjQgMCAwIDAtMjA1LjQ4MjY2Ni0yNjIuMTkyNzYybC04LjMzODI4Ni0xLjk5OTIzOGMtMTUuNDU3NTI0LTUuMjY2Mjg2LTI1Ljg0MzgxLTE4LjY3NTgxLTI1Ljg0MzgxLTMzLjQwMTkwNSAwLTE0LjQzMzUyNCA5LjY1NDg1Ny0yNy4zNTU0MjkgMjQuNTc2LTMyLjk2MzA0OGwwLjI0MzgxLTAuMDk3NTIzIDAuMTk1MDQ4LTAuMDk3NTI0YTEzOS42NTQwOTUgMTM5LjY1NDA5NSAwIDAgMCA4Mi40MDc2MTktMTI2LjkyNzIzOGMwLTU5LjA1MDY2Ny0zNy4zNTE2MTktMTExLjE3NzE0My05My40Mjc4MS0xMzAuOTI1NzE1YTI2OS4xNjU3MTQgMjY5LjE2NTcxNCAwIDAgMC00MC45Ni03Ni40MDk5MDQgMzQzLjI4MzgxIDM0My4yODM4MSAwIDAgMC0yLjE5NDI4Ni0zLjU1OTYxOWMxMTUuMzcwNjY3IDEuOTUwNDc2IDIwOC42MDM0MjkgOTUuODE3MTQzIDIwOC42MDM0MjkgMjEwLjg5NTIzOCAwIDUyLjE3NTIzOC0xOS42MDIyODYgMTAyLjQtNTUuMTk4NDc2IDE0MS40MDk1MjNsLTcuMTE5MjM4IDcuODAxOTA1IDkuMzYyMjg1IDQuODc2MTkxYTM0MC4wNjU1MjQgMzQwLjA2NTUyNCAwIDAgMSAxODUuMTk3NzE1IDMwMy41OTE2MTl2NjcuNzMwMjg1YTM1Ljg4ODc2MiAzNS44ODg3NjIgMCAwIDEtMzUuOTg2Mjg2IDM1LjY5MzcxNUgxMTExLjc3MTQyOXoiIHAtaWQ9IjI4OTEiIGZpbGw9IiMxMjk2ZGIiPjwvcGF0aD48L3N2Zz4=",
+        "version": 2,
+        "width": 1.2176471,
+        "xPos": 0.2805628199999999,
+        "yPos": 1.2840912,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550129490999",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "  ",
+        "filterData": [
+          {
+            "alias": "状态码（可选）",
+            "filterMode": false,
+            "key": "responseStatus.code",
+            "list": [
+              "200",
+              "201",
+              "202",
+              "403",
+              "404"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.6136364,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.8205882,
+        "xPos": 5.6970587,
+        "yPos": -0.05681818181818182,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550130130374",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "操作"
+        ],
+        "chartType": "line",
+        "displayName": "操作轨迹",
+        "height": 3.340909,
+        "legendPosition": "top",
+        "margin": [
+          91,
+          0,
+          "auto",
+          "auto"
+        ],
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.9235296,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": 0.04558824699999999,
+        "yAxis": [
+          "v"
+        ],
+        "yPos": 4.3522716,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:create or verb:patch or verb:update or verb:delete) | select case when \"操作\" is null then '无' else \"操作\" end as \"操作\", \"时间\", v  from (  select  concat(CASE WHEN \"objectRef.subresource\" is null then  \"objectRef.resource\" else \"objectRef.subresource\" end, '[', verb, ']')  as \"操作\", time_series(__time__, '1h', '%y-%m-%d %H', '0') as \"时间\", count(1) as v from log  group by  \"操作\", \"时间\" order by \"时间\" asc   limit 10000)",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:create or verb:patch or verb:update or verb:delete) | select case when \"操作\" is null then '无' else \"操作\" end as \"操作\", \"时间\", v  from (  select  concat(CASE WHEN \"objectRef.subresource\" is null then  \"objectRef.resource\" else \"objectRef.subresource\" end, '[', verb, ']')  as \"操作\", time_series(__time__, '1h', '%y-%m-%d %H', '0') as \"时间\", count(1) as v from log  group by  \"操作\", \"时间\" order by \"时间\" asc   limit 10000)",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550132598097",
+      "type": "agg"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "操作"
+        ],
+        "chartType": "interval",
+        "displayName": "资源操作分布",
+        "height": 3.3295455,
+        "legendPosition": "top",
+        "margin": [
+          50,
+          0,
+          "auto",
+          "auto"
+        ],
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 4.092647,
+        "xAxis": [
+          "资源"
+        ],
+        "xPos": 5.95,
+        "yAxis": [
+          [
+            "total"
+          ]
+        ],
+        "yPos": 4.352273,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb:create or verb:patch or verb:update or verb:delete) |  select  CASE WHEN \"objectRef.subresource\" is null then  \"objectRef.resource\" else \"objectRef.subresource\" end as \"资源\", verb as \"操作\", count(1) as total group by \"资源\", \"操作\"   limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb:create or verb:patch or verb:update or verb:delete) |  select  CASE WHEN \"objectRef.subresource\" is null then  \"objectRef.resource\" else \"objectRef.subresource\" end as \"资源\", verb as \"操作\", count(1) as total group by \"资源\", \"操作\"   limit 10000",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550133425729",
+      "type": "agg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "操作轨迹",
+        "fixedTime": false,
+        "height": 2.340909,
+        "showBackground": false,
+        "showBorder": false,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": false,
+        "width": 2.4235294,
+        "xAxis": [
+          "p"
+        ],
+        "xPos": 5.883824,
+        "yAxis": [
+          "T"
+        ],
+        "yPos": 1.8068175,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:*) |  select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000) group by p  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:*) |  select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet'  limit 10000) group by p  limit 10000",
+        "tokenQueryMap": {
+          "0": "* and ${{User|2xxxxxxxx9}} and (verb:*) |  select sum(total) as T, ip_to_province(ip) as p  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000) group by p  limit 10000"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550145516891",
+      "type": "map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "操作轨迹",
+        "fixedTime": false,
+        "height": 2.409091,
+        "showBackground": false,
+        "showBorder": false,
+        "showLegend": false,
+        "showTime": true,
+        "showTitle": false,
+        "width": 2.2,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 7.825,
+        "yAxis": [
+          "t"
+        ],
+        "yPos": 1.8068182,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:*) |  select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000 ) group by country limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:*) |  select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' limit 10000 ) group by country limit 10000",
+        "tokenQueryMap": {
+          "0": "* and ${{User|2xxxxxxxx9}} and (verb:*) |  select sum(total) as t, ip_to_country(ip) as country  from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip having ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip)) limit 10000 ) group by country limit 10000"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550145737612",
+      "type": "world-map"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "公网访问次数",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 0.64772725,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTime": true,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 14,
+        "width": 0.975,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.4602942,
+        "yPos": 1.2954546,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:*) |  select case when sum(total) > 0 then sum(total) else 0 end  as total from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip))",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:*) |  select case when sum(total) > 0 then sum(total) else 0 end  as total from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) != 'intranet'",
+        "tokenQueryMap": {
+          "0": "* and ${{User|2xxxxxxxx9}} and (verb:*) |  select case when sum(total) > 0 then sum(total) else 0 end  as total from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) != 'intranet' and ip not LIKE '%,%' and not try(is_subnet_of('7.0.0.0/8', ip))"
+        },
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146421865",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "操作"
+        ],
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "chartType": "line",
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "公网访问次数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "height": 0.6363636,
+        "legendPosition": "top",
+        "margin": [
+          50,
+          0,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 0.9235294,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 7.689706,
+        "yAxis": [
+          "t"
+        ],
+        "yPos": 1.2954546,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:*) |  select case when sum(total) > 0 then sum(total) else 0 end as total from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) = 'intranet'",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:*) |  select case when sum(total) > 0 then sum(total) else 0 end as total from (select CASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas ip, count(1) as total from log  group by ip) where ip_to_domain(ip) = 'intranet'",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146533577",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 7,
+          "g": 7,
+          "r": 7
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146642469",
+        "fontSize": 12,
+        "height": 0.5,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "公网访问数",
+        "version": 2,
+        "width": 0.9,
+        "xPos": 6.4588237,
+        "yPos": 1.0568182,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146642469",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 7,
+          "g": 7,
+          "r": 7
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146642469",
+        "fontSize": 12,
+        "height": 0.5,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "内网访问数",
+        "version": 2,
+        "width": 0.9,
+        "xPos": 7.719706,
+        "yPos": 1.0568182,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146692701",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(255,255,255,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 0,
+          "borderStyle": "solid",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 3.1818182,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "",
+        "version": 2,
+        "width": 4.09,
+        "xPos": 5.94,
+        "yPos": 1.0568182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146806139",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 249,
+          "g": 104,
+          "r": 8
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146642469",
+        "fontSize": 20,
+        "height": 0.5,
+        "isBold": true,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "访问地域分布",
+        "version": 2,
+        "width": 1.3426471,
+        "xPos": 7.4235296,
+        "yPos": 0.6363638,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550147460175",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "操作"
+        ],
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "chartType": "line",
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "公网访问次数",
+        "fontColor": {
+          "a": 1,
+          "b": 5,
+          "g": 117,
+          "r": 65
+        },
+        "fontSize": 32,
+        "height": 0.625,
+        "legendPosition": "top",
+        "margin": [
+          50,
+          0,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.0632353,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 8.706765,
+        "yAxis": [
+          "t"
+        ],
+        "yPos": 1.2954546,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and 2xxxxxxxx9 and (verb:*) |  select round(count_if(\"responseStatus.code\" = 403) * 100.0 / count(1), 2)",
+        "start": "-604800s",
+        "tokenQuery": "* and ${User} and (verb:*) |  select round(count_if(\"responseStatus.code\" = 403) * 100.0 / count(1), 2)",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550147706122",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 7,
+          "g": 7,
+          "r": 7
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550146642469",
+        "fontSize": 12,
+        "height": 0.5,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "失败率",
+        "version": 2,
+        "width": 0.65882355,
+        "xPos": 8.912353,
+        "yPos": 1.0454553,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550147935804",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "删除资源分布",
+        "height": 2.340909,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.1,
+        "xAxis": [
+          "resource"
+        ],
+        "xPos": 3.858235,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 1.9431819,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and verb:delete |  SELECT \"objectRef.resource\" as resource, count(1) group by resource",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and verb:delete |  SELECT \"objectRef.resource\" as resource, count(1) group by resource",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550148975376",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "操作Namespace分布",
+        "height": 2.340909,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.1,
+        "xAxis": [
+          "ns"
+        ],
+        "xPos": 1.8061763,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 1.9431819,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9  |  select case when \"objectRef.namespace\" is null then '_all__' else \"objectRef.namespace\" end as ns, count(1) as total group by  ns  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User}  |  select case when \"objectRef.namespace\" is null then '_all__' else \"objectRef.namespace\" end as ns, count(1) as total group by  ns  limit 10000",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149118839",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "资源创建数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "height": 1.375,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.43,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 1.8008823,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 0.6363636,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and verb:create |  select count(1)",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and verb:create |  select count(1)",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149285136",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "资源修改数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "height": 1.375,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.43,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 3.160882200000001,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 0.64772725,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb:update or verb : patch)  |  select count(1)",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb:update or verb : patch)  |  select count(1)",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149393281",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "资源删除数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "height": 1.375,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.43,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 4.520882,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 0.64772725,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb : delete)  |  select count(1)",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb : delete)  |  select count(1)",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149424352",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 0,
+          "g": 0,
+          "r": 0
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149973135",
+        "fontSize": 14,
+        "height": 0.53409094,
+        "isBold": true,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "请输入子账号ID",
+        "version": 2,
+        "width": 1.107353,
+        "xPos": -0.05,
+        "yPos": -0.05681818181818182,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550149973135",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "  ",
+        "filterData": [
+          {
+            "alias": "",
+            "filterMode": true,
+            "key": "全局关键词过滤",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.6136364,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.52,
+        "xPos": 7.49,
+        "yPos": -0.05681818181818182,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550150707845",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "创建资源列表",
+        "height": 5.5795455,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5,
+        "xAxis": [
+          "resource"
+        ],
+        "xPos": 0.05,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 7.659091,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb : create )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", requestObject as \"详细内容\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb : create )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", requestObject as \"详细内容\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550150911959",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "修改资源列表",
+        "height": 5.5795455,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5,
+        "xAxis": [
+          "resource"
+        ],
+        "xPos": 5.03,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 7.659091,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and  (verb : update or verb : put or verb : patch )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", requestObject as \"详细内容\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and  (verb : update or verb : put or verb : patch )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", requestObject as \"详细内容\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550151032437",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "资源访问列表",
+        "height": 5.5795455,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5,
+        "xAxis": [
+          "resource"
+        ],
+        "xPos": 0.05,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 13.193182,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb : get or verb:list )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb : get or verb:list )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550151209407",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "资源删除列表",
+        "height": 5.5795455,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5,
+        "xAxis": [
+          "resource"
+        ],
+        "xPos": 5.03,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 13.193182,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "*  and 2xxxxxxxx9 and (verb : delete )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "*  and ${User} and (verb : delete )        | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "User",
+            "value": "2xxxxxxxx9"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550151262530",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "User",
+            "list": [],
+            "mode": false,
+            "type": "token"
+          }
+        ],
+        "height": 0.6136364,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 0.91,
+        "yPos": -0.05681818181818182,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551505110620",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": " Namespace（可选）",
+            "key": "objectRef.namespace",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.6136364,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.48,
+        "xPos": 3.3052938,
+        "yPos": -0.05681818181818182,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create or verb : patch or verb : update or verb : put or verb:delete | select DISTINCT ( case when \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end )  as ns  HAVING ns != '__all__'  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551509625163",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_user_op_cn",
+  "description": "",
+  "displayName": "Kubernetes账号操作审计"
+}

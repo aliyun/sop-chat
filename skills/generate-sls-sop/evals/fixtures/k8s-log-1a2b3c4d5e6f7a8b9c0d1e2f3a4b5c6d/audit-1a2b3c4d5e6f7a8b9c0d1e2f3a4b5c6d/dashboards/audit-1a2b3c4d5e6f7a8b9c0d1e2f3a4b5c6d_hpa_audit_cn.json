@@ -1,0 +1,1283 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "HPA名": {
+          "type": "disabled"
+        },
+        "HPA空间": {
+          "type": "disabled"
+        },
+        "当前副本数": {
+          "type": "disabled"
+        },
+        "扩/缩副本数": {
+          "type": "disabled"
+        },
+        "时间": {
+          "type": "disabled"
+        },
+        "最大副本数": {
+          "type": "disabled"
+        },
+        "最小副本数": {
+          "type": "disabled"
+        },
+        "查看详情": {
+          "blank": false,
+          "filterInherit": false,
+          "savedSearchName": "audit-c550367cdf1e84dfabab013b277cc6bc2_audit-id",
+          "searchFilter": "${查看详情}",
+          "searchToken": [],
+          "timeRange": -1,
+          "tokenInherit": false,
+          "type": "NewSearch"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        },
+        "资源类型": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "标准HPA缩/扩容详细列表",
+        "height": 4.2613635,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(19,188,254,1)",
+            "cols": [
+              "类型"
+            ],
+            "rule": "=",
+            "threshold": "缩容"
+          },
+          {
+            "color": "rgba(126,211,33,1)",
+            "cols": [
+              "类型"
+            ],
+            "rule": "=",
+            "threshold": "扩容"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 10.018919,
+        "xPos": 0.03226705,
+        "yPos": 35.727272,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select Time as \"时间\", case when  CurrentReplicas < DesiredReplicas then '扩容' when CurrentReplicas > DesiredReplicas then '缩容' else '未变化' end  as \"类型\",  abs(CurrentReplicas - DesiredReplicas ) as \"扩/缩副本数\" , RescaleTargetName as \"资源名\", RescaleTargetKind as \"资源类型\", CurrentReplicas as \"当前副本数\", MinReplicas as \"最小副本数\", MaxReplicas as \"最大副本数\", HPAName as \"HPA名\", HPANamespace as \"HPA空间\", AuditID as \"查看详情\"    from (select t as Time , cast (json_extract_scalar(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract_scalar(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas,  cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.name') as varchar) as RescaleTargetName, cast (json_extract_scalar(requestJson, '$.spec.minReplicas') as bigint) as MinReplicas, cast (json_extract_scalar(requestJson, '$.spec.maxReplicas') as bigint) as MaxReplicas,  cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.kind') as varchar) as RescaleTargetKind, HPAName, HPANamespace, auditID as AuditID   from (SELECT auditID, from_unixtime(__time__ ) as t, requestObject as requestJson, \"objectRef.name\" as HPAName, \"objectRef.namespace\" as HPANamespace  from log  limit 100000) limit 100000) HAVING \"资源名\" is not null  order by time desc limit 10000",
+        "start": "today",
+        "tokenQuery": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select Time as \"时间\", case when  CurrentReplicas < DesiredReplicas then '扩容' when CurrentReplicas > DesiredReplicas then '缩容' else '未变化' end  as \"类型\",  abs(CurrentReplicas - DesiredReplicas ) as \"扩/缩副本数\" , RescaleTargetName as \"资源名\", RescaleTargetKind as \"资源类型\", CurrentReplicas as \"当前副本数\", MinReplicas as \"最小副本数\", MaxReplicas as \"最大副本数\", HPAName as \"HPA名\", HPANamespace as \"HPA空间\", AuditID as \"查看详情\"    from (select t as Time , cast (json_extract(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas,  cast (json_extract(requestJson, '$.spec.scaleTargetRef.name') as varchar) as RescaleTargetName, cast (json_extract(requestJson, '$.spec.minReplicas') as bigint) as MinReplicas, cast (json_extract(requestJson, '$.spec.maxReplicas') as bigint) as MaxReplicas,  cast (json_extract(requestJson, '$.spec.scaleTargetRef.kind') as varchar) as RescaleTargetKind, HPAName, HPANamespace, auditID as AuditID   from (SELECT auditID, from_unixtime(__time__ ) as t, json_parse(requestObject) as requestJson, \"objectRef.name\" as HPAName, \"objectRef.namespace\" as HPANamespace  from log  limit 100000) limit 100000) order by time  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817517",
+      "type": "table"
+    },
+    {
+      "action": {
+        "HPA名": {
+          "type": "disabled"
+        },
+        "HPA空间": {
+          "type": "disabled"
+        },
+        "Job名": {
+          "type": "disabled"
+        },
+        "current": {
+          "type": "disabled"
+        },
+        "desired": {
+          "type": "disabled"
+        },
+        "time": {
+          "type": "disabled"
+        },
+        "当前": {},
+        "扩/缩副本数": {
+          "type": "disabled"
+        },
+        "目标": {},
+        "类型": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        },
+        "资源类型": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "CronHPA伸缩详情",
+        "height": 3.9772727,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(126,211,33,1)",
+            "cols": [
+              "类型"
+            ],
+            "rule": "=",
+            "threshold": "扩容"
+          },
+          {
+            "color": "rgba(50,150,238,1)",
+            "cols": [
+              "类型"
+            ],
+            "rule": "=",
+            "threshold": "缩容"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 10.020354,
+        "xPos": 0.023417491,
+        "yPos": 31.80682,
+        "zIndex": 1
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb:  update or verb:  patch)  and CronHorizontalPodAutoscaler and responseStatus.code < 400 | select date_format( from_unixtime( to_unixtime( parse_datetime( lastProbeTime, 'YYYY-MM-dd''T''HH:mm:ssZ'))), '%Y-%m-%d %H:%i:%S') as time  , case when  arbitrary(current) < arbitrary(desired) then '扩容' when arbitrary(current) > arbitrary(desired) then '缩容' else '未变化' end  as \"类型\",  abs(arbitrary(current) - arbitrary(desired) ) as \"扩/缩副本数\" , arbitrary(RescaleTargetKind) as \"资源类型\", arbitrary(RescaleTargetName) as \"资源名\",  arbitrary(jobName) as \"Job名\", arbitrary(current) as \"当前\", arbitrary(desired) as \"目标\"    , arbitrary(HPAName) as \"HPA名\", arbitrary(HPANamespace) as \"HPA空间\"  from  (select RescaleTargetName, RescaleTargetKind, HPAName, HPANamespace,  regexp_extract(jobDetail, 'jobId\":\"([^\"]+)\"', 1) as jobId,  regexp_extract(jobDetail, 'lastProbeTime\":\"([^\"]+)\"', 1) as lastProbeTime, regexp_extract(jobDetail, 'state\":\"([^\"]+)\"', 1) as state,   regexp_extract(jobDetail, 'cron hpa job (\\S+) executed', 1) as jobName, try_cast(regexp_extract(jobDetail, 'current replicas:(\\d+)', 1) as bigint) as current, try_cast(regexp_extract(jobDetail, 'desired replicas:(\\d+)', 1) as bigint)  as desired from ( select  cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.name') as varchar) as RescaleTargetName,   cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.kind') as varchar) as RescaleTargetKind, HPAName, HPANamespace, jobDetail   from ( SELECT auditID, from_unixtime(__time__ ) as t, requestObject as requestJson, \"objectRef.name\" as HPAName, \"objectRef.namespace\" as HPANamespace  from log  limit 100000) CROSS JOIN UNNEST(regexp_extract_all(requestJson, '(\"jobId\":\"[^\"]+\",\"lastProbeTime\":\"[^\"]+\",\"message\":\"cron hpa job \\S+ \\S+ successfully. current replicas:\\d+, desired replicas:\\d+\",\"name\":\"[^\"]+\",\"schedule\":\"[^\"]+\",\"state\":\"Succeed\")', 1)) AS t (jobDetail) having jobDetail is not null limit 10000) limit 10000) group by jobId, lastProbeTime order by lastProbeTime desc  limit 10000",
+        "start": "-86400s",
+        "tokenQuery": "(verb:  update or verb:  patch)  and CronHorizontalPodAutoscaler and responseStatus.code < 400 | select date_format( from_unixtime( to_unixtime( parse_datetime( lastProbeTime, 'YYYY-MM-dd''T''HH:mm:ssZ'))), '%Y-%m-%d %H:%i:%S') as time  , case when  arbitrary(current) < arbitrary(desired) then '扩容' when arbitrary(current) > arbitrary(desired) then '缩容' else '未变化' end  as \"类型\",  abs(arbitrary(current) - arbitrary(desired) ) as \"扩/缩副本数\" , arbitrary(RescaleTargetKind) as \"资源类型\", arbitrary(RescaleTargetName) as \"资源名\",  arbitrary(jobName) as \"Job名\", arbitrary(current) as current, arbitrary(desired) as desired    , arbitrary(HPAName) as \"HPA名\", arbitrary(HPANamespace) as \"HPA空间\"  from  (select RescaleTargetName, RescaleTargetKind, HPAName, HPANamespace,  regexp_extract(jobDetail, 'jobId\":\"([^\"]+)\"', 1) as jobId,  regexp_extract(jobDetail, 'lastProbeTime\":\"([^\"]+)\"', 1) as lastProbeTime, regexp_extract(jobDetail, 'state\":\"([^\"]+)\"', 1) as state,   regexp_extract(jobDetail, 'cron hpa job (\\S+) executed', 1) as jobName, try_cast(regexp_extract(jobDetail, 'current replicas:(\\d+)', 1) as bigint) as current, try_cast(regexp_extract(jobDetail, 'desired replicas:(\\d+)', 1) as bigint)  as desired from ( select  cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.name') as varchar) as RescaleTargetName,   cast (json_extract_scalar(requestJson, '$.spec.scaleTargetRef.kind') as varchar) as RescaleTargetKind, HPAName, HPANamespace, jobDetail   from ( SELECT auditID, from_unixtime(__time__ ) as t, requestObject as requestJson, \"objectRef.name\" as HPAName, \"objectRef.namespace\" as HPANamespace  from log  limit 100000) CROSS JOIN UNNEST(regexp_extract_all(requestJson, '(\"jobId\":\"[^\"]+\",\"lastProbeTime\":\"[^\"]+\",\"message\":\"cron hpa job \\S+ \\S+ successfully. current replicas:\\d+, desired replicas:\\d+\",\"name\":\"[^\"]+\",\"schedule\":\"[^\"]+\",\"state\":\"Succeed\")', 1)) AS t (jobDetail) having jobDetail is not null limit 10000) limit 10000) group by jobId, lastProbeTime order by lastProbeTime desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817518",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容节点数趋势",
+        "formatType": "number",
+        "height": 3.6818182,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5.0027027,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.021804452,
+        "yAxis": [
+          "普通节点",
+          "总节点",
+          "扩容节点"
+        ],
+        "yPos": 9.72727,
+        "zIndex": 2
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system  | select date_format(time, '%m-%d %H:%i') as time, scaleCount as \"扩容节点\", total as \"总节点\",  total - scaleCount as \"普通节点\" from ( select count(DISTINCT  case when \"responseObject\" like '%k8s.io/cluster-autoscaler%' then \"objectRef.name\" else '' end) - 1 as scaleCount, count(DISTINCT \"objectRef.name\") as total,  __time__ - __time__ % 600 as time from log group by time order by time asc limit 10000) order by time asc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system  | select date_format(time, '%m-%d %H:%i') as time, scaleCount as \"扩容节点\", total as \"总节点\",  total - scaleCount as \"普通节点\" from ( select count(DISTINCT  case when \"responseObject\" like '%k8s.io/cluster-autoscaler%' then \"objectRef.name\" else '' end) - 1 as scaleCount, count(DISTINCT \"objectRef.name\") as total,  __time__ - __time__ % 600 as time from log group by time order by time asc limit 10000) order by time asc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817519",
+      "type": "area"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容CPU数趋势",
+        "formatType": "number",
+        "height": 3.6818182,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5.008108,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 5.004237,
+        "yAxis": [
+          "扩容CPU",
+          "普通CPU",
+          "总CPU"
+        ],
+        "yPos": 9.715909,
+        "zIndex": 3
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, totalCpu as \"总CPU\", scaleCPU as \"扩容CPU\", totalCpu - scaleCPU as \"普通CPU\" from ( select time, sum(cpu) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 600 as time, arbitrary(\"responseObject\") as resp, cast(arbitrary(\"responseObject.status.allocatable.cpu\") as bigint) as cpu from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, totalCpu as \"总CPU\", scaleCPU as \"扩容CPU\", totalCpu - scaleCPU as \"普通CPU\" from ( select time, sum(cpu) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 1800 as time, arbitrary(\"responseObject\") as resp, cast(arbitrary(\"responseObject.status.allocatable.cpu\") as bigint) as cpu from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817520",
+      "type": "area"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "扩容节点数/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容节点数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5347013,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "width": 1.8056457,
+        "xAxis": [
+          "totalNode"
+        ],
+        "xPos": 2.872256,
+        "yAxis": [
+          "totalNodeDelta"
+        ],
+        "yPos": 2.0701,
+        "zIndex": 4
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, totalCPUSecDiff[1] as totalCPUSec, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, totalCPUSecDiff[1] as totalCPUSec, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817521",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "扩容CPU核数/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容CPU核数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5347013,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.8132943,
+        "xAxis": [
+          "totalCPU"
+        ],
+        "xPos": 4.6557117,
+        "yAxis": [
+          "totalCPUDelta"
+        ],
+        "yPos": 2.0701,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, case when totalCPUDiff[1] is null then 0 else totalCPUDiff[1] end  as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, totalCPUSecDiff[1] as totalCPUSec, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, totalCPUSecDiff[1] as totalCPUSec, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817522",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "总CPU时间/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容CPU小时",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5347013,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "CPU小时",
+        "unitSize": 12,
+        "width": 1.8018214,
+        "xAxis": [
+          "totalCPUHour"
+        ],
+        "xPos": 6.453286,
+        "yAxis": [
+          "totalCPUHourDelta"
+        ],
+        "yPos": 2.0701,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, round(case when  totalCPUSecDiff[1] is null then 0 else totalCPUSecDiff[1] end  / 3600.0, 2) as totalCPUHour, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUHourDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, round( totalCPUSecDiff[1] / 3600.0, 2) as totalCPUHour, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUHourDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817523",
+      "type": "number"
+    },
+    {
+      "action": {
+        "CPU核数": {
+          "type": "disabled"
+        },
+        "NodeName": {
+          "type": "disabled"
+        },
+        "时间": {
+          "type": "disabled"
+        },
+        "节点": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "节点缩容列表",
+        "height": 3.590909,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 5.018919,
+        "xPos": 5.0292425,
+        "yPos": 24.670454,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and responseObject: \"k8s.io/cluster-autoscaler\" )  ) | SELECT date_format(time, '%Y-%m-%d %H:%i:%S') as \"时间\", name as \"节点\", cpuCore as \"CPU核数\" from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when responseObject like '%k8s.io/cluster-autoscaler%' then 1 else 0 end) as scaler, max(case when verb = 'patch' then cpuCore else 0 end) as cpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (\"responseObject.status.allocatable.cpu\") as bigint) as cpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 and time > 0 ) order by \"时间\" desc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system )  ) | SELECT date_format(time, '%Y-%m-%d %H:%i:%S') as \"时间\", name as \"NodeName\", cpuCore as \"CPU核数\" from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when responseObject like '%k8s.io/cluster-autoscaler%' then 1 else 0 end) as scaler, max(case when verb = 'patch' then cpuCore else 0 end) as cpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (\"responseObject.status.allocatable.cpu\") as bigint) as cpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817524",
+      "type": "table"
+    },
+    {
+      "action": {
+        "CPU核数": {
+          "type": "disabled"
+        },
+        "时间": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "节点扩容列表",
+        "height": 3.6022727,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 5.045946,
+        "xPos": 0.02064602,
+        "yPos": 24.659096,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | SELECT date_format(__time__, '%Y-%m-%d %H:%i:%S') as \"时间\", \"objectRef.name\" as \"节点\", \"responseObject.status.allocatable.cpu\" as  \"CPU核数\" from log order by \"时间\" desc limit 1000",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | SELECT date_format(__time__, '%Y-%m-%d %H:%i:%S') as \"时间\", \"objectRef.name\" as \"节点\", \"responseObject.status.allocatable.cpu\" as  \"CPU核数\" from log order by \"时间\" desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817525",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "node"
+        ],
+        "chartType": "line",
+        "displayName": "扩容节点运行轨迹",
+        "formatType": "number",
+        "height": 4.5227275,
+        "legendPosition": "right",
+        "margin": [
+          0,
+          157,
+          "auto",
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 10.002703,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.009642289,
+        "yAxis": [
+          "node1"
+        ],
+        "yPos": 5.170457,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler  |  select split(b, '$#$') [1] as node, split(b, '$#$') [1] as node1, split(b, '$#$') [2] as time  from ( SELECT   ARRAY[ concat( \"objectRef.name\",  '$#$', date_format(max(__time__) + 30, '%m-%d %H:%i')),  concat( \"objectRef.name\",  '$#$', date_format(min(__time__) - 30, '%m-%d %H:%i'))]   as e   from log GROUP  by \"objectRef.name\"  limit 1000 ) t, unnest(e) as x(b)  order by time asc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler  |  select split(b, '$#$') [1] as node, split(b, '$#$') [1] as node1, split(b, '$#$') [2] as time  from ( SELECT   ARRAY[ concat( \"objectRef.name\",  '$#$', date_format(max(__time__) + 30, '%m-%d %H:%i')),  concat( \"objectRef.name\",  '$#$', date_format(min(__time__) - 30, '%m-%d %H:%i'))]   as e   from log GROUP  by \"objectRef.name\"  limit 1000 ) t, unnest(e) as x(b)  order by time asc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817526",
+      "type": "agg"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容节点趋势",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 3.5,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5.008108,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.0151881995,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 13.340911,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | select date_format(t, '%m-%d %H:%i') as time, diff[1] as \"今天\", diff[2] as \"昨天\", diff[3] as \"上周\" from  (  SELECT t, ts_compare(\"节点数\", 86400, 604800) as diff from ( SELECT date_parse(\"时间\", '%Y-%m-%d %H:%i:%S') as t, \"节点数\", \"CPU核数\" from (   select time_series(__time__, '10m', '%Y-%m-%d %H:%i:%S', '0')  as \"时间\", count(DISTINCT  \"objectRef.name\" ) as \"节点数\" , sum( cast (\"responseObject.status.allocatable.cpu\" as bigint) )  as  \"CPU核数\" from log group by \"时间\" order by \"时间\"  limit 1000 )    ) group by t having t is not null ) order by time asc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | select date_format(t, '%m-%d %H:%i') as time, diff[1] as \"今天\", diff[2] as \"昨天\", diff[3] as \"上周\" from  (  SELECT t, ts_compare(\"节点数\", 86400, 604800) as diff from ( SELECT date_parse(\"时间\", '%Y-%m-%d %H:%i:%S') as t, \"节点数\", \"CPU核数\" from (   select time_series(__time__, '1h', '%Y-%m-%d %H:%i:%S', '0')  as \"时间\", count(DISTINCT  \"objectRef.name\" ) as \"节点数\" , sum( cast (\"responseObject.status.allocatable.cpu\" as bigint) )  as  \"CPU核数\" from log group by \"时间\" order by \"时间\" desc limit 1000 )    ) group by t having t is not null ) order by time asc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817527",
+      "type": "line"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容节点CPU趋势",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 3.5,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5.0405407,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 5.004237,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 13.340909,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | select date_format(t, '%m-%d %H:%i') as time, diff[1] as \"今天\", diff[2] as \"昨天\", diff[3] as \"上周\" from  (  SELECT t, ts_compare(\"CPU核数\", 86400, 604800) as diff from ( SELECT date_parse(\"时间\", '%Y-%m-%d %H:%i:%S') as t, \"节点数\", \"CPU核数\" from (   select time_series(__time__, '10m', '%Y-%m-%d %H:%i:%S', '0')  as \"时间\", count(DISTINCT  \"objectRef.name\" ) as \"节点数\" , sum( cast (\"responseObject.status.allocatable.cpu\" as bigint) )  as  \"CPU核数\" from log group by \"时间\" order by \"时间\"  limit 1000 )    ) group by t having t is not null ) order by time asc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | select date_format(t, '%m-%d %H:%i') as time, diff[1] as \"今天\", diff[2] as \"昨天\", diff[3] as \"上周\" from  (  SELECT t, ts_compare(\"CPU核数\", 86400, 604800) as diff from ( SELECT date_parse(\"时间\", '%Y-%m-%d %H:%i:%S') as t, \"节点数\", \"CPU核数\" from (   select time_series(__time__, '1h', '%Y-%m-%d %H:%i:%S', '0')  as \"时间\", count(DISTINCT  \"objectRef.name\" ) as \"节点数\" , sum( cast (\"responseObject.status.allocatable.cpu\" as bigint) )  as  \"CPU核数\" from log group by \"时间\" order by \"时间\" desc limit 1000 )    ) group by t having t is not null ) order by time asc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817528",
+      "type": "line"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "扩容GPU节点/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容GPU节点数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5347013,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.8013854,
+        "xAxis": [
+          "totalNode"
+        ],
+        "xPos": 2.8748007,
+        "yAxis": [
+          "totalNodeDelta"
+        ],
+        "yPos": 3.6132877,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalGPUDiff[1] as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta, totalGPUSecDiff[1] as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalGPUDiff[1] as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta, totalGPUSecDiff[1] as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817529",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "扩容GPU卡数/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容GPU卡数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.523599,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 1.8026313,
+        "xAxis": [
+          "totalGPU"
+        ],
+        "xPos": 4.659034,
+        "yAxis": [
+          "totalGPUDelta"
+        ],
+        "yPos": 3.6243927,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, case when totalGPUDiff[1] is null then  0 else totalGPUDiff[1] end as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta, totalGPUSecDiff[1] as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalGPUDiff[1] as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta, totalGPUSecDiff[1] as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817530",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "总GPU小时/同比上周",
+        "descriptionSize": 12,
+        "displayName": "扩容GPU小时",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5347013,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "GPU小时",
+        "unitSize": 12,
+        "width": 1.7870584,
+        "xAxis": [
+          "totalGPUSec"
+        ],
+        "xPos": 6.4551024,
+        "yAxis": [
+          "totalGPUSecDelta"
+        ],
+        "yPos": 3.6243885,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalGPUDiff[1] as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta,  round(case when  totalGPUSecDiff[1] is null then 0 else totalGPUSecDiff[1] end /3600.0, 3) as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler and responseObject:gpu  | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalGPUDiff[1] as totalGPU, (totalGPUDiff[1] - totalGPUDiff[2]) * 100.0 / totalGPUDiff[2] as totalGPUDelta, round(totalGPUSecDiff[1]/3600.0, 3) as totalGPUSec, (totalGPUSecDiff[1] - totalGPUSecDiff[2]) * 100.0 / totalGPUSecDiff[2] as totalGPUSecDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalGPU, 604800) as totalGPUDiff, compare(totalGPUSec, 604800) as totalGPUSecDiff from ( select count(1) as totalNode, sum(gpuCore) as totalGPU, sum(gpuCore * runTimeSec) as totalGPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817531",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "HPA空间",
+        "filterData": [
+          {
+            "alias": "HPA空间",
+            "key": "\"objectRef.namespace\"",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.72026736,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.6018248,
+        "xPos": -0.04989122,
+        "yPos": -0.04528446,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"horizontalpodautoscalers\"  and objectRef.subresource:  status | SELECT  DISTINCT \"objectRef.namespace\" as ns",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817532",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "HPA名",
+        "filterData": [
+          {
+            "alias": "HPA名",
+            "key": "\"objectRef.name\"",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.72026736,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.6018248,
+        "xPos": 2.4445755,
+        "yPos": -0.038449172,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"horizontalpodautoscalers\"  and objectRef.subresource:  status | SELECT  DISTINCT \"objectRef.name\" as name",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817533",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "color0": "rgba(35,143,255,1)",
+        "color1": "rgba(255,191,0,1)",
+        "color2": "rgba(245,34,45,1)",
+        "colorAreaNum": 3,
+        "colorval0": 33,
+        "colorval1": 66,
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "CronHPA扩容实例数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3463522,
+        "maxval": 100,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "实例",
+        "unitSize": 14,
+        "useCol": false,
+        "width": 1.8076112,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.460084,
+        "yPos": 0.7265561,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb:  update or verb:  patch)  and CronHorizontalPodAutoscaler and responseStatus.code < 400 |  select sum(total) as total from ( select  case when  arbitrary(current) < arbitrary(desired) then '扩容' when arbitrary(current) > arbitrary(desired) then '缩容' else '未变化' end  as \"类型\",  abs(arbitrary(current) - arbitrary(desired) ) as total  from  (select regexp_extract(jobDetail, 'jobId\":\"([^\"]+)\"', 1) as jobId,  regexp_extract(jobDetail, 'lastProbeTime\":\"([^\"]+)\"', 1) as lastProbeTime,  try_cast(regexp_extract(jobDetail, 'current replicas:(\\d+)', 1) as bigint) as current, try_cast(regexp_extract(jobDetail, 'desired replicas:(\\d+)', 1) as bigint)  as desired from ( select  jobDetail   from ( SELECT  from_unixtime(__time__ ) as t, requestObject as requestJson from log  limit 100000) CROSS JOIN UNNEST(regexp_extract_all(requestJson, '(\"jobId\":\"[^\"]+\",\"lastProbeTime\":\"[^\"]+\",\"message\":\"cron hpa job \\S+ \\S+ successfully. current replicas:\\d+, desired replicas:\\d+\",\"name\":\"[^\"]+\",\"schedule\":\"[^\"]+\",\"state\":\"Succeed\")', 1)) AS t (jobDetail) having jobDetail is not null limit 10000) limit 10000) group by jobId, lastProbeTime having \"类型\" = '扩容' order by lastProbeTime desc  limit 10000)",
+        "start": "today",
+        "tokenQuery": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then 1 when CurrentReplicas > DesiredReplicas then 0 else 0 end)  as total from (select cast (json_extract(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT json_parse(requestObject) as requestJson  from log  limit 100000) limit 100000)))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817536",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "CronHPA缩容实例数",
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3459661,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "实例",
+        "unitSize": 14,
+        "width": 1.7802063,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.227915,
+        "yPos": 0.7045455,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb:  update or verb:  patch)  and CronHorizontalPodAutoscaler and responseStatus.code < 400 |  select sum(total) as total from ( select  case when  arbitrary(current) < arbitrary(desired) then '扩容' when arbitrary(current) > arbitrary(desired) then '缩容' else '未变化' end  as \"类型\",  abs(arbitrary(current) - arbitrary(desired) ) as total  from  (select regexp_extract(jobDetail, 'jobId\":\"([^\"]+)\"', 1) as jobId,  regexp_extract(jobDetail, 'lastProbeTime\":\"([^\"]+)\"', 1) as lastProbeTime,  try_cast(regexp_extract(jobDetail, 'current replicas:(\\d+)', 1) as bigint) as current, try_cast(regexp_extract(jobDetail, 'desired replicas:(\\d+)', 1) as bigint)  as desired from ( select  jobDetail   from ( SELECT  from_unixtime(__time__ ) as t, requestObject as requestJson from log  limit 100000) CROSS JOIN UNNEST(regexp_extract_all(requestJson, '(\"jobId\":\"[^\"]+\",\"lastProbeTime\":\"[^\"]+\",\"message\":\"cron hpa job \\S+ \\S+ successfully. current replicas:\\d+, desired replicas:\\d+\",\"name\":\"[^\"]+\",\"schedule\":\"[^\"]+\",\"state\":\"Succeed\")', 1)) AS t (jobDetail) having jobDetail is not null limit 10000) limit 10000) group by jobId, lastProbeTime having \"类型\" = '缩容' order by lastProbeTime desc  limit 10000)",
+        "start": "today",
+        "tokenQuery": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then 1 when CurrentReplicas > DesiredReplicas then 0 else 0 end)  as total from (select cast (json_extract(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT json_parse(requestObject) as requestJson  from log  limit 100000) limit 100000)))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817537",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "次数/同比上周",
+        "descriptionSize": 12,
+        "displayName": "节点缩容次数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.5458033,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "width": 1.7750511,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.225421,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 2.058998,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and responseObject: \"k8s.io/cluster-autoscaler\" )  ) | select diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta  from ( select compare(total, 604800) as diff from ( SELECT count(1) as total from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when responseObject like '%k8s.io/cluster-autoscaler%' then 1 else 0 end) as scaler, max(case when verb = 'patch' then cpuCore else 0 end) as cpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (\"responseObject.status.allocatable.cpu\") as bigint) as cpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 and delta > 0 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, round( totalCPUSecDiff[1] / 3600.0, 2) as totalCPUHour, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUHourDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817538",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "次数/同比上周",
+        "descriptionSize": 12,
+        "displayName": "GPU节点缩容次数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 1.523599,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "width": 1.7611036,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.221893,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 3.6243901,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and responseObject: \"k8s.io/cluster-autoscaler\" and responseObject:\"gpu\" )  ) | select diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta  from ( select compare(total, 604800) as diff from ( SELECT count(1) as total from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when (responseObject like '%k8s.io/cluster-autoscaler%' and responseObject like '%nvidia.com/gpu%') then 1 else 0 end) as scaler, max(case when verb = 'patch' then cpuCore else 0 end) as cpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (\"responseObject.status.allocatable.cpu\") as bigint) as cpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 and delta > 0 ) ) )",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler | select totalNodeDiff[1] as totalNode, (totalNodeDiff[1] - totalNodeDiff[2]) * 100.0 / totalNodeDiff[2] as totalNodeDelta, totalCPUDiff[1] as totalCPU, (totalCPUDiff[1] - totalCPUDiff[2]) * 100.0 / totalCPUDiff[2] as totalCPUDelta, round( totalCPUSecDiff[1] / 3600.0, 2) as totalCPUHour, (totalCPUSecDiff[1] - totalCPUSecDiff[2]) * 100.0 / totalCPUSecDiff[2] as totalCPUHourDelta from  ( select compare(totalNode, 604800) as totalNodeDiff, compare(totalCPU, 604800) as totalCPUDiff, compare(totalCPUSec, 604800) as totalCPUSecDiff from ( select count(1) as totalNode, sum(cpuCore) as totalCPU, sum(cpuCore * runTimeSec) as totalCPUSec from ( SELECT \"objectRef.name\" as nodeName, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, max(__time__) - min(__time__) + 60 as  runTimeSec  from log GROUP  by nodeName limit 1000 ) ) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817539",
+      "type": "number"
+    },
+    {
+      "action": {
+        "CPU核数": {
+          "type": "disabled"
+        },
+        "GPU卡数": {},
+        "型号": {},
+        "时间": {
+          "type": "disabled"
+        },
+        "节点": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "GPU节点扩容列表",
+        "height": 3.6022727,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 5.0405407,
+        "xPos": 0.025148477,
+        "yPos": 28.261358,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" and responseObject:\"gpu\" | SELECT date_format(__time__, '%Y-%m-%d %H:%i:%S') as \"时间\", \"objectRef.name\" as \"节点\", regexp_extract(responseObject, 'nvidia_count\":\"([^\"]+)', 1) as  \"GPU卡数\", regexp_extract(responseObject, 'nvidia_name\":\"([^\"]+)', 1) as  \"型号\" from log order by \"时间\" desc limit 1000",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and responseStatus.code < 400 and  verb:create and responseObject : \"k8s.io/cluster-autoscaler\" | SELECT date_format(__time__, '%Y-%m-%d %H:%i:%S') as \"时间\", \"objectRef.name\" as \"节点\", \"responseObject.status.allocatable.cpu\" as  \"CPU核数\" from log order by \"时间\" desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817540",
+      "type": "table"
+    },
+    {
+      "action": {
+        "CPU核数": {
+          "type": "disabled"
+        },
+        "GPU卡数": {},
+        "NodeName": {
+          "type": "disabled"
+        },
+        "时间": {
+          "type": "disabled"
+        },
+        "节点": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "节点缩容列表",
+        "height": 3.590909,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 4.989706,
+        "xPos": 5.0452595,
+        "yPos": 28.261364,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and responseObject: \"k8s.io/cluster-autoscaler\" and responseObject : gpu )  ) | SELECT date_format(time, '%Y-%m-%d %H:%i:%S') as \"时间\", name as \"节点\", gpuCore as \"GPU卡数\" from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when responseObject like '%k8s.io/cluster-autoscaler%' then 1 else 0 end) as scaler, max(case when verb = 'patch' then gpuCore else 0 end) as gpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) ) as bigint) as gpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 and time > 0 ) order by \"时间\" desc",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and   ((verb : delete )  or (objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system )  ) | SELECT date_format(time, '%Y-%m-%d %H:%i:%S') as \"时间\", name as \"NodeName\", cpuCore as \"CPU核数\" from (  SELECT name as name, sum(case when verb = 'delete' then 1 else 0 end) as delta, sum(case when responseObject like '%k8s.io/cluster-autoscaler%' then 1 else 0 end) as scaler, max(case when verb = 'patch' then cpuCore else 0 end) as cpuCore, max(case when verb = 'delete' then time else 0 end) as time  from ( SELECT \"objectRef.name\" as name, verb, arbitrary(responseObject) as responseObject, cast( max (\"responseObject.status.allocatable.cpu\") as bigint) as cpuCore, arbitrary(__time__) as time  from log group by name, verb having (responseObject like '%k8s.io/cluster-autoscaler%' or verb = 'delete')  limit 10000 ) group by name having scaler > 0 )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817541",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容CPU运行时间趋势",
+        "formatType": "number",
+        "height": 3.9204545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 10.035432,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.015047488,
+        "yAxis": [
+          "总CPU/小时",
+          "扩容CPU/小时"
+        ],
+        "yPos": 16.795454,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, round(totalCpu  / 3600.0, 2) as \"总CPU/小时\", round(scaleCPU  / 3600.0, 2) as \"扩容CPU/小时\", round((totalCpu - scaleCPU)  / 3600.0, 2) as \"普通CPU/小时\" from ( select time, sum(cpu* runSeconds ) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu * runSeconds else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 600 as time, arbitrary(\"responseObject\") as resp, cast(arbitrary(\"responseObject.status.allocatable.cpu\") as bigint) as cpu, max(__time__) - min(__time__) as runSeconds from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, totalCpu as \"总CPU\", scaleCPU as \"扩容CPU\", totalCpu - scaleCPU as \"普通CPU\" from ( select time, sum(cpu) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 1800 as time, arbitrary(\"responseObject\") as resp, cast(arbitrary(\"responseObject.status.allocatable.cpu\") as bigint) as cpu from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817542",
+      "type": "area"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "扩容内存运行时间趋势",
+        "formatType": "number",
+        "height": 4.0113635,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 10.027361,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.028181614,
+        "yAxis": [
+          "总内存（GB）/小时",
+          "扩容内存（GB）/小时"
+        ],
+        "yPos": 20.704546,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, round(totalCpu / 1024/1024  / 3600.0, 2) as \"总内存（GB）/小时\", round(scaleCPU  / 1024/1024  / 3600.0, 2) as \"扩容内存（GB）/小时\", round((totalCpu - scaleCPU)  / 1024/1024  / 3600.0, 2) as \"普通内存（GB）/小时\" from ( select time, sum(cpu* runSeconds ) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu * runSeconds else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 600 as time, arbitrary(\"responseObject\") as resp, cast(regexp_extract( arbitrary(\"responseObject.status.allocatable.memory\"), '(\\d+)', 1) as bigint) as cpu, max(__time__) - min(__time__) as runSeconds from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "start": "today",
+        "tokenQuery": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system | select date_format(time, '%m-%d %H:%i') as time, totalCpu as \"总CPU\", scaleCPU as \"扩容CPU\", totalCpu - scaleCPU as \"普通CPU\" from ( select time, sum(cpu) as totalCpu, sum(CASE when resp like '%k8s.io/cluster-autoscaler%' then cpu else 0 end) as scaleCPU from ( SELECT \"objectRef.name\" as node, __time__ - __time__ % 1800 as time, arbitrary(\"responseObject\") as resp, cast(arbitrary(\"responseObject.status.allocatable.cpu\") as bigint) as cpu from log group by node, time  limit 100000) group by time  limit 10000) order by time asc limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817543",
+      "type": "area"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "同比上周",
+        "descriptionSize": 12,
+        "displayName": "标准HPA扩容实例数",
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3681703,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "实例",
+        "unitSize": 14,
+        "width": 1.8055712,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 2.8715122,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 0.7265561,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  case when diff[1] is null then 0 else diff[1] end  as total, round((diff[1] - diff[2]) * 100.0 / diff[2], 2) as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then DesiredReplicas - CurrentReplicas when CurrentReplicas > DesiredReplicas then 0 else 0 end)  as total from (select cast (json_extract_scalar(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract_scalar(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT requestObject as requestJson  from log  limit 100000) limit 100000)))",
+        "start": "today",
+        "tokenQuery": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then 1 when CurrentReplicas > DesiredReplicas then 0 else 0 end)  as total from (select cast (json_extract(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT json_parse(requestObject) as requestJson  from log  limit 100000) limit 100000)))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817544",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "同比上周",
+        "descriptionSize": 12,
+        "displayName": "标准HPA缩容实例数",
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3681703,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "实例",
+        "unitSize": 14,
+        "width": 1.7993237,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 4.6580853,
+        "yAxis": [
+          "delta"
+        ],
+        "yPos": 0.7156475,
+        "zIndex": 28
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  case when diff[1] is null then 0 else diff[1] end  as total, round((diff[1] - diff[2]) * 100.0 / diff[2], 2) as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then 0 when CurrentReplicas > DesiredReplicas then CurrentReplicas - DesiredReplicas  else 0 end)  as total from (select cast (json_extract_scalar(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract_scalar(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT requestObject as requestJson  from log  limit 100000) limit 100000)))",
+        "start": "today",
+        "tokenQuery": "objectRef.resource : \"horizontalpodautoscalers\" and verb:  update and  \"SucceededRescale\"   | select  diff[1] as total, (diff[1] - diff[2]) * 100.0 / diff[2] as delta from( select compare(total, 604800) as diff from( select sum( case when  CurrentReplicas < DesiredReplicas then 1 when CurrentReplicas > DesiredReplicas then 0 else 0 end)  as total from (select cast (json_extract(requestJson, '$.status.currentReplicas') as bigint) as CurrentReplicas, cast (json_extract(requestJson, '$.status.desiredReplicas') as bigint) as DesiredReplicas from (SELECT json_parse(requestObject) as requestJson  from log  limit 100000) limit 100000)))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567326817545",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 1.3863636,
+        "markdownStr": "<center><font color=gree size=4>当前扩容出的节点数：${total} ，总CPU核心数：${cpu}，总GPU卡数：${gpu}，总内存：${mem}GB</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.3794117,
+        "xPos": 0.12264711,
+        "yPos": 3.6232245,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* and objectRef.resource : nodes and objectRef.subresource:status  and   (verb : update or verb : put or verb : patch ) and user.username: node and user.username: system and  responseObject: k8s.io/cluster-autoscaler  | SELECT count(1) as total, CASE when  sum(cpucore) is null then 0 else sum(cpucore) end  as cpu, CASE when  sum(gpucore) is null then 0 else sum(gpucore) end as gpu, round( sum(mem/ 1024.0 / 1024), 1) as mem    from ( select \"objectRef.name\" as name, cast( max_by( regexp_extract(responseObject, 'nvidia\\.com/gpu\":\"(\\d+)', 1) , __time__) as bigint) as gpuCore, cast( max_by( \"responseObject.status.allocatable.cpu\", __time__) as bigint) as cpuCore, cast(regexp_extract( arbitrary(\"responseObject.status.allocatable.memory\"), '(\\d+)', 1) as bigint) as mem from log GROUP by name limit 1000 )",
+        "start": "-2m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1567329673438",
+      "type": "markdown"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_hpa_audit_cn",
+  "description": "",
+  "displayName": "Kubernetes弹性伸缩审计"
+}

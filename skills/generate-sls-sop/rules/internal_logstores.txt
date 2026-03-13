@@ -1,0 +1,5 @@
+internal-alert-history
+internal-alert-analysis
+internal-operation_log
+internal-diagnostic_log
+internal-ml-log

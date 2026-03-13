@@ -1,0 +1,1137 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "昨日金额/环比增加",
+        "descriptionSize": 12,
+        "displayName": "昨日金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.401223241590214,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": 0.0192492781520693,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": 0.8181818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "yesterday",
+        "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580713940189",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本月金额/同比增加",
+        "descriptionSize": 12,
+        "displayName": "本月金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.47339380196523,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": 2.495498682648435,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": 0.8181818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "thismonth",
+        "tokenQuery": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580714640950",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.977272727272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "金额"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 3.090909090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill  and  ProductCode:ecs | select  date_format(__time__,'%Y-%m-%d') as t,  round(sum(PretaxAmount),3)  as \"金额\"  group by t order by t",
+            "tokenQuery": "source:bill  and  ProductCode:ecs | select  date_format(__time__,'%Y-%m-%d') as t,  round(sum(PretaxAmount),3)  as \"金额\"  group by t order by t"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580714821238",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "日期": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "一周费用",
+        "height": 1.647727272727273,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 6.045454545454547,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:ecs | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill  and  ProductCode:ecs | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580715007549",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "6个月费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 3.125,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "金额"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 7.693181818181818,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill and ProductCode:ECS | select t, \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+            "tokenQuery": "source:bill and ProductCode:ECS | select t, \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580715318945",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "时间": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "6个月费用",
+        "height": 1.840909090909091,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 10.81818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:ECS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill and ProductCode:ECS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580715358468",
+      "type": "table"
+    },
+    {
+      "action": {
+        "同比上月": {},
+        "实例": {},
+        "实例ID": {
+          "type": "disabled"
+        },
+        "实例费用": {},
+        "用量": {},
+        "计费项": {},
+        "费用": {},
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一个月Top 10 实例",
+        "height": 5.011363636363637,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 12.63636363636364,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "ProductCode:ECS and source: instance_bill  | select case when rnk =1 then instanceid else '' end as \"实例\", billingitem as \"计费项\", concat(cast(Usage as varchar),'(',UsageUnit,')')  as \"用量\", fee as \"费用\",concat(cast(round(Percent,3) as varchar),'%') as \"同比上月\", case when rnk = 1 then cast(round(totalFee,3) as varchar) else '' end as \"实例费用\" from(select instanceId,fee, billingitem, rank() over(partition by instanceid order by fee desc) as rnk ,sum(fee) over(partition by instanceid)  as totalFee, Usage, Percent,UsageUnit  from(select instanceid, billingitem, d1[1] as Usage, d2[1] as fee, round(d2[3]*100-100,3) as percent, UsageUnit from( select instanceid, BillingItem,compare(usage,2592000) as d1, compare(fee,2592000) as d2, arbitrary(UsageUnit) as UsageUnit from(  select  BillingItem,InstanceID  , sum(Usage) as Usage ,round(sum(PretaxAmount),3)  as fee, arbitrary(UsageUnit) as UsageUnit from log  group by InstanceID,BillingItem   ) group by instanceid, BillingItem)))  where Usage is not null order by totalFee desc, rnk limit 1000",
+        "start": "-2592000s",
+        "tokenQuery": "ProductCode:ECS and source: instance_bill  |select  InstanceID as \"实例ID\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"实例ID\" order by \"金额\" desc limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580717226533",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "30天实例总数",
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.47339380196523,
+        "xAxis": [
+          "实例数"
+        ],
+        "xPos": 5.043918647519817,
+        "yPos": 0.8181818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "ProductCode:ECS and source: instance_bill  |select count(distinct InstanceId) as \"实例数\"",
+        "start": "-2592000s",
+        "tokenQuery": "ProductCode:ECS and source: instance_bill  |select count(distinct InstanceId) as \"实例数\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580717608567",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "每日实例数",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.897727272727273,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKeys": [
+              "实例数"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 17.63636363636364,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "ProductCode:ECS and source: instance_bill  |select  date_format(__time__,'%Y-%m-%d') as \"日期\", count(distinct InstanceId) as \"实例数\"  group by \"日期\"  order by \"日期\"",
+            "tokenQuery": "ProductCode:ECS and source: instance_bill  |select  date_format(__time__,'%Y-%m-%d') as \"日期\", count(distinct InstanceId) as \"实例数\"  group by \"日期\"  order by \"日期\""
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580718049533",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "实例数": {
+          "type": "disabled"
+        },
+        "日期": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "每日实例数",
+        "height": 1.863636363636364,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 20.53409090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "ProductCode:ECS and source: instance_bill  |select  date_format(__time__,'%Y-%m-%d') as \"日期\", count(distinct InstanceId) as \"实例数\"  group by \"日期\"  order by \"日期\"",
+        "start": "-2592000s",
+        "tokenQuery": "ProductCode:ECS and source: instance_bill  |select  date_format(__time__,'%Y-%m-%d') as \"日期\", count(distinct InstanceId) as \"实例数\"  group by \"日期\"  order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580718074893",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "平均实例消费",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 2.420483749055178,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 7.592338612391199,
+        "yPos": 0.8181818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill | select round(sum(PretaxAmount)/ count(distinct(instanceid)),3)",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:instance_bill | select sum(PretaxAmount)/ count(distinct(instanceid))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580719569558",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "各价格段实例个数",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.909090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "价格段",
+            "yAxisKeys": [
+              "实例个数"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 22.40909090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "ProductCode:ECS and source: instance_bill  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"价格段\" , counts as \"实例个数\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low  from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top from(select m, sum(v) over( order by k ) as rnk  from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from log  group by InstanceId))),unnest(his) as t(k,v) order by k))))",
+            "tokenQuery": "ProductCode:ECS and source: instance_bill  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"价格段\" , counts as \"实例个数\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low  from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top from(select m, sum(v) over( order by k ) as rnk  from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from log  group by InstanceId))),unnest(his) as t(k,v) order by k))))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580723230248",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "_col0": {},
+        "counts": {},
+        "total": {},
+        "价格段": {},
+        "实例个数": {},
+        "消费": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "各价格段实例个数",
+        "height": 2.238636363636364,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 25.30681818181818,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "ProductCode:ECS and source: instance_bill  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"价格段\" , counts as \"实例个数\",round(total,3) as \"消费\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low ,total from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top,total from(select m, sum(v) over( order by k ) as rnk ,k*v as total from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from log  group by InstanceId))),unnest(his) as t(k,v) order by k))))",
+        "start": "-2592000s",
+        "tokenQuery": "ProductCode:ECS and source: instance_bill  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) , counts from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low  from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top from(select m, sum(v) over( order by k ) as rnk  from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from log  group by InstanceId))),unnest(his) as t(k,v) order by k))))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580724297916",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "各Region费用百分比",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 3,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "PieChart",
+          "labelType": "type_percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "amount",
+            "showFieldKey": "Region"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3,
+        "xPos": 0.0192492781520693,
+        "yPos": 27.52272727272726,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source: instance_bill and ecs | select Region, sum(PretaxAmount) as amount group by region order by amount desc limit 100",
+            "tokenQuery": "source: instance_bill and ecs | select Region, sum(PretaxAmount) as amount group by region order by amount desc limit 100"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580736281708",
+      "type": "piepro"
+    },
+    {
+      "action": {
+        "Region": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "各Region分摊",
+        "height": 3,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 7.03,
+        "xPos": 2.989249278152069,
+        "yPos": 27.52272727272726,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ecs | select Region, round(sum(PretaxAmount),3) as \"金额\" group by region order by \"金额\" desc limit 100",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ecs | select Region, round(sum(PretaxAmount),3) as \"金额\" group by region order by \"金额\" desc limit 100",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580736395883",
+      "type": "table"
+    },
+    {
+      "action": {
+        "k": {},
+        "tag": {},
+        "v": {},
+        "费用": {},
+        "金额": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "不同Tag成本分摊(Top1000)",
+        "height": 5.534090909090909,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 5.05,
+        "xPos": 0.0192492781520693,
+        "yPos": 30.53409090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ecs |select tag , round(sum(PretaxAmount),3) as \"费用\" from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr , PretaxAmount  from log ) ,unnest(arr) as t(tag) group by  tag limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ecs | select k,v , round(sum(PretaxAmount),3) \"金额\" from( select split_to_map(Tag,';',' ') as tags ,PretaxAmount from log  where tag <>'' ),unnest(tags) as t(k,v) group by k,v order by \"金额\" desc limit  1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580784872962",
+      "type": "table"
+    },
+    {
+      "action": {
+        "NickName": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "不同NickName费用(Top1000)",
+        "height": 5.534090909090909,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 4.98,
+        "xPos": 5.039249278152069,
+        "yPos": 30.53409090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ecs |select NickName, round(sum(PretaxAmount),3)   as \"金额\" group by NickName order by  \"金额\" desc limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ecs |select NickName, round(sum(PretaxGrossAmount),3)   as \"金额\" group by NickName order by  \"金额\" desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580785177935",
+      "type": "table"
+    },
+    {
+      "action": {
+        "付费类型": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "付费类型金额",
+        "height": 1.772727272727273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": 0.0192492781520693,
+        "yPos": 39.22727272727273,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ecs |select case when SubscriptionType ='PayAsYouGo' then  '按量付费' when  SubscriptionType='Subscription' then '包年包月' else SubscriptionType end  as \"付费类型\", round(sum(PretaxAmount),3)   as \"金额\" group by \"付费类型\" order by  \"金额\" desc limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ecs |select case when SubscriptionType ='PayAsYouGo' then  '按量付费' when  SubscriptionType='Subscription' then '包年包月' else SubscriptionType end  as \"付费类型\", round(sum(PretaxGrossAmount),3)   as \"金额\" group by \"付费类型\" order by  \"金额\" desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580786834772",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "付费类型",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 3.193181818181818,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "付费类型",
+            "yAxisKeys": [
+              "金额"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 36.04545454545455,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source: instance_bill and ecs |select case when SubscriptionType ='PayAsYouGo' then  '按量付费' when  SubscriptionType='Subscription' then '包年包月' else SubscriptionType end  as \"付费类型\", round(sum(PretaxAmount),3)   as \"金额\" group by \"付费类型\" order by  \"金额\" desc limit 1000",
+            "tokenQuery": "source: instance_bill and ecs |select case when SubscriptionType ='PayAsYouGo' then  '按量付费' when  SubscriptionType='Subscription' then '包年包月' else SubscriptionType end  as \"付费类型\", round(sum(PretaxAmount),3)   as \"金额\" group by \"付费类型\" order by  \"金额\" desc limit 1000"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580787527705",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "不同Tag成本分摊(Top1000)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 5.534090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "tag",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "金额"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0.0192492781520693,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 40.98863636363637,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source: instance_bill and ecs | select date_format(__time__,'%Y-%m-%d') as t, round(sum(PretaxAmount),3) as \"金额\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from log),unnest(arr) as t(tag) group by t,tag order by t  limit 1000",
+            "tokenQuery": "source: instance_bill and ecs | select date_format(__time__,'%Y-%m-%d') as t, round(sum(PretaxAmount),3) as \"金额\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from log),unnest(arr) as t(tag) group by t,tag order by t  limit 1000"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1581576511809",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Tag",
+        "filterData": [
+          {
+            "key": "Tag",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.9204545454545454,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 3.622617901828682,
+        "xPos": 0.01924927815206966,
+        "yPos": 0,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill | select concat('\"',tag,'\"') as tag from(select distinct(tag)   from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr   from log ) ,unnest(arr) as t(tag))  order by tag  limit 1000",
+        "start": "-2d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "yunlei-bill1584341515992",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "ecs_analysis_cn",
+  "description": "",
+  "displayName": "ECS账单分析(V1)"
+}

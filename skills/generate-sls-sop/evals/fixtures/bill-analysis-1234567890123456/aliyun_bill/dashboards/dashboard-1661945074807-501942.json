@@ -1,0 +1,914 @@
+{
+  "attribute": {
+    "type": "grid"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "昨日金额",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "同比前一天费用",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日金额/同比增加",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "昨日费用"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "center",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 5,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill  and PretaxAmount> 0 and ProductCode:OSS | select t, cost as \"昨日费用\", (cost-lag(cost, 1, 0) over())/cost*100 as \"同比前一天费用\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM  log group by t order by t  asc) limit 1000",
+            "tokenQuery": "source:bill  and PretaxAmount> 0 and ProductCode:OSS | select t, cost as \"昨日费用\", (cost-lag(cost, 1, 0) over())/cost*100 as \"同比前一天费用\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM  log group by t order by t  asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661949051198",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "本月金额",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051199",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "同比前一月费用",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月金额/同比增加",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "本月费用"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "center",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 5,
+        "xPos": 5,
+        "yPos": 0,
+        "zIndex": 23
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill  and PretaxAmount> 0 and ProductCode:OSS | select t, cost as \"本月费用\", (cost-lag(cost, 1, 0) over())/cost*100 as \"同比前一月费用\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  log group by t order by t  asc) limit 1000",
+            "tokenQuery": "source:bill  and PretaxAmount> 0 and ProductCode:OSS | select t, cost as \"本月费用\", (cost-lag(cost, 1, 0) over())/cost*100 as \"同比前一月费用\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  log group by t order by t  asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-180d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661949051199",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "存储空间",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日金额/环比增加",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "none",
+            "showField": [
+              "存储空间"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "center",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 5,
+        "xPos": 10,
+        "yPos": 0,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"存储空间\" ,date_trunc('day',__time__) as t where (BillingItem like '%容量%' \tand InstanceID like '%%' and split_part(InstanceID, ';', 1) like '%%' )  group by t order by t asc limit 1000",
+            "tokenQuery": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"存储空间\" ,date_trunc('day',__time__) as t where (BillingItem like '%容量%' \tand InstanceID like '${{InstanceID|%%}}' and split_part(InstanceID, ';', 1) like '${{Region|%%}}' )  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661949476951",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "使用流量",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日金额/环比增加",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "none",
+            "showField": [
+              "使用流量"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "center",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 5,
+        "xPos": 15,
+        "yPos": 0,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"使用流量\" ,date_trunc('day',__time__) as t where (BillingItem like '%流量%' and InstanceID like '%%' and split_part(InstanceID, ';', 1) like '%%' )  group by t order by t asc limit 1000",
+            "tokenQuery": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"使用流量\" ,date_trunc('day',__time__) as t where (BillingItem like '%流量%' and InstanceID like '${{InstanceID|%%}}' and split_part(InstanceID, ';', 1) like '${{Region|%%}}' )  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661996757921",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "访问请求",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日金额/环比增加",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "none",
+            "showField": [
+              "请求次数"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "customUnit": "万次",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "center",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 4,
+        "xPos": 20,
+        "yPos": 0,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage) as \"请求次数\" ,date_trunc('day',__time__) as t where (BillingItem like '%请求%' and InstanceID like '%%' and split_part(InstanceID, ';', 1) like '%%' )  group by t order by t asc limit 1000",
+            "tokenQuery": "(* and source:instance_bill and ProductCode:oss)| select sum(Usage) as \"请求次数\" ,date_trunc('day',__time__) as t where (BillingItem like '%请求%' and InstanceID like '${{InstanceID|%%}}' and split_part(InstanceID, ';', 1) like '${{Region|%%}}' )  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661996852542",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "area"
+        },
+        "barOptions": {
+          "barWidth": 0.9,
+          "fillOpacity": 85,
+          "gradientMode": "none",
+          "groupWidth": 0.7,
+          "lineWidth": 1,
+          "orientation": "vertical",
+          "showValues": "auto",
+          "stackingMode": "none",
+          "valueSize": 12
+        },
+        "basicOptions": {
+          "displayName": "近30天费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-13234318156223491658992537650",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "auto"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "single",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKey": "费用"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "none",
+          "textAlignment": "auto",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "tooltipOption": {
+          "mode": "all",
+          "sortOrder": "desc"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "show": true,
+          "zoomTarget": "global"
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 3,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and source:instance_bill and ProductCode:oss | select date_trunc('day', __time__)  as \"日期\", billingItem, round(sum(PretaxAmount),3) as \"费用\" from log \twhere InstanceID like '%%' and split_part(InstanceID, ';', 1) like '%%'  group by \"日期\",billingItem order by \"日期\"   limit 1000",
+            "tokenQuery": "* and source:instance_bill and ProductCode:oss | select date_trunc('day', __time__)  as \"日期\", billingItem, round(sum(PretaxAmount),3) as \"费用\" from log \twhere InstanceID like '${{InstanceID|%%}}' and split_part(InstanceID, ';', 1) like '${{Region|%%}}'  group by \"日期\",billingItem order by \"日期\"   limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561661997616723",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "计费项用量趋势(资源包抵扣后)",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "none"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKey": "Usage"
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "thresholdOption": {
+          "fillOpacity": 40
+        },
+        "tooltipOption": {
+          "mode": "all",
+          "sortOrder": "none"
+        },
+        "version": "2",
+        "width": 12,
+        "xAxisOption": {
+          "show": true,
+          "zoomTarget": "global"
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 3
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and source:instance_bill and ProductCode:oss | select \"日期\", round(sum(Usage), 3) as Usage, concat(billingItem, ' (',unit,')') as billingItem from(select\n      date_trunc('day', __time__) as \"日期\",\n      Usage,\n      UsageUnit as unit,\n      billingItem\n    FROM      log\n\twhere InstanceID like '%%' and split_part(InstanceID, ';', 1) like '%%' \n    group by\n\t\"日期\",\n      Usage,\n      BillingItem,\n      unit) group by \"日期\",unit ,billingItem order by \"日期\"   limit 1000",
+            "tokenQuery": "* and source:instance_bill and ProductCode:oss | select \"日期\", round(sum(Usage), 3) as Usage, concat(billingItem, ' (',unit,')') as billingItem from(select\n      date_trunc('day', __time__) as \"日期\",\n      Usage,\n      UsageUnit as unit,\n      billingItem\n    FROM      log\n\twhere InstanceID like '${{InstanceID|%%}}' and split_part(InstanceID, ';', 1) like '${{Region|%%}}' \n    group by\n\t\"日期\",\n      Usage,\n      BillingItem,\n      unit) group by \"日期\",unit ,billingItem order by \"日期\"   limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561662016371627",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1661945074807-501942",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "region",
+            "newAdd": true,
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1661945074807-501942",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "InstanceID",
+            "newAdd": true,
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "实例用量明细",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "none"
+        },
+        "height": 19,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "BillingItem",
+            "name": "A",
+            "xAxisKeys": [
+              "region",
+              "InstanceID",
+              "InstanceType",
+              "费用 (元)",
+              "前日费用 (元)",
+              "同比前日 (%)"
+            ],
+            "yAxisKey": "Usage"
+          }
+        },
+        "standardOption": {
+          "decimals": 3,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0",
+            "replaceType": "text"
+          }
+        ],
+        "version": "2",
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(\n  *\n  and source :instance_bill\n  and ProductCode :oss\n) |\nwith t1 as (\n    select\n      Region,\n      InstanceID,\n      InstanceType,\n      concat(BillingItem, ' (', Unit, ')') as BillingItem,\n      Usage\n    from(\n        select\n          split_part(InstanceID, ';', 1) as Region,\n          InstanceID,\n          COALESCE(split_part(InstanceID, ';', 3), split_part(InstanceID, ';', 2)) as InstanceType,\n          BillingItem,\n          arbitrary(UsageUnit) as Unit,\n          sum(Usage) as Usage\n        FROM          log\n\t\twhere InstanceID like '%%' and Region like '%%' \n        group by\n          InstanceID,\n          UsageUnit,\n          BillingItem\n      )\n)\n, t2 as (\n    select\n        InstanceID,\n        round(di [1], 3) as \"费用\",\n        round(di[2], 3) as \"前日费用\",\n        round(di [3] * 100 -100, 3) \"同比前日\"\n    from(\n        select\n            InstanceID,\n            compare(cost, 2592000) as di\n        from (\n            select\n                InstanceID,\n                round(sum(PretaxAmount), 2) as cost\n            FROM              log\n            group by\n              InstanceID\n        )\n        group by\n          InstanceID\n    )\n)\n\nselect \n    t1.Region as region,\n    t1.InstanceID as InstanceID,\n    t1.InstanceType as InstanceType,\n    t1.BillingItem as BillingItem,\n    t1.Usage as Usage,\n    t2.\"费用\"  as \"费用 (元)\",\n    t2.\"前日费用\"  as \"前日费用 (元)\",\n    t2.\"同比前日\"as \"同比前日 (%)\"\nfrom t1 Left join t2 on t1.InstanceID = t2.InstanceID\nlimit 10000",
+            "tokenQuery": "(\n  *\n  and source :instance_bill\n  and ProductCode :oss\n) |\nwith t1 as (\n    select\n      Region,\n      InstanceID,\n      InstanceType,\n      concat(BillingItem, ' (', Unit, ')') as BillingItem,\n      Usage\n    from(\n        select\n          split_part(InstanceID, ';', 1) as Region,\n          InstanceID,\n          COALESCE(split_part(InstanceID, ';', 3), split_part(InstanceID, ';', 2)) as InstanceType,\n          BillingItem,\n          arbitrary(UsageUnit) as Unit,\n          sum(Usage) as Usage\n        FROM          log\n\t\twhere InstanceID like '${{InstanceID|%%}}' and Region like '${{Region|%%}}' \n        group by\n          InstanceID,\n          UsageUnit,\n          BillingItem\n      )\n)\n, t2 as (\n    select\n        InstanceID,\n        round(di [1], 3) as \"费用\",\n        round(di[2], 3) as \"前日费用\",\n        round(di [3] * 100 -100, 3) \"同比前日\"\n    from(\n        select\n            InstanceID,\n            compare(cost, 2592000) as di\n        from (\n            select\n                InstanceID,\n                round(sum(PretaxAmount), 2) as cost\n            FROM              log\n            group by\n              InstanceID\n        )\n        group by\n          InstanceID\n    )\n)\n\nselect \n    t1.Region as region,\n    t1.InstanceID as InstanceID,\n    t1.InstanceType as InstanceType,\n    t1.BillingItem as BillingItem,\n    t1.Usage as Usage,\n    t2.\"费用\"  as \"费用 (元)\",\n    t2.\"前日费用\"  as \"前日费用 (元)\",\n    t2.\"同比前日\"as \"同比前日 (%)\"\nfrom t1 Left join t2 on t1.InstanceID = t2.InstanceID\nlimit 10000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561662016707785",
+      "type": "crosstable"
+    }
+  ],
+  "dashboardName": "dashboard-1661945074807-501942",
+  "description": "",
+  "displayName": "OSS费用分析（NEW）"
+}
