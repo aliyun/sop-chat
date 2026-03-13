@@ -1,0 +1,1574 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "namespace数",
+        "descriptionSize": 12,
+        "displayName": "类型",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 226,
+          "g": 144,
+          "r": 74
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 0.8181818,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 0.7397058600000002,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": -0.05,
+        "yPos": 2.1590903,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.namespace:*  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT count(DISTINCT \"objectRef.namespace\")",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType} and objectRef.namespace:*  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT count(DISTINCT \"objectRef.namespace\")",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547277980873",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278501507",
+        "height": 0.92045456,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mjc4NDI4NTQ1IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9Ijc1NDgiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNOTE5LjU1MiAzNDYuNjI0Yy0xNS44NzIgMC0yOS4xODQgMTMuMzEyLTI5LjE4NCAyOS4xODR2NTcwLjM2OGMwIDEzLjMxMi01LjYzMiAxMy44MjQtMTIuOCAxMy44MjRoLTc3OC4yNGMtNS42MzIgMC0xMS4yNjQgMC0xMS4yNjQtMTMuODI0VjE3NS42MTZjMC0xMC4yNCA4LjE5Mi0xOC40MzIgMTguNDMyLTE4LjQzMkg2MjkuNzZjMTUuODcyIDAgMjkuMTg0LTEzLjMxMiAyOS4xODQtMjkuMTg0cy0xMy4zMTItMjkuMTg0LTI5LjE4NC0yOS4xODRIMTA1Ljk4NGMtNDIuNDk2IDAtNzYuOCAzNC4zMDQtNzYuOCA3Ni44djc3MS4wNzJjMCA0Mi40OTYgMjguNjcyIDcyLjE5MiA3MC4xNDQgNzIuMTkyaDc3OC4yNGM0MS45ODQgMCA3MS4xNjgtMjkuNjk2IDcxLjE2OC03Mi4xOTJWMzc2LjMyYzAtMTYuMzg0LTEzLjMxMi0yOS42OTYtMjkuMTg0LTI5LjY5NnogbTczLjcyOC0yMDkuOTJjLTMuNTg0LTIwLjQ4LTE1LjM2LTM3Ljg4OC0zMi4yNTYtNDkuNjY0TDg1Ny4wODggMTYuMzg0Yy0xMC4yNC03LjE2OC0yNC41NzYtMTEuMjY0LTM4LjQtMTEuMjY0LTE5LjQ1NiAwLTM2Ljg2NCA4LjE5Mi00Ni4wOCAyMS41MDQtMi4wNDggMy41ODQtMjI1Ljc5MiAzMjcuMTY4LTI4OS43OTIgNDIxLjM3Ni0xMy44MjQgMjAuOTkyLTIyLjAxNiA0NS4wNTYtMjQuMDY0IDcwLjE0NEw0NTAuNTYgNjQ5LjcyOGMtMS4wMjQgMTUuMzYgMy41ODQgMzAuMjA4IDE1LjM2IDQzLjAwOCAxMC43NTIgMTIuMjg4IDI2LjExMiAyMC40OCA0MC45NiAyMi4wMTZIMTk5LjY4Yy0xNS44NzIgMC0yOS4xODQgMTMuMzEyLTI5LjE4NCAyOS4xODRzMTMuMzEyIDI5LjE4NCAyOS4xODQgMjkuMTg0aDU3OC41NmMxNS44NzIgMCAyOS4xODQtMTMuMzEyIDI5LjE4NC0yOS4xODRzLTEzLjMxMi0yOS4xODQtMjkuMTg0LTI5LjE4NGgtMjU2YzUuNjMyLTAuNTEyIDExLjI2NC0yLjU2IDE2Ljg5Ni01LjYzMiAwLjUxMiAwIDEuMDI0LTAuNTEyIDEuMDI0LTAuNTEyIDAuNTEyLTAuNTEyIDcxLjY4LTQzLjAwOCAxMTcuNzYtNzEuMTY4IDIxLjUwNC0xMy4zMTIgMzkuNDI0LTMwLjIwOCA1My43Ni01MC42ODhsMjMyLjQ0OC0zMzguOTQ0IDM2Ljg2NC01My4yNDhjMTEuNzc2LTE2Ljg5NiAxNi4zODQtMzcuMzc2IDEyLjI4OC01Ny44NTZ6IG0tNDc5LjIzMiA1MjAuMTkyYy0yLjA0OC0wLjUxMi0zLjU4NC0yLjA0OC00LjYwOC0zLjA3Mmw4LjE5Mi0xMzAuNTYgNjcuMDcyIDIwLjk5MiAzNi4zNTIgNDguMTI4Yy00MC40NDggMjQuMDY0LTk0LjcyIDU2LjMyLTEwNy4wMDggNjQuNTEyeiBtMTUwLjAxNi0xMDMuOTM2bC0zNC4zMDQtNDUuMDU2czAtMC41MTItMC41MTItMC41MTJjLTcuMTY4LTguNzA0LTE2LjM4NC0xNS4zNi0yNy4xMzYtMTguOTQ0bC02My40ODgtMTkuNDU2YzQ3LjEwNC02OS4xMiAxNDkuNTA0LTIxOC4xMTIgMjE3LjA4OC0zMTUuMzkybDEyNC40MTYgODQuOTkyLTIxNi4wNjQgMzE0LjM2OHogbTI2OS4zMTItMzkxLjE2OGwtMjAuNDggMjkuMTg0TDc4OC40OCAxMDUuOTg0YzkuNzI4LTEzLjgyNCAxOS40NTYtMjcuNjQ4IDI5LjE4NC00MS45ODRoMC41MTJjMi41NiAwIDUuMTIgMC41MTIgNS42MzIgMS4wMjRsMTAzLjQyNCA3MS4xNjhjMy41ODQgMi41NiA3LjE2OCA3LjE2OCA3LjY4IDEyLjI4OCAyLjA0OCAzLjU4NCAxLjAyNCA4LjcwNC0xLjUzNiAxMy4zMTJ6IiBwLWlkPSI3NTQ5IiBmaWxsPSIjMTI5NmRiIj48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.5779412,
+        "xPos": 3.617941,
+        "yPos": 2.0454545,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278501507",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278521097",
+        "height": 1.0909091,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mjc4MzEyNjU1IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjQ1MDYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNzkxLjExMDk1OSA2ODUuMDU2ODAxYTIxOS4xNDQzMSAyMTkuMTQ0MzEgMCAxIDAtMjY4LjA4NjUzOSAwQTM2NS4yNDA1MTcgMzY1LjI0MDUxNyAwIDAgMCAyOTIuMTkyNDEzIDEwMjRoNzMuMDQ4MTA0YTI5Mi4xOTI0MTMgMjkyLjE5MjQxMyAwIDAgMSA1ODQuMzg0ODI2IDBoNzMuMDQ4MTAzYTM2NS4yNDA1MTcgMzY1LjI0MDUxNyAwIDAgMC0yMzEuNTYyNDg3LTMzOC45NDMxOTl6TTY1Ny40MzI5MyA2NTguNzU5NDgzYTE0Ni4wOTYyMDcgMTQ2LjA5NjIwNyAwIDEgMSAxNDYuMDk2MjA2LTE0Ni4wOTYyMDYgMTQ2LjA5NjIwNyAxNDYuMDk2MjA3IDAgMCAxLTE0Ni4wOTYyMDYgMTQ2LjA5NjIwNnpNMzkyLjI2ODMxNSAzOTEuNDAzNDI1YTI5Mi4xOTI0MTMgMjkyLjE5MjQxMyAwIDAgMSAzOC43MTU0OTUtNjEuMzYwNDA3bC0xOC4yNjIwMjYtMTAuMjI2NzM0YTE4Mi42MjAyNTggMTgyLjYyMDI1OCAwIDEgMC0yNDEuMDU4NzQxIDBBMjkyLjE5MjQxMyAyOTIuMTkyNDEzIDAgMCAwIDAgNTg1LjcxMTM4aDczLjA0ODEwM2EyMTkuMTQ0MzEgMjE5LjE0NDMxIDAgMCAxIDIxOS4xNDQzMS0yMTkuMTQ0MzEgMjE5LjE0NDMxIDIxOS4xNDQzMSAwIDAgMSAxMDAuMDc1OTAyIDI0LjgzNjM1NXpNMTgyLjYyMDI1OCAxODMuOTQ2ODEyQTEwOS41NzIxNTUgMTA5LjU3MjE1NSAwIDEgMSAyOTIuMTkyNDEzIDI5My41MTg5NjdhMTA5LjU3MjE1NSAxMDkuNTcyMTU1IDAgMCAxLTEwOS41NzIxNTUtMTA5LjU3MjE1NXoiIHAtaWQ9IjQ1MDciIGZpbGw9IiMxMjk2ZGIiPjwvcGF0aD48L3N2Zz4=",
+        "version": 2,
+        "width": 0.62941176,
+        "xPos": 0.6261765,
+        "yPos": 0.57954544,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278521097",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278539451",
+        "height": 1.2386364,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mjc4MzU4MzMxIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjQ2NzEiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNMzI0LjYgMTM3VjIxMmg0NTB2NTI1aDc1di02MDB6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSI0NjcyIj48L3BhdGg+PHBhdGggZD0iTTE3NC42IDI4N3Y2MDBoNTI1di02MDBIMTc0LjZ6TTU4NyA2NjJoLTMwMHYtNzVoMzAwVjY2MnogbTAtMTUwaC0zMDB2LTc1aDMwMFY1MTJ6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSI0NjczIj48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.7617647,
+        "xPos": 0.5235293,
+        "yPos": 1.8977273,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278539451",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+        "height": 1.2272727,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3MTc3Nzg4NjAzIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjE3OTUiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDQwLjMyIDU5NS42MjY2NjdhMTguMzQ2NjY3IDE4LjM0NjY2NyAwIDAgMC0xNy4wNjY2NjctMTQuMDhoLTMuODRsLTEwNC41MzMzMzMgMTcuNDkzMzMzQTIwOC42NCAyMDguNjQgMCAwIDAgMzk4LjkzMzMzMyA3MDRsNDAuNTMzMzM0LTk3LjcwNjY2N2ExNy4wNjY2NjcgMTcuMDY2NjY3IDAgMCAwIDAuODUzMzMzLTEwLjY2NjY2NnpNNDA1Ljc2IDUyMC41MzMzMzNhMTcuNDkzMzMzIDE3LjQ5MzMzMyAwIDAgMCA4Ljk2LTYuNCAxNy45MiAxNy45MiAwIDAgMC0yLjEzMzMzMy0yNC43NDY2NjZMMzMzLjIyNjY2NyA0MTguNTZhMjA3Ljc4NjY2NyAyMDcuNzg2NjY3IDAgMCAwLTI5LjQ0IDEzMS44NGwxMDEuNTQ2NjY2LTI5LjQ0eiBtMTM3LjgxMzMzMy05My44NjY2NjZhMTguNzczMzMzIDE4Ljc3MzMzMyAwIDAgMCAzLjg0IDEwLjI0IDE3LjkyIDE3LjkyIDAgMCAwIDI0Ljc0NjY2NyAzLjQxMzMzM2gwLjQyNjY2N2w4Ni4xODY2NjYtNjEuMDEzMzMzQTIwNy43ODY2NjcgMjA3Ljc4NjY2NyAwIDAgMCA1MzcuNiAzMjEuMjhsNS45NzMzMzMgMTA1LjM4NjY2N3ogbS02MC41ODY2NjYgMTI1LjAxMzMzM2wyOS40NCAxNC4wOCAyOS40NC0xNC4wOCA3LjI1MzMzMy0zMS41NzMzMzMtMjAuNDgtMjUuMTczMzM0aC0zMi40MjY2NjdsLTIwLjA1MzMzMyAyNS4xNzMzMzQgNy4yNTMzMzMgMzEuNTczMzMzeiBtLTMwLjcyLTExMC45MzMzMzNhMTcuMDY2NjY3IDE3LjA2NjY2NyAwIDAgMCAxMC4yNCAzLjQxMzMzMyAxNy45MiAxNy45MiAwIDAgMCAxNy45Mi0xNy4wNjY2NjdoMC40MjY2NjZsNS45NzMzMzQtMTA1LjgxMzMzM2EyMTguMDI2NjY3IDIxOC4wMjY2NjcgMCAwIDAtMjEuNzYgMy44NCAyMDYuNTA2NjY3IDIwNi41MDY2NjcgMCAwIDAtOTkuODQgNTQuMTg2NjY3bDg3LjA0IDYxLjQ0eiBtMjM4LjA4LTIxLjc2bC03OC45MzMzMzQgNzAuODI2NjY2YTE5LjIgMTkuMiAwIDAgMC01LjU0NjY2NiA5LjM4NjY2NyAxNy40OTMzMzMgMTcuNDkzMzMzIDAgMCAwIDEyLjggMjAuOTA2NjY3bDEwMS45NzMzMzMgMjkuNDRhMjA5LjA2NjY2NyAyMDkuMDY2NjY3IDAgMCAwLTQuMjY2NjY3LTY3Ljg0IDE5Ny45NzMzMzMgMTk3Ljk3MzMzMyAwIDAgMC0yNS42LTYzLjU3MzMzNHoiIGZpbGw9IiMwMDhCREIiIHAtaWQ9IjE3OTYiPjwvcGF0aD48cGF0aCBkPSJNOTk1Ljg0IDYxMy45NzMzMzNMOTEyLjY0IDI1MS43MzMzMzNhNjMuNTczMzMzIDYzLjU3MzMzMyAwIDAgMC0zNC45ODY2NjctNDMuNTJsLTMzNy40OTMzMzMtMTYwLjg1MzMzM2E2NS43MDY2NjcgNjUuNzA2NjY3IDAgMCAwLTU1Ljg5MzMzMyAwTDE0Ni4zNDY2NjcgMjA4LjY0YTY0Ljg1MzMzMyA2NC44NTMzMzMgMCAwIDAtMzQuOTg2NjY3IDQzLjUyTDI4LjE2IDYxMy45NzMzMzNhNjMuNTczMzMzIDYzLjU3MzMzMyAwIDAgMCA4LjUzMzMzMyA0OS4wNjY2NjdsMy44NCA1LjEyIDIzMy4zODY2NjcgMjkwLjU2YTY0Ljg1MzMzMyA2NC44NTMzMzMgMCAwIDAgNTAuMzQ2NjY3IDIzLjg5MzMzM2gzNzQuNjEzMzMzYTY1LjcwNjY2NyA2NS43MDY2NjcgMCAwIDAgNTAuMzQ2NjY3LTIzLjg5MzMzM2wyMzMuMzg2NjY2LTI5MC41NmE2NC44NTMzMzMgNjQuODUzMzMzIDAgMCAwIDEyLjgtNTQuNjEzMzMzeiBtLTEyOC40MjY2NjctNC4yNjY2NjZhMjEuMzMzMzMzIDIxLjMzMzMzMyAwIDAgMS0yNi4wMjY2NjYgMTQuOTMzMzMzaC0wLjg1MzMzNGwtNS4xMi0xLjI4YTE3MS41MiAxNzEuNTIgMCAwIDEtMTcuOTItNi44MjY2NjcgMjE1LjQ2NjY2NyAyMTUuNDY2NjY3IDAgMCAwLTM0Ljk4NjY2Ni0xMC4yNCAxNi4yMTMzMzMgMTYuMjEzMzMzIDAgMCAwLTExLjUyIDQuMjY2NjY3bC04LjUzMzMzNC0xLjI4YTI2Mi40IDI2Mi40IDAgMCAxLTExNi40OCAxNDYuMzQ2NjY3IDUzLjc2IDUzLjc2IDAgMCAwIDMuNDEzMzM0IDguMTA2NjY2IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMS4yOCAxMS45NDY2NjcgMTg1LjYgMTg1LjYgMCAwIDAgMTcuOTIgMzIgMTY1Ljk3MzMzMyAxNjUuOTczMzMzIDAgMCAxIDExLjA5MzMzMyAxNi4yMTMzMzNsMi41NiA1LjU0NjY2N2EyMC40OCAyMC40OCAwIDEgMS0zNi42OTMzMzMgMTcuNDkzMzMzbC0yLjk4NjY2Ny02LjRhMTM0LjgyNjY2NyAxMzQuODI2NjY3IDAgMCAxLTUuOTczMzMzLTE4Ljc3MzMzMyAyMDQuMzczMzMzIDIwNC4zNzMzMzMgMCAwIDAtMTQuMDgtMzQuMTMzMzMzIDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMTAuMjQtNi40bC00LjI2NjY2Ny03LjY4YTI2Ny41MiAyNjcuNTIgMCAwIDEtMzQuNTYgMTAuMjQgMjU5Ljg0IDI1OS44NCAwIDAgMS0xNTEuNDY2NjY3LTExLjA5MzMzNGwtNC4yNjY2NjYgOC4xMDY2NjdhMTUuNzg2NjY3IDE1Ljc4NjY2NyAwIDAgMC04LjUzMzMzNCA0LjI2NjY2N2MtNy4yNTMzMzMgOC41MzMzMzMtMTAuMjQgMjIuNjEzMzMzLTE1Ljc4NjY2NiAzNi4yNjY2NjZhMTQ2LjM0NjY2NyAxNDYuMzQ2NjY3IDAgMCAxLTUuOTczMzM0IDE4Ljc3MzMzNGwtMi41NiA1LjEyYTIwLjQ4IDIwLjQ4IDAgMSAxLTM2LjI2NjY2Ni0xNy40OTMzMzRsMi41Ni01LjU0NjY2NmExMzAuNTYgMTMwLjU2IDAgMCAxIDExLjA5MzMzMy0xNi4yMTMzMzQgMTk2LjY5MzMzMyAxOTYuNjkzMzMzIDAgMCAwIDE4LjM0NjY2Ny0zMi44NTMzMzMgMjAuNDggMjAuNDggMCAwIDAtMS43MDY2NjctMTEuNTJsMy44NC04Ljk2YTI2Mi44MjY2NjcgMjYyLjgyNjY2NyAwIDAgMS0xMTYuNDgtMTQ1LjQ5MzMzM2wtOC45NiAxLjI4YTI0Ljc0NjY2NyAyNC43NDY2NjcgMCAwIDAtMTEuNTItNC4yNjY2NjcgMTcwLjY2NjY2NyAxNzAuNjY2NjY3IDAgMCAwLTM0Ljk4NjY2NyAxMC4yNCAxMzAuNTYgMTMwLjU2IDAgMCAxLTE3LjkyIDYuODI2NjY3bC01LjEyIDEuMjhoLTAuODUzMzMzYTIwLjQ4IDIwLjQ4IDAgMSAxLTguOTYtMzkuMjUzMzM0aDAuNDI2NjY3bDUuNTQ2NjY2LTEuMjhhMTczLjY1MzMzMyAxNzMuNjUzMzMzIDAgMCAxIDE5LjItMS4yOCAxOTMuMjggMTkzLjI4IDAgMCAwIDM2LjI2NjY2Ny01Ljk3MzMzM2MzLjQxMzMzMy0xLjI4IDYuNC01Ljk3MzMzMyA4LjUzMzMzMy04LjUzMzMzM2w4LjUzMzMzNC0yLjU2YTI2MS4xMiAyNjEuMTIgMCAwIDEgNDAuOTYtMTgyLjE4NjY2N2wtNi40LTUuNTQ2NjY3YTI0LjMyIDI0LjMyIDAgMCAwLTMuODQtMTEuNTIgMTg0LjMyIDE4NC4zMiAwIDAgMC0yOS44NjY2NjctMjAuOTA2NjY2IDE3NC45MzMzMzMgMTc0LjkzMzMzMyAwIDAgMS0xNi42NC05LjgxMzMzNGwtNC4yNjY2NjctMy40MTMzMzNoLTAuNDI2NjY2YTIxLjMzMzMzMyAyMS4zMzMzMzMgMCAwIDEtNS4xMi0yOS44NjY2NjcgMTkuMiAxOS4yIDAgMCAxIDE0LjkzMzMzMy02LjQgMjYuMDI2NjY3IDI2LjAyNjY2NyAwIDAgMSAxNC4wOCA1LjEybDQuMjY2NjY3IDMuNDEzMzM0YTE3Ny45MiAxNzcuOTIgMCAwIDEgMTMuMjI2NjY2IDE0LjA4IDE2OS44MTMzMzMgMTY5LjgxMzMzMyAwIDAgMCAyNy43MzMzMzQgMjQuNzQ2NjY2IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAgMTEuOTQ2NjY2IDEuMjhsNy4yNTMzMzQgNS4xMmEyNjAuMjY2NjY3IDI2MC4yNjY2NjcgMCAwIDEgMTMxLjg0LTc1LjUyIDI2NC45NiAyNjQuOTYgMCAwIDEgMzYuMjY2NjY2LTUuNTQ2NjY2di04LjUzMzMzNGEyMS43NiAyMS43NiAwIDAgMCA2LjQtMTAuMjQgMTc3LjkyIDE3Ny45MiAwIDAgMC0yLjEzMzMzMy0zNi42OTMzMzMgMTYwLjg1MzMzMyAxNjAuODUzMzMzIDAgMCAxLTIuNTYtMTkuMnYtNS41NDY2NjdjMC0xMi4zNzMzMzMgOC45Ni0yMi42MTMzMzMgMjAuMDUzMzMzLTIyLjYxMzMzM3MyMC4wNTMzMzMgMTAuMjQgMjAuMDUzMzM0IDIyLjYxMzMzM1YxOTJhMTQ3LjIgMTQ3LjIgMCAwIDEtMi41NiAxOS4yIDE3Ny45MiAxNzcuOTIgMCAwIDAtMi4xMzMzMzQgMzYuNjkzMzMzIDE1LjM2IDE1LjM2IDAgMCAwIDYuODI2NjY3IDEwLjI0YzAgMS4yOCAwLjQyNjY2NyA2LjQgMC40MjY2NjcgOC45NmEyNjQuNTMzMzMzIDI2NC41MzMzMzMgMCAwIDEgMTY3LjY4IDgxLjA2NjY2N2w3LjY4LTUuNTQ2NjY3YTIxLjMzMzMzMyAyMS4zMzMzMzMgMCAwIDAgMTEuOTQ2NjY2LTEuMjggMjEyLjkwNjY2NyAyMTIuOTA2NjY3IDAgMCAwIDI3LjMwNjY2Ny0yNC43NDY2NjYgMTQyLjA4IDE0Mi4wOCAwIDAgMSAxMy4yMjY2NjctMTQuMDhsNC4yNjY2NjYtMy40MTMzMzRhMjEuNzYgMjEuNzYgMCAwIDEgMzAuMjkzMzM0IDEuNzA2NjY3YzcuMjUzMzMzIDguNTMzMzMzIDQuNjkzMzMzIDIyLjE4NjY2Ny01LjEyIDI5Ljg2NjY2N2wtNC4yNjY2NjcgMy40MTMzMzNjLTUuNTQ2NjY3IDQuMjY2NjY3LTExLjA5MzMzMyA2LjQtMTYuNjQgOS44MTMzMzNhMTg0LjMyIDE4NC4zMiAwIDAgMC0yOS44NjY2NjcgMjAuOTA2NjY3IDE1Ljc4NjY2NyAxNS43ODY2NjcgMCAwIDAtMy44NCAxMS41MmwtNy4yNTMzMzMgNi40YTI2NC4xMDY2NjcgMjY0LjEwNjY2NyAwIDAgMSAzNy45NzMzMzMgODcuNDY2NjY3IDI1OC4xMzMzMzMgMjU4LjEzMzMzMyAwIDAgMSA0LjI2NjY2NyA5NC4yOTMzMzNsOC4xMDY2NjcgMi41NmMxLjI4IDIuMTMzMzMzIDQuMjY2NjY3IDcuMjUzMzMzIDguNTMzMzMzIDguNTMzMzMzYTE5My4yOCAxOTMuMjggMCAwIDAgMzYuMjY2NjY3IDUuOTczMzM0IDE3My42NTMzMzMgMTczLjY1MzMzMyAwIDAgMSAxOS4yIDEuMjhsNS45NzMzMzMgMS4yOGMxMS45NDY2NjcgMy40MTMzMzMgMTkuNjI2NjY3IDE0LjA4IDE3LjQ5MzMzMyAyNC43NDY2NjZ6IiBmaWxsPSIjMDA4QkRCIiBwLWlkPSIxNzk3Ij48L3BhdGg+PHBhdGggZD0iTTUyNy43ODY2NjcgNjM0LjAyNjY2N2ExOC4zNDY2NjcgMTguMzQ2NjY3IDAgMCAwLTguMTA2NjY3LTcuNjggMTYuNjQgMTYuNjQgMCAwIDAtOC41MzMzMzMtMS43MDY2NjcgMTguMzQ2NjY3IDE4LjM0NjY2NyAwIDAgMC0xNC45MzMzMzQgOS4zODY2NjdsLTUxLjIgOTIuNTg2NjY2YTIwOC4yMTMzMzMgMjA4LjIxMzMzMyAwIDAgMCAxMTMuOTIgNS45NzMzMzQgMTk0LjEzMzMzMyAxOTQuMTMzMzMzIDAgMCAwIDIwLjQ4LTUuNTQ2NjY3bC01MS4yLTkzLjAxMzMzM3ogbTc2LjM3MzMzMy01Mi40OGgtNC4yNjY2NjdhMTcuOTIgMTcuOTIgMCAwIDAtMTUuNzg2NjY2IDI0Ljc0NjY2NmgtMC40MjY2NjdsNDAuOTYgOTguNTZhMjA3LjM2IDIwNy4zNiAwIDAgMCA4NC4wNTMzMzMtMTA1LjgxMzMzM2wtMTA0Ljk2LTE3LjQ5MzMzM3oiIGZpbGw9IiMwMDhCREIiIHAtaWQ9IjE3OTgiPjwvcGF0aD48L3N2Zz4=",
+        "version": 2,
+        "width": 0.8279412,
+        "xPos": 2.0676467,
+        "yPos": 0.48863637,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": "#4285F4",
+        "connectPoints": [
+          {
+            "x": 120.558826,
+            "y": 98.99999911999998
+          },
+          {
+            "x": 211.76467,
+            "y": 96.99999936
+          }
+        ],
+        "connectType": "straight",
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278691394",
+        "end": {
+          "chartDirc": "W",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "linewidth": 3,
+        "points": [
+          {
+            "x": 10,
+            "y": 12
+          },
+          {
+            "x": 134.03995,
+            "y": 10
+          }
+        ],
+        "showTitle": true,
+        "start": {
+          "chartDirc": "E",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278521097",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278691394",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": "#4285F4",
+        "connectPoints": [
+          {
+            "x": 248.16173,
+            "y": 145.99999816
+          },
+          {
+            "x": 123.5294,
+            "y": 221.500004
+          }
+        ],
+        "connectType": "straight",
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279007602",
+        "end": {
+          "chartDirc": "E",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278539451",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "linewidth": 3,
+        "points": [
+          {
+            "x": 179.49997,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 85.50001
+          }
+        ],
+        "showTitle": true,
+        "start": {
+          "chartDirc": "S",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279007602",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": "#4285F4",
+        "connectPoints": [
+          {
+            "x": 248.16173,
+            "y": 145.99999816
+          },
+          {
+            "x": 366.7941,
+            "y": 220.49999664
+          }
+        ],
+        "connectType": "straight",
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279024635",
+        "end": {
+          "chartDirc": "W",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278501507",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "linewidth": 3,
+        "points": [
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 171.34003,
+            "y": 84.5
+          }
+        ],
+        "showTitle": true,
+        "start": {
+          "chartDirc": "S",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279024635",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "操作资源",
+        "descriptionSize": 12,
+        "displayName": "类型",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 0,
+          "g": 0,
+          "r": 0
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 0.79545456,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.3426471,
+        "xAxis": [
+          "type"
+        ],
+        "xPos": 0.9670588,
+        "yPos": 0.42045385,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* | SELECT \"objectRef.resource\" as type  limit 1",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType} | SELECT \"objectRef.resource\" as type  limit 1",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279110754",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "成功率",
+        "descriptionSize": 12,
+        "displayName": "类型",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 226,
+          "g": 144,
+          "r": 74
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 0.8181818,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "%",
+        "unitSize": 12,
+        "version": 2,
+        "width": 0.7397058600000002,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 4.1111765,
+        "yPos": 2.1249993,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  round(sum(case when \"responseStatus.code\" < 400 then 1 else 0 end) *100.0 / count(1), 2)",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType}   NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  round(sum(case when \"responseStatus.code\" < 400 then 1 else 0 end) *100.0 / count(1), 2)",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279450177",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "操作用户数",
+        "descriptionSize": 12,
+        "displayName": "类型",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 226,
+          "g": 144,
+          "r": 74
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 0.8181818,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 0.7397058600000002,
+        "xAxis": [
+          "操作账号"
+        ],
+        "xPos": -0.05,
+        "yPos": 0.6818175,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  count(DISTINCT( CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n )) as \"操作账号\"",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType}   NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  count(DISTINCT( CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n )) as \"操作账号\"",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547279859697",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280191802",
+        "height": 1.2840909,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3MjgwMTY4MDYyIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjkwMjIiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDA4LjcgODEyLjVsMzEuNi0zNi40IDQuOC00LjhjMjkuMS0yNi43IDc1LjMtMjQuMyAxMDIgNC44bDMxLjYgMzYuNGMxNy00LjggMzQtMTIuMSA0OC42LTE5LjRsLTIuNS00OC42di03LjNjMi41LTQxLjMgMzYuNC03MC40IDc3LjctNjhsNDguNiAyLjVjNy4zLTE0LjYgMTQuNi0zMS42IDE5LjQtNDguNmwtMzYuNC0zMS42LTQuOC00LjhjLTI2LjctMjkuMS0yNC4zLTc1LjMgNC44LTEwMmwzNi40LTMxLjZjLTQuOC0xNy0xMi4xLTM0LTE5LjQtNDguNmwtNDguNiAyLjVoLTcuM2MtNDEuMy0yLjUtNzAuNC0zNi40LTY4LTc3LjdsMi41LTQ4LjZjLTE0LjYtNy4zLTMxLjYtMTQuNi00OC42LTE5LjRsLTMxLjYgMzYuNC00LjggNC44Yy0yOS4xIDI2LjctNzUuMyAyNC4zLTEwMi00LjhsLTMxLjYtMzYuNGMtMTIuMSA0LjgtMjkuMSAxMi4xLTQ4LjYgMjEuOGwyLjUgNDguNnY3LjNjLTIuNSA0MS4zLTM2LjQgNzAuNC03Ny43IDY4bC00OC42LTIuNWMtNy4zIDE0LjYtMTQuNiAzMS42LTE5LjQgNDguNmwzNi40IDMxLjYgNC44IDQuOGMyNi43IDI5LjEgMjQuMyA3NS4zLTQuOCAxMDJsLTM2LjQgMzEuNmM0LjggMTcgMTIuMSAzNCAxOS40IDQ4LjZsNDguNi0yLjVoNy4zYzQxLjMgMi41IDcwLjQgMzYuNCA2OCA3Ny43bC0yLjUgNDguNmMxNy4xIDQuOSAzMS43IDkuNyA0OC42IDE3eiBtLTk3LjEtOS43bDIuNS02My4yYzAtMTQuNi05LjctMjQuMy0yMS44LTI2LjdoLTIuNWwtNjMuMiAyLjVjLTkuNyAwLTE3LTQuOC0yMS44LTEyLjEtMTctMjYuNy0yOS4xLTU1LjktMzYuNC04Ny41LTIuNS05LjcgMC0xNyA3LjMtMjQuM2w0OC42LTQzLjdjOS43LTkuNyA5LjctMjQuMyAyLjUtMzRsLTIuNS0yLjUtNDguNi00My43Yy03LjMtNC44LTkuNy0xNC42LTcuMy0yNC4zIDcuMy0zMS42IDE5LjQtNjAuNyAzNi40LTg3LjUgNC44LTcuMyAxMi4xLTEyLjEgMjEuOC0xMi4xbDYzLjIgMi41YzE0LjYgMCAyNC4zLTkuNyAyNi43LTIxLjh2LTIuNWwtMi41LTYzLjJjMC05LjcgNC44LTE5LjQgMTQuNi0yMS44IDM2LjQtMTkuNCA2NS41LTI5LjEgODcuNS0zNi40IDkuNy0yLjUgMTcgMCAyNC4zIDcuM2w0My43IDQ4LjZjOS43IDkuNyAyNC4zIDkuNyAzNCAyLjVsMi41LTIuNSA0My43LTQ4LjZjNC44LTcuMyAxNC42LTkuNyAyNC4zLTcuMyAzMS42IDcuMyA2MC43IDE5LjQgODcuNSAzNi40IDcuMyA0LjggMTIuMSAxMi4xIDEyLjEgMjEuOGwtMi41IDYzLjJjMCAxNC42IDkuNyAyNC4zIDIxLjggMjYuN2gyLjVsNjMuMi0yLjVjOS43IDAgMTcgNC44IDIxLjggMTIuMSAxNyAyNi43IDI5LjEgNTUuOSAzNi40IDg3LjUgMi41IDkuNyAwIDE3LTcuMyAyNC4zbC00OC42IDQzLjdjLTkuNyA5LjctOS43IDI0LjMtMi41IDM0bDIuNSAyLjUgNDguNiA0My43YzcuMyA0LjggOS43IDE0LjYgNy4zIDI0LjMtNy4zIDMxLjYtMTkuNCA2MC43LTM2LjQgODcuNS00LjggNy4zLTEyLjEgMTIuMS0yMS44IDEyLjFsLTYzLjItMi41Yy0xNC42IDAtMjQuMyA5LjctMjYuNyAyMS44djIuNWwyLjUgNjMuMmMwIDkuNy00LjggMTctMTIuMSAyMS44LTI2LjcgMTctNTUuOSAyOS4xLTg3LjUgMzYuNC05LjcgMi41LTE3IDAtMjQuMy03LjNMNTE4IDgwNS4yYy05LjctOS43LTI0LjMtOS43LTM0LTIuNWwtMi41IDIuNS00My43IDQ4LjZjLTQuOCA3LjMtMTQuNiA5LjctMjQuMyA3LjMtMzEuNi03LjMtNjAuNy0xOS40LTg3LjUtMzYuNC05LjUtMi41LTE0LjQtMTIuMi0xNC40LTIxLjl6TTQ5Ni4yIDY3OWMtODAuMiAwLTE0NS43LTY1LjUtMTQ1LjctMTQ1LjdTNDE2IDM4Ny42IDQ5Ni4yIDM4Ny42czE0NS43IDY1LjUgMTQ1LjcgMTQ1LjdTNTc2LjMgNjc5IDQ5Ni4yIDY3OXogbTAtNDguNmM1My40IDAgOTcuMS00My43IDk3LjEtOTcuMXMtNDMuNy05Ny4xLTk3LjEtOTcuMS05Ny4xIDQzLjctOTcuMSA5Ny4xYzAgNTMuNCA0My43IDk3LjEgOTcuMSA5Ny4xeiIgZmlsbD0iIzEyOTZkYiIgcC1pZD0iOTAyMyI+PC9wYXRoPjwvc3ZnPg==",
+        "version": 2,
+        "width": 0.8720588,
+        "xPos": 2.0482354,
+        "yPos": 1.9204545,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280191802",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": "#4285F4",
+        "connectPoints": [
+          {
+            "x": 248.16173,
+            "y": 145.99999816
+          },
+          {
+            "x": 248.42648,
+            "y": 173.999996
+          }
+        ],
+        "connectType": "straight",
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280204404",
+        "end": {
+          "chartDirc": "N",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280191802",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "linewidth": 3,
+        "points": [
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 10.36006,
+            "y": 37.999996
+          }
+        ],
+        "showTitle": true,
+        "start": {
+          "chartDirc": "S",
+          "chartTitle": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547278550769",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280204404",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "操作方法数",
+        "descriptionSize": 12,
+        "displayName": "类型",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 226,
+          "g": 144,
+          "r": 74
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 0.8181818,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 0.7397058600000002,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 2.6341178,
+        "yPos": 2.1477265,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  count(DISTINCT verb)",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType}   NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT  count(DISTINCT verb)",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547280214249",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": " Namespace（可选）",
+            "key": "objectRef.namespace",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.5340909090909091,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.517578027465668,
+        "xPos": 4.9,
+        "yPos": -0.05681818181818182,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create or verb : patch or verb : update or verb : put or verb:delete | select DISTINCT ( case when \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end )  as ns  HAVING ns != '__all__'  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551509533037",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "访问事件Namespace分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.7272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.5,
+        "xPos": 5.070883,
+        "yPos": 3.159091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "(verb : get or verb : list or verb : watch )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "(verb : get or verb : list or verb : watch )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543838969000",
+      "type": "piepro"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "资源更新列表",
+        "fixedTime": false,
+        "height": 4.659091,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 4.95,
+        "xPos": 5.07,
+        "yPos": 5.875,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb : update or verb : put or verb : patch )  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType} and (verb : update or verb : put or verb : patch )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543842188000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        },
+        "资源名": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "资源创建列表",
+        "fixedTime": false,
+        "height": 4.659091,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源名": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 5.1,
+        "xPos": -0.05,
+        "yPos": 5.875,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb : create )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager      | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType} and (verb : create )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager      | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"objectRef.name\" as \"资源名\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543842216000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "资源删除列表",
+        "fixedTime": false,
+        "height": 4.659091,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 4.95,
+        "xPos": 5.07,
+        "yPos": 10.5,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : delete  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType} and (verb : delete )     NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543842234000",
+      "type": "table"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "filterInherit": false,
+          "savedSearchName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_audit-id",
+          "searchFilter": "${事件ID}",
+          "searchToken": [
+            {
+              "key": "id",
+              "value": "__sls__trigger_col__"
+            }
+          ],
+          "timeRange": -1,
+          "type": "NewSearch"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "资源": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "资源访问列表",
+        "fixedTime": false,
+        "height": 4.659091,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 5.1,
+        "xPos": -0.05,
+        "yPos": 10.5,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "(verb : get or verb : list or verb : watch )      NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager    | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : ${ResourceType}  and (verb : get or verb : list or verb : watch )      NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager    | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"requestURI\" as \"资源\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc",
+        "tokens": [
+          {
+            "key": "ResourceType",
+            "value": "xxx"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543842288000",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "更新事件Namespace分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.7272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.5,
+        "xPos": 7.522058500000001,
+        "yPos": 0.48863637,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "(verb : update or verb : put or verb : patch )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "(verb : update or verb : put or verb : patch )    NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager     | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543843436000",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "创建事件Namespace分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.7272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.5,
+        "xPos": 5.071177,
+        "yPos": 0.48863652,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "verb : create | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "verb : create | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543843469000",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Delete事件Namespace分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.7272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "total",
+            "showFieldKey": "ns"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.5,
+        "xPos": 7.5235295,
+        "yPos": 3.159091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "(verb : delete)  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns",
+            "tokenQuery": "(verb : delete)  | SELECT CASE WHEN  \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end as  ns, count(1) as total  from log   group by ns"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543843520000",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "子账号ID（可选）",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 2.437578027465668,
+        "yPos": -0.05681818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543843762000",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "  ",
+        "filterData": [
+          {
+            "alias": "状态码（可选）",
+            "key": "responseStatus.code",
+            "list": [
+              "404",
+              "403",
+              "500",
+              "501",
+              "502",
+              "200",
+              "201",
+              "202"
+            ],
+            "mode": true,
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": 7.38,
+        "yPos": -0.05681818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543843950000",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "操作轨迹",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "never"
+        },
+        "height": 2.7272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "ActionType",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "count"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 5.0852942,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 3.159091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "name": "A",
+            "project": "k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+            "query": "level: RequestResponse  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   |  select case when \"ActionType\" is null then '无' else \"ActionType\" end as \"ActionType\", \"t\", count from (SELECT time_series(__time__, '1h', '%y-%m-%d %H', '0') as t, verb as ActionType, count(1) as count from log group by t, verb   order by t  limit 10000) limit 10000",
+            "tokenQuery": "level: RequestResponse  NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager   |  select case when \"ActionType\" is null then '无' else \"ActionType\" end as \"ActionType\", \"t\", count from (SELECT time_series(__time__, '1h', '%y-%m-%d %H', '0') as t, verb as ActionType, count(1) as count from log group by t, verb   order by t  limit 10000) limit 10000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-cfc281c9c4ca548638a1aaa765d8f220d1543904253000",
+      "type": "aggpro"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_resource_op_detail_cn",
+  "description": "",
+  "displayName": "Kubernetes资源操作详细列表"
+}

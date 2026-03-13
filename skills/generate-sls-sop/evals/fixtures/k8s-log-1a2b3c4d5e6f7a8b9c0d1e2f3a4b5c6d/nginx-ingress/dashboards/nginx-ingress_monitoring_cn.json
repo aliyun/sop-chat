@@ -1,0 +1,1793 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟PV/同比上昨日",
+        "descriptionSize": 12,
+        "displayName": "访问PV",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2159091,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.02021739,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.49999997,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "*  | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare( pv , 86400) as diff from (select count(1) as pv from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124015",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "5分钟UV/同比昨日",
+        "descriptionSize": 12,
+        "displayName": "访问UV",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 1.732353,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.6731589,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5113636,
+        "zIndex": 1
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(uv , 86400) as diff from (select approx_distinct(x_forward_for) as uv from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124016",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "请求成功率（code<400）/同比昨日",
+        "descriptionSize": 12,
+        "displayName": "请求成功率",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.02227616899999999,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 1.625,
+        "zIndex": 2
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) * 100, 2) as inc from(select compare(count , 86400) as diff from (select sum(case when status < 400 then 1 else 0 end) * 100.0 / count(1) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124017",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "aAxis": [
+          "method"
+        ],
+        "bAxis": [
+          "_col1"
+        ],
+        "displayName": "Method分布",
+        "height": 1.7954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "ring",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 1.64,
+        "xAxis": [
+          "method"
+        ],
+        "xPos": 6.660218,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 2.1477273,
+        "zIndex": 3
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select method, count(1) group by method",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124018",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "aAxis": [
+          "status"
+        ],
+        "bAxis": [
+          "_col1"
+        ],
+        "displayName": "状态码分布",
+        "height": 1.7386364,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "ring",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 1.6367648,
+        "xAxis": [
+          "status"
+        ],
+        "xPos": 6.665217,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.48863637,
+        "zIndex": 4
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select status, count(1) group by status",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124019",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "aAxis": [
+          "_pod_name_"
+        ],
+        "bAxis": [
+          "_col1"
+        ],
+        "displayName": "Ingress请求数分布",
+        "height": 3.4545455,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pieType": "ring",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 1.79,
+        "xAxis": [
+          "_pod_name_"
+        ],
+        "xPos": 8.250217,
+        "yAxis": [
+          "_col1"
+        ],
+        "yPos": 0.48863637,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select _pod_name_, count(1) group by _pod_name_",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124020",
+      "type": "pie"
+    },
+    {
+      "action": {
+        "pv": {
+          "type": "disabled"
+        },
+        "url": {
+          "type": "disabled"
+        },
+        "uv": {
+          "type": "disabled"
+        },
+        "入流量(KB)": {
+          "type": "disabled"
+        },
+        "出流量(KB)": {
+          "type": "disabled"
+        },
+        "平均延迟": {
+          "type": "disabled"
+        },
+        "访问成功率(%)": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "TOP请求URL",
+        "height": 3.875,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 5.0117645,
+        "xPos": 0.012864462,
+        "yPos": 9.454545,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  url_extract_path(url) as url , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\", \nround(avg(request_time), 6) as \"平均延迟\",\nround(sum(request_length) / 1024.0, 3) as \"入流量(KB)\",\nround(sum(body_bytes_sent) / 1024.0, 3) as \"出流量(KB)\"\n  group by url ORDER by pv desc limit 100",
+        "start": "-3600s",
+        "tokenQuery": "* | select  url_extract_path(url) as url , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\", \nround(avg(request_time), 6) as \"平均延迟\",\nround(sum(request_length) / 1024.0, 3) as \"入流量(KB)\",\nround(sum(body_bytes_sent) / 1024.0, 3) as \"出流量(KB)\"\n  group by url ORDER by pv desc limit 100",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124021",
+      "type": "table"
+    },
+    {
+      "action": {
+        "pv": {
+          "type": "disabled"
+        },
+        "service": {
+          "type": "disabled"
+        },
+        "uv": {
+          "type": "disabled"
+        },
+        "入流量(KB)": {
+          "type": "disabled"
+        },
+        "出流量(KB)": {
+          "type": "disabled"
+        },
+        "平均延迟": {
+          "type": "disabled"
+        },
+        "访问成功率(%)": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "TOP请求Service",
+        "height": 3.8522727,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "pv": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "uv": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "入流量(KB)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "出流量(KB)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "平均延迟": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "访问成功率(%)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 5.019118,
+        "xPos": 4.9922767,
+        "yPos": 9.454545,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as service , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\", \nround(avg(request_time), 6) as \"平均延迟\",\nround(sum(request_length) / 1024.0, 3) as \"入流量(KB)\",\nround(sum(body_bytes_sent) / 1024.0, 3) as \"出流量(KB)\"\n  group by service ORDER by pv desc   limit 100",
+        "start": "-3600s",
+        "tokenQuery": "* | select  proxy_upstream_name as service , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\", \nround(avg(request_time), 6) as \"平均延迟\",\nround(sum(request_length) / 1024.0, 3) as \"入流量(KB)\",\nround(sum(body_bytes_sent) / 1024.0, 3) as \"出流量(KB)\"\n  group by service ORDER by pv desc   limit 100",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124022",
+      "type": "table"
+    },
+    {
+      "action": {
+        "pv": {},
+        "service": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Service请求TOP10",
+        "height": 3.340909,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "pv": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 2.61,
+        "xPos": 0.010217392,
+        "yPos": 6.1818185,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as service , count(1) as pv\n  group by service having  length(service) > 3 ORDER by pv desc   limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124023",
+      "type": "table"
+    },
+    {
+      "action": {
+        "service": {},
+        "访问失败率(%)": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Service失败率TOP10",
+        "height": 3.340909,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "访问失败率(%)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 2.48,
+        "xPos": 2.5502174,
+        "yPos": 6.1818185,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as service , round(sum( \ncase when status >= 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问失败率(%)\" group by service  having  length(service) > 3 ORDER by \"访问失败率(%)\" desc    limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124024",
+      "type": "table"
+    },
+    {
+      "action": {
+        "service": {},
+        "平均延迟": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Service延迟TOP10",
+        "height": 3.340909,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "平均延迟": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 2.43,
+        "xPos": 4.990217,
+        "yPos": 6.1818185,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as service , \nround(avg(request_time), 6) as \"平均延迟\"\n  group by service  having  length(service) > 3 ORDER by \"平均延迟\" desc    limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124025",
+      "type": "table"
+    },
+    {
+      "action": {
+        "service": {},
+        "入流量(KB)": {},
+        "出流量(KB)": {},
+        "总流量(KB)": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Service流量TOP10",
+        "height": 3.340909,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "入流量(KB)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "出流量(KB)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "总流量(KB)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 2.66,
+        "xPos": 7.3702173,
+        "yPos": 6.1818185,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as service , round(sum(request_length) / 1024.0, 3) as \"入流量(KB)\",round(sum(body_bytes_sent) / 1024.0, 3) as \"出流量(KB)\",\nround((sum(body_bytes_sent) + sum(request_length)) / 1024.0, 3) as \"总流量(KB)\"\n  group by service  having  length(service) > 3 ORDER by \"总流量(KB)\" desc    limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124026",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "P99延迟/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "P99延迟",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 3.3287463,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 2.75,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(approx_percentile(request_time, 0.99) * 1000, 3) as count  from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124027",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "P90延迟/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "P95延迟",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1818181,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "width": 1.7273972,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.6708056,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 2.75,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(approx_percentile(request_time, 0.95) * 1000, 3) as count  from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124028",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "P50延迟/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "P9999延迟",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 4.9866877,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 2.75,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(approx_percentile(request_time, 0.9999) * 1000, 3) as count  from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124029",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "平均延迟/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "平均延迟",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "ms",
+        "unitSize": 14,
+        "width": 1.7383561,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 0.012276215,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 2.75,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(avg(request_time) * 1000, 3) as count  from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124030",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "入流量（MB）/同比昨日",
+        "descriptionSize": 12,
+        "displayName": "入流量",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "MB",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 3.3240404,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.49999997,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(sum(request_length) / 1024.0 / 1024.0, 3) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124031",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "出流量（MB）/同比昨日",
+        "descriptionSize": 12,
+        "displayName": "出流量",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "MB",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 4.983157,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.49999997,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(sum(body_bytes_sent) / 1024.0 / 1024.0, 3) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124032",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "",
+        "description": "404比例/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "404比例",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "width": 1.73,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 1.6702174,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 1.625,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1), 3) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124033",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "",
+        "description": "请求未转发比例/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "请求未转发比例",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "width": 1.7273972,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 4.984335,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 1.625,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(sum(case when length(proxy_upstream_name) <= 3 then 1 else 0 end) * 100.0 / count(1), 3) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124034",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "method"
+        ],
+        "chartType": "area",
+        "displayName": "PV&UV",
+        "height": 2.3977273,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 3.3794117,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.019629154,
+        "yAxis": [
+          "PV",
+          "UV"
+        ],
+        "yAxisRight": [],
+        "yPos": 3.875,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select arbitrary(__time__)  time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time,  count(1) as PV, approx_distinct(x_forward_for) as UV    group by time  order by time_t  limit 14400",
+        "start": "-3600s",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124035",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Service",
+            "filterMode": true,
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1220589,
+        "xPos": 2.1210868,
+        "yPos": -0.045454547,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124036",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "method"
+        ],
+        "chartType": "area",
+        "displayName": "请求延迟",
+        "height": 2.3977273,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 3.36,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 6.650217,
+        "yAxis": [
+          "P95延迟",
+          "P99延迟",
+          "P9999延迟",
+          "平均延迟"
+        ],
+        "yAxisRight": [],
+        "yPos": 3.875,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select arbitrary(__time__)  time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time,  round(avg(request_time) * 1000, 3) as \"平均延迟\", round(approx_percentile(request_time, 0.95) * 1000, 3) as \"P95延迟\",  round(approx_percentile(request_time, 0.99) * 1000, 3) as \"P99延迟\", round(approx_percentile(request_time, 0.9999) * 1000, 3) as \"P9999延迟\"   group by time  order by time_t  limit 14400",
+        "start": "-3600s",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124037",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "URL",
+            "key": "url",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.0558825,
+        "xPos": 4.12615,
+        "yPos": -0.045454547,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT url from ( select  (url_extract_path(url))  as url, count(1) as total from log  group by url  order by total desc   limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124038",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "method"
+        ],
+        "chartType": "area",
+        "displayName": "失败率",
+        "height": 2.3977273,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 3.38,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 3.3302174,
+        "yAxis": [
+          "404比例%",
+          "5XX比例%",
+          "失败率%"
+        ],
+        "yAxisRight": [],
+        "yPos": 3.875,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select arbitrary(__time__)  time_t, date_format(from_unixtime(__time__ - __time__ % 60), '%H:%i') as time, round(sum(case when status >= 400 then 1 else 0 end) * 100.0 / count(1), 3) as \"失败率%\", round(sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1), 3) as \"404比例%\", round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 3) as \"5XX比例%\"    group by time  order by time_t  limit 14400",
+        "start": "-3600s",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124039",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Method",
+            "key": "method",
+            "list": [
+              "GET",
+              "POST",
+              "DELETE",
+              "PUT"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.092647,
+        "xPos": 6.0811,
+        "yPos": -0.045454547,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124040",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "",
+        "description": "5XX比例/同比昨天",
+        "descriptionSize": 12,
+        "displayName": "5XX比例",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.2045455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "%",
+        "unitSize": 14,
+        "width": 1.72,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 3.3310997,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 1.625,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare(count , 86400) as diff from (select round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 3) as count from log))",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124041",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Status",
+            "key": "status",
+            "list": [
+              "200",
+              "404",
+              "500",
+              "502",
+              "401"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 1.975,
+        "xPos": 8.073964,
+        "yPos": -0.045454547,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124042",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1815217,
+        "xPos": 0.04482113200000001,
+        "yPos": -0.045454547,
+        "zIndex": 28
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT host from ( select  host  as host, count(1) as total from log  group by host  order by total desc   limit 100 ) having host is not null ",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561035124043",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "nginx-ingress_monitoring_cn",
+  "description": "",
+  "displayName": "Ingress监控中心"
+}

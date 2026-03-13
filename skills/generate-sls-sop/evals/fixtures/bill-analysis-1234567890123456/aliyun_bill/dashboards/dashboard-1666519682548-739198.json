@@ -1,0 +1,1210 @@
+{
+  "attribute": {
+    "remark": "修改图表",
+    "type": "grid",
+    "update": 1758596378605,
+    "version": "20947142"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses Yesterday",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 4,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "Expenses/Day-to-Day Increase",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "Expenses_today"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": "2",
+        "width": 8,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from instance_bill where PretaxAmount> 0 and ProductCode='oss'))",
+            "tokenQuery": "* | select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from instance_bill where PretaxAmount> 0 and ProductCode='oss'))"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720194",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses This Month",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 4,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "Expenses/Month-on-Month Increase",
+            "descriptionDecimals": 3,
+            "descriptionFontSize": 16,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "Expenses_today"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 3,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": "2",
+        "width": 8,
+        "xPos": 8,
+        "yPos": 0,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*| select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from instance_bill where PretaxAmount> 0 and ProductCode='oss'))",
+            "tokenQuery": "*| select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from instance_bill where PretaxAmount> 0 and ProductCode='oss'))"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720195",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Total Storage Space",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 4,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Storage_space"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgba(255,255,255,1)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "customUnit": "GB",
+            "unit": "custom"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "background",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#555555",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 24,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "first",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "allValues"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "version": "2",
+        "width": 8,
+        "xPos": 16,
+        "yPos": 0,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select round(max_by(usage,t),3) as \"Storage_space\" from(select date_trunc('day',__time__) as t, sum(Usage)/24 as Usage  from instance_bill where ProductCode='oss'   and (BillingItem like '%存储%' or BillingItem like '%Storage%') group by t)",
+            "tokenQuery": "* | select round(max_by(usage,t),3) as \"Storage_space\" from(select date_trunc('day',__time__) as t, sum(Usage)/24 as Usage  from instance_bill where ProductCode='oss'   and (BillingItem like '%存储%' or BillingItem like '%Storage%') group by t)"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720196",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666519720197",
+        "height": 9,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Date",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 4,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='oss' group by \"Date\" order by \"Date\"",
+            "tokenQuery": "* | select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='oss' group by \"Date\" order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720197",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 4,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 13,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='oss' group by \"Date\" order by \"Date\"",
+            "tokenQuery": "* | select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='oss' group by \"Date\" order by \"Date\""
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720198",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in 6 Months",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666519720199",
+        "height": 9,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Time",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 17,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='oss' group by t order by t)) where t > mt",
+            "tokenQuery": "* | select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='oss' group by t order by t)) where t > mt"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720199",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in 6 Months",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 26,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*| select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='oss' group by t order by t)) where t > mt",
+            "tokenQuery": "*| select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='oss' group by t order by t)) where t > mt"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720200",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Standard Storage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 7,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 31,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%standard%' group by \"Billing_item\" order by \"Expenses\" desc",
+            "tokenQuery": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%standard%' group by \"Billing_item\" order by \"Expenses\" desc"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720201",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Archive Storage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 38,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%archive%' group by \"Billing_item\" order by \"Expenses\" desc",
+            "tokenQuery": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%archive%' group by \"Billing_item\" order by \"Expenses\" desc"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720202",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Infrequent Access Storage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 43,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%IA%' group by \"Billing_item\" order by \"Expenses\" desc",
+            "tokenQuery": "* | select BillingItem as \"Billing_item\", round(sum(PretaxAmount),3) as \"Expenses\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"Usage\" from instance_bill where productcode='oss' and instanceid like '%IA%' group by \"Billing_item\" order by \"Expenses\" desc"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720203",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in Each Region",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666519720204",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Region",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 48,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select Region , round(sum(PretaxAmount),3) as \"Expenses\" from instance_bill where productcode='oss' group by Region  order by \"Expenses\" desc",
+            "tokenQuery": "* | select Region , round(sum(PretaxAmount),3) as \"Expenses\" from instance_bill where productcode='oss' group by Region  order by \"Expenses\" desc"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720204",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Analysis in Each Region",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [
+          {
+            "name": "comparedWithLastMonth",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "colorSchame"
+                ],
+                "value": {
+                  "schema": "threshold"
+                }
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "background"
+              },
+              {
+                "optionKeys": [
+                  "thresholdOption",
+                  "thresholds"
+                ],
+                "value": [
+                  {
+                    "color": "rgb(115, 191, 105)",
+                    "rule": ">",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgba(208,2,27,1)",
+                    "rule": ">",
+                    "value": "10"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 18,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 56,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select case when rnk1 =1 then Region else '' end as Region , case when rnk2 = 1 then class else '' end  as \"Storage_class\",BillingItem as \"Billing_item\", concat(cast( round(Usage,3) as varchar),' (' , UsageUnit,')') as\"Usage\", \"Expenses\",concat(cast(round(feepercent,3) as varchar) ,'%') as \"comparedWithLastMonth\" from(  select *, sum(\"Expenses\") over(partition by Region) as regionFee,sum(\"Expenses\") over(partition by Region,class) as RegionClassFee , rank() over(partition by Region order by \"Expenses\" desc) as rnk1,rank() over(partition by Region, class order by \"Expenses\" desc) as rnk2  from ( \nselect region,class, billingitem, usagediff[1] as Usage, usagediff[3]*100-100 as UsagePercent, usageunit, feediff[1] as \"Expenses\", feediff[3]*100-100 as feePercent from(\nselect region,class, billingitem, compare(usage,604800) as usagediff, arbitrary(usageUnit) as usageunit, compare(\"Expenses\",604800) as feediff from(\nselect Region ,split_part(InstanceId,';',2) as class, BillingItem, sum(Usage) as usage, arbitrary(UsageUnit) as UsageUnit, round(sum(PretaxAmount),3) as \"Expenses\"  from instance_bill where productcode='oss' group by Region,class,BillingItem  ) group by region,class,billingitem\n) \n) )order by regionFee desc, RegionClassFee desc ,\"Expenses\" desc  limit 1000",
+            "tokenQuery": "* | select case when rnk1 =1 then Region else '' end as Region , case when rnk2 = 1 then class else '' end  as \"Storage_class\",BillingItem as \"Billing_item\", concat(cast( round(Usage,3) as varchar),' (' , UsageUnit,')') as\"Usage\", \"Expenses\",concat(cast(round(feepercent,3) as varchar) ,'%') as \"comparedWithLastMonth\" from(  select *, sum(\"Expenses\") over(partition by Region) as regionFee,sum(\"Expenses\") over(partition by Region,class) as RegionClassFee , rank() over(partition by Region order by \"Expenses\" desc) as rnk1,rank() over(partition by Region, class order by \"Expenses\" desc) as rnk2  from ( \nselect region,class, billingitem, usagediff[1] as Usage, usagediff[3]*100-100 as UsagePercent, usageunit, feediff[1] as \"Expenses\", feediff[3]*100-100 as feePercent from(\nselect region,class, billingitem, compare(usage,604800) as usagediff, arbitrary(usageUnit) as usageunit, compare(\"Expenses\",604800) as feediff from(\nselect Region ,split_part(InstanceId,';',2) as class, BillingItem, sum(Usage) as usage, arbitrary(UsageUnit) as UsageUnit, round(sum(PretaxAmount),3) as \"Expenses\"  from instance_bill where productcode='oss' group by Region,class,BillingItem  ) group by region,class,billingitem\n) \n) )order by regionFee desc, RegionClassFee desc ,\"Expenses\" desc  limit 1000"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720205",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Daily Storage Space Usage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561666519720206",
+        "height": 8,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Date",
+            "yAxisKeys": [
+              "Storage_space"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "byte_ies",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 74,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(__time__,'%b %e, %Y') as \"Date\" , avg(Usage)*1024*1024*1024  as \"Storage_space\" from instance_bill where productcode='oss' and (BillingItem like '%标准存储(本地冗余)容量%' or BillingItem like '%Capacity-Standard%' or BillingItem like '%Storage%'  or  BillingItem like '%容量%' ) group by \"Date\" order by \"Date\"",
+            "tokenQuery": "* | select date_format(__time__,'%b %e, %Y') as \"Date\" , avg(Usage)*1024*1024*1024  as \"Storage_space\" from instance_bill where productcode='oss' and (BillingItem like '%标准存储(本地冗余)容量%' or BillingItem like '%Capacity-Standard%' or BillingItem like '%Storage%'  or  BillingItem like '%容量%' ) group by \"Date\" order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720206",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Daily Storage Space Usage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 82,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(__time__,'%b %e, %Y') as \"Date\" , concat(cast(round(avg(Usage),3) as varchar),'G')   as \"Storage_space\" from instance_bill where productcode='oss' and (BillingItem like '%标准存储(本地冗余)容量%' or BillingItem like '%Capacity-Standard%' or BillingItem like '%Storage%'  or  BillingItem like '%容量%' ) group by \"Date\" order by \"Date\"",
+            "tokenQuery": "* | select date_format(__time__,'%b %e, %Y') as \"Date\" , concat(cast(round(avg(Usage),3) as varchar),'G')   as \"Storage_space\" from instance_bill where productcode='oss' and (BillingItem like '%标准存储(本地冗余)容量%' or BillingItem like '%Capacity-Standard%' or BillingItem like '%Storage%'  or  BillingItem like '%容量%' ) group by \"Date\" order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561666519720207",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Outbound Traffic over Public Network (Peak/Off-peak Hours)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 10,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 87,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*| select r as Region,round(p,3) as \"Unit_price\",concat(cast(round(u ,3) as varchar ), usageUnit) as \"Usage\", round(a,3) as \"Expenses\"  from(select concat(regions,array['Total']) as regions, concat(price,array[total/usage]) as price, concat(amounts, array[total]) as amounts, concat(usages,array[usage]) as Usages,usageUnit   from( select * from( select array_agg(region) as regions, array_agg(ListPrice) as price, array_agg(amount) as amounts ,sum(Usage)  as usage,  array_agg(usage) as usages,sum(amount) as total  ,arbitrary(UsageUnit) as usageUnit  from(select  region, listPrice , sum(PretaxAmount) as amount ,sum(Usage) as usage ,arbitrary(UsageUnit) as usageUnit from instance_bill where productcode='oss' and (BillingItem like '%外网流出流量%'  or BillingItem like '%NetworkOut%') group by region,listprice order by amount  desc )))),unnest(regions,price, amounts,Usages) as t(r,p,a ,u)",
+            "tokenQuery": "*| select r as Region,round(p,3) as \"Unit_price\",concat(cast(round(u ,3) as varchar ), usageUnit) as \"Usage\", round(a,3) as \"Expenses\"  from(select concat(regions,array['Total']) as regions, concat(price,array[total/usage]) as price, concat(amounts, array[total]) as amounts, concat(usages,array[usage]) as Usages,usageUnit   from( select * from( select array_agg(region) as regions, array_agg(ListPrice) as price, array_agg(amount) as amounts ,sum(Usage)  as usage,  array_agg(usage) as usages,sum(amount) as total  ,arbitrary(UsageUnit) as usageUnit  from(select  region, listPrice , sum(PretaxAmount) as amount ,sum(Usage) as usage ,arbitrary(UsageUnit) as usageUnit from instance_bill where productcode='oss' and (BillingItem like '%外网流出流量%'  or BillingItem like '%NetworkOut%') group by region,listprice order by amount  desc )))),unnest(regions,price, amounts,Usages) as t(r,p,a ,u)"
+          }
+        ],
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561666519720208",
+      "type": "tablepro"
+    }
+  ],
+  "dashboardName": "dashboard-1666519682548-739198",
+  "description": "",
+  "displayName": "OSS Expense Analysis"
+}

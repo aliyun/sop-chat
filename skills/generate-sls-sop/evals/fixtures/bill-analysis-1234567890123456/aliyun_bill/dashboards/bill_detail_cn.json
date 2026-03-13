@@ -1,0 +1,572 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {
+        "产品": {
+          "type": "disabled"
+        },
+        "产品总金额": {
+          "type": "disabled"
+        },
+        "代金券抵扣": {
+          "type": "disabled"
+        },
+        "优惠券优惠金额": {
+          "type": "disabled"
+        },
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "使用量": {
+          "type": "disabled"
+        },
+        "储值卡抵扣": {
+          "type": "disabled"
+        },
+        "单价": {
+          "type": "disabled"
+        },
+        "原始金额": {
+          "type": "disabled"
+        },
+        "应付金额": {
+          "type": "disabled"
+        },
+        "未接清金额": {
+          "type": "disabled"
+        },
+        "现金支付": {
+          "type": "disabled"
+        },
+        "计费项": {
+          "type": "disabled"
+        },
+        "资源包抵扣用量": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "使用量和费用",
+        "height": 7.045454545454546,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 10.05,
+        "xPos": -0.05,
+        "yPos": 11.48863636363636,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from log group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "source:instance_bill | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(DeductedByCoupons,3) as \"优惠券优惠金额\",round(DeductedByCashCoupons,3) as \"代金券抵扣\",round(DeductedByPrepaidCard,3) as \"储值卡抵扣\" ,round(PaymentAmount,3) as \"现金支付\",round(OutstandingAmount,3) as \"未接清金额\",round(PretaxAmount,3) as \"应付金额\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(DeductedByCashCoupons) as DeductedByCashCoupons , sum(DeductedByCoupons) as DeductedByCoupons, sum(DeductedByPrepaidCard) as DeductedByPrepaidCard, sum(InvoiceDiscount) as InvoiceDiscount, sum(OutstandingAmount) as OutstandingAmount, sum(PaymentAmount) as PaymentAmount, sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from log group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1588921272191",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "异常详情",
+        "height": 3.5227273,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.31,
+        "xPos": 4.74,
+        "yPos": 19.15909072727273,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "ProductCode:oss| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from log group by time order by time)) limit 10000",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "tokenQuery": "ProductCode:${name}| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from log group by time order by time)) limit 10000",
+        "tokens": [
+          {
+            "end": 15,
+            "key": "name",
+            "mode": "global",
+            "start": 12,
+            "value": "oss"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "dashboard-demo1569329370995",
+      "type": "timeseries"
+    },
+    {
+      "action": {
+        "30天费用趋势": {},
+        "产品名称": {
+          "type": "disabled"
+        },
+        "产品费用/总费用": {},
+        "产品费用占比": {},
+        "占比": {},
+        "原始消费(元)": {
+          "type": "disabled"
+        },
+        "原始消费(同比上月)": {
+          "type": "disabled"
+        },
+        "同比上月(原始消费)": {},
+        "同比上月(折后费用)": {},
+        "实际应付(元)": {
+          "type": "disabled"
+        },
+        "实际应付(同比上月)": {
+          "type": "disabled"
+        },
+        "折后费用(元)": {},
+        "折后费用(同比上月)": {},
+        "趋势": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "本月产品明细",
+        "height": 4.5795455,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(240,139,151,1)",
+            "cols": [
+              "同比上月(折后费用)"
+            ],
+            "rule": ">",
+            "threshold": "10",
+            "wholeline": false
+          },
+          {
+            "color": "rgba(184,233,134,1)",
+            "cols": [
+              "同比上月(折后费用)"
+            ],
+            "rule": "<",
+            "threshold": "-10"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "30天费用趋势"
+            ],
+            "rule": ">",
+            "threshold": 0,
+            "type": "line"
+          }
+        ],
+        "transpose": false,
+        "version": 2,
+        "width": 10.05,
+        "xPos": -0.05,
+        "yPos": 0.056818184,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill |select productname as \"产品名称\",round(diffreal[1],3) as \"折后费用(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"产品费用占比\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"同比上月(折后费用)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"同比上月(原始消费)\" , (days) as \"30天费用趋势\" from( select productname, compare(pretaxamount,2592000) as diffreal, compare(PretaxGrossAmount,2592000) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(pretaxAmount) as days from(select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by productname ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "* |select productname as \"产品名称\",round(diffreal[1],3) as \"实际应付(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"产品费用/总费用\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"实际应付(同比上月)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"原始消费(同比上月)\" , (days) as \"30天费用趋势\" from( select productname, compare(pretaxamount,604800) as diffreal, compare(PretaxGrossAmount,604800) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(pretaxAmount) as days from(select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by productname ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1569403704716",
+      "type": "table"
+    },
+    {
+      "action": {
+        "付费类型": {
+          "type": "disabled"
+        },
+        "占比": {
+          "type": "disabled"
+        },
+        "原始消费(元)": {
+          "type": "disabled"
+        },
+        "原始消费(同比上月)": {
+          "type": "disabled"
+        },
+        "同比上月(原始消费)": {},
+        "同比上月(折后费用)": {},
+        "实际应付(元)": {
+          "type": "disabled"
+        },
+        "实际应付(同比上月)": {
+          "type": "disabled"
+        },
+        "折后费用(元)": {},
+        "折后费用(同比上月)": {},
+        "消费趋势": {},
+        "趋势": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "付费类型详情（本月）",
+        "height": 3.5227273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "消费趋势"
+            ],
+            "rule": ">",
+            "threshold": 0,
+            "type": "line"
+          }
+        ],
+        "transpose": false,
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.7392755,
+        "yPos": 7.977142999999999,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill|select productname as \"付费类型\",round(diffreal[1],3) as \"折后费用(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"占比\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"同比上月(折后费用)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"同比上月(原始消费)\" , (days) as \"消费趋势\" from( select productname, compare(pretaxamount,2592000) as diffreal, compare(PretaxGrossAmount,2592000) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(PretaxAmount) as days from(select SubscriptionType as ProductName, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by SubscriptionType ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "* |select productname as \"付费类型\",round(diffreal[1],3) as \"实际应付(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"占比\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"实际应付(同比上月)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"原始消费(同比上月)\" ,cardinality(days) as \"趋势\" from( select productname, compare(pretaxamount,604800) as diffreal, compare(PretaxGrossAmount,604800) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(t) as days from(select SubscriptionType as ProductName, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by SubscriptionType ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1569404449345",
+      "type": "table"
+    },
+    {
+      "action": {
+        "c": {},
+        "stamp": {
+          "type": "disabled"
+        },
+        "time": {},
+        "value": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "displayName": "智能诊断，选中时间段后查看结果",
+        "height": 8.886364,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "version": 2,
+        "width": 10.05,
+        "xPos": -0.05,
+        "yPos": 22.71590872727273,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "* | select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from log group by day  order by day limit 1000",
+        "start": "-2592000s",
+        "tokenQuery": "* | select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from log group by day  order by day limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1572847901782",
+      "type": "billRcaKpi"
+    },
+    {
+      "action": {
+        "30天费用趋势": {},
+        "产品/总费用": {},
+        "产品名称": {
+          "type": "disabled"
+        },
+        "产品总费占比": {},
+        "产品费用/总费用": {},
+        "产品费用占比": {},
+        "占比": {},
+        "原始消费(元)": {
+          "type": "disabled"
+        },
+        "原始消费(同比上月)": {
+          "type": "disabled"
+        },
+        "同比-1天": {},
+        "同比-2天": {},
+        "同比-3天": {},
+        "同比前天": {},
+        "同比昨日-2天": {},
+        "实际应付(元)": {
+          "type": "disabled"
+        },
+        "实际应付(同比上月)": {
+          "type": "disabled"
+        },
+        "折后费用(元)": {},
+        "折后金额(元)": {},
+        "折后金额(同比上月)": {},
+        "折后金额(同比前天)": {},
+        "趋势": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "昨日消费明细",
+        "height": 6.806818000000001,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "同比-1天"
+            ],
+            "rule": ">",
+            "threshold": "10"
+          },
+          {
+            "color": "rgba(184,233,134,1)",
+            "cols": [
+              "同比-1天"
+            ],
+            "rule": "<",
+            "threshold": "-10"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "30天费用趋势"
+            ],
+            "rule": ">",
+            "threshold": 0,
+            "type": "line"
+          }
+        ],
+        "transpose": false,
+        "version": 2,
+        "width": 4.7446446,
+        "xPos": 0.008702551999999999,
+        "yPos": 4.6819153,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill|select productname as \"产品名称\",round(diffreal[1],3) as \"折后费用(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"产品费用占比\",concat(cast(coalesce(round(diffreal[5]*100-100),2) as varchar),'%') as \"同比-1天\",concat(cast(round(coalesce(diffreal[6]*100-100,2)) as varchar),'%') as \"同比-2天\",concat(cast(round(coalesce(diffreal[7]*100-100),2) as varchar),'%') as \"同比-3天\"   from( select productname, compare(pretaxamount,86400,172800,259200) as diffreal from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount)    from log group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "start": "daybeforeyesterday",
+        "tokenQuery": "* |select productname as \"产品名称\",round(diffreal[1],3) as \"实际应付(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"占比\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"实际应付(同比上月)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"原始消费(同比上月)\" , (days) as \"30天费用趋势\" from( select productname, compare(pretaxamount,604800) as diffreal, compare(PretaxGrossAmount,604800) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(pretaxAmount) as days from(select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by productname ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1572935659761",
+      "type": "table"
+    },
+    {
+      "action": {
+        "付费类型": {
+          "type": "disabled"
+        },
+        "占比": {
+          "type": "disabled"
+        },
+        "原始消费(元)": {
+          "type": "disabled"
+        },
+        "原始消费(同比-1天)": {},
+        "原始消费(同比上月)": {
+          "type": "disabled"
+        },
+        "同比-1天": {},
+        "同比-2天": {},
+        "同比-3天": {},
+        "实际应付(元)": {
+          "type": "disabled"
+        },
+        "实际应付(同比上月)": {
+          "type": "disabled"
+        },
+        "折后费用(元)": {},
+        "折后费用(同比-1天)": {},
+        "折后费用(同比-2天)": {},
+        "折后费用(同比-3天)": {},
+        "折后费用(同比上月)": {},
+        "趋势": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "付费类型详情（昨日）",
+        "height": 3.2727273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "趋势"
+            ],
+            "rule": ">",
+            "threshold": 0,
+            "type": "line"
+          }
+        ],
+        "transpose": false,
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.7393894,
+        "yPos": 4.681947,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill|select item as \"付费类型\",round(diffreal[1],3) as \"折后费用(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"占比\",concat(cast(round(diffreal[5]*100-100,2) as varchar),'%') as \"同比-1天\" ,concat(cast(round(diffreal[6]*100-100,2) as varchar),'%') as \"同比-2天\",concat(cast(round(diffreal[7]*100-100,2) as varchar),'%') as \"同比-3天\"      from( select item, compare(pretaxamount,86400,172800,259200) as diffreal  from( select item, sum(PretaxAmount) as PretaxAmount  from log  group by item) group by item) order by diffreal[1] desc limit 1000",
+        "start": "yesterday",
+        "tokenQuery": "* |select productname as \"付费类型\",round(diffreal[1],3) as \"实际应付(元)\",concat(cast(round(diffreal[1]/sum(diffreal[1])over() * 100,2) as varchar),'%') as \"占比\",concat(cast(round(diffreal[3]*100-100,2) as varchar),'%') as \"实际应付(同比上月)\" , round( diffgross[1],3) as \"原始消费(元)\",concat(cast(round( diffgross[3]*100-100,2) as varchar),'%')  as \"原始消费(同比上月)\" ,cardinality(days) as \"趋势\" from( select productname, compare(pretaxamount,604800) as diffreal, compare(PretaxGrossAmount,604800) as diffgross,arbitrary(days) as days from( select productname, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount, array_agg(t) as days from(select SubscriptionType as ProductName, sum(PretaxAmount) as PretaxAmount, sum(PretaxGrossAmount) as PretaxGrossAmount ,date_trunc('day',__time__) as t  from log group by SubscriptionType ,t order by t  )group by productname) group by productname) order by diffreal[1] desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1572938073010",
+      "type": "table"
+    },
+    {
+      "action": {
+        "实际费用": {
+          "type": "disabled"
+        },
+        "异常产品名称": {
+          "blank": false,
+          "dashboardFilter": "",
+          "dashboardName": "bill_detail_cn",
+          "dashboardToken": [
+            {
+              "key": "name",
+              "value": "异常产品名称"
+            }
+          ],
+          "filterInherit": false,
+          "timeRange": -2,
+          "tokenInherit": false,
+          "type": "NewDashboard"
+        },
+        "异常差额": {
+          "type": "disabled"
+        },
+        "异常时间点": {
+          "type": "disabled"
+        },
+        "预期正常费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "实际费用": 129,
+          "异常产品名称": 129,
+          "异常差额": 129,
+          "异常时间点": 129,
+          "预期正常费用": 129
+        },
+        "displayName": "异常账单时间点，点击产品名称查看右详情",
+        "height": 3.5227273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 4.7459626,
+        "xPos": 0.006119172600000003,
+        "yPos": 19.17171572727273,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill | select name as \"异常产品名称\", date_format(from_unixtime(r.t),'%Y-%m-%d %H:%i:%s') as \"异常时间点\",round(r.d,3) as \"实际费用\", round(r.pred,3) as \"预期正常费用\", round( r.pred-r.d,3) as \"异常差额\" from(select res.name,filter(cast(zip(res.ts, res.probs,res.ds,res.preds) as array(row(t double, prob double, d double, pred double))), r -> r.prob >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, filter(array_distinct(array_agg(ProductCode) over()),x -> x is not null) as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from log group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(r) order by r.t desc",
+        "start": "-80d",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select name as \"异常产品名\", date_format(from_unixtime(k),'%Y-%m-%d %H:%i:%s') as \"异常时间点\"  from(select res.name,map_filter(map(res.ts, res.probs), (k,v) -> v >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, array_agg(ProductCode) over() as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from log group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(k,v) order by name, k",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "dashboard-demo1572956331304",
+      "type": "table"
+    }
+  ],
+  "dashboardName": "bill_detail_cn",
+  "description": "",
+  "displayName": "产品账单明细（old）"
+}
