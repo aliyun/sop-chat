@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
+	"os"
 	"sync"
 
 	"sop-chat/internal/auth"
@@ -60,7 +62,20 @@ type Server struct {
 }
 
 // generateConfigUIToken 生成随机的配置 UI 访问令牌
+// 若环境变量 SOP_ADMIN_TOKEN 已设置（daemon 子进程模式），直接复用该值
 func generateConfigUIToken() (string, error) {
+	if t := os.Getenv("SOP_ADMIN_TOKEN"); t != "" {
+		return t, nil
+	}
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+// GenerateConfigUIToken 生成随机令牌（供 main 包在 daemon 模式下预生成并打印 URL）
+func GenerateConfigUIToken() (string, error) {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
 		return "", err
@@ -358,6 +373,12 @@ func (s *Server) setupRoutes() {
 func (s *Server) Run(addr string) error {
 	log.Printf("Server starting on %s", addr)
 	return s.router.Run(addr)
+}
+
+// RunListener 在已绑定的监听器上开始服务（daemon 模式专用）
+func (s *Server) RunListener(l net.Listener) error {
+	log.Printf("Server starting on %s", l.Addr().String())
+	return s.router.RunListener(l)
 }
 
 // GetConfigUIToken 返回配置 UI 访问令牌
