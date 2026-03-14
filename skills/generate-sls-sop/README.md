@@ -34,7 +34,7 @@
 使用 npx 一键安装到所有支持的 Agent 平台（Cursor、Claude Code、Cline 等）：
 
 ```bash
-npx skills add https://github.com/aliyun/sop-chat --skill generate-sls-sop -g --all
+npx skills add https://github.com/aliyun/sop-chat --skill generate-sls-sop -g -y
 ```
 
 或手动 clone 到平台对应的 skills 目录：

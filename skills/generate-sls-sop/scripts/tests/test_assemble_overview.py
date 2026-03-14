@@ -108,7 +108,8 @@ class TestUsageInstructionConditional(unittest.TestCase):
 
         self.assertIn("## 使用说明", content)
         self.assertIn("queries_extra.md", content)
-        self.assertIn("本文档与 queries_extra.md 中的查询示例", content)
+        self.assertIn("优先使用本文档的查询示例", content)
+        self.assertIn("找不到时再参考 queries_extra.md", content)
 
         # Also verify queries_extra.md was copied to output dir
         extra_output = os.path.join(output_dir, "queries_extra.md")
