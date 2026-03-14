@@ -63,7 +63,7 @@ def build_frontmatter(name: str, description: str) -> str:
 
 USAGE_INSTRUCTION_WITH_EXTRA = """## 使用说明
 
-- 本 logstore 的查询语法较复杂，建议尽量使用本文档与 queries_extra.md 中的查询示例，避免自行编写。
+- 本 logstore 的查询语法较复杂，建议优先使用本文档的查询示例，找不到时再参考 queries_extra.md，尽量避免自行编写。
 - 变量取值优先参考本文档的「常见值速查」部分。"""
 
 USAGE_INSTRUCTION_WITHOUT_EXTRA = """## 使用说明
