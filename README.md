@@ -33,11 +33,27 @@
 # 赋予执行权限（macOS / Linux）
 chmod +x sop-chat-server
 
-# 启动（首次运行会自动生成默认 config.yaml）
+# 前台运行（默认，日志直接输出到终端，Ctrl+C 退出）
 ./sop-chat-server
+
+# 后台守护进程模式运行（日志写入 logs/sop-chat-server.log）
+./sop-chat-server --daemon
 ```
 
-** 启动后在终端会输出后台配置的链接地址** 根据配置页面进行配置
+启动后终端会输出配置管理 UI 的访问地址，根据配置页面完成初始配置。
+
+#### 守护进程常用命令
+
+```bash
+# 查看管理 UI 地址
+./sop-chat-server adminurl
+
+# 停止后台进程
+./sop-chat-server stop
+```
+
+> **说明：** 前台模式同样会写入 `logs/sop-chat-server.pid` 和 `logs/sop-chat-server.url`，
+> 因此 `adminurl` / `stop` 子命令在前台和后台两种模式下均可用。
 
 ---
 

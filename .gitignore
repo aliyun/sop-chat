@@ -2,6 +2,8 @@
 dist/
 backend/sop-chat-api
 backend/sop-chat-server
+backend/sop-chat-server.exe
+backend/sop-chat-api.exe
 
 # 前端构建产物
 frontend/dist/

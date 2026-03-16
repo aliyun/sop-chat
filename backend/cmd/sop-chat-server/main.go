@@ -53,12 +53,12 @@ func main() {
 	// 解析命令行参数
 	var configPath string
 	var showHelp bool
-	var noDaemon bool
+	var daemon bool
 	flag.StringVar(&configPath, "config", "", "配置文件路径（默认: config.yaml 或 CONFIG_PATH 环境变量）")
 	flag.StringVar(&configPath, "c", "", "配置文件路径（-config 的简写）")
 	flag.BoolVar(&showHelp, "help", false, "显示帮助信息")
 	flag.BoolVar(&showHelp, "h", false, "显示帮助信息")
-	flag.BoolVar(&noDaemon, "no-daemon", false, "前台运行，不进入守护进程模式")
+	flag.BoolVar(&daemon, "daemon", false, "后台守护进程模式运行（默认前台运行）")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "SOP Chat API Server\n\n")
 		fmt.Fprintf(os.Stderr, "用法: %s [子命令] [选项]\n\n", os.Args[0])
@@ -69,8 +69,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "选项:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n示例:\n")
-		fmt.Fprintf(os.Stderr, "  %s -config /path/to/config.yaml\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -c ./config.yaml\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s                        # 前台运行\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s --daemon               # 后台守护进程运行\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -c ./config.yaml       # 指定配置文件\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s stop\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s adminurl\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\n注意: 端口配置请在 config.yaml 的 global.port 中设置\n")
@@ -171,7 +172,7 @@ func main() {
 
 	// ── Daemon 模式 ────────────────────────────────────────────────────────
 	// 非 daemon 子进程 且 未指定 --no-daemon 时，将自身以 daemon 方式重启
-	if os.Getenv(envDaemonMode) != "1" && !noDaemon {
+	if os.Getenv(envDaemonMode) != "1" && daemon {
 		// 预生成 token，确保父进程打印的 URL 与 daemon 子进程使用的一致
 		token, err := api.GenerateConfigUIToken()
 		if err != nil {
@@ -212,7 +213,7 @@ func main() {
 		)
 		cmd.Stdout = logFile
 		cmd.Stderr = logFile
-		cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+		setSysProcAttr(cmd)
 		if err := cmd.Start(); err != nil {
 			log.Fatalf("启动守护进程失败: %v", err)
 		}
@@ -281,6 +282,10 @@ func main() {
 
 	isDaemon := os.Getenv(envDaemonMode) == "1"
 
+	// cleanupOnExit 由前台分支设置，用于在进程退出前清理 PID/URL 文件。
+	// daemon 模式由 stop 命令负责清理，此处保持空操作。
+	cleanupOnExit := func() {}
+
 	// 信号处理：
 	// - daemon 模式：SIGTERM / SIGINT 均直接优雅退出（stop 命令依赖此行为）
 	// - 前台模式：SIGTERM 直接退出；SIGINT（Ctrl+C）需 10s 内连按两次才退出
@@ -291,12 +296,14 @@ func main() {
 		var lastInt time.Time
 		for sig := range sigCh {
 			if isDaemon || sig == syscall.SIGTERM {
+				cleanupOnExit()
 				log.Printf("收到退出信号，正在关闭服务...")
 				os.Exit(0)
 			}
 			// 前台 SIGINT 双击确认
 			now := time.Now()
 			if !lastInt.IsZero() && now.Sub(lastInt) <= 10*time.Second {
+				cleanupOnExit()
 				log.Printf("确认退出")
 				os.Exit(0)
 			}
@@ -335,6 +342,24 @@ func main() {
 			log.Fatalf("服务器退出: %v", err)
 		}
 	} else {
+		// 前台模式：写入 PID 文件和 URL 文件，使 stop / adminurl 子命令可用
+		logsDir0 := "logs"
+		_ = os.MkdirAll(logsDir0, 0o755)
+
+		pidPath := filepath.Join(logsDir0, adminPIDName)
+		if werr := os.WriteFile(pidPath, []byte(strconv.Itoa(os.Getpid())+"\n"), 0o644); werr != nil {
+			log.Printf("警告: 写入 PID 文件失败: %v", werr)
+		}
+
+		adminURLs := buildAdminURLs(unifiedConfig.GetHost(), finalPort, token)
+		urlFilePath := filepath.Join(logsDir0, adminURLName)
+		_ = os.WriteFile(urlFilePath, []byte(strings.Join(adminURLs, "\n")+"\n"), 0o600)
+
+		cleanupOnExit = func() {
+			_ = os.Remove(pidPath)
+			_ = os.Remove(urlFilePath)
+		}
+
 		log.Printf("启动 API 服务器，监听地址 %s", listenAddr)
 		if err := server.Run(listenAddr); err != nil {
 			log.Fatalf("服务器启动失败: %v", err)
