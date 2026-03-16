@@ -114,11 +114,17 @@ func NewServer(cfg *client.Config, globalConfig *config.Config, configPath strin
 	// 注册路由
 	server.setupRoutes()
 
-	if globalConfig != nil && globalConfig.Channels != nil {
+	if globalConfig != nil {
+		// 无论 CMS 凭据是否完整，都尝试启动 IM 渠道机器人。
+		// 机器人启动只需要各平台自身的凭据（如钉钉 clientId/clientSecret），
+		// CMS 凭据仅在响应消息时才用到；凭据缺失时机器人仍可连接，查询时再报错。
+		// 这与 reloadConfig 的行为保持一致。
 		cmsClientCfg, cmsErr := globalConfig.ToClientConfig()
 		if cmsErr != nil {
-			log.Printf("警告: 无法获取 CMS 配置，消息渠道机器人未启动: %v", cmsErr)
-		} else {
+			log.Printf("提示: CMS 凭据未配置或解析失败，消息渠道机器人将以空凭据启动（%v）", cmsErr)
+			cmsClientCfg = &config.ClientConfig{}
+		}
+		if globalConfig.Channels != nil {
 			// 启动钉钉机器人
 			if len(globalConfig.Channels.DingTalk) > 0 {
 				server.syncDingTalkBots(globalConfig.Channels.DingTalk, cmsClientCfg)

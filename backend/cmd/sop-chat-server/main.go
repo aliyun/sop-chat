@@ -45,6 +45,11 @@ func main() {
 		return
 	}
 
+	// start 子命令：效果等同于直接运行（移除子命令参数后继续正常启动）
+	if len(os.Args) >= 2 && os.Args[1] == "start" {
+		os.Args = append(os.Args[:1], os.Args[2:]...)
+	}
+
 	// 解析命令行参数
 	var configPath string
 	var showHelp bool
@@ -58,6 +63,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "SOP Chat API Server\n\n")
 		fmt.Fprintf(os.Stderr, "用法: %s [子命令] [选项]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "子命令:\n")
+		fmt.Fprintf(os.Stderr, "  start       启动服务（效果同直接运行，可附带选项）\n")
 		fmt.Fprintf(os.Stderr, "  stop        停止后台守护进程\n")
 		fmt.Fprintf(os.Stderr, "  adminurl    打印当前运行实例的配置管理 UI 地址\n\n")
 		fmt.Fprintf(os.Stderr, "选项:\n")
@@ -121,10 +127,11 @@ func main() {
 		if data, err := os.ReadFile(pidPath); err == nil {
 			if pid, err := strconv.Atoi(strings.TrimSpace(string(data))); err == nil {
 				if proc, err := os.FindProcess(pid); err == nil {
-					if proc.Signal(syscall.Signal(0)) == nil {
-						fmt.Fprintf(os.Stderr, "sop-chat-server 已在运行（PID=%d），\n如需重启请先执行: ./sop-chat-server stop\n如需查看管理地址: ./sop-chat-server adminurl\n", pid)
-						os.Exit(1)
-					}
+				if proc.Signal(syscall.Signal(0)) == nil {
+					fmt.Fprintf(os.Stderr, "sop-chat-server 已在运行（PID=%d），\n如需重启请先执行: ./sop-chat-server stop\n如需查看管理地址: ./sop-chat-server adminurl\n", pid)
+					fmt.Fprintln(os.Stderr, "❌ 启动失败")
+					os.Exit(1)
+				}
 				}
 			}
 			// PID 文件存在但进程已不在，清理残留文件
@@ -212,9 +219,39 @@ func main() {
 		logFile.Close() // 父进程不再需要，关闭自己持有的 fd
 
 		pidPath := filepath.Join(logsDir, adminPIDName)
-		fmt.Printf("守护进程已启动 PID=%d，端口绑定成功后 PID 将写入 %s\n", cmd.Process.Pid, pidPath)
+
+		// 等待子进程启动结果：轮询 PID 文件（子进程绑端口成功后写入），最多等待 10 秒。
+		// 若子进程提前退出则判定为启动失败。
+		started := false
+		deadline := time.Now().Add(10 * time.Second)
+		for time.Now().Before(deadline) {
+			// 检查子进程是否已退出（启动失败）
+			if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
+				break
+			}
+			// PID 文件出现即表示端口绑定成功
+			if data, err := os.ReadFile(pidPath); err == nil {
+				if pid, err := strconv.Atoi(strings.TrimSpace(string(data))); err == nil && pid == cmd.Process.Pid {
+					started = true
+					break
+				}
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+
+		if !started {
+			// 子进程已退出，从日志文件尾部取最后几行作为错误提示
+			fmt.Printf("❌ 启动失败（PID=%d 已退出），错误详情:\n", cmd.Process.Pid)
+			if tail := tailFile(logPath, 10); tail != "" {
+				fmt.Print(tail)
+			} else {
+				fmt.Printf("  （请查看日志: %s）\n", logPath)
+			}
+			os.Exit(1)
+		}
 		fmt.Printf("停止服务: ./sop-chat-server stop\n")
 		fmt.Printf("查看管理地址: ./sop-chat-server adminurl\n")
+		fmt.Printf("✅ 启动成功 PID=%d\n", cmd.Process.Pid)
 
 		return
 	}
@@ -438,6 +475,25 @@ func isPortAvailable(port int) bool {
 	}
 	ln.Close()
 	return true
+}
+
+// tailFile 读取文件末尾最多 n 行并返回（用于启动失败时展示日志片段）。
+func tailFile(path string, n int) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	lines := strings.Split(strings.TrimRight(string(data), "\n"), "\n")
+	if len(lines) > n {
+		lines = lines[len(lines)-n:]
+	}
+	var sb strings.Builder
+	for _, l := range lines {
+		sb.WriteString("  ")
+		sb.WriteString(l)
+		sb.WriteByte('\n')
+	}
+	return sb.String()
 }
 
 // localAddresses 返回本机所有真实 IPv4 单播地址，过滤掉常见虚拟网桥接口。

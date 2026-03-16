@@ -1596,7 +1596,7 @@ function makeTaskCard(task, idx, expanded) {
   ).join('');
   const whType = task.webhook ? (task.webhook.type || '') : '';
   const whUrl  = task.webhook ? (task.webhook.url || '') : '';
-  const whMsg  = task.webhook ? (task.webhook.msgType || 'text') : 'text';
+  const whMsg  = task.webhook ? (task.webhook.msgType || (task.webhook.type === 'dingtalk' ? 'markdown' : 'text')) : 'text';
   const whTitle = task.webhook ? (task.webhook.title || '') : '';
   const titleField = whMsg === 'text' ? 'style="display:none"' : '';
 
@@ -1692,7 +1692,7 @@ function addScheduledTask() {
     cron: '0 9 * * 1-5',
     employeeName: 'apsara-ops',
     conciseReply: true,
-    webhook: { type: 'dingtalk', msgType: 'text' },
+    webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
   }, container.children.length, true));
 }
 
@@ -1761,8 +1761,16 @@ function onWebhookTypeChange(sel) {
   const card = sel.closest('.task-card');
   const msgSel = card.querySelector('[data-field=webhookMsgType]');
   if (!msgSel) return;
-  // 重建 options，保留当前选中值（如果新平台不支持则回退到第一项）
-  msgSel.innerHTML = buildMsgTypeOptions(sel.value, msgSel.value);
+  // 钉钉默认使用 markdown，其他平台保留当前选中值（不支持则回退到第一项）
+  const preferredMsg = sel.value === 'dingtalk' ? 'markdown' : msgSel.value;
+  msgSel.innerHTML = buildMsgTypeOptions(sel.value, preferredMsg);
+  // 切换到钉钉且标题为空时，补上默认标题
+  if (sel.value === 'dingtalk') {
+    const titleInput = card.querySelector('[data-field=webhookTitle]');
+    if (titleInput && !titleInput.value.trim()) {
+      titleInput.value = '定时任务通知';
+    }
+  }
   onMsgTypeChange(msgSel);
 }
 

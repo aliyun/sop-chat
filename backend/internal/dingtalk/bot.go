@@ -157,14 +157,16 @@ func errorMessage(err error) string {
 	return err.Error()
 }
 
-// replyAtText 向钉钉回复文本，并 @ 提问者。
+// replyAtMarkdown 向钉钉发送 Markdown 消息，并 @ 提问者。
+// title 作为钉钉 markdown 消息的标题字段（不显示在正文中，但出现在通知预览）。
 // atDingtalkIds 负责触发客户端通知和渲染高亮 @，content 本身不再重复拼 @前缀，
 // 避免钉钉客户端自动显示的 @ 头与手动拼接的前缀重叠造成双 @。
-func replyAtText(ctx context.Context, webhook, senderId, _, content string) error {
+func replyAtMarkdown(ctx context.Context, webhook, senderId, title, content string) error {
 	body := map[string]interface{}{
-		"msgtype": "text",
-		"text": map[string]interface{}{
-			"content": content,
+		"msgtype": "markdown",
+		"markdown": map[string]interface{}{
+			"title": title,
+			"text":  content,
 		},
 		"at": map[string]interface{}{
 			"atDingtalkIds": []string{senderId},
@@ -253,13 +255,20 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		}
 
 		log.Printf("[DingTalk] 正在回复钉钉消息，sessionWebhook=%s", webhook)
+
 		var replyErr error
 		if conversationType == "2" {
 			// 群聊：@ 提问者，触发客户端通知和高亮
-			replyErr = replyAtText(asyncCtx, webhook, senderId, senderNick, replyText)
+			replyErr = replyAtMarkdown(asyncCtx, webhook, senderId, "回复", replyText)
 		} else {
 			// 单聊：直接回复，无需 @
-			replyErr = chatbot.NewChatbotReplier().SimpleReplyText(asyncCtx, webhook, []byte(replyText))
+			replyErr = chatbot.NewChatbotReplier().ReplyMessage(asyncCtx, webhook, map[string]interface{}{
+				"msgtype": "markdown",
+				"markdown": map[string]interface{}{
+					"title": "回复",
+					"text":  replyText,
+				},
+			})
 		}
 		if replyErr != nil {
 			log.Printf("[DingTalk] 回复消息失败: %v", replyErr)
@@ -483,7 +492,7 @@ func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName strin
 }
 
 // conciseInstruction 是开启简洁模式时附加到用户消息末尾的指令
-const conciseInstruction = "\n\n（请用简洁的纯文本回答，避免复杂排版，适合在 IM 中直接阅读，控制在几句话以内。 尽量拟人的语气，少用markdown）"
+const conciseInstruction = "\n\n（请用简洁的回答，控制在几句话以内，尽量拟人的语气。）"
 
 // queryEmployee 向 CMS 数字员工发送消息，返回收集到的回复文本和线程 ID。
 // employeeName 为路由解析后的目标员工（可能与 cfg.EmployeeName 不同）。
