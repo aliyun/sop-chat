@@ -41,6 +41,7 @@ type Server struct {
 	userStore      auth.UserStore
 	authMiddleware *auth.AuthMiddleware
 
+
 	// 钉钉机器人生命周期管理（支持多实例热启停，keyed by clientId）
 	dingtalkMu   sync.Mutex
 	dingtalkBots map[string]*dingtalk.Bot
@@ -775,6 +776,17 @@ func (s *Server) reloadConfig() error {
 
 	log.Printf("✅ 配置热重载完成")
 	return nil
+}
+
+// isSlsProduct 根据全局配置 global.product 判断当前实例是否对接 SLS 产品。
+func (s *Server) isSlsProduct() bool {
+	s.mu.RLock()
+	cfg := s.globalConfig
+	s.mu.RUnlock()
+	if cfg == nil {
+		return true
+	}
+	return config.IsSlsProduct(cfg.Global.Product)
 }
 
 // createClient 为每个请求创建一个新的客户端实例

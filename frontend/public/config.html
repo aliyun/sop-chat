@@ -241,7 +241,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <!-- ── Tab 1: Global ── -->
 <div class="tab-panel active" id="panel-global">
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128279;</span> 阿里云凭证</div>
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> 阿里云连接</div>
     <div class="field-grid">
       <div class="field">
         <label>AccessKeyId <span style="color:var(--red)">*</span></label>
@@ -256,10 +256,28 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
           </button>
         </div>
       </div>
-      <div class="field field-full">
+      <div class="field">
         <label>Endpoint（服务地址）</label>
         <input type="text" id="g-endpoint" placeholder="cms.cn-hangzhou.aliyuncs.com" oninput="onAKFieldChange()">
         <span class="hint">不填则使用默认地址</span>
+      </div>
+      <div class="field">
+        <label>默认数字员工产品 Product</label>
+        <select id="g-product" onchange="updateGlobalVariableFields()">
+          <option value="sls">SLS</option>
+          <option value="cms">CMS</option>
+        </select>
+        <span class="hint">Channels 机器人未单独配置时使用此默认值</span>
+      </div>
+      <div class="field" id="g-project-field">
+        <label>Project</label>
+        <input type="text" id="g-project" placeholder="Project(可选)">
+        <span class="hint">SLS 产品对应的 Project</span>
+      </div>
+      <div class="field" id="g-workspace-field" style="display:none">
+        <label>Workspace</label>
+        <input type="text" id="g-workspace" placeholder="">
+        <span class="hint">CMS 产品对应的 Workspace</span>
       </div>
     </div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
@@ -303,6 +321,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <span class="badge-hot">endpoint</span>
     <span class="badge-hot">timeZone</span>
     <span class="badge-hot">language</span>
+    <span class="badge-hot">product</span>
     &nbsp;
     <strong>需重启：</strong>
     <span class="badge-cold">host</span>
@@ -936,6 +955,7 @@ function renderDingTalkBots(bots) {
   const container = document.getElementById('dt-bots-list');
   container.innerHTML = '';
   (bots || []).forEach((bot, i) => container.appendChild(makeDingTalkBotCard(bot, i)));
+  updateBotVariableFields();
 }
 
 function makeDingTalkBotCard(bot, idx) {
@@ -973,10 +993,27 @@ function makeDingTalkBotCard(bot, idx) {
           '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="field field-full">' +
+      '<div class="field">' +
         '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
-        '<span class="hint">未命中路由规则时使用此员工</span>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>对接产品</label>' +
+        '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.dt-bot-card\'))">' +
+          '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
+          '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Project</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Workspace</label>' +
+        '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<span class="hint">未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace；Project/Workspace 根据产品类型选填</span>' +
       '</div>' +
       '<details class="field field-full" style="padding:0;border:none;background:none"' + ((bot.conversationRoutes || []).length > 0 ? ' open' : '') + '>' +
         '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
@@ -986,7 +1023,7 @@ function makeDingTalkBotCard(bot, idx) {
         '</summary>' +
         '<div style="padding:8px 0 4px">' +
           '<div data-dt-routes style="display:flex;flex-direction:column;gap:6px">' +
-            (bot.conversationRoutes || []).map(r => makeDtRouteRow(r.conversationTitle, r.employeeName)).join('') +
+            (bot.conversationRoutes || []).map(r => makeDtRouteRow(r)).join('') +
           '</div>' +
           '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addDtRoute(this)">+ 添加路由</button>' +
         '</div>' +
@@ -1029,7 +1066,9 @@ function makeDingTalkBotCard(bot, idx) {
 
 function addDingTalkBot() {
   const container = document.getElementById('dt-bots-list');
-  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
+  const defaultProduct = val('g-product') || 'sls';
+  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  updateBotVariableFields();
 }
 
 function removeDingTalkBot(btn) {
@@ -1070,19 +1109,41 @@ function dtTagKey(e, inp) {
   inp.value = '';
 }
 
-function makeDtRouteRow(conversationTitle, employeeName) {
-  return '<div class="list-row" style="gap:6px;align-items:center">' +
-    '<input type="text" class="flex1" placeholder="群名称（精确匹配）" value="' + esc(conversationTitle || '') + '" data-dt-route-title>' +
-    '<span style="color:var(--text3);font-size:12px;flex-shrink:0">→</span>' +
-    '<input type="text" class="flex1" placeholder="数字员工 ID" value="' + esc(employeeName || '') + '" data-dt-route-employee>' +
+function makeDtRouteRow(route) {
+  const r = route || {};
+  const product = r.product || 'sls';
+  return '<div class="list-row" style="gap:6px;align-items:flex-start;flex-wrap:wrap">' +
+    '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:200px">' +
+      '<input type="text" class="flex1" placeholder="群名称（精确匹配）" value="' + esc(r.conversationTitle || '') + '" data-dt-route-title>' +
+      '<span style="color:var(--text3);font-size:12px;flex-shrink:0">→</span>' +
+      '<input type="text" class="flex1" placeholder="数字员工 ID" value="' + esc(r.employeeName || '') + '" data-dt-route-employee>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:300px">' +
+      '<select data-dt-route-product style="width:80px" onchange="updateRouteVariableFields(this)">' +
+        '<option value="sls"' + (product === 'sls' ? ' selected' : '') + '>SLS</option>' +
+        '<option value="cms"' + (product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+      '</select>' +
+      '<input type="text" placeholder="Project（可选）" value="' + esc(r.project || '') + '" data-dt-route-project style="flex:1;display:' + (product === 'sls' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="Workspace（可选）" value="' + esc(r.workspace || '') + '" data-dt-route-workspace style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
+    '</div>' +
     '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="删除路由">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
     '</button>' +
   '</div>';
 }
+
+function updateRouteVariableFields(select) {
+  const row = select.closest('.list-row');
+  const projectInput = row.querySelector('[data-dt-route-project]');
+  const workspaceInput = row.querySelector('[data-dt-route-workspace]');
+  const isSls = select.value === 'sls';
+  if (projectInput) projectInput.style.display = isSls ? 'block' : 'none';
+  if (workspaceInput) workspaceInput.style.display = isSls ? 'none' : 'block';
+}
+
 function addDtRoute(btn) {
   const wrap = btn.previousElementSibling;
-  wrap.insertAdjacentHTML('beforeend', makeDtRouteRow('', ''));
+  wrap.insertAdjacentHTML('beforeend', makeDtRouteRow({}));
 }
 
 function collectDingTalkBots() {
@@ -1093,12 +1154,18 @@ function collectDingTalkBots() {
     clientSecret: card.querySelector('[data-field=clientSecret]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    product:      card.querySelector('[data-field=product]').value,
+    project:      card.querySelector('[data-field=project]').value.trim(),
+    workspace:    card.querySelector('[data-field=workspace]').value.trim(),
     allowedGroupUsers:    Array.from(card.querySelectorAll('[data-dt-allowed-group-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedDirectUsers:   Array.from(card.querySelectorAll('[data-dt-allowed-direct-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedConversations: Array.from(card.querySelectorAll('[data-dt-allowed-convs] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     conversationRoutes:   Array.from(card.querySelectorAll('[data-dt-routes] .list-row')).map(row => ({
       conversationTitle: row.querySelector('[data-dt-route-title]').value.trim(),
       employeeName:      row.querySelector('[data-dt-route-employee]').value.trim(),
+      product:           row.querySelector('[data-dt-route-product]')?.value || 'sls',
+      project:           row.querySelector('[data-dt-route-project]')?.value.trim() || '',
+      workspace:         row.querySelector('[data-dt-route-workspace]')?.value.trim() || '',
     })).filter(r => r.conversationTitle && r.employeeName),
   }));
 }
@@ -1108,6 +1175,7 @@ function renderFeishuBots(bots) {
   const container = document.getElementById('feishu-bots-list');
   container.innerHTML = '';
   (bots || []).forEach((bot, i) => container.appendChild(makeFeishuBotCard(bot, i)));
+  updateBotVariableFields();
 }
 
 function makeFeishuBotCard(bot, idx) {
@@ -1145,9 +1213,24 @@ function makeFeishuBotCard(bot, idx) {
           '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="field field-full">' +
-        '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
+      '<div class="field">' +
+        '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>对接产品</label>' +
+        '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.fs-bot-card\'))">' +
+          '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
+          '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Project</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Workspace</label>' +
+        '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
         '<label>Verification Token <span class="hint">（WebSocket 模式可留空）</span></label>' +
@@ -1193,7 +1276,9 @@ function makeFeishuBotCard(bot, idx) {
 
 function addFeishuBot() {
   const container = document.getElementById('feishu-bots-list');
-  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
+  const defaultProduct = val('g-product') || 'sls';
+  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  updateBotVariableFields();
 }
 
 function removeFeishuBot(btn) {
@@ -1230,6 +1315,9 @@ function collectFeishuBots() {
     verificationToken: card.querySelector('[data-field=verificationToken]').value.trim(),
     eventEncryptKey:   card.querySelector('[data-field=eventEncryptKey]').value.trim(),
     conciseReply:      card.querySelector('[data-field=conciseReply]').checked,
+    product:           card.querySelector('[data-field=product]').value,
+    project:           card.querySelector('[data-field=project]').value.trim(),
+    workspace:         card.querySelector('[data-field=workspace]').value.trim(),
     allowedUsers:      Array.from(card.querySelectorAll('[data-feishu-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedChats:      Array.from(card.querySelectorAll('[data-feishu-allowed-chats] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
   }));
@@ -1240,6 +1328,7 @@ function renderWeComBots(bots) {
   const container = document.getElementById('wecom-bots-list');
   container.innerHTML = '';
   (bots || []).forEach((bot, i) => container.appendChild(makeWeComBotCard(bot, i)));
+  updateBotVariableFields();
 }
 
 function makeWeComBotCard(bot, idx) {
@@ -1281,9 +1370,24 @@ function makeWeComBotCard(bot, idx) {
           '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="field field-full">' +
-        '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
+      '<div class="field">' +
+        '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>对接产品</label>' +
+        '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.wc-bot-card\'))">' +
+          '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
+          '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Project</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Workspace</label>' +
+        '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
         '<label>回调 Token <span style="color:var(--red)">*</span></label>' +
@@ -1327,7 +1431,9 @@ function makeWeComBotCard(bot, idx) {
 
 function addWeComBot() {
   const container = document.getElementById('wecom-bots-list');
-  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback', employeeName: 'apsara-ops' }, container.children.length));
+  const defaultProduct = val('g-product') || 'sls';
+  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback', employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  updateBotVariableFields();
 }
 
 function removeWeComBot(btn) {
@@ -1366,6 +1472,9 @@ function collectWeComBots() {
     callbackPath:   card.querySelector('[data-field=callbackPath]').value.trim() || '/wecom/callback',
     employeeName:   card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply:   card.querySelector('[data-field=conciseReply]').checked,
+    product:        card.querySelector('[data-field=product]').value,
+    project:        card.querySelector('[data-field=project]').value.trim(),
+    workspace:      card.querySelector('[data-field=workspace]').value.trim(),
     allowedUsers:   Array.from(card.querySelectorAll('[data-wecom-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
   }));
 }
@@ -1375,6 +1484,7 @@ function renderWeComGroupBots(bots) {
   const container = document.getElementById('wecom-group-bots-list');
   container.innerHTML = '';
   (bots || []).forEach((bot, i) => container.appendChild(makeWeComGroupBotCard(bot, i)));
+  updateBotVariableFields();
 }
 
 function makeWeComGroupBotCard(bot, idx) {
@@ -1407,9 +1517,24 @@ function makeWeComGroupBotCard(bot, idx) {
           '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="field field-full">' +
-        '<label>默认数字员工 ID <span style="color:var(--red)">*</span></label>' +
+      '<div class="field">' +
+        '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>对接产品</label>' +
+        '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.wcb-bot-card\'))">' +
+          '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
+          '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Project</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Workspace</label>' +
+        '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
         '<label class="toggle">' +
@@ -1428,7 +1553,9 @@ function makeWeComGroupBotCard(bot, idx) {
 
 function addWeComGroupBot() {
   const container = document.getElementById('wecom-group-bots-list');
-  container.appendChild(makeWeComGroupBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops' }, container.children.length));
+  const defaultProduct = val('g-product') || 'sls';
+  container.appendChild(makeWeComGroupBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  updateBotVariableFields();
 }
 
 function removeWeComGroupBot(btn) {
@@ -1455,6 +1582,9 @@ function collectWeComGroupBots() {
     botSecret:    card.querySelector('[data-field=botSecret]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    product:      card.querySelector('[data-field=product]').value,
+    project:      card.querySelector('[data-field=project]').value.trim(),
+    workspace:    card.querySelector('[data-field=workspace]').value.trim(),
   }));
 }
 
@@ -1497,6 +1627,12 @@ function populate(data) {
   setVal('g-port', g.port || 8080);
   setVal('g-tz', g.timeZone || 'Asia/Shanghai');
   setVal('g-lang', g.language || 'zh');
+  setVal('g-product', g.product || 'sls');
+  setVal('g-project', g.project || '');
+  setVal('g-workspace', g.workspace || '');
+
+  updateGlobalVariableFields();
+  updateBotVariableFields();
 
   const a = data.auth || {};
   renderMethods(a.methods || []);
@@ -1516,6 +1652,7 @@ function populate(data) {
   onOpenAIToggle();
 
   renderScheduledTasks(data.scheduledTasks || []);
+  updateAllTaskVariableFields();
 
   // 记录当前 AK 快照（加载完成 = 已知状态，不需要重新测试）
   markAKTested();
@@ -1541,6 +1678,9 @@ function collect() {
       port:            parseInt(val('g-port')) || 8080,
       timeZone:        val('g-tz') || 'Asia/Shanghai',
       language:        val('g-lang') || 'zh',
+      product:         val('g-product') || 'sls',
+      project:         val('g-project') || '',
+      workspace:       val('g-workspace') || '',
     },
     auth: {
       methods:      collectMethods(),
@@ -1566,6 +1706,76 @@ function val(id) {
 
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Bot variable fields visibility ────────────────────────────────────────
+// 更新全局配置中 project/workspace 字段的显示
+function updateGlobalVariableFields() {
+  const product = val('g-product') || 'sls';
+  const projectField = document.getElementById('g-project-field');
+  const workspaceField = document.getElementById('g-workspace-field');
+  
+  const isSls = product === 'sls';
+  if (projectField) projectField.style.display = isSls ? '' : 'none';
+  if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
+}
+
+function updateBotVariableFields() {
+  // 更新所有 bot 卡片中根据 product 选择显示/隐藏 project/workspace 字段
+  document.querySelectorAll('.dt-bot-card').forEach(card => {
+    const productSelect = card.querySelector('[data-field=product]');
+    const projectField = card.querySelector('[data-field=project]');
+    const workspaceField = card.querySelector('[data-field=workspace]');
+    
+    if (productSelect && projectField && workspaceField) {
+      const product = productSelect.value || 'sls';
+      const projectContainer = projectField.closest('.field');
+      const workspaceContainer = workspaceField.closest('.field');
+      
+      const isSls = product === 'sls';
+      if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
+      if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
+    }
+  });
+}
+
+// 更新单个 bot 卡片的 project/workspace 显示
+function updateSingleBotVariableFields(card) {
+  const productSelect = card.querySelector('[data-field=product]');
+  const projectField = card.querySelector('[data-field=project]');
+  const workspaceField = card.querySelector('[data-field=workspace]');
+  
+  if (productSelect && projectField && workspaceField) {
+    const product = productSelect.value || 'sls';
+    const projectContainer = projectField.closest('.field');
+    const workspaceContainer = workspaceField.closest('.field');
+    
+    const isSls = product === 'sls';
+    if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
+    if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
+  }
+}
+
+// 更新单个定时任务卡片的 project/workspace 显示
+function updateSingleTaskVariableFields(card) {
+  const productSelect = card.querySelector('[data-field=product]');
+  const projectField = card.querySelector('[data-task-project-field]');
+  const workspaceField = card.querySelector('[data-task-workspace-field]');
+  
+  if (productSelect) {
+    const product = productSelect.value || 'sls';
+    
+    const isSls = product === 'sls';
+    if (projectField) projectField.style.display = isSls ? '' : 'none';
+    if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
+  }
+}
+
+// 更新所有定时任务卡片的 project/workspace 显示
+function updateAllTaskVariableFields() {
+  document.querySelectorAll('.task-card').forEach(card => {
+    updateSingleTaskVariableFields(card);
+  });
 }
 
 // ── Scheduled tasks ───────────────────────────────────────────────────────
@@ -1630,6 +1840,21 @@ function makeTaskCard(task, idx, expanded) {
         '<label>数字员工 ID <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="employeeName" value="' + esc(task.employeeName || '') + '" placeholder="apsara-ops" autocomplete="off">' +
       '</div>' +
+      '<div class="field">' +
+        '<label>对接产品</label>' +
+        '<select data-field="product" style="width:100%" onchange="updateSingleTaskVariableFields(this.closest(\'.task-card\'))">' +
+          '<option value="sls"' + (task.product === 'sls' || !task.product ? ' selected' : '') + '>SLS</option>' +
+          '<option value="cms"' + (task.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field" data-task-project-field>' +
+        '<label>Project</label>' +
+        '<input type="text" data-field="project" value="' + esc(task.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field" data-task-workspace-field style="display:none">' +
+        '<label>Workspace</label>' +
+        '<input type="text" data-field="workspace" value="' + esc(task.workspace || '') + '">' +
+      '</div>' +
       '<div class="field field-full">' +
         '<label>Prompt（发送给数字员工的问题）<span style="color:var(--red)"> *</span></label>' +
         '<textarea class="prompt-input" data-field="prompt" placeholder="请总结昨日工作进展和今日计划">' + esc(task.prompt || '') + '</textarea>' +
@@ -1687,11 +1912,13 @@ function makeTaskCard(task, idx, expanded) {
 
 function addScheduledTask() {
   const container = document.getElementById('tasks-list');
+  const defaultProduct = val('g-product') || 'sls';
   container.appendChild(makeTaskCard({
     enabled: true,
     cron: '0 9 * * 1-5',
     employeeName: 'apsara-ops',
     conciseReply: true,
+    product: defaultProduct,
     webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
   }, container.children.length, true));
 }
@@ -1789,6 +2016,9 @@ function collectScheduledTasks() {
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    product:      card.querySelector('[data-field=product]')?.value || '',
+    project:      card.querySelector('[data-field=project]')?.value.trim() || '',
+    workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
@@ -1809,6 +2039,9 @@ async function triggerTask(btn) {
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    product:      card.querySelector('[data-field=product]')?.value || '',
+    project:      card.querySelector('[data-field=project]')?.value.trim() || '',
+    workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),

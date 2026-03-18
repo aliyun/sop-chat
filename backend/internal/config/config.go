@@ -45,6 +45,12 @@ type ScheduledTaskConfig struct {
 	EmployeeName string `yaml:"employeeName"`
 	// 启用简洁输出：向 Prompt 末尾追加简化输出指令，适合 IM 场景
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该任务对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用 global.product 的值。
+	Product string `yaml:"product,omitempty"`
+	// Project 与 Workspace 根据产品类型二选一
+	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
+	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
 	// Webhook 配置：任务结果的发送目标
 	Webhook WebhookConfig `yaml:"webhook"`
 }
@@ -86,6 +92,11 @@ type OpenAICompatConfig struct {
 type ConversationRoute struct {
 	ConversationTitle string `yaml:"conversationTitle"` // 群名称（精确匹配）
 	EmployeeName      string `yaml:"employeeName"`      // 路由到的数字员工
+	// Product 指定该路由对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用渠道配置的 product。
+	Product   string `yaml:"product,omitempty"`
+	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
+	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
 }
 
 // DingTalkConfig 钉钉机器人配置
@@ -93,11 +104,18 @@ type DingTalkConfig struct {
 	// 是否启用钉钉机器人；false 时保留配置但不启动 Stream 连接
 	Enabled      bool   `yaml:"enabled"`
 	Name         string `yaml:"name,omitempty"` // 机器人显示名称（仅用于标识，不影响功能）
-	ClientId     string `yaml:"clientId"`        // 企业内部应用 AppKey（唯一标识）
-	ClientSecret string `yaml:"clientSecret"`    // 企业内部应用 AppSecret
-	EmployeeName string `yaml:"employeeName"`    // 默认数字员工名称
+	ClientId     string `yaml:"clientId"`       // 企业内部应用 AppKey（唯一标识）
+	ClientSecret string `yaml:"clientSecret"`   // 企业内部应用 AppSecret
+	EmployeeName string `yaml:"employeeName"`   // 默认数字员工名称
 	// 开启后，发送给大模型的消息会附加精简指令，要求回复简短、适合 IM 阅读
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该渠道对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用 global.product 的值。
+	Product string `yaml:"product,omitempty"`
+	// SLS 产品：数字员工所属 project（写入 Thread Variables.Project）
+	Project string `yaml:"project,omitempty"`
+	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
+	Workspace string `yaml:"workspace,omitempty"`
 	// 群用户白名单（钉钉 senderNick）；限制群聊中可 @ 机器人提问的用户；为空时允许所有群成员
 	AllowedGroupUsers []string `yaml:"allowedGroupUsers,omitempty"`
 	// 单聊用户白名单（钉钉 senderNick）；限制可与机器人单聊的用户；为空时允许所有人单聊
@@ -126,6 +144,13 @@ type FeishuConfig struct {
 	EmployeeName string `yaml:"employeeName"`
 	// 开启后回复简短，适合 IM 阅读
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该渠道对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用 global.product 的值。
+	Product string `yaml:"product,omitempty"`
+	// SLS 产品：数字员工所属 project（写入 Thread Variables.Project）
+	Project string `yaml:"project,omitempty"`
+	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
+	Workspace string `yaml:"workspace,omitempty"`
 	// 用户白名单（飞书 open_id）；为空时允许所有用户
 	AllowedUsers []string `yaml:"allowedUsers,omitempty"`
 	// 群聊白名单（飞书 chat_id）；为空时允许所有群聊
@@ -156,6 +181,13 @@ type WeComConfig struct {
 	EmployeeName string `yaml:"employeeName"`
 	// 开启后回复简短，适合 IM 阅读
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该渠道对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用 global.product 的值。
+	Product string `yaml:"product,omitempty"`
+	// SLS 产品：数字员工所属 project（写入 Thread Variables.Project）
+	Project string `yaml:"project,omitempty"`
+	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
+	Workspace string `yaml:"workspace,omitempty"`
 	// 用户白名单（企业微信 userid）；为空时允许所有用户
 	AllowedUsers []string `yaml:"allowedUsers,omitempty"`
 	// 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
@@ -196,6 +228,13 @@ type WeComBotConfig struct {
 	EmployeeName string `yaml:"employeeName"`
 	// 开启后回复简短，适合 IM 阅读
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该渠道对接的数字员工所属产品：sls（默认）或 cms。
+	// 为空时使用 global.product 的值。
+	Product string `yaml:"product,omitempty"`
+	// SLS 产品：数字员工所属 project（写入 Thread Variables.Project）
+	Project string `yaml:"project,omitempty"`
+	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
+	Workspace string `yaml:"workspace,omitempty"`
 	// WebSocket 连接地址（默认 wss://openws.work.weixin.qq.com）
 	URL string `yaml:"url,omitempty"`
 	// 心跳间隔（秒，默认 30）
@@ -270,10 +309,15 @@ type GlobalConfig struct {
 	AccessKeyId     string `yaml:"accessKeyId"`
 	AccessKeySecret string `yaml:"accessKeySecret"`
 	Endpoint        string `yaml:"endpoint"`
-	Host            string `yaml:"host"` // 服务监听地址，默认 0.0.0.0
-	Port            int    `yaml:"port"` // 服务监听端口，默认 8080
+	Host            string `yaml:"host"`     // 服务监听地址，默认 0.0.0.0
+	Port            int    `yaml:"port"`     // 服务监听端口，默认 8080
 	TimeZone        string `yaml:"timeZone"` // 时区设置
 	Language        string `yaml:"language"` // 语言设置
+	// Product 指定本实例对接的数字员工所属产品：sls（默认）或 cms。
+	// sls：对话时附加 skill=sop 变量；cms：不附加该变量。
+	Product   string `yaml:"product,omitempty"`
+	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
+	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
 }
 
 // AuthConfig 认证配置
@@ -326,27 +370,27 @@ type RoleConfig struct {
 
 // LDAPConfig LDAP 认证配置
 type LDAPConfig struct {
-	Host         string `yaml:"host"`           // LDAP 服务器地址，如 ldap.example.com
-	Port         int    `yaml:"port"`           // 端口，明文默认 389，TLS 默认 636
-	UseTLS       bool   `yaml:"useTLS"`         // 是否使用 TLS（LDAPS）
-	BindDN       string `yaml:"bindDN"`         // 查询用 DN，如 cn=readonly,dc=example,dc=com
-	BindPassword string `yaml:"bindPassword"`   // 查询用密码
-	BaseDN       string `yaml:"baseDN"`         // 用户搜索根，如 ou=people,dc=example,dc=com
-	UserFilter   string `yaml:"userFilter"`     // 用户搜索过滤器，如 (uid={username})
-	UsernameAttr string `yaml:"usernameAttr"`   // 用户名属性，默认 uid
-	DisplayAttr  string `yaml:"displayAttr"`    // 显示名属性，默认 cn
-	EmailAttr    string `yaml:"emailAttr"`      // 邮箱属性，默认 mail
+	Host         string `yaml:"host"`         // LDAP 服务器地址，如 ldap.example.com
+	Port         int    `yaml:"port"`         // 端口，明文默认 389，TLS 默认 636
+	UseTLS       bool   `yaml:"useTLS"`       // 是否使用 TLS（LDAPS）
+	BindDN       string `yaml:"bindDN"`       // 查询用 DN，如 cn=readonly,dc=example,dc=com
+	BindPassword string `yaml:"bindPassword"` // 查询用密码
+	BaseDN       string `yaml:"baseDN"`       // 用户搜索根，如 ou=people,dc=example,dc=com
+	UserFilter   string `yaml:"userFilter"`   // 用户搜索过滤器，如 (uid={username})
+	UsernameAttr string `yaml:"usernameAttr"` // 用户名属性，默认 uid
+	DisplayAttr  string `yaml:"displayAttr"`  // 显示名属性，默认 cn
+	EmailAttr    string `yaml:"emailAttr"`    // 邮箱属性，默认 mail
 }
 
 // OIDCConfig OIDC / OAuth2 认证配置
 // 兼容标准 OIDC Provider（Keycloak、Dex、Okta、Azure AD 等）
 type OIDCConfig struct {
-	IssuerURL    string   `yaml:"issuerURL"`              // Provider 地址，如 https://accounts.example.com
-	ClientID     string   `yaml:"clientId"`               // OAuth2 Client ID
-	ClientSecret string   `yaml:"clientSecret"`           // OAuth2 Client Secret
-	RedirectURL  string   `yaml:"redirectURL"`            // 回调地址，如 http://your-server/api/auth/oidc/callback
-	Scopes       []string `yaml:"scopes,omitempty"`       // 默认: [openid, profile, email]
-	UsernameClaim string  `yaml:"usernameClaim,omitempty"` // 用于提取用户名的 claim，默认 preferred_username
+	IssuerURL     string   `yaml:"issuerURL"`               // Provider 地址，如 https://accounts.example.com
+	ClientID      string   `yaml:"clientId"`                // OAuth2 Client ID
+	ClientSecret  string   `yaml:"clientSecret"`            // OAuth2 Client Secret
+	RedirectURL   string   `yaml:"redirectURL"`             // 回调地址，如 http://your-server/api/auth/oidc/callback
+	Scopes        []string `yaml:"scopes,omitempty"`        // 默认: [openid, profile, email]
+	UsernameClaim string   `yaml:"usernameClaim,omitempty"` // 用于提取用户名的 claim，默认 preferred_username
 }
 
 // randomHex 生成 n 字节的随机十六进制字符串
@@ -460,6 +504,7 @@ func (c *Config) expandEnvVars() {
 	c.Global.AccessKeySecret = expandEnvVar(c.Global.AccessKeySecret)
 	c.Global.Endpoint = expandEnvVar(c.Global.Endpoint)
 	c.Global.Host = expandEnvVar(c.Global.Host)
+	c.Global.Product = expandEnvVar(c.Global.Product)
 
 	// 展开 Auth 配置中的环境变量
 	c.Auth.JWT.SecretKey = expandEnvVar(c.Auth.JWT.SecretKey)
@@ -582,6 +627,7 @@ func (c *Config) ToClientConfig() (*ClientConfig, error) {
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
 		Endpoint:        endpoint,
+		Product:         c.Global.Product,
 	}, nil
 }
 
@@ -615,6 +661,8 @@ type ClientConfig struct {
 	AccessKeyId     string
 	AccessKeySecret string
 	Endpoint        string
+	// Product 来自 global.product，供各渠道 Bot 和调度器直接读取
+	Product string
 }
 
 // GetPort 获取端口配置（优先级: 配置文件 > 环境变量 > 默认值）
@@ -681,6 +729,20 @@ func SaveRawConfig(configPath string, content string) error {
 		return fmt.Errorf("写入配置文件失败: %w", err)
 	}
 	return nil
+}
+
+// IsSlsProduct 判断给定的 product 值是否对应 SLS 产品。
+// 空字符串和 "sls" 均视为 SLS（向后兼容默认行为）。
+func IsSlsProduct(product string) bool {
+	return product == "" || product == "sls"
+}
+
+// GetProduct 获取对接产品类型（如果未配置则返回默认值 "sls"）
+func (c *Config) GetProduct() string {
+	if c.Global.Product == "" {
+		return "sls"
+	}
+	return c.Global.Product
 }
 
 // GetTimeZone 获取时区配置（如果未配置则返回默认值 "Asia/Shanghai"）

@@ -60,15 +60,15 @@ code{background:#eef0ff;padding:2px 6px;border-radius:4px;font-size:.8rem}</styl
 
 // configUIResponse 是返回给前端的结构化配置数据（不暴露文件路径）
 type configUIResponse struct {
-	Global         configUIGlobal           `json:"global"`
-	Auth           configUIAuth             `json:"auth"`
-	DingTalk       []configUIDingTalk       `json:"dingtalk"`
-	Feishu         []configUIFeishu         `json:"feishu"`
-	WeCom          []configUIWeCom          `json:"wecom"`
-	WeComBot       []configUIWeComBot       `json:"wecomBot"`
-	OpenAIEnabled  bool                     `json:"openaiEnabled"`
-	OpenAI         configUIOpenAI           `json:"openai"`
-	ScheduledTasks []configUIScheduledTask  `json:"scheduledTasks"`
+	Global         configUIGlobal          `json:"global"`
+	Auth           configUIAuth            `json:"auth"`
+	DingTalk       []configUIDingTalk      `json:"dingtalk"`
+	Feishu         []configUIFeishu        `json:"feishu"`
+	WeCom          []configUIWeCom         `json:"wecom"`
+	WeComBot       []configUIWeComBot      `json:"wecomBot"`
+	OpenAIEnabled  bool                    `json:"openaiEnabled"`
+	OpenAI         configUIOpenAI          `json:"openai"`
+	ScheduledTasks []configUIScheduledTask `json:"scheduledTasks"`
 }
 
 // configUIScheduledTask 定时任务配置（UI 层）
@@ -79,6 +79,9 @@ type configUIScheduledTask struct {
 	Prompt       string          `json:"prompt"`
 	EmployeeName string          `json:"employeeName"`
 	ConciseReply bool            `json:"conciseReply"`
+	Product      string          `json:"product"`
+	Project      string          `json:"project"`
+	Workspace    string          `json:"workspace"`
 	Webhook      configUIWebhook `json:"webhook"`
 }
 
@@ -98,6 +101,9 @@ type configUIGlobal struct {
 	Port            int    `json:"port"`
 	TimeZone        string `json:"timeZone"`
 	Language        string `json:"language"`
+	Product         string `json:"product"`
+	Project         string `json:"project"`
+	Workspace       string `json:"workspace"`
 }
 
 type configUIAuth struct {
@@ -126,19 +132,25 @@ type configUIRole struct {
 type configUIConversationRoute struct {
 	ConversationTitle string `json:"conversationTitle"`
 	EmployeeName      string `json:"employeeName"`
+	Product           string `json:"product"`
+	Project           string `json:"project"`
+	Workspace         string `json:"workspace"`
 }
 
 type configUIDingTalk struct {
-	Enabled              bool                         `json:"enabled"`
-	Name                 string                       `json:"name"`
-	ClientId             string                       `json:"clientId"`
-	ClientSecret         string                       `json:"clientSecret"`
-	EmployeeName         string                       `json:"employeeName"`
-	ConciseReply         bool                         `json:"conciseReply"`
-	AllowedGroupUsers    []string                     `json:"allowedGroupUsers"`
-	AllowedDirectUsers   []string                     `json:"allowedDirectUsers"`
-	AllowedConversations []string                     `json:"allowedConversations"`
-	ConversationRoutes   []configUIConversationRoute  `json:"conversationRoutes"`
+	Enabled              bool                        `json:"enabled"`
+	Name                 string                      `json:"name"`
+	ClientId             string                      `json:"clientId"`
+	ClientSecret         string                      `json:"clientSecret"`
+	EmployeeName         string                      `json:"employeeName"`
+	ConciseReply         bool                        `json:"conciseReply"`
+	Product              string                      `json:"product"`
+	Project              string                      `json:"project"`
+	Workspace            string                      `json:"workspace"`
+	AllowedGroupUsers    []string                    `json:"allowedGroupUsers"`
+	AllowedDirectUsers   []string                    `json:"allowedDirectUsers"`
+	AllowedConversations []string                    `json:"allowedConversations"`
+	ConversationRoutes   []configUIConversationRoute `json:"conversationRoutes"`
 }
 
 type configUIFeishu struct {
@@ -150,6 +162,9 @@ type configUIFeishu struct {
 	EventEncryptKey   string   `json:"eventEncryptKey"`
 	EmployeeName      string   `json:"employeeName"`
 	ConciseReply      bool     `json:"conciseReply"`
+	Product           string   `json:"product"`
+	Project           string   `json:"project"`
+	Workspace         string   `json:"workspace"`
 	AllowedUsers      []string `json:"allowedUsers"`
 	AllowedChats      []string `json:"allowedChats"`
 }
@@ -166,6 +181,9 @@ type configUIWeCom struct {
 	CallbackPath   string   `json:"callbackPath"`
 	EmployeeName   string   `json:"employeeName"`
 	ConciseReply   bool     `json:"conciseReply"`
+	Product        string   `json:"product"`
+	Project        string   `json:"project"`
+	Workspace      string   `json:"workspace"`
 	AllowedUsers   []string `json:"allowedUsers"`
 }
 
@@ -175,6 +193,9 @@ type configUIWeComBot struct {
 	BotSecret    string `json:"botSecret"`
 	EmployeeName string `json:"employeeName"`
 	ConciseReply bool   `json:"conciseReply"`
+	Product      string `json:"product"`
+	Project      string `json:"project"`
+	Workspace    string `json:"workspace"`
 }
 
 type configUIOpenAI struct {
@@ -209,6 +230,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			Port:            cfg.Global.Port,
 			TimeZone:        cfg.Global.TimeZone,
 			Language:        cfg.Global.Language,
+			Product:         cfg.Global.Product,
+			Project:         cfg.Global.Project,
+			Workspace:       cfg.Global.Workspace,
 		},
 		Auth: configUIAuth{
 			Methods:      cfg.Auth.Methods,
@@ -246,6 +270,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				routes[j] = configUIConversationRoute{
 					ConversationTitle: r.ConversationTitle,
 					EmployeeName:      r.EmployeeName,
+					Product:           r.Product,
+					Project:           r.Project,
+					Workspace:         r.Workspace,
 				}
 			}
 			resp.DingTalk[i] = configUIDingTalk{
@@ -255,6 +282,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				ClientSecret:         dt.ClientSecret,
 				EmployeeName:         dt.EmployeeName,
 				ConciseReply:         dt.ConciseReply,
+				Product:              dt.Product,
+				Project:              dt.Project,
+				Workspace:            dt.Workspace,
 				AllowedGroupUsers:    dt.AllowedGroupUsers,
 				AllowedDirectUsers:   dt.AllowedDirectUsers,
 				AllowedConversations: dt.AllowedConversations,
@@ -278,6 +308,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				EventEncryptKey:   ft.EventEncryptKey,
 				EmployeeName:      ft.EmployeeName,
 				ConciseReply:      ft.ConciseReply,
+				Product:           ft.Product,
+				Project:           ft.Project,
+				Workspace:         ft.Workspace,
 				AllowedUsers:      ft.AllowedUsers,
 				AllowedChats:      ft.AllowedChats,
 			}
@@ -302,6 +335,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				CallbackPath:   wc.CallbackPath,
 				EmployeeName:   wc.EmployeeName,
 				ConciseReply:   wc.ConciseReply,
+				Product:        wc.Product,
+				Project:        wc.Project,
+				Workspace:      wc.Workspace,
 				AllowedUsers:   wc.AllowedUsers,
 			}
 		}
@@ -319,6 +355,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				BotSecret:    wb.BotSecret,
 				EmployeeName: wb.EmployeeName,
 				ConciseReply: wb.ConciseReply,
+				Product:      wb.Product,
+				Project:      wb.Project,
+				Workspace:    wb.Workspace,
 			}
 		}
 	} else {
@@ -347,6 +386,9 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
 				ConciseReply: t.ConciseReply,
+				Product:      t.Product,
+				Project:      t.Project,
+				Workspace:    t.Workspace,
 				Webhook: configUIWebhook{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -386,6 +428,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 			Port:            req.Global.Port,
 			TimeZone:        req.Global.TimeZone,
 			Language:        req.Global.Language,
+			Product:         req.Global.Product,
+			Project:         req.Global.Project,
+			Workspace:       req.Global.Workspace,
 		},
 		Auth: config.AuthConfig{
 			Methods: req.Auth.Methods,
@@ -423,6 +468,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 						routes = append(routes, config.ConversationRoute{
 							ConversationTitle: r.ConversationTitle,
 							EmployeeName:      r.EmployeeName,
+							Product:           r.Product,
+							Project:           r.Project,
+							Workspace:         r.Workspace,
 						})
 					}
 				}
@@ -433,6 +481,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					ClientSecret:         dt.ClientSecret,
 					EmployeeName:         dt.EmployeeName,
 					ConciseReply:         dt.ConciseReply,
+					Product:              dt.Product,
+					Project:              dt.Project,
+					Workspace:            dt.Workspace,
 					AllowedGroupUsers:    dt.AllowedGroupUsers,
 					AllowedDirectUsers:   dt.AllowedDirectUsers,
 					AllowedConversations: dt.AllowedConversations,
@@ -467,6 +518,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					EventEncryptKey:   ft.EventEncryptKey,
 					EmployeeName:      ft.EmployeeName,
 					ConciseReply:      ft.ConciseReply,
+					Product:           ft.Product,
+					Project:           ft.Project,
+					Workspace:         ft.Workspace,
 					AllowedUsers:      allowedUsers,
 					AllowedChats:      allowedChats,
 				})
@@ -498,6 +552,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					CallbackPath:   wc.CallbackPath,
 					EmployeeName:   wc.EmployeeName,
 					ConciseReply:   wc.ConciseReply,
+					Product:        wc.Product,
+					Project:        wc.Project,
+					Workspace:      wc.Workspace,
 					AllowedUsers:   allowedUsers,
 				})
 			}
@@ -518,6 +575,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					BotSecret:    wb.BotSecret,
 					EmployeeName: wb.EmployeeName,
 					ConciseReply: wb.ConciseReply,
+					Product:      wb.Product,
+					Project:      wb.Project,
+					Workspace:    wb.Workspace,
 				})
 			}
 		}
@@ -544,6 +604,9 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
 				ConciseReply: t.ConciseReply,
+				Product:      t.Product,
+				Project:      t.Project,
+				Workspace:    t.Workspace,
 				Webhook: config.WebhookConfig{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -593,6 +656,7 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 
 	s.mu.RLock()
 	cfg := s.config
+	globalCfg := s.globalConfig
 	s.mu.RUnlock()
 
 	if cfg == nil || cfg.AccessKeyId == "" {
@@ -605,6 +669,17 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		AccessKeySecret: cfg.AccessKeySecret,
 		Endpoint:        cfg.Endpoint,
 	}
+	if globalCfg != nil {
+		clientCfg.Product = globalCfg.Global.Product
+	}
+
+	// 确定任务使用的 product/project/workspace
+	taskProduct := req.Product
+	if taskProduct == "" {
+		taskProduct = clientCfg.Product // 使用全局配置
+	}
+	taskProject := req.Project
+	taskWorkspace := req.Workspace
 
 	type triggerResult struct {
 		reply string
@@ -617,7 +692,7 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		if req.ConciseReply {
 			prompt += "\n\n简化最终输出 适合聊天工具上阅读"
 		}
-		reply, err := scheduler.QueryEmployee(clientCfg, req.EmployeeName, prompt)
+		reply, err := scheduler.QueryEmployeeWithVariables(clientCfg, req.EmployeeName, prompt, taskProduct, taskProject, taskWorkspace)
 		done <- triggerResult{reply: reply, err: err}
 	}()
 

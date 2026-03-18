@@ -1,9 +1,8 @@
 # SOP Chat
 
-阿里云SLS智能问答助手（SOP Agent) 的客户端应用，提供独立的 Web UI 界面，并支持钉钉、飞书、企业微信机器人接入，让你无需开发即可快速使用 SOP 智能对话能力。
+阿里云SLS和CMS智能问答助手的客户端应用，提供独立的 Web UI 界面，并支持钉钉、飞书、企业微信机器人接入，让你无需开发即可快速使用 SOP 智能对话能力。
 
 ## 主要功能
-
 - **独立 Web UI** — 开箱即用的聊天界面，支持 Markdown 渲染、多会话管理
 - **多平台机器人对接** — 支持钉钉、飞书、企业微信三大 IM 平台接入 SOP Agent，同一服务可同时运行多个机器人实例
   - **钉钉** — 基于 DingTalk Stream SDK，无需公网 IP，支持群内 @机器人 及单聊
@@ -116,19 +115,26 @@ chmod +x sop-chat-server
 ### 一键构建（推荐）
 
 ```bash
-# 构建当前平台的单一二进制（前端已嵌入）
+# 构建当前平台的二进制（前端已嵌入）
 make build
 
-# 或使用构建脚本
-./build.sh
-
 # 多平台构建（Linux + macOS）
-./build-all.sh
+make build-all
 ```
 
 **产物：**
-- 单平台：`backend/sop-chat-server`
+- 单平台：`backend/sop-chat-server`、`backend/sop-chat-cli`
 - 多平台：`dist/linux/sop-chat-server`、`dist/darwin/sop-chat-server`、`dist/darwin/sop-chat-server-arm64`
+
+### 其他构建命令
+
+```bash
+make build-frontend  # 仅构建前端
+make build-backend   # 仅构建后端（需先构建前端）
+make build-cli       # 仅构建 CLI 工具
+make clean           # 清理所有构建产物
+make clean-dist      # 仅清理多平台构建产物
+```
 
 ### 分开构建
 

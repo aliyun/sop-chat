@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -21,7 +22,7 @@ var (
 	threadTitle        string
 	threadId           string
 	threadFilters      []string
-	threadAttr         string
+	threadAttrs        []string
 )
 
 // NewThreadCmd 创建 thread 命令
@@ -66,15 +67,15 @@ func newThreadCreateCmd(client *sopchat.Client) *cobra.Command {
 				return fmt.Errorf("employee name is required (use -e flag)")
 			}
 
+			attrs, err := parseThreadAttrs(threadAttrs)
+			if err != nil {
+				return err
+			}
+
 			config := &sopchat.ThreadConfig{
 				EmployeeName: threadEmployeeName,
 				Title:        threadTitle,
-				Attributes:   make(map[string]interface{}),
-			}
-
-			// 将 attr 的整个值（key=value）设置到 workspace variable 中
-			if threadAttr != "" {
-				config.Attributes["workspace"] = threadAttr
+				Attributes:   attrs,
 			}
 
 			result, err := client.CreateThread(config)
@@ -98,7 +99,7 @@ func newThreadCreateCmd(client *sopchat.Client) *cobra.Command {
 
 	cmd.Flags().StringVarP(&threadEmployeeName, "employee", "e", "", "Digital employee name (required)")
 	cmd.Flags().StringVar(&threadTitle, "title", "", "Thread title (optional)")
-	cmd.Flags().StringVar(&threadAttr, "attr", "", "Thread attribute in key=value format, value will be set to workspace variable")
+	cmd.Flags().StringArrayVar(&threadAttrs, "attr", []string{}, "Thread attribute as key=value (supported keys: workspace, project); can be specified multiple times")
 
 	return cmd
 }
@@ -115,17 +116,16 @@ func newThreadListCmd(client *sopchat.Client) *cobra.Command {
 				return fmt.Errorf("employee name is required (use -e flag)")
 			}
 
-			// 解析过滤条件：将 filter 的值（attr=value）作为 workspace 变量的过滤条件
-			var filters []sopchat.ThreadFilter
-			for _, filter := range threadFilters {
-				// 直接将整个 filter 值（attr=value）作为 workspace 的过滤值
-				filters = append(filters, sopchat.ThreadFilter{
-					Key:   "workspace",
-					Value: filter,
-				})
+			filters, err := parseThreadAttrs(threadFilters)
+			if err != nil {
+				return fmt.Errorf("invalid --filter: %w", err)
+			}
+			var filterList []sopchat.ThreadFilter
+			for k, v := range filters {
+				filterList = append(filterList, sopchat.ThreadFilter{Key: k, Value: v.(string)})
 			}
 
-			result, err := client.ListThreads(threadEmployeeName, filters)
+			result, err := client.ListThreads(threadEmployeeName, filterList)
 			if err != nil {
 				return err
 			}
@@ -143,15 +143,10 @@ func newThreadListCmd(client *sopchat.Client) *cobra.Command {
 				fmt.Printf("    Title: %s\n", tea.StringValue(thread.Title))
 				fmt.Printf("    Create Time: %s\n", tea.StringValue(thread.CreateTime))
 				fmt.Printf("    Update Time: %s\n", tea.StringValue(thread.UpdateTime))
-
-				// 显示变量
-				if thread.Variables != nil {
-					fmt.Println("    Variables:")
-					if thread.Variables.Project != nil {
-						fmt.Printf("      Project: %s\n", tea.StringValue(thread.Variables.Project))
-					}
-					if thread.Variables.Workspace != nil {
-						fmt.Printf("      Workspace: %s\n", tea.StringValue(thread.Variables.Workspace))
+				if len(thread.Attributes) > 0 {
+					fmt.Println("    Attributes:")
+					for k, v := range thread.Attributes {
+						fmt.Printf("      %s: %s\n", k, tea.StringValue(v))
 					}
 				}
 			}
@@ -162,7 +157,7 @@ func newThreadListCmd(client *sopchat.Client) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&threadEmployeeName, "employee", "e", "", "Digital employee name (required)")
-	cmd.Flags().StringArrayVar(&threadFilters, "filter", []string{}, "Filter workspace variable by attr=value format (can be specified multiple times)")
+	cmd.Flags().StringArrayVar(&threadFilters, "filter", []string{}, "Filter by attribute as key=value (can be specified multiple times)")
 
 	return cmd
 }
@@ -200,14 +195,10 @@ func newThreadGetCmd(client *sopchat.Client) *cobra.Command {
 			fmt.Printf("Create Time: %s\n", tea.StringValue(thread.Body.CreateTime))
 			fmt.Printf("Update Time: %s\n", tea.StringValue(thread.Body.UpdateTime))
 
-			// 显示变量
-			if thread.Body.Variables != nil {
-				fmt.Println("\nVariables:")
-				if thread.Body.Variables.Project != nil {
-					fmt.Printf("  Project: %s\n", tea.StringValue(thread.Body.Variables.Project))
-				}
-				if thread.Body.Variables.Workspace != nil {
-					fmt.Printf("  Workspace: %s\n", tea.StringValue(thread.Body.Variables.Workspace))
+			if len(thread.Body.Attributes) > 0 {
+				fmt.Println("\nAttributes:")
+				for k, v := range thread.Body.Attributes {
+					fmt.Printf("  %s: %s\n", k, tea.StringValue(v))
 				}
 			}
 
@@ -237,7 +228,6 @@ func newThreadGetCmd(client *sopchat.Client) *cobra.Command {
 				for _, msg := range data.Messages {
 					timestamp := int64(0)
 					if msg.Timestamp != nil {
-						// 尝试解析时间戳字符串
 						if ts, err := parseTimestamp(*msg.Timestamp); err == nil {
 							timestamp = ts
 						}
@@ -464,15 +454,15 @@ func newThreadCreateCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Co
 				return fmt.Errorf("employee name is required (use -e flag)")
 			}
 
+			attrs, err := parseThreadAttrs(threadAttrs)
+			if err != nil {
+				return err
+			}
+
 			config := &sopchat.ThreadConfig{
 				EmployeeName: threadEmployeeName,
 				Title:        threadTitle,
-				Attributes:   make(map[string]interface{}),
-			}
-
-			// 将 attr 的整个值（key=value）设置到 workspace variable 中
-			if threadAttr != "" {
-				config.Attributes["workspace"] = threadAttr
+				Attributes:   attrs,
 			}
 
 			result, err := client.CreateThread(config)
@@ -496,7 +486,7 @@ func newThreadCreateCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Co
 
 	cmd.Flags().StringVarP(&threadEmployeeName, "employee", "e", "", "Digital employee name (required)")
 	cmd.Flags().StringVar(&threadTitle, "title", "", "Thread title (optional)")
-	cmd.Flags().StringVar(&threadAttr, "attr", "", "Thread attribute in key=value format, value will be set to workspace variable")
+	cmd.Flags().StringArrayVar(&threadAttrs, "attr", []string{}, "Thread attribute as key=value (supported keys: workspace, project); can be specified multiple times")
 
 	return cmd
 }
@@ -517,17 +507,16 @@ func newThreadListCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comm
 				return fmt.Errorf("employee name is required (use -e flag)")
 			}
 
-			// 解析过滤条件：将 filter 的值（attr=value）作为 workspace 变量的过滤条件
-			var filters []sopchat.ThreadFilter
-			for _, filter := range threadFilters {
-				// 直接将整个 filter 值（attr=value）作为 workspace 的过滤值
-				filters = append(filters, sopchat.ThreadFilter{
-					Key:   "workspace",
-					Value: filter,
-				})
+			filters, err := parseThreadAttrs(threadFilters)
+			if err != nil {
+				return fmt.Errorf("invalid --filter: %w", err)
+			}
+			var filterList []sopchat.ThreadFilter
+			for k, v := range filters {
+				filterList = append(filterList, sopchat.ThreadFilter{Key: k, Value: v.(string)})
 			}
 
-			result, err := client.ListThreads(threadEmployeeName, filters)
+			result, err := client.ListThreads(threadEmployeeName, filterList)
 			if err != nil {
 				return err
 			}
@@ -545,15 +534,10 @@ func newThreadListCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comm
 				fmt.Printf("    Title: %s\n", tea.StringValue(thread.Title))
 				fmt.Printf("    Create Time: %s\n", tea.StringValue(thread.CreateTime))
 				fmt.Printf("    Update Time: %s\n", tea.StringValue(thread.UpdateTime))
-
-				// 显示变量
-				if thread.Variables != nil {
-					fmt.Println("    Variables:")
-					if thread.Variables.Project != nil {
-						fmt.Printf("      Project: %s\n", tea.StringValue(thread.Variables.Project))
-					}
-					if thread.Variables.Workspace != nil {
-						fmt.Printf("      Workspace: %s\n", tea.StringValue(thread.Variables.Workspace))
+				if len(thread.Attributes) > 0 {
+					fmt.Println("    Attributes:")
+					for k, v := range thread.Attributes {
+						fmt.Printf("      %s: %s\n", k, tea.StringValue(v))
 					}
 				}
 			}
@@ -564,7 +548,7 @@ func newThreadListCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comm
 	}
 
 	cmd.Flags().StringVarP(&threadEmployeeName, "employee", "e", "", "Digital employee name (required)")
-	cmd.Flags().StringArrayVar(&threadFilters, "filter", []string{}, "Filter workspace variable by attr=value format (can be specified multiple times)")
+	cmd.Flags().StringArrayVar(&threadFilters, "filter", []string{}, "Filter by attribute as key=value (can be specified multiple times)")
 
 	return cmd
 }
@@ -606,14 +590,10 @@ func newThreadGetCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comma
 			fmt.Printf("Create Time: %s\n", tea.StringValue(thread.Body.CreateTime))
 			fmt.Printf("Update Time: %s\n", tea.StringValue(thread.Body.UpdateTime))
 
-			// 显示变量
-			if thread.Body.Variables != nil {
-				fmt.Println("\nVariables:")
-				if thread.Body.Variables.Project != nil {
-					fmt.Printf("  Project: %s\n", tea.StringValue(thread.Body.Variables.Project))
-				}
-				if thread.Body.Variables.Workspace != nil {
-					fmt.Printf("  Workspace: %s\n", tea.StringValue(thread.Body.Variables.Workspace))
+			if len(thread.Body.Attributes) > 0 {
+				fmt.Println("\nAttributes:")
+				for k, v := range thread.Body.Attributes {
+					fmt.Printf("  %s: %s\n", k, tea.StringValue(v))
 				}
 			}
 
@@ -643,7 +623,6 @@ func newThreadGetCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comma
 				for _, msg := range data.Messages {
 					timestamp := int64(0)
 					if msg.Timestamp != nil {
-						// 尝试解析时间戳字符串
 						if ts, err := parseTimestamp(*msg.Timestamp); err == nil {
 							timestamp = ts
 						}
@@ -678,6 +657,25 @@ func newThreadGetCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Comma
 	cmd.Flags().StringVar(&threadId, "thread-id", "", "Thread ID (required)")
 
 	return cmd
+}
+
+// parseThreadAttrs 解析 --attr key=value 列表，返回 map
+var attrKeyRe = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+
+func parseThreadAttrs(attrs []string) (map[string]interface{}, error) {
+	m := make(map[string]interface{})
+	for _, a := range attrs {
+		idx := strings.Index(a, "=")
+		if idx <= 0 {
+			return nil, fmt.Errorf("invalid format %q: expected key=value", a)
+		}
+		key := a[:idx]
+		if !attrKeyRe.MatchString(key) {
+			return nil, fmt.Errorf("invalid attribute key %q: only letters, digits and underscores are allowed", key)
+		}
+		m[key] = a[idx+1:]
+	}
+	return m, nil
 }
 
 // parseTimestamp 解析时间戳字符串为 int64 (Unix 时间戳，秒)

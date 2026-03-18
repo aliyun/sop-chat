@@ -218,22 +218,42 @@ func (s *Server) handleOpenAIListModels(c *gin.Context) {
 		return
 	}
 
-	employees, err := cmsClient.ListEmployees()
-	if err != nil {
-		log.Printf("[OpenAI] 列举数字员工失败: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": gin.H{"message": err.Error(), "type": "server_error"},
-		})
-		return
+	// 根据全局 product 配置决定列举哪类员工：SLS 用带 domain=sop 过滤的接口，CMS 列举全部
+	var employeeNames []string
+	if s.isSlsProduct() {
+		list, err := cmsClient.ListEmployees()
+		if err != nil {
+			log.Printf("[OpenAI] 列举数字员工失败: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": gin.H{"message": err.Error(), "type": "server_error"},
+			})
+			return
+		}
+		for _, e := range list {
+			if e.Name != nil {
+				employeeNames = append(employeeNames, *e.Name)
+			}
+		}
+	} else {
+		list, err := cmsClient.ListAllEmployees()
+		if err != nil {
+			log.Printf("[OpenAI] 列举数字员工失败: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": gin.H{"message": err.Error(), "type": "server_error"},
+			})
+			return
+		}
+		for _, e := range list {
+			if e.Name != nil {
+				employeeNames = append(employeeNames, *e.Name)
+			}
+		}
 	}
 
-	models := make([]OpenAIModel, 0, len(employees))
-	for _, emp := range employees {
-		if emp.Name == nil {
-			continue
-		}
+	models := make([]OpenAIModel, 0, len(employeeNames))
+	for _, name := range employeeNames {
 		models = append(models, OpenAIModel{
-			ID:      *emp.Name,
+			ID:      name,
 			Object:  "model",
 			Created: time.Now().Unix(),
 			OwnedBy: "organization",
@@ -290,10 +310,13 @@ func (s *Server) handleOpenAIChatCompletions(c *gin.Context) {
 		threadID = newThreadID
 	}
 
+	// 根据全局 product 配置判断是否为 SLS 产品（需传 skill=sop）
+	isSLS := s.isSlsProduct()
+
 	if req.Stream {
-		s.handleOpenAIStreamResponse(c, employeeName, threadID, userMessage)
+		s.handleOpenAIStreamResponse(c, employeeName, threadID, userMessage, isSLS)
 	} else {
-		s.handleOpenAINonStreamResponse(c, employeeName, threadID, userMessage)
+		s.handleOpenAINonStreamResponse(c, employeeName, threadID, userMessage, isSLS)
 	}
 }
 
@@ -318,12 +341,22 @@ func (s *Server) createOpenAIThread(employeeName string) (string, error) {
 }
 
 // buildChatRequest 构造 CMS CreateChatRequest
-func (s *Server) buildChatRequest(employeeName, threadID, message string) *cmsclient.CreateChatRequest {
+// isSLS 为 true 时表示对接 SLS 产品的数字员工，需在 Variables 中附加 skill=sop
+func (s *Server) buildChatRequest(employeeName, threadID, message string, isSLS bool) *cmsclient.CreateChatRequest {
 	timeZone := "Asia/Shanghai"
 	language := "zh"
 	if s.globalConfig != nil {
 		timeZone = s.globalConfig.GetTimeZone()
 		language = s.globalConfig.GetLanguage()
+	}
+
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", time.Now().Unix()),
+		"timeZone":  timeZone,
+		"language":  language,
+	}
+	if isSLS {
+		variables["skill"] = "sop"
 	}
 
 	return &cmsclient.CreateChatRequest{
@@ -341,17 +374,12 @@ func (s *Server) buildChatRequest(employeeName, threadID, message string) *cmscl
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", time.Now().Unix()),
-			"timeZone":  timeZone,
-			"language":  language,
-		},
+		Variables: variables,
 	}
 }
 
 // handleOpenAIStreamResponse 流式模式：以 SSE 格式返回 OpenAI 兼容的 chunks
-func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, threadID, message string) {
+func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, threadID, message string, isSLS bool) {
 	cmsClient, err := s.createCMSClient()
 	if err != nil {
 		log.Printf("[OpenAI] 创建 CMS 客户端失败: %v", err)
@@ -399,7 +427,7 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 	// 发送角色 delta
 	sendChunk("", nil, "")
 
-	request := s.buildChatRequest(employeeName, threadID, message)
+	request := s.buildChatRequest(employeeName, threadID, message, isSLS)
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
@@ -464,7 +492,7 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 }
 
 // handleOpenAINonStreamResponse 非流式模式：收集完整回复后一次性返回
-func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, threadID, message string) {
+func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, threadID, message string, isSLS bool) {
 	cmsClient, err := s.createCMSClient()
 	if err != nil {
 		log.Printf("[OpenAI] 创建 CMS 客户端失败: %v", err)
@@ -474,7 +502,7 @@ func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, thr
 		return
 	}
 
-	request := s.buildChatRequest(employeeName, threadID, message)
+	request := s.buildChatRequest(employeeName, threadID, message, isSLS)
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 

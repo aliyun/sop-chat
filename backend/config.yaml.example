@@ -10,6 +10,13 @@ global:
   port: 8080          # 监听端口，0 时读取 PORT 环境变量，默认 8080
   timeZone: "Asia/Shanghai"
   language: "zh"      # zh | en
+  # product 指定本实例对接的数字员工所属产品，影响所有渠道和定时任务
+  #   sls（默认）：对话时附加 skill=sop 变量（适用于 SLS 产品的数字员工）
+  #   cms：不附加 skill=sop（适用于 CMS 产品的数字员工）
+  product: sls
+  # project 与 workspace 根据产品类型二选一
+  # project: "etl-dev"    # SLS 产品对应的 Project
+  # workspace: ""         # CMS 产品对应的 Workspace
 
 # ─── 认证配置 ─────────────────────────────────────────────────────────────────
 auth:
@@ -75,6 +82,9 @@ auth:
 #       clientSecret: "$DINGTALK_CLIENT_SECRET_1"
 #       employeeName: "employee-name-1"
 #       conciseReply: true        # 开启后回复内容会更简洁，适合 IM 阅读
+#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
+#       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       allowedGroupUsers:        # 群用户白名单（钉钉 senderNick）：限制群聊中可 @ 机器人提问的用户；为空则允许所有群成员
 #         - "张三"
 #         - "李四"
@@ -83,16 +93,15 @@ auth:
 #       allowedConversations:     # 群白名单（conversationTitle）：为空则所有群均可；单聊不受此限制
 #         - "研发一群"
 #         - "SRE 值班群"
-#     - enabled: true
-#       clientId: "$DINGTALK_CLIENT_ID_2"
-#       clientSecret: "$DINGTALK_CLIENT_SECRET_2"
-#       employeeName: "employee-name-2"
 #   feishu:
 #     - enabled: true
 #       appId: "$FEISHU_APP_ID"           # 飞书应用 App ID
 #       appSecret: "$FEISHU_APP_SECRET"   # 飞书应用 App Secret
 #       employeeName: "employee-name-1"
 #       conciseReply: true
+#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
+#       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       verificationToken: ""             # WebSocket 模式可留空
 #       eventEncryptKey: ""               # WebSocket 模式可留空
 #       allowedUsers: []                  # 飞书用户 open_id 白名单，为空则允许所有用户
@@ -107,6 +116,9 @@ auth:
 #       callbackPath: "/wecom/callback"   # 回调路径（必须以 /wecom/ 开头）
 #       employeeName: "employee-name-1"
 #       conciseReply: true
+#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
+#       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       allowedUsers: []                  # 企业微信 userid 白名单，为空则允许所有用户
 #       webhookUrl: ""                    # 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
 #       # 旧版嵌套配置（向后兼容，推荐使用下方独立 wecomBot 节点）
@@ -120,6 +132,9 @@ auth:
 #       botSecret: "$WECOM_BOT_SECRET"    # 机器人 Secret
 #       employeeName: "employee-name-1"   # 默认数字员工名称
 #       conciseReply: true
+#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
+#       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       # url: "wss://openws.work.weixin.qq.com"  # WebSocket 地址（默认值，通常无需修改）
 #       # pingIntervalSec: 30             # 心跳间隔（秒）
 #       # reconnectDelaySec: 5            # 重连基础延迟（秒，指数退避）
@@ -151,6 +166,10 @@ auth:
 #     cron: "0 9 * * 1-5"           # 工作日每天 9:00
 #     prompt: "请总结昨日工作进展和今日计划"
 #     employeeName: "my-sop-employee"
+#     # product/project/workspace 可选，为空时使用全局配置
+#     # product: sls                  # sls 或 cms
+#     # project: "etl-dev"           # SLS 产品对应的 Project
+#     # workspace: ""                 # CMS 产品对应的 Workspace
 #     webhook:
 #       type: dingtalk
 #       url: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"

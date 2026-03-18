@@ -16,33 +16,26 @@ func (c *Client) CreateThread(config *ThreadConfig) (*cmsclient.CreateThreadResp
 	}
 
 	if len(config.Attributes) > 0 {
-		// 转换 map[string]interface{} 为 Variables 结构
-		// 注意：CreateThreadRequestVariables 结构体只支持 project 和 workspace 字段
-		// 其他属性（如 user）会被保留在 config.Attributes 中，但可能无法通过 Variables 传递到 API
+		attrs := make(map[string]*string, len(config.Attributes))
+		for k, v := range config.Attributes {
+			if strVal, ok := v.(string); ok {
+				attrs[k] = tea.String(strVal)
+			}
+		}
+		if len(attrs) > 0 {
+			request.Attributes = attrs
+		}
+	}
+
+	if config.Project != "" || config.Workspace != "" {
 		variables := &cmsclient.CreateThreadRequestVariables{}
-		hasVariables := false
-		
-		if projectVal, ok := config.Attributes["project"]; ok {
-			if strVal, ok := projectVal.(string); ok {
-				variables.Project = tea.String(strVal)
-				hasVariables = true
-			}
+		if config.Project != "" {
+			variables.Project = tea.String(config.Project)
 		}
-		if workspaceVal, ok := config.Attributes["workspace"]; ok {
-			if strVal, ok := workspaceVal.(string); ok {
-				variables.Workspace = tea.String(strVal)
-				hasVariables = true
-			}
+		if config.Workspace != "" {
+			variables.Workspace = tea.String(config.Workspace)
 		}
-		
-		// 注意：user 属性会被添加到 config.Attributes 中（在 API 层）
-		// 但由于 CreateThreadRequestVariables 结构体限制，可能无法通过 Variables 传递
-		// 如果 API 实际支持 user 字段，需要更新 SDK 或使用其他方式传递
-		
-		// 只有当至少有一个字段被设置时才设置 Variables
-		if hasVariables {
-			request.Variables = variables
-		}
+		request.Variables = variables
 	}
 
 	result, err := c.CmsClient.CreateThread(tea.String(config.EmployeeName), request)

@@ -2,9 +2,11 @@ package feishu
 
 import (
 	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"strings"
 	"sync"
 	"time"
@@ -30,8 +32,8 @@ const workerQueueSize = 8
 
 // Bot 封装飞书机器人及其与 CMS 的对接逻辑
 type Bot struct {
-	cfgMu    sync.RWMutex
-	ftConfig *config.FeishuConfig
+	cfgMu     sync.RWMutex
+	ftConfig  *config.FeishuConfig
 	cmsConfig *config.ClientConfig
 
 	// 会话 -> 线程 ID 的映射
@@ -46,6 +48,10 @@ type Bot struct {
 
 	// 飞书消息发送客户端
 	larkClient *lark.Client
+
+	// 重连控制
+	shouldRun         bool
+	reconnectAttempts int
 }
 
 // NewBot 创建飞书机器人实例
@@ -104,15 +110,50 @@ func (b *Bot) Start() error {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	b.cancel = cancel
+	b.shouldRun = true
+	b.reconnectAttempts = 0
 
-	go func() {
-		if err := wsClient.Start(ctx); err != nil && ctx.Err() == nil {
-			log.Printf("[Feishu] WebSocket 连接断开: %v", err)
-		}
-	}()
+	// 启动连接循环（含自动重连）
+	go b.connectLoop(ctx, wsClient)
 
 	log.Printf("[Feishu] 机器人已启动，appId=%s，绑定数字员工: %s", cfg.AppID, cfg.EmployeeName)
 	return nil
+}
+
+// connectLoop 连接循环（含重连逻辑）
+func (b *Bot) connectLoop(ctx context.Context, wsClient *larkws.Client) {
+	for b.shouldRun {
+		err := wsClient.Start(ctx)
+		if err != nil && ctx.Err() == nil {
+			log.Printf("[Feishu] WebSocket 连接断开: %v", err)
+		}
+
+		if !b.shouldRun || ctx.Err() != nil {
+			return
+		}
+
+		// 指数退避重连
+		delay := b.reconnectDelay()
+		log.Printf("[Feishu] %s 后重连 (attempt=%d)", delay, b.reconnectAttempts)
+		b.reconnectAttempts++
+
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(delay):
+		}
+	}
+}
+
+// reconnectDelay 计算重连延迟（指数退避）
+func (b *Bot) reconnectDelay() time.Duration {
+	base := 5 * time.Second
+	maxDelay := 60 * time.Second
+	delay := time.Duration(float64(base) * math.Pow(2, float64(b.reconnectAttempts)))
+	if delay > maxDelay {
+		delay = maxDelay
+	}
+	return delay
 }
 
 // Stop 停止飞书 WebSocket 连接
@@ -123,6 +164,7 @@ func (b *Bot) Stop() {
 	if b.cancel == nil {
 		return
 	}
+	b.shouldRun = false // 停止重连循环
 	b.cancel()
 	b.cancel = nil
 	log.Printf("[Feishu] 机器人已停止")
@@ -201,6 +243,9 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 
 	key := threadKey(chatID, senderOpenID, cfg.EmployeeName)
 
+	// worker queue key 不含 variable，保证同一会话的消息串行处理
+	queueKey := key
+
 	// 异步处理，避免阻塞事件回调
 	work := func() {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
@@ -225,14 +270,18 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 		}
 
 		if newThreadId != "" && newThreadId != threadId {
-			b.threadStore.Store(key, newThreadId)
+			// 缓存 key 需要包含 variable
+			project, workspace := b.threadVariable()
+			variable := project + workspace
+			cacheKey := threadKey(chatID, senderOpenID, cfg.EmployeeName) + "\x00" + variable
+			b.threadStore.Store(cacheKey, newThreadId)
 		}
 
 		log.Printf("[Feishu] 回复消息 chatId=%s 长度=%d", chatID, len(replyText))
 		b.sendText(workCtx, chatID, replyText)
 	}
 
-	if !b.enqueueWork(key, work) {
+	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[Feishu] 队列已满，拒绝消息 chatId=%s sender=%s", chatID, senderOpenID)
 		b.sendText(ctx, chatID, "⚠️ 消息处理中，请稍后再发。")
 	}
@@ -350,9 +399,27 @@ func (b *Bot) newSopClient() (*sopchat.Client, error) {
 	}, nil
 }
 
+// threadVariable 根据 product 返回需要写入 Thread Variables 的值
+// 优先使用渠道配置的 product，为空则使用全局配置。
+func (b *Bot) threadVariable() (project, workspace string) {
+	// 优先使用渠道配置的 product，为空则使用全局配置
+	productType := b.ftConfig.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+	if config.IsSlsProduct(productType) {
+		return b.ftConfig.Project, ""
+	}
+	return "", b.ftConfig.Workspace
+}
+
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID
 func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (string, error) {
-	key := threadKey(chatID, senderOpenID, employeeName)
+	project, workspace := b.threadVariable()
+	variable := project + workspace
+
+	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
+	key := threadKey(chatID, senderOpenID, employeeName) + "\x00" + variable
 
 	if v, ok := b.threadStore.Load(key); ok {
 		return v.(string), nil
@@ -363,10 +430,11 @@ func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (st
 		return "", err
 	}
 
-	workspace := fmt.Sprintf("feishu:%s:%s:%s", chatID, senderOpenID, employeeName)
+	h := md5.Sum([]byte("feishu\x00" + chatID + "\x00" + senderOpenID + "\x00" + employeeName + "\x00" + variable))
+	session := fmt.Sprintf("%x", h)
 
 	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
-		{Key: "workspace", Value: workspace},
+		{Key: "session", Value: session},
 	})
 	if listErr != nil {
 		log.Printf("[Feishu] 列出线程失败（将尝试新建）: %v", listErr)
@@ -375,8 +443,7 @@ func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (st
 			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
 				continue
 			}
-			if t.Variables != nil && t.Variables.Workspace != nil &&
-				*t.Variables.Workspace == workspace {
+			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
 				threadId := *t.ThreadId
 				log.Printf("[Feishu] 找到已有线程 [employee=%s]: %s", employeeName, threadId)
 				b.threadStore.Store(key, threadId)
@@ -389,7 +456,9 @@ func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (st
 	resp, err := client.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: employeeName,
 		Title:        "Feishu: " + senderOpenID,
-		Attributes:   map[string]interface{}{"workspace": workspace},
+		Attributes:   map[string]interface{}{"session": session},
+		Project:      project,
+		Workspace:    workspace,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -420,7 +489,31 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		message += conciseInstruction
 	}
 
+	// 获取 project/workspace 用于传递给 CreateChat variables
+	project, workspace := b.threadVariable()
+
+	// 获取渠道配置的 product，为空则使用全局配置
+	productType := cfg.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+
 	nowTS := time.Now().Unix()
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", nowTS),
+		"timeZone":  "Asia/Shanghai",
+		"language":  "zh",
+	}
+	if config.IsSlsProduct(productType) {
+		variables["skill"] = "sop"
+		if project != "" {
+			variables["project"] = project
+		}
+	} else {
+		if workspace != "" {
+			variables["workspace"] = workspace
+		}
+	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
 		ThreadId:            tea.String(threadId),
@@ -436,12 +529,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", nowTS),
-			"timeZone":  "Asia/Shanghai",
-			"language":  "zh",
-		},
+		Variables: variables,
 	}
 
 	responseChan := make(chan *cmsclient.CreateChatResponse)

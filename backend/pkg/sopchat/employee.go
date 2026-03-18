@@ -8,7 +8,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 )
 
-// ListEmployees 列出数字员工
+// ListEmployees 列出 SLS 产品下的数字员工（带 domain=sop 标签过滤）
 func (c *Client) ListEmployees() ([]*cmsclient.ListDigitalEmployeesResponseBodyDigitalEmployees, error) {
 	request := &cmsclient.ListDigitalEmployeesRequest{
 		Tags: []*cmsclient.Tag{
@@ -28,9 +28,34 @@ func (c *Client) ListEmployees() ([]*cmsclient.ListDigitalEmployeesResponseBodyD
 		return []*cmsclient.ListDigitalEmployeesResponseBodyDigitalEmployees{}, nil
 	}
 
-	employees := result.Body.DigitalEmployees
+	return result.Body.DigitalEmployees, nil
+}
 
-	return employees, nil
+// ListAllEmployees 列出所有数字员工（不区分产品，包含 SLS 和 CMS 员工）
+func (c *Client) ListAllEmployees() ([]*cmsclient.ListDigitalEmployeesResponseBodyDigitalEmployees, error) {
+	request := &cmsclient.ListDigitalEmployeesRequest{}
+
+	result, err := c.CmsClient.ListDigitalEmployees(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list all employees: %w", err)
+	}
+
+	if result.Body == nil || result.Body.DigitalEmployees == nil {
+		return []*cmsclient.ListDigitalEmployeesResponseBodyDigitalEmployees{}, nil
+	}
+
+	return result.Body.DigitalEmployees, nil
+}
+
+// IsSlsEmployee 判断数字员工是否属于 SLS 产品（通过检查 domain=sop 标签）
+func IsSlsEmployee(tags []*cmsclient.Tag) bool {
+	for _, tag := range tags {
+		if tag != nil && tag.Key != nil && *tag.Key == "domain" &&
+			tag.Value != nil && *tag.Value == "sop" {
+			return true
+		}
+	}
+	return false
 }
 
 // GetEmployee 获取指定数字员工的详细信息

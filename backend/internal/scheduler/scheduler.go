@@ -126,8 +126,8 @@ func (s *Scheduler) registerTask(task config.ScheduledTaskConfig) error {
 
 	s.entryIDs[task.Name] = id
 	next := s.cron.Entry(id).Next
-	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhook=%s  下次执行: %s",
-		task.Name, task.Cron, task.EmployeeName, task.Webhook.Type, next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
+	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhook=%s product=%q project=%q workspace=%q 下次执行: %s",
+		task.Name, task.Cron, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
 	return nil
 }
 
@@ -137,8 +137,8 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	clientCfg := s.clientCfg
 	s.mu.Unlock()
 
-	log.Printf("[Scheduler] 开始执行任务: %q  employee=%q  webhook=%s",
-		task.Name, task.EmployeeName, task.Webhook.Type)
+	log.Printf("[Scheduler] 开始执行任务: %q  employee=%q  webhook=%s  product=%q  project=%q  workspace=%q",
+		task.Name, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace)
 	prompt := task.Prompt
 	if task.ConciseReply {
 		prompt += "\n\n简化最终输出 适合聊天工具上阅读"
@@ -151,7 +151,15 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 		return
 	}
 
-	reply, err := queryEmployee(clientCfg, task.Name, task.EmployeeName, prompt, s.timezone)
+	// 确定任务使用的 product/project/workspace
+	taskProduct := task.Product
+	if taskProduct == "" {
+		taskProduct = clientCfg.Product // 使用全局配置
+	}
+	taskProject := task.Project
+	taskWorkspace := task.Workspace
+
+	reply, err := queryEmployee(clientCfg, task.Name, task.EmployeeName, prompt, s.timezone, taskProduct, taskProject, taskWorkspace)
 	if err != nil {
 		log.Printf("[Scheduler] 任务 %q 查询数字员工失败: %v", task.Name, err)
 		return
@@ -177,11 +185,16 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 
 // QueryEmployee 向数字员工发送消息，等待完整响应并返回文本（公开，供外部触发测试使用）
 func QueryEmployee(clientCfg *config.ClientConfig, employeeName, message string) (string, error) {
-	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local)
+	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, clientCfg.Product, "", "")
+}
+
+// QueryEmployeeWithVariables 向数字员工发送消息，支持指定 product/project/workspace
+func QueryEmployeeWithVariables(clientCfg *config.ClientConfig, employeeName, message, product, project, workspace string) (string, error) {
+	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, product, project, workspace)
 }
 
 // queryEmployee 向数字员工发送消息，等待完整响应并返回文本
-func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, message string, loc *time.Location) (string, error) {
+func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, message string, loc *time.Location, product, project, workspace string) (string, error) {
 	sopClient, err := client.NewCMSClient(&client.Config{
 		AccessKeyId:     clientCfg.AccessKeyId,
 		AccessKeySecret: clientCfg.AccessKeySecret,
@@ -206,6 +219,22 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	}
 	threadId := *threadResp.Body.ThreadId
 	nowTS := time.Now().Unix()
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", nowTS),
+		"timeZone":  "Asia/Shanghai",
+		"language":  "zh",
+	}
+	// 根据 product 配置决定是否附加 skill=sop
+	if config.IsSlsProduct(product) {
+		variables["skill"] = "sop"
+	}
+	// 添加 project/workspace 到变量
+	if project != "" {
+		variables["project"] = project
+	}
+	if workspace != "" {
+		variables["workspace"] = workspace
+	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
 		ThreadId:            tea.String(threadId),
@@ -221,12 +250,7 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", nowTS),
-			"timeZone":  "Asia/Shanghai",
-			"language":  "zh",
-		},
+		Variables: variables,
 	}
 
 	startSSE := time.Now()
@@ -285,10 +309,10 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 
 		case err, ok := <-errorChan:
 			if !ok {
-			result := strings.Join(textParts, "")
-			log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
-				employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
-			return result, nil
+				result := strings.Join(textParts, "")
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				return result, nil
 			}
 			if err != nil {
 				log.Printf("[Scheduler] queryEmployee SSE error: %v", err)

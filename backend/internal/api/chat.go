@@ -58,7 +58,7 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	}
 
 	nowTimeStamp := time.Now().Unix()
-	
+
 	// 从配置中获取时区和语言设置，如果未配置则使用默认值
 	timeZone := "Asia/Shanghai"
 	language := "zh"
@@ -66,7 +66,17 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		timeZone = s.globalConfig.GetTimeZone()
 		language = s.globalConfig.GetLanguage()
 	}
-	
+
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", nowTimeStamp),
+		"timeZone":  timeZone,
+		"language":  language,
+	}
+	// 根据全局 product 配置决定是否附加 skill=sop
+	if s.isSlsProduct() {
+		variables["skill"] = "sop"
+	}
+
 	// 创建聊天请求
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(req.EmployeeName),
@@ -83,12 +93,7 @@ func (s *Server) handleChatStream(c *gin.Context) {
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", nowTimeStamp),
-			"timeZone":  timeZone,
-			"language":  language,
-		},
+		Variables: variables,
 	}
 
 	// 创建 channel 用于接收 SSE 响应

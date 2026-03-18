@@ -19,6 +19,9 @@ type ChatOptions struct {
 	ThreadId     string
 	Message      string
 	Debug        bool
+	// ProductType 数字员工来源产品：sls（默认）或 cms。
+	// 空字符串和 "sls" 均视为 SLS，对话时会附加 skill=sop 变量；"cms" 时不附加。
+	ProductType string
 }
 
 // ChatResult 聊天结果
@@ -30,6 +33,12 @@ type ChatResult struct {
 
 // SendMessage 发送聊天消息并通过回调处理流式响应
 func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*ChatResult, error) {
+	variables := map[string]interface{}{}
+	// SLS 产品的数字员工需要传递 skill=sop；CMS 员工不需要
+	if opts.ProductType == "" || opts.ProductType == "sls" {
+		variables["skill"] = "sop"
+	}
+
 	// 创建聊天请求
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(opts.EmployeeName),
@@ -46,9 +55,7 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill": "sop",
-		},
+		Variables: variables,
 	}
 
 	result := &ChatResult{}

@@ -38,18 +38,14 @@ func (s *Server) handleCreateThread(c *gin.Context) {
 		return
 	}
 
-	// 处理 attributes，将 user=当前用户名称 写入到 workspace
 	attributes := req.Attributes
 	if attributes == nil {
 		attributes = make(map[string]interface{})
 	}
-	
-	// 从context获取登录用户账号，将 user=用户名 写入到 workspace
+
+	// 将登录用户名写入 user attribute，用于后续按用户过滤线程
 	if user, exists := auth.GetUserFromContext(c); exists {
-		userAttr := "user=" + user.Username
-		// 如果已有 workspace，需要合并（用分号或其他分隔符，或者直接覆盖）
-		// 根据需求，这里直接设置 workspace 为 user=username
-		attributes["workspace"] = userAttr
+		attributes["user"] = user.Username
 	}
 
 	config := &sopchat.ThreadConfig{
@@ -106,13 +102,12 @@ func (s *Server) handleListThreads(c *gin.Context) {
 		return
 	}
 
-	// 构建过滤条件：过滤 workspace 变量等于 user=当前用户名称
+	// 按登录用户的 user attribute 过滤线程
 	var filters []sopchat.ThreadFilter
 	if user, exists := auth.GetUserFromContext(c); exists {
-		// 将 user=username 作为 workspace 的过滤值（与 CLI 保持一致）
 		filters = append(filters, sopchat.ThreadFilter{
-			Key:   "workspace",
-			Value: "user=" + user.Username,
+			Key:   "user",
+			Value: user.Username,
 		})
 	}
 

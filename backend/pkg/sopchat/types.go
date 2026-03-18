@@ -33,6 +33,10 @@ type ThreadConfig struct {
 	EmployeeName string                 `json:"employeeName"`
 	Title        string                 `json:"title,omitempty"`
 	Attributes   map[string]interface{} `json:"attributes,omitempty"`
+	// Project 写入 Thread Variables.Project（SLS 产品使用）
+	Project string `json:"project,omitempty"`
+	// Workspace 写入 Thread Variables.Workspace（CMS 产品使用）
+	Workspace string `json:"workspace,omitempty"`
 }
 
 // ChatConfig 表示聊天配置

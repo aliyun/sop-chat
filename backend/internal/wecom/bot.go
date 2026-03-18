@@ -2,6 +2,7 @@ package wecom
 
 import (
 	"context"
+	"crypto/md5"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -83,7 +84,6 @@ func (b *Bot) UpdateConfig(newCfg *config.WeComConfig) {
 	log.Printf("[WeCom] 配置已热更新: corpId=%s employee=%s", newCfg.CorpID, newCfg.EmployeeName)
 }
 
-
 // HandleCallback 处理企业微信回调请求（可直接挂载到 Gin 或 net/http）
 func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
@@ -159,6 +159,9 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 	key := threadKey(msg.FromUserName, cfg.EmployeeName)
 
+	// worker queue key 不含 variable，保证同一用户的消息串行处理
+	queueKey := key
+
 	work := func() {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
@@ -182,7 +185,11 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if newThreadId != "" && newThreadId != threadId {
-			b.threadStore.Store(key, newThreadId)
+			// 缓存 key 需要包含 variable
+			project, workspace := b.threadVariable()
+			variable := project + workspace
+			cacheKey := threadKey(msg.FromUserName, cfg.EmployeeName) + "\x00" + variable
+			b.threadStore.Store(cacheKey, newThreadId)
 		}
 
 		log.Printf("[WeCom] 回复消息 to=%s 长度=%d", msg.FromUserName, len(replyText))
@@ -206,7 +213,7 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if !b.enqueueWork(key, work) {
+	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom] 队列已满，拒绝消息 from=%s", msg.FromUserName)
 		_, _ = b.msgManager.SendTextToUser(context.Background(), msg.FromUserName, "⚠️ 消息处理中，请稍后再发。")
 	}
@@ -270,9 +277,27 @@ func (b *Bot) newSopClient() (*sopchat.Client, error) {
 	}, nil
 }
 
+// threadVariable 根据 product 返回需要写入 Thread Variables 的值
+// 优先使用渠道配置的 product，为空则使用全局配置。
+func (b *Bot) threadVariable() (project, workspace string) {
+	// 优先使用渠道配置的 product，为空则使用全局配置
+	productType := b.wcConfig.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+	if config.IsSlsProduct(productType) {
+		return b.wcConfig.Project, ""
+	}
+	return "", b.wcConfig.Workspace
+}
+
 // getOrCreateThreadId 查找或新建该用户对应的 CMS 线程 ID
 func (b *Bot) getOrCreateThreadId(userID, employeeName string) (string, error) {
-	key := threadKey(userID, employeeName)
+	project, workspace := b.threadVariable()
+	variable := project + workspace
+
+	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
+	key := threadKey(userID, employeeName) + "\x00" + variable
 
 	if v, ok := b.threadStore.Load(key); ok {
 		return v.(string), nil
@@ -283,10 +308,11 @@ func (b *Bot) getOrCreateThreadId(userID, employeeName string) (string, error) {
 		return "", err
 	}
 
-	workspace := fmt.Sprintf("wecom:%s:%s", userID, employeeName)
+	h := md5.Sum([]byte("wecom\x00" + userID + "\x00" + employeeName + "\x00" + variable))
+	session := fmt.Sprintf("%x", h)
 
 	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
-		{Key: "workspace", Value: workspace},
+		{Key: "session", Value: session},
 	})
 	if listErr != nil {
 		log.Printf("[WeCom] 列出线程失败（将尝试新建）: %v", listErr)
@@ -295,8 +321,7 @@ func (b *Bot) getOrCreateThreadId(userID, employeeName string) (string, error) {
 			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
 				continue
 			}
-			if t.Variables != nil && t.Variables.Workspace != nil &&
-				*t.Variables.Workspace == workspace {
+			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
 				threadId := *t.ThreadId
 				log.Printf("[WeCom] 找到已有线程 [employee=%s]: %s", employeeName, threadId)
 				b.threadStore.Store(key, threadId)
@@ -309,7 +334,9 @@ func (b *Bot) getOrCreateThreadId(userID, employeeName string) (string, error) {
 	resp, err := client.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: employeeName,
 		Title:        "WeCom: " + userID,
-		Attributes:   map[string]interface{}{"workspace": workspace},
+		Attributes:   map[string]interface{}{"session": session},
+		Project:      project,
+		Workspace:    workspace,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -340,7 +367,31 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		message += conciseInstruction
 	}
 
+	// 获取 project/workspace 用于传递给 CreateChat variables
+	project, workspace := b.threadVariable()
+
+	// 获取渠道配置的 product，为空则使用全局配置
+	productType := cfg.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+
 	nowTS := time.Now().Unix()
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", nowTS),
+		"timeZone":  "Asia/Shanghai",
+		"language":  "zh",
+	}
+	if config.IsSlsProduct(productType) {
+		variables["skill"] = "sop"
+		if project != "" {
+			variables["project"] = project
+		}
+	} else {
+		if workspace != "" {
+			variables["workspace"] = workspace
+		}
+	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
 		ThreadId:            tea.String(threadId),
@@ -356,12 +407,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", nowTS),
-			"timeZone":  "Asia/Shanghai",
-			"language":  "zh",
-		},
+		Variables: variables,
 	}
 
 	responseChan := make(chan *cmsclient.CreateChatResponse)

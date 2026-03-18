@@ -2,6 +2,7 @@ package wecom
 
 import (
 	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -43,14 +44,14 @@ type longConnFrame struct {
 
 // longConnCallbackBody 回调消息体
 type longConnCallbackBody struct {
-	MsgType     string                  `json:"msgtype"`
-	MsgID       string                  `json:"msgid"`
-	ChatType    string                  `json:"chattype"`
-	ChatID      string                  `json:"chatid"`
-	From        *longConnFrom           `json:"from,omitempty"`
-	Text        *longConnTextContent    `json:"text,omitempty"`
-	ResponseURL string                  `json:"response_url,omitempty"`
-	Stream      *longConnStreamContent  `json:"stream,omitempty"`
+	MsgType     string                 `json:"msgtype"`
+	MsgID       string                 `json:"msgid"`
+	ChatType    string                 `json:"chattype"`
+	ChatID      string                 `json:"chatid"`
+	From        *longConnFrom          `json:"from,omitempty"`
+	Text        *longConnTextContent   `json:"text,omitempty"`
+	ResponseURL string                 `json:"response_url,omitempty"`
+	Stream      *longConnStreamContent `json:"stream,omitempty"`
 }
 
 type longConnFrom struct {
@@ -135,13 +136,23 @@ func (b *LongConnBot) Stop() {
 	b.stopOnce.Do(func() {
 		b.shouldRun = false
 		close(b.stopCh)
-		b.mu.Lock()
-		if b.conn != nil {
-			b.conn.Close()
-			b.conn = nil
-		}
-		b.connected = false
-		b.mu.Unlock()
+
+		// 使用 recover 防止 conn.Close() 时 goroutine 仍在写入导致的 panic
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("[WeCom-LongConn] Stop() recovered from panic: %v", r)
+				}
+			}()
+			b.mu.Lock()
+			if b.conn != nil {
+				b.conn.Close()
+				b.conn = nil
+			}
+			b.connected = false
+			b.mu.Unlock()
+		}()
+
 		log.Printf("[WeCom-LongConn] 已停止")
 	})
 }
@@ -454,6 +465,9 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 
 	key := longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID)
 
+	// worker queue key 不含 variable，保证同一会话的消息串行处理
+	queueKey := key
+
 	work := func() {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
@@ -479,14 +493,18 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		}
 
 		if newThreadID != "" && newThreadID != threadID {
-			b.threadStore.Store(key, newThreadID)
+			// 缓存 key 需要包含 variable
+			project, workspace := b.threadVariable()
+			variable := project + workspace
+			cacheKey := longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID) + "\x00" + variable
+			b.threadStore.Store(cacheKey, newThreadID)
 		}
 
 		log.Printf("[WeCom-LongConn] 回复消息 to=%s 长度=%d isGroup=%v", fromUser, len(replyText), isGroupChat)
 		b.sendStreamReply(reqID, streamID, replyText, true)
 	}
 
-	if !b.enqueueWork(key, work) {
+	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom-LongConn] 队列已满，拒绝消息 from=%s", fromUser)
 		b.sendStreamReply(reqID, streamID, "⚠️ 消息处理中，请稍后再发。", true)
 	}
@@ -547,9 +565,27 @@ func longConnThreadKey(userID, employeeName, chatID string) string {
 	return "lc:" + userID + "\x00" + employeeName
 }
 
+// threadVariable 根据 product 返回需要写入 Thread Variables 的值
+// 优先使用渠道配置的 product，为空则使用全局配置。
+func (b *LongConnBot) threadVariable() (project, workspace string) {
+	// 优先使用渠道配置的 product，为空则使用全局配置
+	productType := b.cfg.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+	if config.IsSlsProduct(productType) {
+		return b.cfg.Project, ""
+	}
+	return "", b.cfg.Workspace
+}
+
 // getOrCreateThreadID 查找或新建 CMS 线程 ID
 func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (string, error) {
-	key := longConnThreadKey(userID, employeeName, chatID)
+	project, workspace := b.threadVariable()
+	variable := project + workspace
+
+	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
+	key := longConnThreadKey(userID, employeeName, chatID) + "\x00" + variable
 
 	if v, ok := b.threadStore.Load(key); ok {
 		return v.(string), nil
@@ -560,13 +596,15 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 		return "", err
 	}
 
-	workspace := fmt.Sprintf("wecom-lc:%s:%s", chatID, employeeName)
+	raw := "wecom_lc\x00" + chatID + "\x00" + employeeName
 	if chatID == "" {
-		workspace = fmt.Sprintf("wecom-lc:%s:%s", userID, employeeName)
+		raw = "wecom_lc\x00" + userID + "\x00" + employeeName
 	}
+	h := md5.Sum([]byte(raw + "\x00" + variable))
+	session := fmt.Sprintf("%x", h)
 
 	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
-		{Key: "workspace", Value: workspace},
+		{Key: "session", Value: session},
 	})
 	if listErr != nil {
 		log.Printf("[WeCom-LongConn] 列出线程失败（将尝试新建）: %v", listErr)
@@ -575,8 +613,7 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
 				continue
 			}
-			if t.Variables != nil && t.Variables.Workspace != nil &&
-				*t.Variables.Workspace == workspace {
+			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
 				threadID := *t.ThreadId
 				log.Printf("[WeCom-LongConn] 找到已有线程 [employee=%s]: %s", employeeName, threadID)
 				b.threadStore.Store(key, threadID)
@@ -594,7 +631,9 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 	resp, err := client.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: employeeName,
 		Title:        title,
-		Attributes:   map[string]interface{}{"workspace": workspace},
+		Attributes:   map[string]interface{}{"session": session},
+		Project:      project,
+		Workspace:    workspace,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -641,7 +680,31 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 		message += conciseInstruction
 	}
 
+	// 获取 project/workspace 用于传递给 CreateChat variables
+	project, workspace := b.threadVariable()
+
+	// 获取渠道配置的 product，为空则使用全局配置
+	productType := cfg.Product
+	if productType == "" {
+		productType = b.cmsConfig.Product
+	}
+
 	nowTS := time.Now().Unix()
+	variables := map[string]interface{}{
+		"timeStamp": fmt.Sprintf("%d", nowTS),
+		"timeZone":  "Asia/Shanghai",
+		"language":  "zh",
+	}
+	if config.IsSlsProduct(productType) {
+		variables["skill"] = "sop"
+		if project != "" {
+			variables["project"] = project
+		}
+	} else {
+		if workspace != "" {
+			variables["workspace"] = workspace
+		}
+	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
 		ThreadId:            tea.String(threadID),
@@ -657,12 +720,7 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 				},
 			},
 		},
-		Variables: map[string]interface{}{
-			"skill":     "sop",
-			"timeStamp": fmt.Sprintf("%d", nowTS),
-			"timeZone":  "Asia/Shanghai",
-			"language":  "zh",
-		},
+		Variables: variables,
 	}
 
 	responseChan := make(chan *cmsclient.CreateChatResponse)
