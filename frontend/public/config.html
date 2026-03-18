@@ -1180,7 +1180,7 @@ function renderFeishuBots(bots) {
 
 function makeFeishuBotCard(bot, idx) {
   const div = document.createElement('div');
-  div.className = 'dt-bot-card';
+  div.className = 'dt-bot-card fs-bot-card';
   const checkedAttr = bot.enabled ? 'checked' : '';
   div.innerHTML =
     '<div class="dt-bot-header">' +
@@ -1333,7 +1333,7 @@ function renderWeComBots(bots) {
 
 function makeWeComBotCard(bot, idx) {
   const div = document.createElement('div');
-  div.className = 'dt-bot-card';
+  div.className = 'dt-bot-card wc-bot-card';
   const checkedAttr = bot.enabled ? 'checked' : '';
   div.innerHTML =
     '<div class="dt-bot-header">' +
@@ -1489,7 +1489,7 @@ function renderWeComGroupBots(bots) {
 
 function makeWeComGroupBotCard(bot, idx) {
   const div = document.createElement('div');
-  div.className = 'dt-bot-card';
+  div.className = 'dt-bot-card wcb-bot-card';
   const checkedAttr = bot.enabled ? 'checked' : '';
   div.innerHTML =
     '<div class="dt-bot-header">' +
