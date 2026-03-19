@@ -13,7 +13,6 @@ import (
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/open-dingtalk/dingtalk-stream-sdk-go/chatbot"
 	dingclient "github.com/open-dingtalk/dingtalk-stream-sdk-go/client"
@@ -465,9 +464,10 @@ func (b *Bot) isConversationAllowed(conversationType, conversationTitle string) 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:     tea.String(b.cmsConfig.AccessKeyId),
-		AccessKeySecret: tea.String(b.cmsConfig.AccessKeySecret),
-		Endpoint:        tea.String(b.cmsConfig.Endpoint),
+		AccessKeyId:      tea.String(b.cmsConfig.AccessKeyId),
+		AccessKeySecret:  tea.String(b.cmsConfig.AccessKeySecret),
+		Endpoint:         tea.String(b.cmsConfig.Endpoint),
+		SignatureVersion: tea.String("v3"),
 	}
 	rawClient, err := cmsclient.NewClient(cmsConfig)
 	if err != nil {
@@ -699,7 +699,8 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cms.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	returnedThreadId := threadId
@@ -715,6 +716,10 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 			}
 			if response.Body == nil {
 				continue
+			}
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				return strings.Join(textParts, ""), returnedThreadId, nil
 			}
 			for _, msg := range response.Body.Messages {
 				if msg == nil {
@@ -807,7 +812,8 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cms.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	returnedThreadId := threadId
@@ -823,6 +829,10 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 			}
 			if response.Body == nil {
 				continue
+			}
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				return strings.Join(textParts, ""), returnedThreadId, nil
 			}
 			for _, msg := range response.Body.Messages {
 				if msg == nil {

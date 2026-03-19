@@ -9,7 +9,6 @@ import (
 	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
 
@@ -357,6 +356,22 @@ func (s *Server) buildChatRequest(employeeName, threadID, message string, isSLS 
 	}
 	if isSLS {
 		variables["skill"] = "sop"
+		if s.globalConfig != nil && s.globalConfig.Global.Project != "" {
+			variables["project"] = s.globalConfig.Global.Project
+		}
+	} else {
+		if s.globalConfig != nil {
+			if s.globalConfig.Global.Workspace != "" {
+				variables["workspace"] = s.globalConfig.Global.Workspace
+			}
+			if s.globalConfig.Global.Region != "" {
+				variables["region"] = s.globalConfig.Global.Region
+			}
+		}
+		// CMS 产品：添加 fromTime/toTime（15 分钟窗口）
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 
 	return &cmsclient.CreateChatRequest{
@@ -431,7 +446,9 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cmsClient.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	ctx := c.Request.Context()
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	done := false
 	for !done {
@@ -447,6 +464,11 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 			}
 			if response.Body == nil {
 				continue
+			}
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				done = true
+				break
 			}
 			for _, msg := range response.Body.Messages {
 				if msg == nil {
@@ -506,7 +528,9 @@ func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, thr
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cmsClient.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	ctx := c.Request.Context()
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	done := false
@@ -519,6 +543,11 @@ func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, thr
 			}
 			if response.Body == nil {
 				continue
+			}
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				done = true
+				break
 			}
 			for _, msg := range response.Body.Messages {
 				if msg == nil {

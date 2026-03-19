@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,9 +9,10 @@ import (
 	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
+
+	"sop-chat/pkg/sopchat"
 )
 
 // ChatStreamRequest 聊天流式请求
@@ -72,9 +74,25 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		"timeZone":  timeZone,
 		"language":  language,
 	}
-	// 根据全局 product 配置决定是否附加 skill=sop
+	// 根据全局 product 配置决定附加的变量
 	if s.isSlsProduct() {
 		variables["skill"] = "sop"
+		if s.globalConfig != nil && s.globalConfig.Global.Project != "" {
+			variables["project"] = s.globalConfig.Global.Project
+		}
+	} else {
+		if s.globalConfig != nil {
+			if s.globalConfig.Global.Workspace != "" {
+				variables["workspace"] = s.globalConfig.Global.Workspace
+			}
+			if s.globalConfig.Global.Region != "" {
+				variables["region"] = s.globalConfig.Global.Region
+			}
+		}
+		// CMS 产品：添加 fromTime/toTime（15 分钟窗口）
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 
 	// 创建聊天请求
@@ -100,8 +118,11 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 在 goroutine 中调用 SDK 的 CreateChatWithSSE
-	go cmsClient.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	// 使用带 Context 的 SSE 调用，支持客户端断开时取消
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Minute)
+	defer cancel()
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	// 用于保存元数据
 	var requestId, threadId string
@@ -152,6 +173,12 @@ func (s *Server) handleChatStream(c *gin.Context) {
 					requestId = *response.Body.RequestId
 				}
 				// ThreadId 不在 Body 中，使用请求中的 threadId
+
+				// 检测 done 消息，提前结束 SSE 循环
+				if sopchat.IsDoneMessage(response.Body) {
+					done = true
+					break
+				}
 
 				// 处理消息：直接将消息序列化为 JSON 并转发
 				if response.Body.Messages != nil {

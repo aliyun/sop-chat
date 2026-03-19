@@ -13,7 +13,6 @@ import (
 	"sop-chat/pkg/sopchat"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/robfig/cron/v3"
 )
@@ -272,7 +271,8 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cms.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	responseCount, msgCount := 0, 0
@@ -297,6 +297,14 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 			}
 			if response.Body == nil {
 				continue
+			}
+
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				result := strings.Join(textParts, "")
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				return result, nil
 			}
 
 			for _, msg := range response.Body.Messages {
