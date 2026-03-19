@@ -372,6 +372,7 @@ type resolvedRoute struct {
 	product      string
 	project      string
 	workspace    string
+	region       string
 }
 
 // resolveRoute 根据群名称匹配路由规则，返回应处理本次消息的路由信息。
@@ -383,6 +384,7 @@ func (b *Bot) resolveRoute(conversationType, conversationTitle string) resolvedR
 		product:      cfg.Product,
 		project:      cfg.Project,
 		workspace:    cfg.Workspace,
+		region:       cfg.Region,
 	}
 	if conversationType == "2" {
 		for _, route := range cfg.ConversationRoutes {
@@ -397,6 +399,9 @@ func (b *Bot) resolveRoute(conversationType, conversationTitle string) resolvedR
 				}
 				if route.Workspace != "" {
 					result.workspace = route.Workspace
+				}
+				if route.Region != "" {
+					result.region = route.Region
 				}
 				break
 			}
@@ -477,25 +482,25 @@ func (b *Bot) newSopClient() (*sopchat.Client, error) {
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值：
-// SLS 产品返回 project，CMS 产品返回 workspace。
+// SLS 产品返回 project，CMS 产品返回 workspace 和 region。
 // 优先使用渠道配置的 product，为空则使用全局配置。
-func (b *Bot) threadVariable() (project, workspace string) {
+func (b *Bot) threadVariable() (project, workspace, region string) {
 	// 优先使用渠道配置的 product，为空则使用全局配置
 	productType := b.dtConfig.Product
 	if productType == "" {
 		productType = b.cmsConfig.Product
 	}
 	if config.IsSlsProduct(productType) {
-		return b.dtConfig.Project, ""
+		return b.dtConfig.Project, "", ""
 	}
-	return "", b.dtConfig.Workspace
+	return "", b.dtConfig.Workspace, b.dtConfig.Region
 }
 
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID。
 // 查找顺序：内存缓存 → ListThreads(session attribute 过滤) → CreateThread 新建。
 // employeeName 决定线程归属的数字员工（路由后的目标员工）。
 func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName string) (string, error) {
-	project, workspace := b.threadVariable()
+	project, workspace, region := b.threadVariable()
 	variable := project + workspace // 两者互斥，至多一个非空
 
 	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
@@ -544,6 +549,7 @@ func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName strin
 		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
 		Workspace:    workspace,
+		Region:       region,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -608,6 +614,7 @@ func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, ro
 		Attributes:   map[string]interface{}{"session": session},
 		Project:      route.project,
 		Workspace:    route.workspace,
+		Region:       route.region,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -639,8 +646,8 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		message += conciseInstruction
 	}
 
-	// 获取 project/workspace 用于传递给 CreateChat variables
-	project, workspace := b.threadVariable()
+	// 获取 project/workspace/region 用于传递给 CreateChat variables
+	project, workspace, region := b.threadVariable()
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
@@ -663,6 +670,13 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		if workspace != "" {
 			variables["workspace"] = workspace
 		}
+		if region != "" {
+			variables["region"] = region
+		}
+		// CMS product: add fromTime/toTime (15-minute window)
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
@@ -743,7 +757,7 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 		message += conciseInstruction
 	}
 
-	// 使用路由级别的 product/project/workspace
+	// 使用路由级别的 product/project/workspace/region
 	productType := route.product
 	if productType == "" {
 		productType = b.cmsConfig.Product
@@ -764,6 +778,13 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 		if route.workspace != "" {
 			variables["workspace"] = route.workspace
 		}
+		if route.region != "" {
+			variables["region"] = route.region
+		}
+		// CMS product: add fromTime/toTime (15-minute window)
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(route.employeeName),

@@ -274,6 +274,11 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <input type="text" id="g-project" placeholder="Project(可选)">
         <span class="hint">SLS 产品对应的 Project</span>
       </div>
+      <div class="field" id="g-region-field" style="display:none">
+        <label>Region</label>
+        <input type="text" id="g-region" placeholder="">
+        <span class="hint">CMS 产品对应的 Region</span>
+      </div>
       <div class="field" id="g-workspace-field" style="display:none">
         <label>Workspace</label>
         <input type="text" id="g-workspace" placeholder="">
@@ -1009,11 +1014,15 @@ function makeDingTalkBotCard(bot, idx) {
         '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
       '</div>' +
       '<div class="field">' +
+        '<label>Region</label>' +
+        '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
+      '</div>' +
+      '<div class="field">' +
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full">' +
-        '<span class="hint">未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace；Project/Workspace 根据产品类型选填</span>' +
+        '<span class="hint">未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace/Region；Project/Workspace/Region 根据产品类型选填</span>' +
       '</div>' +
       '<details class="field field-full" style="padding:0;border:none;background:none"' + ((bot.conversationRoutes || []).length > 0 ? ' open' : '') + '>' +
         '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
@@ -1124,6 +1133,7 @@ function makeDtRouteRow(route) {
         '<option value="cms"' + (product === 'cms' ? ' selected' : '') + '>CMS</option>' +
       '</select>' +
       '<input type="text" placeholder="Project（可选）" value="' + esc(r.project || '') + '" data-dt-route-project style="flex:1;display:' + (product === 'sls' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="Region" value="' + esc(r.region || '') + '" data-dt-route-region style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
       '<input type="text" placeholder="Workspace（可选）" value="' + esc(r.workspace || '') + '" data-dt-route-workspace style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
     '</div>' +
     '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="删除路由">' +
@@ -1135,9 +1145,11 @@ function makeDtRouteRow(route) {
 function updateRouteVariableFields(select) {
   const row = select.closest('.list-row');
   const projectInput = row.querySelector('[data-dt-route-project]');
+  const regionInput = row.querySelector('[data-dt-route-region]');
   const workspaceInput = row.querySelector('[data-dt-route-workspace]');
   const isSls = select.value === 'sls';
   if (projectInput) projectInput.style.display = isSls ? 'block' : 'none';
+  if (regionInput) regionInput.style.display = isSls ? 'none' : 'block';
   if (workspaceInput) workspaceInput.style.display = isSls ? 'none' : 'block';
 }
 
@@ -1157,6 +1169,7 @@ function collectDingTalkBots() {
     product:      card.querySelector('[data-field=product]').value,
     project:      card.querySelector('[data-field=project]').value.trim(),
     workspace:    card.querySelector('[data-field=workspace]').value.trim(),
+    region:       card.querySelector('[data-field=region]').value.trim(),
     allowedGroupUsers:    Array.from(card.querySelectorAll('[data-dt-allowed-group-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedDirectUsers:   Array.from(card.querySelectorAll('[data-dt-allowed-direct-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedConversations: Array.from(card.querySelectorAll('[data-dt-allowed-convs] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
@@ -1166,6 +1179,7 @@ function collectDingTalkBots() {
       product:           row.querySelector('[data-dt-route-product]')?.value || 'sls',
       project:           row.querySelector('[data-dt-route-project]')?.value.trim() || '',
       workspace:         row.querySelector('[data-dt-route-workspace]')?.value.trim() || '',
+      region:            row.querySelector('[data-dt-route-region]')?.value.trim() || '',
     })).filter(r => r.conversationTitle && r.employeeName),
   }));
 }
@@ -1227,6 +1241,10 @@ function makeFeishuBotCard(bot, idx) {
       '<div class="field">' +
         '<label>Project</label>' +
         '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Region</label>' +
+        '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
         '<label>Workspace</label>' +
@@ -1318,6 +1336,7 @@ function collectFeishuBots() {
     product:           card.querySelector('[data-field=product]').value,
     project:           card.querySelector('[data-field=project]').value.trim(),
     workspace:         card.querySelector('[data-field=workspace]').value.trim(),
+    region:            card.querySelector('[data-field=region]').value.trim(),
     allowedUsers:      Array.from(card.querySelectorAll('[data-feishu-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedChats:      Array.from(card.querySelectorAll('[data-feishu-allowed-chats] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
   }));
@@ -1384,6 +1403,10 @@ function makeWeComBotCard(bot, idx) {
       '<div class="field">' +
         '<label>Project</label>' +
         '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Region</label>' +
+        '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
         '<label>Workspace</label>' +
@@ -1475,6 +1498,7 @@ function collectWeComBots() {
     product:        card.querySelector('[data-field=product]').value,
     project:        card.querySelector('[data-field=project]').value.trim(),
     workspace:      card.querySelector('[data-field=workspace]').value.trim(),
+    region:         card.querySelector('[data-field=region]').value.trim(),
     allowedUsers:   Array.from(card.querySelectorAll('[data-wecom-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
   }));
 }
@@ -1533,6 +1557,10 @@ function makeWeComGroupBotCard(bot, idx) {
         '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
       '</div>' +
       '<div class="field">' +
+        '<label>Region</label>' +
+        '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
+      '</div>' +
+      '<div class="field">' +
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
@@ -1585,6 +1613,7 @@ function collectWeComGroupBots() {
     product:      card.querySelector('[data-field=product]').value,
     project:      card.querySelector('[data-field=project]').value.trim(),
     workspace:    card.querySelector('[data-field=workspace]').value.trim(),
+    region:       card.querySelector('[data-field=region]').value.trim(),
   }));
 }
 
@@ -1630,6 +1659,7 @@ function populate(data) {
   setVal('g-product', g.product || 'sls');
   setVal('g-project', g.project || '');
   setVal('g-workspace', g.workspace || '');
+  setVal('g-region', g.region || '');
 
   updateGlobalVariableFields();
   updateBotVariableFields();
@@ -1681,6 +1711,7 @@ function collect() {
       product:         val('g-product') || 'sls',
       project:         val('g-project') || '',
       workspace:       val('g-workspace') || '',
+      region:          val('g-region') || '',
     },
     auth: {
       methods:      collectMethods(),
@@ -1709,57 +1740,66 @@ function esc(s) {
 }
 
 // ── Bot variable fields visibility ────────────────────────────────────────
-// 更新全局配置中 project/workspace 字段的显示
+// 更新全局配置中 project/workspace/region 字段的显示
 function updateGlobalVariableFields() {
   const product = val('g-product') || 'sls';
   const projectField = document.getElementById('g-project-field');
   const workspaceField = document.getElementById('g-workspace-field');
+  const regionField = document.getElementById('g-region-field');
   
   const isSls = product === 'sls';
   if (projectField) projectField.style.display = isSls ? '' : 'none';
   if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
+  if (regionField) regionField.style.display = isSls ? 'none' : '';
 }
 
 function updateBotVariableFields() {
-  // 更新所有 bot 卡片中根据 product 选择显示/隐藏 project/workspace 字段
+  // 更新所有 bot 卡片中根据 product 选择显示/隐藏 project/workspace/region 字段
   document.querySelectorAll('.dt-bot-card').forEach(card => {
     const productSelect = card.querySelector('[data-field=product]');
     const projectField = card.querySelector('[data-field=project]');
     const workspaceField = card.querySelector('[data-field=workspace]');
+    const regionField = card.querySelector('[data-field=region]');
     
-    if (productSelect && projectField && workspaceField) {
+    if (productSelect) {
       const product = productSelect.value || 'sls';
-      const projectContainer = projectField.closest('.field');
-      const workspaceContainer = workspaceField.closest('.field');
+      const projectContainer = projectField ? projectField.closest('.field') : null;
+      const workspaceContainer = workspaceField ? workspaceField.closest('.field') : null;
+      const regionContainer = regionField ? regionField.closest('.field') : null;
       
       const isSls = product === 'sls';
       if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
       if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
+      if (regionContainer) regionContainer.style.display = isSls ? 'none' : '';
     }
   });
 }
 
-// 更新单个 bot 卡片的 project/workspace 显示
+// 更新单个 bot 卡片的 project/workspace/region 显示
 function updateSingleBotVariableFields(card) {
   const productSelect = card.querySelector('[data-field=product]');
   const projectField = card.querySelector('[data-field=project]');
   const workspaceField = card.querySelector('[data-field=workspace]');
+  const regionField = card.querySelector('[data-field=region]');
   
-  if (productSelect && projectField && workspaceField) {
+  if (productSelect) {
     const product = productSelect.value || 'sls';
-    const projectContainer = projectField.closest('.field');
-    const workspaceContainer = workspaceField.closest('.field');
+    const projectContainer = projectField ? projectField.closest('.field') : null;
+    const workspaceContainer = workspaceField ? workspaceField.closest('.field') : null;
+    const regionContainer = regionField ? regionField.closest('.field') : null;
     
     const isSls = product === 'sls';
     if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
     if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
+    if (regionContainer) regionContainer.style.display = isSls ? 'none' : '';
   }
 }
 
-// 更新单个定时任务卡片的 project/workspace 显示
+// 更新单个定时任务卡片的 project/workspace/region 显示
 function updateSingleTaskVariableFields(card) {
   const productSelect = card.querySelector('[data-field=product]');
   const projectField = card.querySelector('[data-task-project-field]');
+  const regionField = card.querySelector('[data-task-region-field]');
   const workspaceField = card.querySelector('[data-task-workspace-field]');
   
   if (productSelect) {
@@ -1767,6 +1807,7 @@ function updateSingleTaskVariableFields(card) {
     
     const isSls = product === 'sls';
     if (projectField) projectField.style.display = isSls ? '' : 'none';
+    if (regionField) regionField.style.display = isSls ? 'none' : '';
     if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
   }
 }
@@ -1850,6 +1891,10 @@ function makeTaskCard(task, idx, expanded) {
       '<div class="field" data-task-project-field>' +
         '<label>Project</label>' +
         '<input type="text" data-field="project" value="' + esc(task.project || '') + '" placeholder="Project（可选）">' +
+      '</div>' +
+      '<div class="field" data-task-region-field style="display:none">' +
+        '<label>Region</label>' +
+        '<input type="text" data-field="region" value="' + esc(task.region || '') + '">' +
       '</div>' +
       '<div class="field" data-task-workspace-field style="display:none">' +
         '<label>Workspace</label>' +
@@ -2019,6 +2064,7 @@ function collectScheduledTasks() {
     product:      card.querySelector('[data-field=product]')?.value || '',
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
+    region:       card.querySelector('[data-field=region]')?.value.trim() || '',
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
@@ -2042,6 +2088,7 @@ async function triggerTask(btn) {
     product:      card.querySelector('[data-field=product]')?.value || '',
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
+    region:       card.querySelector('[data-field=region]')?.value.trim() || '',
     webhook: {
       type:    card.querySelector('[data-field=webhookType]').value,
       url:     card.querySelector('[data-field=webhookUrl]').value.trim(),

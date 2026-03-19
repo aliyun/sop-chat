@@ -37,6 +37,8 @@ type ThreadConfig struct {
 	Project string `json:"project,omitempty"`
 	// Workspace 写入 Thread Variables.Workspace（CMS 产品使用）
 	Workspace string `json:"workspace,omitempty"`
+	// Region 写入 Thread Variables.Region（CMS 产品使用）
+	Region string `json:"region,omitempty"`
 }
 
 // ChatConfig 表示聊天配置
