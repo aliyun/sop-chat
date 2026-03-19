@@ -15,8 +15,8 @@ import (
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
-	"github.com/open-dingtalk/dingtalk-stream-sdk-go/chatbot"
-	dingclient "github.com/open-dingtalk/dingtalk-stream-sdk-go/client"
+	"sop-chat/internal/dingtalksdk/chatbot"
+	dingclient "sop-chat/internal/dingtalksdk/client"
 
 	"sop-chat/internal/config"
 	"sop-chat/pkg/sopchat"
