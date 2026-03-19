@@ -18,7 +18,6 @@ import (
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 
 	lark "github.com/larksuite/oapi-sdk-go/v3"
@@ -271,7 +270,7 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 
 		if newThreadId != "" && newThreadId != threadId {
 			// 缓存 key 需要包含 variable
-			project, workspace := b.threadVariable()
+			project, workspace, _ := b.threadVariable()
 			variable := project + workspace
 			cacheKey := threadKey(chatID, senderOpenID, cfg.EmployeeName) + "\x00" + variable
 			b.threadStore.Store(cacheKey, newThreadId)
@@ -383,9 +382,10 @@ func threadKey(chatID, senderOpenID, employeeName string) string {
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:     tea.String(b.cmsConfig.AccessKeyId),
-		AccessKeySecret: tea.String(b.cmsConfig.AccessKeySecret),
-		Endpoint:        tea.String(b.cmsConfig.Endpoint),
+		AccessKeyId:      tea.String(b.cmsConfig.AccessKeyId),
+		AccessKeySecret:  tea.String(b.cmsConfig.AccessKeySecret),
+		Endpoint:         tea.String(b.cmsConfig.Endpoint),
+		SignatureVersion: tea.String("v3"),
 	}
 	rawClient, err := cmsclient.NewClient(cmsConfig)
 	if err != nil {
@@ -401,21 +401,21 @@ func (b *Bot) newSopClient() (*sopchat.Client, error) {
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
-func (b *Bot) threadVariable() (project, workspace string) {
+func (b *Bot) threadVariable() (project, workspace, region string) {
 	// 优先使用渠道配置的 product，为空则使用全局配置
 	productType := b.ftConfig.Product
 	if productType == "" {
 		productType = b.cmsConfig.Product
 	}
 	if config.IsSlsProduct(productType) {
-		return b.ftConfig.Project, ""
+		return b.ftConfig.Project, "", ""
 	}
-	return "", b.ftConfig.Workspace
+	return "", b.ftConfig.Workspace, b.ftConfig.Region
 }
 
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID
 func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (string, error) {
-	project, workspace := b.threadVariable()
+	project, workspace, region := b.threadVariable()
 	variable := project + workspace
 
 	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
@@ -459,6 +459,7 @@ func (b *Bot) getOrCreateThreadId(chatID, senderOpenID, employeeName string) (st
 		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
 		Workspace:    workspace,
+		Region:       region,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -489,8 +490,8 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		message += conciseInstruction
 	}
 
-	// 获取 project/workspace 用于传递给 CreateChat variables
-	project, workspace := b.threadVariable()
+	// 获取 project/workspace/region 用于传递给 CreateChat variables
+	project, workspace, region := b.threadVariable()
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
@@ -513,6 +514,13 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		if workspace != "" {
 			variables["workspace"] = workspace
 		}
+		if region != "" {
+			variables["region"] = region
+		}
+		// CMS product: add fromTime/toTime (15-minute window)
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
@@ -535,7 +543,8 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cms.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	returnedThreadId := threadId
@@ -551,6 +560,10 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 			}
 			if response.Body == nil {
 				continue
+			}
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				return strings.Join(textParts, ""), returnedThreadId, nil
 			}
 			for _, msg := range response.Body.Messages {
 				if msg == nil {

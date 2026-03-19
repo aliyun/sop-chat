@@ -51,6 +51,7 @@ type ScheduledTaskConfig struct {
 	// Project 与 Workspace 根据产品类型二选一
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
+	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
 	// Webhook 配置：任务结果的发送目标
 	Webhook WebhookConfig `yaml:"webhook"`
 }
@@ -97,6 +98,7 @@ type ConversationRoute struct {
 	Product   string `yaml:"product,omitempty"`
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
+	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
 }
 
 // DingTalkConfig 钉钉机器人配置
@@ -116,6 +118,8 @@ type DingTalkConfig struct {
 	Project string `yaml:"project,omitempty"`
 	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
 	Workspace string `yaml:"workspace,omitempty"`
+	// CMS 产品：数字员工所属 region（写入 Thread Variables.Region）
+	Region string `yaml:"region,omitempty"`
 	// 群用户白名单（钉钉 senderNick）；限制群聊中可 @ 机器人提问的用户；为空时允许所有群成员
 	AllowedGroupUsers []string `yaml:"allowedGroupUsers,omitempty"`
 	// 单聊用户白名单（钉钉 senderNick）；限制可与机器人单聊的用户；为空时允许所有人单聊
@@ -151,6 +155,8 @@ type FeishuConfig struct {
 	Project string `yaml:"project,omitempty"`
 	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
 	Workspace string `yaml:"workspace,omitempty"`
+	// CMS 产品：数字员工所属 region（写入 Thread Variables.Region）
+	Region string `yaml:"region,omitempty"`
 	// 用户白名单（飞书 open_id）；为空时允许所有用户
 	AllowedUsers []string `yaml:"allowedUsers,omitempty"`
 	// 群聊白名单（飞书 chat_id）；为空时允许所有群聊
@@ -188,6 +194,8 @@ type WeComConfig struct {
 	Project string `yaml:"project,omitempty"`
 	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
 	Workspace string `yaml:"workspace,omitempty"`
+	// CMS 产品：数字员工所属 region（写入 Thread Variables.Region）
+	Region string `yaml:"region,omitempty"`
 	// 用户白名单（企业微信 userid）；为空时允许所有用户
 	AllowedUsers []string `yaml:"allowedUsers,omitempty"`
 	// 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
@@ -235,6 +243,8 @@ type WeComBotConfig struct {
 	Project string `yaml:"project,omitempty"`
 	// CMS 产品：数字员工所属 workspace（写入 Thread Variables.Workspace）
 	Workspace string `yaml:"workspace,omitempty"`
+	// CMS 产品：数字员工所属 region（写入 Thread Variables.Region）
+	Region string `yaml:"region,omitempty"`
 	// WebSocket 连接地址（默认 wss://openws.work.weixin.qq.com）
 	URL string `yaml:"url,omitempty"`
 	// 心跳间隔（秒，默认 30）
@@ -318,6 +328,7 @@ type GlobalConfig struct {
 	Product   string `yaml:"product,omitempty"`
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
+	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
 }
 
 // AuthConfig 认证配置

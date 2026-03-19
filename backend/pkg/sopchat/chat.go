@@ -1,12 +1,13 @@
 package sopchat
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
@@ -67,8 +68,11 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 在 goroutine 中调用 CreateChatWithSSE
-	go c.CmsClient.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	// 使用带 Context 的 SSE 调用，设置 5 分钟超时
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	runtime := NewSSERuntimeOptions()
+	go c.CmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	// 处理 SSE 事件
 	done := false

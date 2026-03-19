@@ -82,6 +82,7 @@ type configUIScheduledTask struct {
 	Product      string          `json:"product"`
 	Project      string          `json:"project"`
 	Workspace    string          `json:"workspace"`
+	Region       string          `json:"region"`
 	Webhook      configUIWebhook `json:"webhook"`
 }
 
@@ -104,6 +105,7 @@ type configUIGlobal struct {
 	Product         string `json:"product"`
 	Project         string `json:"project"`
 	Workspace       string `json:"workspace"`
+	Region          string `json:"region"`
 }
 
 type configUIAuth struct {
@@ -135,6 +137,7 @@ type configUIConversationRoute struct {
 	Product           string `json:"product"`
 	Project           string `json:"project"`
 	Workspace         string `json:"workspace"`
+	Region            string `json:"region"`
 }
 
 type configUIDingTalk struct {
@@ -147,6 +150,7 @@ type configUIDingTalk struct {
 	Product              string                      `json:"product"`
 	Project              string                      `json:"project"`
 	Workspace            string                      `json:"workspace"`
+	Region               string                      `json:"region"`
 	AllowedGroupUsers    []string                    `json:"allowedGroupUsers"`
 	AllowedDirectUsers   []string                    `json:"allowedDirectUsers"`
 	AllowedConversations []string                    `json:"allowedConversations"`
@@ -165,6 +169,7 @@ type configUIFeishu struct {
 	Product           string   `json:"product"`
 	Project           string   `json:"project"`
 	Workspace         string   `json:"workspace"`
+	Region            string   `json:"region"`
 	AllowedUsers      []string `json:"allowedUsers"`
 	AllowedChats      []string `json:"allowedChats"`
 }
@@ -184,11 +189,23 @@ type configUIWeCom struct {
 	Product        string   `json:"product"`
 	Project        string   `json:"project"`
 	Workspace      string   `json:"workspace"`
+	Region         string   `json:"region"`
 	AllowedUsers   []string `json:"allowedUsers"`
+	WebhookURL     string   `json:"webhookUrl"`
+	BotLongConn    struct {
+		Enabled              bool   `json:"enabled"`
+		BotID                string `json:"botId"`
+		BotSecret            string `json:"botSecret"`
+		URL                  string `json:"url"`
+		PingIntervalSec      int    `json:"pingIntervalSec"`
+		ReconnectDelaySec    int    `json:"reconnectDelaySec"`
+		MaxReconnectDelaySec int    `json:"maxReconnectDelaySec"`
+	} `json:"botLongConn"`
 }
 
 type configUIWeComBot struct {
 	Enabled      bool   `json:"enabled"`
+	Name         string `json:"name"`
 	BotID        string `json:"botId"`
 	BotSecret    string `json:"botSecret"`
 	EmployeeName string `json:"employeeName"`
@@ -196,6 +213,7 @@ type configUIWeComBot struct {
 	Product      string `json:"product"`
 	Project      string `json:"project"`
 	Workspace    string `json:"workspace"`
+	Region       string `json:"region"`
 }
 
 type configUIOpenAI struct {
@@ -233,6 +251,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			Product:         cfg.Global.Product,
 			Project:         cfg.Global.Project,
 			Workspace:       cfg.Global.Workspace,
+			Region:          cfg.Global.Region,
 		},
 		Auth: configUIAuth{
 			Methods:      cfg.Auth.Methods,
@@ -273,6 +292,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 					Product:           r.Product,
 					Project:           r.Project,
 					Workspace:         r.Workspace,
+					Region:            r.Region,
 				}
 			}
 			resp.DingTalk[i] = configUIDingTalk{
@@ -285,6 +305,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Product:              dt.Product,
 				Project:              dt.Project,
 				Workspace:            dt.Workspace,
+				Region:               dt.Region,
 				AllowedGroupUsers:    dt.AllowedGroupUsers,
 				AllowedDirectUsers:   dt.AllowedDirectUsers,
 				AllowedConversations: dt.AllowedConversations,
@@ -311,6 +332,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Product:           ft.Product,
 				Project:           ft.Project,
 				Workspace:         ft.Workspace,
+				Region:            ft.Region,
 				AllowedUsers:      ft.AllowedUsers,
 				AllowedChats:      ft.AllowedChats,
 			}
@@ -338,6 +360,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Product:        wc.Product,
 				Project:        wc.Project,
 				Workspace:      wc.Workspace,
+				Region:         wc.Region,
 				AllowedUsers:   wc.AllowedUsers,
 			}
 		}
@@ -351,6 +374,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 		for i, wb := range cfg.Channels.WeComBot {
 			resp.WeComBot[i] = configUIWeComBot{
 				Enabled:      wb.Enabled,
+				Name:         wb.Name,
 				BotID:        wb.BotID,
 				BotSecret:    wb.BotSecret,
 				EmployeeName: wb.EmployeeName,
@@ -358,6 +382,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Product:      wb.Product,
 				Project:      wb.Project,
 				Workspace:    wb.Workspace,
+				Region:       wb.Region,
 			}
 		}
 	} else {
@@ -389,6 +414,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Product:      t.Product,
 				Project:      t.Project,
 				Workspace:    t.Workspace,
+				Region:       t.Region,
 				Webhook: configUIWebhook{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -431,6 +457,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 			Product:         req.Global.Product,
 			Project:         req.Global.Project,
 			Workspace:       req.Global.Workspace,
+			Region:          req.Global.Region,
 		},
 		Auth: config.AuthConfig{
 			Methods: req.Auth.Methods,
@@ -471,6 +498,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 							Product:           r.Product,
 							Project:           r.Project,
 							Workspace:         r.Workspace,
+							Region:            r.Region,
 						})
 					}
 				}
@@ -484,6 +512,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					Product:              dt.Product,
 					Project:              dt.Project,
 					Workspace:            dt.Workspace,
+					Region:               dt.Region,
 					AllowedGroupUsers:    dt.AllowedGroupUsers,
 					AllowedDirectUsers:   dt.AllowedDirectUsers,
 					AllowedConversations: dt.AllowedConversations,
@@ -521,6 +550,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					Product:           ft.Product,
 					Project:           ft.Project,
 					Workspace:         ft.Workspace,
+					Region:            ft.Region,
 					AllowedUsers:      allowedUsers,
 					AllowedChats:      allowedChats,
 				})
@@ -555,6 +585,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					Product:        wc.Product,
 					Project:        wc.Project,
 					Workspace:      wc.Workspace,
+					Region:         wc.Region,
 					AllowedUsers:   allowedUsers,
 				})
 			}
@@ -571,6 +602,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 			if wb.BotID != "" || wb.BotSecret != "" || wb.EmployeeName != "" {
 				cfg.Channels.WeComBot = append(cfg.Channels.WeComBot, config.WeComBotConfig{
 					Enabled:      wb.Enabled,
+					Name:         wb.Name,
 					BotID:        wb.BotID,
 					BotSecret:    wb.BotSecret,
 					EmployeeName: wb.EmployeeName,
@@ -578,6 +610,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					Product:      wb.Product,
 					Project:      wb.Project,
 					Workspace:    wb.Workspace,
+					Region:       wb.Region,
 				})
 			}
 		}
@@ -607,6 +640,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Product:      t.Product,
 				Project:      t.Project,
 				Workspace:    t.Workspace,
+				Region:       t.Region,
 				Webhook: config.WebhookConfig{
 					Type:    t.Webhook.Type,
 					URL:     t.Webhook.URL,
@@ -673,13 +707,14 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		clientCfg.Product = globalCfg.Global.Product
 	}
 
-	// 确定任务使用的 product/project/workspace
+	// 确定任务使用的 product/project/workspace/region
 	taskProduct := req.Product
 	if taskProduct == "" {
 		taskProduct = clientCfg.Product // 使用全局配置
 	}
 	taskProject := req.Project
 	taskWorkspace := req.Workspace
+	taskRegion := req.Region
 
 	type triggerResult struct {
 		reply string
@@ -692,7 +727,7 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		if req.ConciseReply {
 			prompt += "\n\n简化最终输出 适合聊天工具上阅读"
 		}
-		reply, err := scheduler.QueryEmployeeWithVariables(clientCfg, req.EmployeeName, prompt, taskProduct, taskProject, taskWorkspace)
+		reply, err := scheduler.QueryEmployeeWithVariables(clientCfg, req.EmployeeName, prompt, taskProduct, taskProject, taskWorkspace, taskRegion)
 		done <- triggerResult{reply: reply, err: err}
 	}()
 

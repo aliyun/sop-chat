@@ -809,9 +809,10 @@ func (s *Server) createCMSClient() (*cmsclient.Client, error) {
 		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 global.accessKeyId 和 global.accessKeySecret")
 	}
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:     tea.String(cfg.AccessKeyId),
-		AccessKeySecret: tea.String(cfg.AccessKeySecret),
-		Endpoint:        tea.String(cfg.Endpoint),
+		AccessKeyId:      tea.String(cfg.AccessKeyId),
+		AccessKeySecret:  tea.String(cfg.AccessKeySecret),
+		Endpoint:         tea.String(cfg.Endpoint),
+		SignatureVersion: tea.String("v3"),
 	}
 	return cmsclient.NewClient(cmsConfig)
 }

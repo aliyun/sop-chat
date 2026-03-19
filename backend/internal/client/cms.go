@@ -14,9 +14,10 @@ import (
 func NewCMSClient(config *Config) (*sopchat.Client, error) {
 	// 创建客户端配置
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:     tea.String(config.AccessKeyId),
-		AccessKeySecret: tea.String(config.AccessKeySecret),
-		Endpoint:        tea.String(config.Endpoint),
+		AccessKeyId:      tea.String(config.AccessKeyId),
+		AccessKeySecret:  tea.String(config.AccessKeySecret),
+		Endpoint:         tea.String(config.Endpoint),
+		SignatureVersion: tea.String("v3"),
 	}
 
 	// 创建 CMS 客户端

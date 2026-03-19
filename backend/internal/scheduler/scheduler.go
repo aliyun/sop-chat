@@ -13,7 +13,6 @@ import (
 	"sop-chat/pkg/sopchat"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/robfig/cron/v3"
 )
@@ -126,8 +125,8 @@ func (s *Scheduler) registerTask(task config.ScheduledTaskConfig) error {
 
 	s.entryIDs[task.Name] = id
 	next := s.cron.Entry(id).Next
-	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhook=%s product=%q project=%q workspace=%q 下次执行: %s",
-		task.Name, task.Cron, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
+	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhook=%s product=%q project=%q workspace=%q region=%q 下次执行: %s",
+		task.Name, task.Cron, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, task.Region, next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
 	return nil
 }
 
@@ -137,8 +136,8 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	clientCfg := s.clientCfg
 	s.mu.Unlock()
 
-	log.Printf("[Scheduler] 开始执行任务: %q  employee=%q  webhook=%s  product=%q  project=%q  workspace=%q",
-		task.Name, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace)
+	log.Printf("[Scheduler] 开始执行任务: %q  employee=%q  webhook=%s  product=%q  project=%q  workspace=%q  region=%q",
+		task.Name, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, task.Region)
 	prompt := task.Prompt
 	if task.ConciseReply {
 		prompt += "\n\n简化最终输出 适合聊天工具上阅读"
@@ -151,15 +150,16 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 		return
 	}
 
-	// 确定任务使用的 product/project/workspace
+	// 确定任务使用的 product/project/workspace/region
 	taskProduct := task.Product
 	if taskProduct == "" {
 		taskProduct = clientCfg.Product // 使用全局配置
 	}
 	taskProject := task.Project
 	taskWorkspace := task.Workspace
+	taskRegion := task.Region
 
-	reply, err := queryEmployee(clientCfg, task.Name, task.EmployeeName, prompt, s.timezone, taskProduct, taskProject, taskWorkspace)
+	reply, err := queryEmployee(clientCfg, task.Name, task.EmployeeName, prompt, s.timezone, taskProduct, taskProject, taskWorkspace, taskRegion)
 	if err != nil {
 		log.Printf("[Scheduler] 任务 %q 查询数字员工失败: %v", task.Name, err)
 		return
@@ -185,16 +185,16 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 
 // QueryEmployee 向数字员工发送消息，等待完整响应并返回文本（公开，供外部触发测试使用）
 func QueryEmployee(clientCfg *config.ClientConfig, employeeName, message string) (string, error) {
-	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, clientCfg.Product, "", "")
+	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, clientCfg.Product, "", "", "")
 }
 
-// QueryEmployeeWithVariables 向数字员工发送消息，支持指定 product/project/workspace
-func QueryEmployeeWithVariables(clientCfg *config.ClientConfig, employeeName, message, product, project, workspace string) (string, error) {
-	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, product, project, workspace)
+// QueryEmployeeWithVariables 向数字员工发送消息，支持指定 product/project/workspace/region
+func QueryEmployeeWithVariables(clientCfg *config.ClientConfig, employeeName, message, product, project, workspace, region string) (string, error) {
+	return queryEmployee(clientCfg, "手动触发", employeeName, message, time.Local, product, project, workspace, region)
 }
 
 // queryEmployee 向数字员工发送消息，等待完整响应并返回文本
-func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, message string, loc *time.Location, product, project, workspace string) (string, error) {
+func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, message string, loc *time.Location, product, project, workspace, region string) (string, error) {
 	sopClient, err := client.NewCMSClient(&client.Config{
 		AccessKeyId:     clientCfg.AccessKeyId,
 		AccessKeySecret: clientCfg.AccessKeySecret,
@@ -228,12 +228,22 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	if config.IsSlsProduct(product) {
 		variables["skill"] = "sop"
 	}
-	// 添加 project/workspace 到变量
-	if project != "" {
-		variables["project"] = project
-	}
-	if workspace != "" {
-		variables["workspace"] = workspace
+	// 添加 project/workspace/region 到变量
+	if product == "sls" {
+		if project != "" {
+			variables["project"] = project
+		}
+	} else {
+		if workspace != "" {
+			variables["workspace"] = workspace
+		}
+		if region != "" {
+			variables["region"] = region
+		}
+		// CMS product: add fromTime/toTime (15-minute window)
+		now := time.Now()
+		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
+		variables["toTime"] = now.Unix()
 	}
 	request := &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(employeeName),
@@ -261,7 +271,8 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	go cms.CreateChatWithSSE(request, make(map[string]*string), &dara.RuntimeOptions{}, responseChan, errorChan)
+	runtime := sopchat.NewSSERuntimeOptions()
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
 	var textParts []string
 	responseCount, msgCount := 0, 0
@@ -286,6 +297,14 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 			}
 			if response.Body == nil {
 				continue
+			}
+
+			// 检测 done 消息
+			if sopchat.IsDoneMessage(response.Body) {
+				result := strings.Join(textParts, "")
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				return result, nil
 			}
 
 			for _, msg := range response.Body.Messages {
