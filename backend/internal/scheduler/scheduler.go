@@ -136,8 +136,14 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	clientCfg := s.clientCfg
 	s.mu.Unlock()
 
-	log.Printf("[Scheduler] 开始执行任务: %q  employee=%q  webhook=%s  product=%q  project=%q  workspace=%q  region=%q",
-		task.Name, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, task.Region)
+	log.Printf("[Scheduler] ========== 任务触发 ==========")
+	log.Printf("[Scheduler] 任务名称: %q", task.Name)
+	log.Printf("[Scheduler] Cron 表达式: %q", task.Cron)
+	log.Printf("[Scheduler] 数字员工: %q", task.EmployeeName)
+	log.Printf("[Scheduler] Webhook: type=%s url=%s", task.Webhook.Type, maskURL(task.Webhook.URL))
+	log.Printf("[Scheduler] 产品配置: product=%q project=%q workspace=%q region=%q",
+		task.Product, task.Project, task.Workspace, task.Region)
+
 	prompt := task.Prompt
 	if task.ConciseReply {
 		prompt += "\n\n简化最终输出 适合聊天工具上阅读"
@@ -159,20 +165,21 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	taskWorkspace := task.Workspace
 	taskRegion := task.Region
 
+	log.Printf("[Scheduler] 任务 %q 开始查询数字员工...", task.Name)
 	reply, err := queryEmployee(clientCfg, task.Name, task.EmployeeName, prompt, s.timezone, taskProduct, taskProject, taskWorkspace, taskRegion)
 	if err != nil {
 		log.Printf("[Scheduler] 任务 %q 查询数字员工失败: %v", task.Name, err)
 		return
 	}
 
-	log.Printf("[Scheduler] 任务 %q 数字员工原始响应（%d 字）: %s",
-		task.Name, len([]rune(reply)), reply)
+	log.Printf("[Scheduler] 任务 %q 数字员工响应完成（%d 字）", task.Name, len([]rune(reply)))
 
 	if reply == "" {
 		log.Printf("[Scheduler] 任务 %q 数字员工返回空响应，跳过发送", task.Name)
 		return
 	}
 
+	log.Printf("[Scheduler] 任务 %q 开始发送 Webhook (type=%s)...", task.Name, task.Webhook.Type)
 	raw, err := sendToWebhook(task.Webhook, reply)
 	if err != nil {
 		log.Printf("[Scheduler] 任务 %q 发送 webhook 失败: %v（平台响应: %s）", task.Name, err, raw)
@@ -180,7 +187,8 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	}
 
 	elapsed := time.Since(startTime).Round(time.Millisecond)
-	log.Printf("[Scheduler] 任务 %q 执行完成，耗时 %s，webhook 平台响应: %s", task.Name, elapsed, raw)
+	log.Printf("[Scheduler] 任务 %q 执行完成，耗时 %s", task.Name, elapsed)
+	log.Printf("[Scheduler] ========== 任务结束 ==========")
 }
 
 // QueryEmployee 向数字员工发送消息，等待完整响应并返回文本（公开，供外部触发测试使用）
@@ -195,29 +203,37 @@ func QueryEmployeeWithVariables(clientCfg *config.ClientConfig, employeeName, me
 
 // queryEmployee 向数字员工发送消息，等待完整响应并返回文本
 func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, message string, loc *time.Location, product, project, workspace, region string) (string, error) {
+	log.Printf("[Scheduler] queryEmployee 开始: task=%q employee=%q", taskName, employeeName)
+
 	sopClient, err := client.NewCMSClient(&client.Config{
 		AccessKeyId:     clientCfg.AccessKeyId,
 		AccessKeySecret: clientCfg.AccessKeySecret,
 		Endpoint:        clientCfg.Endpoint,
 	})
 	if err != nil {
+		log.Printf("[Scheduler] queryEmployee 创建 CMS 客户端失败: %v", err)
 		return "", fmt.Errorf("创建 CMS 客户端失败: %w", err)
 	}
+	log.Printf("[Scheduler] queryEmployee CMS 客户端创建成功")
 	cms := sopClient.CmsClient
 
 	// CMS API 要求必须传有效 ThreadId，先创建一次性线程
 	threadTitle := fmt.Sprintf("[定时任务] %s @ %s", taskName, time.Now().In(loc).Format("2006-01-02 15:04:05"))
+	log.Printf("[Scheduler] queryEmployee 创建线程: %s", threadTitle)
 	threadResp, err := sopClient.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: employeeName,
 		Title:        threadTitle,
 	})
 	if err != nil {
+		log.Printf("[Scheduler] queryEmployee 创建线程失败: %v", err)
 		return "", fmt.Errorf("创建线程失败: %w", err)
 	}
 	if threadResp.Body == nil || threadResp.Body.ThreadId == nil || *threadResp.Body.ThreadId == "" {
+		log.Printf("[Scheduler] queryEmployee CreateThread 返回了空的 ThreadId")
 		return "", fmt.Errorf("CreateThread 返回了空的 ThreadId")
 	}
 	threadId := *threadResp.Body.ThreadId
+	log.Printf("[Scheduler] queryEmployee 线程创建成功: threadId=%s", threadId)
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
@@ -265,8 +281,10 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 
 	startSSE := time.Now()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
+
+	log.Printf("[Scheduler] queryEmployee 开始 SSE 流式请求: employee=%q threadId=%s timeout=30m", employeeName, threadId)
 
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
@@ -276,6 +294,7 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 
 	var textParts []string
 	responseCount, msgCount := 0, 0
+	lastProgressLog := time.Now()
 
 	for {
 		select {
@@ -286,11 +305,18 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 		case response, ok := <-responseChan:
 			if !ok {
 				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
 				return result, nil
 			}
 			responseCount++
+
+			// 每 30 秒打印一次进度
+			if time.Since(lastProgressLog) > 30*time.Second {
+				log.Printf("[Scheduler] queryEmployee 进行中: employee=%q 已收 %d 帧 %d 消息 耗时 %s",
+					employeeName, responseCount, msgCount, time.Since(startSSE).Round(time.Second))
+				lastProgressLog = time.Now()
+			}
 
 			if response.StatusCode != nil && *response.StatusCode != 200 {
 				log.Printf("[Scheduler] queryEmployee 响应状态码异常: %d", *response.StatusCode)
@@ -302,8 +328,8 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 			// 检测 done 消息
 			if sopchat.IsDoneMessage(response.Body) {
 				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
 				return result, nil
 			}
 
@@ -329,18 +355,27 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 		case err, ok := <-errorChan:
 			if !ok {
 				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s 耗时 %s 共 %d 帧 文本 %d 字",
+					employeeName, threadId, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
 				return result, nil
 			}
 			if err != nil {
-				log.Printf("[Scheduler] queryEmployee SSE error: %v", err)
+				log.Printf("[Scheduler] queryEmployee SSE 错误: %v", err)
 				return strings.Join(textParts, ""), err
 			}
 			result := strings.Join(textParts, "")
-			log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s prompt=%q 耗时 %s 共 %d 帧 文本 %d 字",
-				employeeName, threadId, message, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
+			log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s 耗时 %s 共 %d 帧 文本 %d 字",
+				employeeName, threadId, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
 			return result, nil
 		}
 	}
+}
+
+// maskURL 遮蔽 URL 中的敏感信息，只显示域名和路径的前后部分
+func maskURL(url string) string {
+	if len(url) < 30 {
+		return url
+	}
+	// 保留前 20 个字符和后 10 个字符
+	return url[:20] + "..." + url[len(url)-10:]
 }

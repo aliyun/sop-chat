@@ -215,7 +215,11 @@ func (b *LongConnBot) connect() error {
 
 	log.Printf("[WeCom-LongConn] 正在连接 %s ...", wsURL)
 
-	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	// 创建新的 Dialer，避免使用共享的 DefaultDialer
+	dialer := &websocket.Dialer{
+		HandshakeTimeout: 10 * time.Second,
+	}
+	conn, _, err := dialer.Dial(wsURL, nil)
 	if err != nil {
 		return fmt.Errorf("WebSocket 连接失败: %w", err)
 	}

@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sop-chat/internal/dingtalksdk/card"
 	"io"
 	"net/http"
 	"net/url"
+	"sop-chat/internal/dingtalksdk/card"
 	"sync"
 	"time"
 
@@ -92,18 +92,17 @@ func (cli *StreamClient) Start(ctx context.Context) error {
 
 	header := make(http.Header)
 
-	var dialer *websocket.Dialer
+	// 始终创建新的 Dialer，避免使用共享的 DefaultDialer 可能导致的问题
+	dialer := &websocket.Dialer{
+		HandshakeTimeout: 10 * time.Second,
+	}
 
-	if len(cli.proxy) == 0 {
-		dialer = websocket.DefaultDialer
-	} else {
+	if len(cli.proxy) > 0 {
 		proxyURL, err := url.Parse(cli.proxy)
 		if err != nil {
 			return err
 		}
-		dialer = &websocket.Dialer{
-			Proxy: http.ProxyURL(proxyURL),
-		}
+		dialer.Proxy = http.ProxyURL(proxyURL)
 	}
 
 	conn, resp, err := dialer.Dial(wssUrl, header)

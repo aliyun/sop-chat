@@ -11,11 +11,12 @@ import (
 	"sync"
 	"time"
 
+	"sop-chat/internal/dingtalksdk/chatbot"
+	dingclient "sop-chat/internal/dingtalksdk/client"
+
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	"github.com/alibabacloud-go/tea/tea"
-	"sop-chat/internal/dingtalksdk/chatbot"
-	dingclient "sop-chat/internal/dingtalksdk/client"
 
 	"sop-chat/internal/config"
 	"sop-chat/pkg/sopchat"
@@ -98,6 +99,7 @@ func (b *Bot) UpdateConfig(newCfg *config.DingTalkConfig) {
 }
 
 // Start 启动钉钉 Stream 连接（非阻塞：SDK 内部以 goroutine 运行消息循环）
+// 连接失败时会自动重试，最多重试 5 次，每次间隔指数递增
 func (b *Bot) Start() error {
 	b.cliMu.Lock()
 	defer b.cliMu.Unlock()
@@ -106,19 +108,44 @@ func (b *Bot) Start() error {
 		return nil // 已在运行，幂等
 	}
 
-	cli := dingclient.NewStreamClient(
-		dingclient.WithAppCredential(dingclient.NewAppCredentialConfig(b.dtConfig.ClientId, b.dtConfig.ClientSecret)),
-		dingclient.WithUserAgent(dingclient.NewDingtalkGoSDKUserAgent()),
-		dingclient.WithAutoReconnect(true), // 断线自动重连，直到 Stop() 被调用
-	)
-	cli.RegisterChatBotCallbackRouter(b.onMessage)
+	// 重试参数
+	maxRetries := 5
+	baseDelay := time.Second
+	maxDelay := 30 * time.Second
 
-	if err := cli.Start(context.Background()); err != nil {
-		return err
+	var lastErr error
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			// 指数退避：1s, 2s, 4s, 8s, 16s...
+			delay := baseDelay << uint(attempt-1)
+			if delay > maxDelay {
+				delay = maxDelay
+			}
+			log.Printf("[DingTalk] 机器人启动失败，%v 后重试（第 %d/%d 次）...", delay, attempt+1, maxRetries)
+			time.Sleep(delay)
+		}
+
+		cli := dingclient.NewStreamClient(
+			dingclient.WithAppCredential(dingclient.NewAppCredentialConfig(b.dtConfig.ClientId, b.dtConfig.ClientSecret)),
+			dingclient.WithUserAgent(dingclient.NewDingtalkGoSDKUserAgent()),
+			dingclient.WithAutoReconnect(true), // 断线自动重连，直到 Stop() 被调用
+		)
+		cli.RegisterChatBotCallbackRouter(b.onMessage)
+
+		if err := cli.Start(context.Background()); err != nil {
+			lastErr = err
+			log.Printf("[DingTalk] 机器人启动失败 (clientId=%s, attempt=%d): %v", b.dtConfig.ClientId, attempt+1, err)
+			// 清理失败的客户端，防止资源泄漏
+			cli.Close()
+			continue
+		}
+
+		b.cli = cli
+		log.Printf("[DingTalk] 机器人已启动，绑定数字员工: %s", b.dtConfig.EmployeeName)
+		return nil
 	}
-	b.cli = cli
-	log.Printf("[DingTalk] 机器人已启动，绑定数字员工: %s", b.dtConfig.EmployeeName)
-	return nil
+
+	return fmt.Errorf("钉钉机器人启动失败，已重试 %d 次: %w", maxRetries, lastErr)
 }
 
 // Stop 停止钉钉 Stream 连接，禁用自动重连后关闭 WebSocket
