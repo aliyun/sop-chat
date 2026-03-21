@@ -404,6 +404,8 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	if len(cfg.ScheduledTasks) > 0 {
 		resp.ScheduledTasks = make([]configUIScheduledTask, len(cfg.ScheduledTasks))
 		for i, t := range cfg.ScheduledTasks {
+			// 与调度执行、保存逻辑一致，避免旧配置无 product 时页面展示与后端实际不一致
+			effectiveProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, cfg.Global.Product)
 			resp.ScheduledTasks[i] = configUIScheduledTask{
 				Name:         t.Name,
 				Enabled:      t.Enabled,
@@ -411,7 +413,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
 				ConciseReply: t.ConciseReply,
-				Product:      t.Product,
+				Product:      effectiveProduct,
 				Project:      t.Project,
 				Workspace:    t.Workspace,
 				Region:       t.Region,
@@ -630,6 +632,8 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	// 定时任务配置
 	for _, t := range req.ScheduledTasks {
 		if t.Name != "" || t.EmployeeName != "" || t.Webhook.URL != "" {
+			// 与 Cron 调度、立即触发使用同一解析规则，保证落盘 product 与页面选择一致
+			taskProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, strings.TrimSpace(req.Global.Product))
 			cfg.ScheduledTasks = append(cfg.ScheduledTasks, config.ScheduledTaskConfig{
 				Name:         t.Name,
 				Enabled:      t.Enabled,
@@ -637,7 +641,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Prompt:       t.Prompt,
 				EmployeeName: t.EmployeeName,
 				ConciseReply: t.ConciseReply,
-				Product:      t.Product,
+				Product:      taskProduct,
 				Project:      t.Project,
 				Workspace:    t.Workspace,
 				Region:       t.Region,
@@ -707,14 +711,18 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		clientCfg.Product = globalCfg.Global.Product
 	}
 
-	// 确定任务使用的 product/project/workspace/region
-	taskProduct := req.Product
-	if taskProduct == "" {
-		taskProduct = clientCfg.Product // 使用全局配置
-	}
+	// 与保存/Cron 使用同一 Resolve，保证与页面「对接产品」一致（仅 cms|sls）
+	taskProduct := config.ResolveScheduledTaskProduct(req.Product, req.Project, req.Workspace, clientCfg.Product)
 	taskProject := req.Project
 	taskWorkspace := req.Workspace
 	taskRegion := req.Region
+	fullPrompt := req.Prompt
+	if req.ConciseReply {
+		fullPrompt += "\n\n简化最终输出 适合聊天工具上阅读"
+	}
+	promptLog := scheduler.PromptForLog(fullPrompt, 1200)
+	log.Printf("[trigger-task] task=%q 使用 product=%q 问题=%s（原始 product=%q 全局=%q workspace=%q project=%q）",
+		req.Name, taskProduct, promptLog, req.Product, clientCfg.Product, req.Workspace, req.Project)
 
 	type triggerResult struct {
 		reply string
@@ -734,12 +742,12 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 	select {
 	case res := <-done:
 		if res.err != nil {
-			log.Printf("[Scheduler] 触发测试失败 task=%q: %v", req.Name, res.err)
+			log.Printf("[Scheduler] 触发测试失败 task=%q product=%q 问题=%s employee=%q: %v", req.Name, taskProduct, promptLog, req.EmployeeName, res.err)
 			c.JSON(http.StatusOK, gin.H{"ok": false, "error": res.err.Error()})
 			return
 		}
-		log.Printf("[Scheduler] 触发测试完成 task=%q employee=%q 响应(%d 字): %s",
-			req.Name, req.EmployeeName, len([]rune(res.reply)), res.reply)
+		log.Printf("[Scheduler] 触发测试完成 task=%q product=%q 问题=%s employee=%q 响应(%d 字): %s",
+			req.Name, taskProduct, promptLog, req.EmployeeName, len([]rune(res.reply)), res.reply)
 
 		// 如果填了 Webhook URL，顺便推送
 		webhookSent := false
@@ -755,10 +763,10 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 			webhookRaw = raw
 			if err != nil {
 				webhookErr = err.Error()
-				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q: %v（平台响应: %s）", req.Name, err, raw)
+				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q product=%q 问题=%s: %v（平台响应: %s）", req.Name, taskProduct, promptLog, err, raw)
 			} else {
 				webhookSent = true
-				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q type=%s 平台响应: %s", req.Name, req.Webhook.Type, raw)
+				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q product=%q 问题=%s type=%s 平台响应: %s", req.Name, taskProduct, promptLog, req.Webhook.Type, raw)
 			}
 		}
 
@@ -770,8 +778,10 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 			"webhookRaw":  webhookRaw,
 		})
 
-	case <-time.After(3 * time.Minute):
-		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（3 分钟），数字员工响应过慢"})
+	case <-time.After(31 * time.Minute):
+		log.Printf("[trigger-task] task=%q product=%q 问题=%s employee=%q 请求超时（HTTP 等待 31m，与 SSE 30m 对齐）", req.Name, taskProduct, promptLog, req.EmployeeName)
+		// 与 queryEmployee 内 SSE 的 30m 超时对齐，避免后台仍在跑但 HTTP 已提前返回
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（30 分钟），数字员工响应过慢"})
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -46,8 +47,8 @@ type ScheduledTaskConfig struct {
 	// 启用简洁输出：向 Prompt 末尾追加简化输出指令，适合 IM 场景
 	ConciseReply bool `yaml:"conciseReply,omitempty"`
 	// Product 指定该任务对接的数字员工所属产品：sls（默认）或 cms。
-	// 为空时使用 global.product 的值。
-	Product string `yaml:"product,omitempty"`
+	// 保存时始终规范为 sls/cms，与页面选择及调度执行一致（不使用 omitempty，避免落盘丢失）。
+	Product string `yaml:"product"`
 	// Project 与 Workspace 根据产品类型二选一
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
@@ -746,6 +747,35 @@ func SaveRawConfig(configPath string, content string) error {
 // 空字符串和 "sls" 均视为 SLS（向后兼容默认行为）。
 func IsSlsProduct(product string) bool {
 	return product == "" || product == "sls"
+}
+
+// NormalizeScheduledTaskProduct 将表单/配置中的 product 规范为 cms 或 sls（大小写与空白容错）。
+func NormalizeScheduledTaskProduct(s string) string {
+	s = strings.TrimSpace(strings.ToLower(s))
+	if s == "cms" {
+		return "cms"
+	}
+	return "sls"
+}
+
+// ResolveScheduledTaskProduct 解析定时任务 / 手动触发测试 / 保存配置使用的 product，与页面下拉选项一致（仅 cms 或 sls）。
+// taskProduct 非空时以其为准并规范化；为空时：Workspace 非空则视为 cms，Project 非空则视为 sls，否则使用 globalProduct（再为空则默认 sls）。
+func ResolveScheduledTaskProduct(taskProduct, project, workspace, globalProduct string) string {
+	p := strings.TrimSpace(taskProduct)
+	if p != "" {
+		return NormalizeScheduledTaskProduct(p)
+	}
+	if strings.TrimSpace(workspace) != "" {
+		return "cms"
+	}
+	if strings.TrimSpace(project) != "" {
+		return "sls"
+	}
+	g := strings.TrimSpace(globalProduct)
+	if g != "" {
+		return NormalizeScheduledTaskProduct(g)
+	}
+	return "sls"
 }
 
 // GetProduct 获取对接产品类型（如果未配置则返回默认值 "sls"）

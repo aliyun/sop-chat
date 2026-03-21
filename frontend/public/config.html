@@ -1836,6 +1836,7 @@ function renderScheduledTasks(tasks) {
   const container = document.getElementById('tasks-list');
   container.innerHTML = '';
   (tasks || []).forEach((t, i) => container.appendChild(makeTaskCard(t, i)));
+  updateAllTaskVariableFields();
 }
 
 function makeTaskCard(task, idx, expanded) {
@@ -1958,14 +1959,16 @@ function makeTaskCard(task, idx, expanded) {
 function addScheduledTask() {
   const container = document.getElementById('tasks-list');
   const defaultProduct = val('g-product') || 'sls';
-  container.appendChild(makeTaskCard({
+  const card = makeTaskCard({
     enabled: true,
     cron: '0 9 * * 1-5',
     employeeName: 'apsara-ops',
     conciseReply: true,
     product: defaultProduct,
     webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
-  }, container.children.length, true));
+  }, container.children.length, true);
+  container.appendChild(card);
+  updateSingleTaskVariableFields(card);
 }
 
 function removeScheduledTask(btn) {
@@ -2053,6 +2056,20 @@ function onMsgTypeChange(sel) {
   titleField.style.display = sel.value === 'text' ? 'none' : '';
 }
 
+function taskCardProductSelect(card) {
+  return card.querySelector('.task-card-fields select[data-field="product"]')
+    || card.querySelector('.task-card-fields [data-field=product]');
+}
+
+/** 定时任务卡片「对接产品」：始终为 sls 或 cms，与后端 Resolve 一致 */
+function scheduledTaskProductFromCard(card) {
+  const v = (taskCardProductSelect(card)?.value || '').trim();
+  if (v === 'cms') return 'cms';
+  if (v === 'sls') return 'sls';
+  const g = (val('g-product') || 'sls').trim();
+  return g === 'cms' ? 'cms' : 'sls';
+}
+
 function collectScheduledTasks() {
   return Array.from(document.querySelectorAll('#tasks-list .task-card')).map(card => ({
     name:         card.querySelector('[data-field=name]').value.trim(),
@@ -2061,7 +2078,7 @@ function collectScheduledTasks() {
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
-    product:      card.querySelector('[data-field=product]')?.value || '',
+    product:      scheduledTaskProductFromCard(card),
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     region:       card.querySelector('[data-field=region]')?.value.trim() || '',
@@ -2085,7 +2102,7 @@ async function triggerTask(btn) {
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
-    product:      card.querySelector('[data-field=product]')?.value || '',
+    product:      scheduledTaskProductFromCard(card),
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     region:       card.querySelector('[data-field=region]')?.value.trim() || '',
