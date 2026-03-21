@@ -118,8 +118,8 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 使用带 Context 的 SSE 调用，支持客户端断开时取消
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Minute)
+	// 使用带 Context 的 SSE 调用，支持客户端断开时取消（与 CMS SSE 读超时一致，避免长对话 5 分钟被掐断）
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 31*time.Minute)
 	defer cancel()
 	runtime := sopchat.NewSSERuntimeOptions()
 	go cmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)

@@ -68,8 +68,8 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 使用带 Context 的 SSE 调用，设置 5 分钟超时
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	// 使用带 Context 的 SSE 调用（与 NewSSERuntimeOptions 读超时、scheduler 一致）
+	ctx, cancel := context.WithTimeout(context.Background(), 31*time.Minute)
 	defer cancel()
 	runtime := NewSSERuntimeOptions()
 	go c.CmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)

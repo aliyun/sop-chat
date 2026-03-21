@@ -18,11 +18,15 @@ func IsDoneMessage(body *cmsclient.CreateChatResponseBody) bool {
 	return false
 }
 
+// SSE 读超时（毫秒）：须 ≥ scheduler/queryEmployee 的 30m context，否则长对话会在约 5 分钟时出现
+// context deadline exceeded (client.Timeout while reading body)，页面 trigger-task 也会失败。
+const sseReadTimeoutMs = 31 * 60 * 1000 // 31 分钟
+
 // NewSSERuntimeOptions 创建 SSE 调用的 RuntimeOptions，设置合理的超时
-// ConnectTimeout: 30 秒，ReadTimeout: 5 分钟
+// ConnectTimeout: 30 秒；ReadTimeout: 31 分钟（与定时任务 / 手动触发侧一致）
 func NewSSERuntimeOptions() *dara.RuntimeOptions {
 	runtime := &dara.RuntimeOptions{}
 	runtime.SetConnectTimeout(30000)
-	runtime.SetReadTimeout(300000)
+	runtime.SetReadTimeout(sseReadTimeoutMs)
 	return runtime
 }
