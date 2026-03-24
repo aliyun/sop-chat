@@ -47,7 +47,7 @@ type Bot struct {
 	cli   *dingclient.StreamClient
 
 	// openAPIClient 用于 AI 流式卡片的 OpenAPI 客户端
-	// 在 Start() 时按需创建，Stop() 时置空
+	// 在 Start() 时按需创建，Stop() 时置空；热更新配置新增 CardTemplateId 时懒初始化
 	openAPIClient *openapi.Client
 }
 
@@ -999,6 +999,11 @@ func (b *Bot) replyWithStreamingCard(
 ) error {
 	cfg := b.config()
 	apiClient := b.openAPIClient
+	// 懒初始化：热更新配置新增 CardTemplateId 时，无需重启 Bot
+	if apiClient == nil && cfg.CardTemplateId != "" {
+		apiClient = openapi.NewClient(cfg.ClientId, cfg.ClientSecret)
+		b.openAPIClient = apiClient
+	}
 	if apiClient == nil {
 		return errCardCreate
 	}
