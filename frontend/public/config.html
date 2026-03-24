@@ -1127,6 +1127,27 @@ function makeDingTalkBotCard(bot, idx) {
           '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
         '</div>' +
       '</div>' +
+      '<div class="field field-full" style="margin-top:4px">' +
+        '<details style="width:100%"' + ((bot.cardTemplateId) ? ' open' : '') + '>' +
+          '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
+            '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
+            'AI 流式卡片' +
+            '<span class="hint" style="font-weight:400;font-size:12px">（配置后回复使用流式卡片，留空则使用普通 Markdown）</span>' +
+          '</summary>' +
+          '<div class="field-grid" style="padding:8px 0 4px">' +
+            '<div class="field">' +
+              '<label>卡片模板 ID</label>' +
+              '<input type="text" data-field="cardTemplateId" value="' + esc(bot.cardTemplateId || '') + '" placeholder="留空则使用普通 Markdown 回复">' +
+              '<span class="hint">在钉钉开放平台创建的 AI 卡片模板 ID</span>' +
+            '</div>' +
+            '<div class="field">' +
+              '<label>流式更新变量名</label>' +
+              '<input type="text" data-field="cardContentKey" value="' + esc(bot.cardContentKey || '') + '" placeholder="默认: content">' +
+              '<span class="hint">卡片模板中用于流式更新的变量名</span>' +
+            '</div>' +
+          '</div>' +
+        '</details>' +
+      '</div>' +
       '<div class="field field-full">' +
         '<label>单聊用户白名单 <span class="hint" style="font-weight:400">（单聊场景生效；留空则允许所有人单聊）</span></label>' +
         '<div class="tag-input-wrap" data-dt-allowed-direct-users>' +
@@ -1245,6 +1266,8 @@ function collectDingTalkBots() {
     clientSecret: card.querySelector('[data-field=clientSecret]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    cardTemplateId: (card.querySelector('[data-field=cardTemplateId]') || {}).value?.trim() || '',
+    cardContentKey: (card.querySelector('[data-field=cardContentKey]') || {}).value?.trim() || '',
     product:      card.querySelector('[data-field=product]').value,
     project:      card.querySelector('[data-field=project]').value.trim(),
     workspace:    card.querySelector('[data-field=workspace]').value.trim(),
