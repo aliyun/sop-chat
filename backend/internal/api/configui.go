@@ -1,6 +1,8 @@
 package api
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -12,6 +14,8 @@ import (
 	"sop-chat/internal/scheduler"
 	"sop-chat/pkg/sopchat"
 
+	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
 )
 
@@ -868,5 +872,150 @@ func (s *Server) handleTestAK(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"ok": true, "preview": preview})
 	case <-time.After(60 * time.Second):
 		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（60s），请检查网络或 Endpoint 是否正确"})
+	}
+}
+
+// handleTestCMS 校验 CMS Region/Workspace 配置是否有效。
+// 通过向指定数字员工发送一条携带 workspace/region 变量的测试消息，
+// 验证整条链路：AK → Endpoint → 数字员工 → Workspace/Region。
+func (s *Server) handleTestCMS(c *gin.Context) {
+	var req struct {
+		AccessKeyId     string `json:"accessKeyId"`
+		AccessKeySecret string `json:"accessKeySecret"`
+		Endpoint        string `json:"endpoint"`
+		EmployeeName    string `json:"employeeName"`
+		Region          string `json:"region"`
+		Workspace       string `json:"workspace"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
+		return
+	}
+	if req.AccessKeyId == "" || req.AccessKeySecret == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "AccessKeyId 和 AccessKeySecret 不能为空"})
+		return
+	}
+	if req.Region == "" || req.Workspace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Region 和 Workspace 不能为空"})
+		return
+	}
+
+	employeeName := req.EmployeeName
+	if employeeName == "" {
+		employeeName = "apsara-ops"
+	}
+
+	endpoint := req.Endpoint
+	if endpoint == "" {
+		endpoint = "cms.cn-hangzhou.aliyuncs.com"
+	}
+
+	sopClient, err := client.NewCMSClient(&client.Config{
+		AccessKeyId:     req.AccessKeyId,
+		AccessKeySecret: req.AccessKeySecret,
+		Endpoint:        endpoint,
+	})
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "创建客户端失败: " + err.Error()})
+		return
+	}
+
+	type testResult struct {
+		text string
+		err  error
+	}
+	done := make(chan testResult, 1)
+
+	go func() {
+		cms := sopClient.CmsClient
+		now := time.Now()
+		variables := map[string]interface{}{
+			"workspace": req.Workspace,
+			"region":    req.Region,
+			"timeStamp": fmt.Sprintf("%d", now.Unix()),
+			"timeZone":  "Asia/Shanghai",
+			"language":  "zh",
+			"fromTime":  now.Add(-15 * time.Minute).Unix(),
+			"toTime":    now.Unix(),
+		}
+		request := &cmsclient.CreateChatRequest{
+			DigitalEmployeeName: tea.String(employeeName),
+			Action:              tea.String("create"),
+			Messages: []*cmsclient.CreateChatRequestMessages{
+				{
+					Role: tea.String("user"),
+					Contents: []*cmsclient.CreateChatRequestMessagesContents{
+						{
+							Type:  tea.String("text"),
+							Value: tea.String("现在几点了"),
+						},
+					},
+				},
+			},
+			Variables: variables,
+		}
+
+		runtime := sopchat.NewSSERuntimeOptions()
+		responseChan := make(chan *cmsclient.CreateChatResponse)
+		errorChan := make(chan error)
+		go cms.CreateChatWithSSECtx(context.Background(), request, make(map[string]*string), runtime, responseChan, errorChan)
+
+		var textParts []string
+		for {
+			select {
+			case response, ok := <-responseChan:
+				if !ok {
+					done <- testResult{text: strings.Join(textParts, "")}
+					return
+				}
+				if response.Body == nil {
+					continue
+				}
+				for _, msg := range response.Body.Messages {
+					if msg == nil {
+						continue
+					}
+					for _, content := range msg.Contents {
+						if content == nil {
+							continue
+						}
+						if t, ok := content["type"]; ok && t == "text" {
+							if v, ok := content["value"]; ok {
+								if s, ok := v.(string); ok {
+									textParts = append(textParts, s)
+								}
+							}
+						}
+					}
+				}
+			case err, ok := <-errorChan:
+				if ok && err != nil {
+					done <- testResult{err: err}
+					return
+				}
+				done <- testResult{text: strings.Join(textParts, "")}
+				return
+			}
+		}
+	}()
+
+	select {
+	case res := <-done:
+		if res.err != nil {
+			log.Printf("[test-cms] 校验失败: %v", res.err)
+			c.JSON(http.StatusOK, gin.H{"ok": false, "error": res.err.Error()})
+			return
+		}
+		preview := res.text
+		if len([]rune(preview)) > 120 {
+			preview = string([]rune(preview)[:120]) + "..."
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"ok":      true,
+			"preview": preview,
+			"message": fmt.Sprintf("校验通过：Region=%s Workspace=%s 配置有效", req.Region, req.Workspace),
+		})
+	case <-time.After(60 * time.Second):
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（60s），请检查 Region、Workspace 和 Endpoint 是否正确"})
 	}
 }
