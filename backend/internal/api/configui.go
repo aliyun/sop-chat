@@ -151,6 +151,8 @@ type configUIDingTalk struct {
 	ClientSecret         string                      `json:"clientSecret"`
 	EmployeeName         string                      `json:"employeeName"`
 	ConciseReply         bool                        `json:"conciseReply"`
+	CardTemplateId       string                      `json:"cardTemplateId"`
+	CardContentKey       string                      `json:"cardContentKey"`
 	Product              string                      `json:"product"`
 	Project              string                      `json:"project"`
 	Workspace            string                      `json:"workspace"`
@@ -306,6 +308,8 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				ClientSecret:         dt.ClientSecret,
 				EmployeeName:         dt.EmployeeName,
 				ConciseReply:         dt.ConciseReply,
+				CardTemplateId:       dt.CardTemplateId,
+				CardContentKey:       dt.CardContentKey,
 				Product:              dt.Product,
 				Project:              dt.Project,
 				Workspace:            dt.Workspace,
@@ -515,6 +519,8 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					ClientSecret:         dt.ClientSecret,
 					EmployeeName:         dt.EmployeeName,
 					ConciseReply:         dt.ConciseReply,
+					CardTemplateId:       dt.CardTemplateId,
+					CardContentKey:       dt.CardContentKey,
 					Product:              dt.Product,
 					Project:              dt.Project,
 					Workspace:            dt.Workspace,
