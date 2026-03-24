@@ -284,6 +284,13 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <input type="text" id="g-workspace" placeholder="">
         <span class="hint">CMS 产品对应的 Workspace</span>
       </div>
+      <div class="field" id="g-cms-validate-field" style="display:none;grid-column:1/-1">
+        <button class="btn btn-secondary" id="test-cms-btn" onclick="testCMS()" style="flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          校验 Region / Workspace
+        </button>
+        <div id="test-cms-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
+      </div>
     </div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
       <button class="btn btn-primary" id="test-ak-btn" onclick="testAK()" style="flex-shrink:0">
@@ -707,6 +714,78 @@ function showTestAKResult(status, msg) {
     el.style.border = '1px solid var(--red-bd)';
     el.style.color = 'var(--red)';
     el.textContent = '❌ ' + msg;
+  }
+}
+
+async function testCMS() {
+  const akid = val('g-akid');
+  const aks  = val('g-aks');
+  const region = val('g-region');
+  const workspace = val('g-workspace');
+  if (!akid || !aks) {
+    showTestCMSResult(false, 'AccessKeyId 和 AccessKeySecret 均需填写后才能校验');
+    return;
+  }
+  if (!region || !workspace) {
+    showTestCMSResult(false, 'Region 和 Workspace 均需填写后才能校验');
+    return;
+  }
+
+  const btn = document.getElementById('test-cms-btn');
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 校验中…';
+  showTestCMSResult('loading', '正在向数字员工发送测试消息以校验 Region / Workspace，请稍候（最长 60s）…');
+
+  try {
+    const res = await fetch('/admin-ui/api/test-cms?token=' + encodeURIComponent(token), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accessKeyId: akid,
+        accessKeySecret: aks,
+        endpoint: val('g-endpoint'),
+        region: region,
+        workspace: workspace,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showTestCMSResult(false, data.error || '请求失败');
+    } else if (data.ok) {
+      const msg = data.preview
+        ? data.message + '，收到回复：「' + data.preview + '」'
+        : data.message || '校验通过';
+      showTestCMSResult(true, msg);
+    } else {
+      showTestCMSResult(false, data.error || '校验失败');
+    }
+  } catch(e) {
+    showTestCMSResult(false, '网络错误: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+  }
+}
+
+function showTestCMSResult(status, msg) {
+  const el = document.getElementById('test-cms-result');
+  el.style.display = 'block';
+  if (status === 'loading') {
+    el.style.background = 'var(--blue-bg)';
+    el.style.border = '1px solid var(--blue-bd)';
+    el.style.color = 'var(--blue)';
+    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:8px"><div class="spinner"></div>' + esc(msg) + '</div>';
+  } else if (status === true) {
+    el.style.background = 'var(--green-bg)';
+    el.style.border = '1px solid var(--green-bd)';
+    el.style.color = 'var(--green)';
+    el.textContent = '\u2705 ' + msg;
+  } else {
+    el.style.background = 'var(--red-bg)';
+    el.style.border = '1px solid var(--red-bd)';
+    el.style.color = 'var(--red)';
+    el.textContent = '\u274c ' + msg;
   }
 }
 
@@ -1751,6 +1830,10 @@ function updateGlobalVariableFields() {
   if (projectField) projectField.style.display = isSls ? '' : 'none';
   if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
   if (regionField) regionField.style.display = isSls ? 'none' : '';
+  const cmsValidateField = document.getElementById('g-cms-validate-field');
+  if (cmsValidateField) {
+    cmsValidateField.style.display = isSls ? 'none' : '';
+  }
 }
 
 function updateBotVariableFields() {
