@@ -286,10 +286,10 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       </div>
       <div class="field" id="g-cms-validate-field" style="display:none;grid-column:1/-1">
         <button class="btn btn-secondary" id="test-cms-btn" onclick="testCMS()" style="flex-shrink:0">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           校验 Region / Workspace
         </button>
-        <div id="test-cms-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
+        <div id="test-cms-result" class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
       </div>
     </div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
@@ -717,25 +717,35 @@ function showTestAKResult(status, msg) {
   }
 }
 
-async function testCMS() {
+// 通用校验 Workspace 函数，btn 为触发按钮，自动从最近的卡片容器中读取 region/workspace
+async function validateWorkspace(btn) {
+  const card = btn.closest('.dt-bot-card, .fs-bot-card, .wc-bot-card, .wcb-bot-card, .task-card, .card');
+  const resultEl = btn.parentElement.querySelector('.validate-ws-result');
+
+  let region, workspace;
+  if (card && card.querySelector('[data-field=region]')) {
+    region = card.querySelector('[data-field=region]').value.trim();
+    workspace = card.querySelector('[data-field=workspace]').value.trim();
+  } else {
+    region = val('g-region');
+    workspace = val('g-workspace');
+  }
   const akid = val('g-akid');
   const aks  = val('g-aks');
-  const region = val('g-region');
-  const workspace = val('g-workspace');
+
   if (!akid || !aks) {
-    showTestCMSResult(false, 'AccessKeyId 和 AccessKeySecret 均需填写后才能校验');
+    showValidateResult(resultEl, false, '请先在全局配置中填写 AccessKeyId 和 AccessKeySecret');
     return;
   }
   if (!region || !workspace) {
-    showTestCMSResult(false, 'Region 和 Workspace 均需填写后才能校验');
+    showValidateResult(resultEl, false, 'Region 和 Workspace 均需填写后才能校验');
     return;
   }
 
-  const btn = document.getElementById('test-cms-btn');
   const origHTML = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> 校验中…';
-  showTestCMSResult('loading', '正在向数字员工发送测试消息以校验 Region / Workspace，请稍候（最长 60s）…');
+  showValidateResult(resultEl, 'loading', '正在校验 Workspace 是否存在，请稍候…');
 
   try {
     const res = await fetch('/admin-ui/api/test-cms?token=' + encodeURIComponent(token), {
@@ -751,25 +761,22 @@ async function testCMS() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showTestCMSResult(false, data.error || '请求失败');
+      showValidateResult(resultEl, false, data.error || '请求失败');
     } else if (data.ok) {
-      const msg = data.preview
-        ? data.message + '，收到回复：「' + data.preview + '」'
-        : data.message || '校验通过';
-      showTestCMSResult(true, msg);
+      showValidateResult(resultEl, true, data.message || '校验通过');
     } else {
-      showTestCMSResult(false, data.error || '校验失败');
+      showValidateResult(resultEl, false, data.error || '校验失败');
     }
   } catch(e) {
-    showTestCMSResult(false, '网络错误: ' + e.message);
+    showValidateResult(resultEl, false, '网络错误: ' + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
   }
 }
 
-function showTestCMSResult(status, msg) {
-  const el = document.getElementById('test-cms-result');
+function showValidateResult(el, status, msg) {
+  if (!el) return;
   el.style.display = 'block';
   if (status === 'loading') {
     el.style.background = 'var(--blue-bg)';
@@ -788,6 +795,10 @@ function showTestCMSResult(status, msg) {
     el.textContent = '\u274c ' + msg;
   }
 }
+
+// 兼容旧的全局校验按钮调用
+function testCMS() { validateWorkspace(document.getElementById('test-cms-btn')); }
+function showTestCMSResult(status, msg) { showValidateResult(document.getElementById('test-cms-result'), status, msg); }
 
 // ── OpenAI toggle ─────────────────────────────────────────────────────────
 function onOpenAIToggle() {
@@ -1100,6 +1111,13 @@ function makeDingTalkBotCard(bot, idx) {
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
+      '<div class="field field-full" data-validate-field>' +
+        '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          ' 校验 Region / Workspace' +
+        '</button>' +
+        '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
+      '</div>' +
       '<div class="field field-full">' +
         '<span class="hint">未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace/Region；Project/Workspace/Region 根据产品类型选填</span>' +
       '</div>' +
@@ -1128,7 +1146,7 @@ function makeDingTalkBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field field-full" style="margin-top:4px">' +
-        '<details style="width:100%"' + ((bot.cardTemplateId) ? ' open' : '') + '>' +
+        '<details class="field" style="width:100%;padding:0;border:none;background:none"' + ((bot.cardTemplateId) ? ' open' : '') + '>' +
           '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
             '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
             'AI 流式卡片' +
@@ -1352,6 +1370,13 @@ function makeFeishuBotCard(bot, idx) {
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
+      '<div class="field field-full" data-validate-field>' +
+        '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          ' 校验 Region / Workspace' +
+        '</button>' +
+        '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
+      '</div>' +
       '<div class="field">' +
         '<label>Verification Token <span class="hint">（WebSocket 模式可留空）</span></label>' +
         '<input type="text" data-field="verificationToken" value="' + esc(bot.verificationToken || '') + '" placeholder="" autocomplete="off">' +
@@ -1514,6 +1539,13 @@ function makeWeComBotCard(bot, idx) {
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
+      '<div class="field field-full" data-validate-field>' +
+        '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          ' 校验 Region / Workspace' +
+        '</button>' +
+        '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
+      '</div>' +
       '<div class="field">' +
         '<label>回调 Token <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="token" value="' + esc(bot.token || '') + '" placeholder="自定义 Token（用于验证消息来源）" autocomplete="off">' +
@@ -1665,6 +1697,13 @@ function makeWeComGroupBotCard(bot, idx) {
       '<div class="field">' +
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
+      '</div>' +
+      '<div class="field field-full" data-validate-field>' +
+        '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          ' 校验 Region / Workspace' +
+        '</button>' +
+        '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
         '<label class="toggle">' +
@@ -1866,17 +1905,19 @@ function updateBotVariableFields() {
     const projectField = card.querySelector('[data-field=project]');
     const workspaceField = card.querySelector('[data-field=workspace]');
     const regionField = card.querySelector('[data-field=region]');
-    
+    const validateField = card.querySelector('[data-validate-field]');
+
     if (productSelect) {
       const product = productSelect.value || 'sls';
       const projectContainer = projectField ? projectField.closest('.field') : null;
       const workspaceContainer = workspaceField ? workspaceField.closest('.field') : null;
       const regionContainer = regionField ? regionField.closest('.field') : null;
-      
+
       const isSls = product === 'sls';
       if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
       if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
       if (regionContainer) regionContainer.style.display = isSls ? 'none' : '';
+      if (validateField) validateField.style.display = isSls ? 'none' : '';
     }
   });
 }
@@ -1887,17 +1928,19 @@ function updateSingleBotVariableFields(card) {
   const projectField = card.querySelector('[data-field=project]');
   const workspaceField = card.querySelector('[data-field=workspace]');
   const regionField = card.querySelector('[data-field=region]');
-  
+  const validateField = card.querySelector('[data-validate-field]');
+
   if (productSelect) {
     const product = productSelect.value || 'sls';
     const projectContainer = projectField ? projectField.closest('.field') : null;
     const workspaceContainer = workspaceField ? workspaceField.closest('.field') : null;
     const regionContainer = regionField ? regionField.closest('.field') : null;
-    
+
     const isSls = product === 'sls';
     if (projectContainer) projectContainer.style.display = isSls ? '' : 'none';
     if (workspaceContainer) workspaceContainer.style.display = isSls ? 'none' : '';
     if (regionContainer) regionContainer.style.display = isSls ? 'none' : '';
+    if (validateField) validateField.style.display = isSls ? 'none' : '';
   }
 }
 
@@ -1907,14 +1950,16 @@ function updateSingleTaskVariableFields(card) {
   const projectField = card.querySelector('[data-task-project-field]');
   const regionField = card.querySelector('[data-task-region-field]');
   const workspaceField = card.querySelector('[data-task-workspace-field]');
-  
+  const validateField = card.querySelector('[data-task-validate-field]');
+
   if (productSelect) {
     const product = productSelect.value || 'sls';
-    
+
     const isSls = product === 'sls';
     if (projectField) projectField.style.display = isSls ? '' : 'none';
     if (regionField) regionField.style.display = isSls ? 'none' : '';
     if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
+    if (validateField) validateField.style.display = isSls ? 'none' : '';
   }
 }
 
@@ -2006,6 +2051,13 @@ function makeTaskCard(task, idx, expanded) {
       '<div class="field" data-task-workspace-field style="display:none">' +
         '<label>Workspace</label>' +
         '<input type="text" data-field="workspace" value="' + esc(task.workspace || '') + '">' +
+      '</div>' +
+      '<div class="field field-full" data-task-validate-field style="display:none">' +
+        '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          ' 校验 Region / Workspace' +
+        '</button>' +
+        '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field field-full">' +
         '<label>Prompt（发送给数字员工的问题）<span style="color:var(--red)"> *</span></label>' +

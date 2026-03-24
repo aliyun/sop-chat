@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,8 +13,6 @@ import (
 	"sop-chat/internal/scheduler"
 	"sop-chat/pkg/sopchat"
 
-	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
 )
 
@@ -882,8 +879,7 @@ func (s *Server) handleTestAK(c *gin.Context) {
 }
 
 // handleTestCMS 校验 CMS Region/Workspace 配置是否有效。
-// 通过向指定数字员工发送一条携带 workspace/region 变量的测试消息，
-// 验证整条链路：AK → Endpoint → 数字员工 → Workspace/Region。
+// 通过创建一个带 workspace 变量的 thread 来验证 workspace 是否存在于指定 region 下。
 func (s *Server) handleTestCMS(c *gin.Context) {
 	var req struct {
 		AccessKeyId     string `json:"accessKeyId"`
@@ -916,112 +912,29 @@ func (s *Server) handleTestCMS(c *gin.Context) {
 		endpoint = "cms.cn-hangzhou.aliyuncs.com"
 	}
 
+	// 校验 workspace 时使用 region 对应的 endpoint
+	validateEndpoint := fmt.Sprintf("cms.%s.aliyuncs.com", req.Region)
+
 	sopClient, err := client.NewCMSClient(&client.Config{
 		AccessKeyId:     req.AccessKeyId,
 		AccessKeySecret: req.AccessKeySecret,
-		Endpoint:        endpoint,
+		Endpoint:        validateEndpoint,
 	})
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "创建客户端失败: " + err.Error()})
 		return
 	}
 
-	type testResult struct {
-		text string
-		err  error
+	// 通过 GetWorkspace 直接验证 workspace 是否存在
+	_, err = sopClient.CmsClient.GetWorkspace(&req.Workspace)
+	if err != nil {
+		log.Printf("[test-cms] 校验失败: %v", err)
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": fmt.Sprintf("Workspace %q 在 Region %s 下不存在或无权访问: %v", req.Workspace, req.Region, err)})
+		return
 	}
-	done := make(chan testResult, 1)
 
-	go func() {
-		cms := sopClient.CmsClient
-		now := time.Now()
-		variables := map[string]interface{}{
-			"workspace": req.Workspace,
-			"region":    req.Region,
-			"timeStamp": fmt.Sprintf("%d", now.Unix()),
-			"timeZone":  "Asia/Shanghai",
-			"language":  "zh",
-			"fromTime":  now.Add(-15 * time.Minute).Unix(),
-			"toTime":    now.Unix(),
-		}
-		request := &cmsclient.CreateChatRequest{
-			DigitalEmployeeName: tea.String(employeeName),
-			Action:              tea.String("create"),
-			Messages: []*cmsclient.CreateChatRequestMessages{
-				{
-					Role: tea.String("user"),
-					Contents: []*cmsclient.CreateChatRequestMessagesContents{
-						{
-							Type:  tea.String("text"),
-							Value: tea.String("现在几点了"),
-						},
-					},
-				},
-			},
-			Variables: variables,
-		}
-
-		runtime := sopchat.NewSSERuntimeOptions()
-		responseChan := make(chan *cmsclient.CreateChatResponse)
-		errorChan := make(chan error)
-		go cms.CreateChatWithSSECtx(context.Background(), request, make(map[string]*string), runtime, responseChan, errorChan)
-
-		var textParts []string
-		for {
-			select {
-			case response, ok := <-responseChan:
-				if !ok {
-					done <- testResult{text: strings.Join(textParts, "")}
-					return
-				}
-				if response.Body == nil {
-					continue
-				}
-				for _, msg := range response.Body.Messages {
-					if msg == nil {
-						continue
-					}
-					for _, content := range msg.Contents {
-						if content == nil {
-							continue
-						}
-						if t, ok := content["type"]; ok && t == "text" {
-							if v, ok := content["value"]; ok {
-								if s, ok := v.(string); ok {
-									textParts = append(textParts, s)
-								}
-							}
-						}
-					}
-				}
-			case err, ok := <-errorChan:
-				if ok && err != nil {
-					done <- testResult{err: err}
-					return
-				}
-				done <- testResult{text: strings.Join(textParts, "")}
-				return
-			}
-		}
-	}()
-
-	select {
-	case res := <-done:
-		if res.err != nil {
-			log.Printf("[test-cms] 校验失败: %v", res.err)
-			c.JSON(http.StatusOK, gin.H{"ok": false, "error": res.err.Error()})
-			return
-		}
-		preview := res.text
-		if len([]rune(preview)) > 120 {
-			preview = string([]rune(preview)[:120]) + "..."
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"ok":      true,
-			"preview": preview,
-			"message": fmt.Sprintf("校验通过：Region=%s Workspace=%s 配置有效", req.Region, req.Workspace),
-		})
-	case <-time.After(60 * time.Second):
-		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（60s），请检查 Region、Workspace 和 Endpoint 是否正确"})
-	}
+	c.JSON(http.StatusOK, gin.H{
+		"ok":      true,
+		"message": fmt.Sprintf("校验通过：Workspace %q 在 Region %s 下存在", req.Workspace, req.Region),
+	})
 }

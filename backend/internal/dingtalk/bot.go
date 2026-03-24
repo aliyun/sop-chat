@@ -240,8 +240,8 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		return nil, nil
 	}
 
-	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s msgtype=%s: %s",
-		data.ConversationId, data.SenderNick, data.Msgtype, userText)
+	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s senderId=%s senderStaffId=%s chatbotUserId=%s conversationType=%s msgtype=%s: %s",
+		data.ConversationId, data.SenderNick, data.SenderId, data.SenderStaffId, data.ChatbotUserId, data.ConversationType, data.Msgtype, userText)
 
 	// 白名单校验（均在取 cfg 快照之前，直接调用 b.config() 保证读取最新配置）
 	if !b.isConversationAllowed(data.ConversationType, data.ConversationTitle) {
@@ -267,6 +267,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	conversationTitle := data.ConversationTitle
 	senderNick := data.SenderNick
 	senderId := data.SenderId
+	senderStaffId := data.SenderStaffId
 	msgId := data.MsgId
 	// 路由解析：按群名匹配，找不到则用默认配置
 	route := b.resolveRoute(conversationType, conversationTitle)
@@ -297,7 +298,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		// 尝试流式卡片回复
 		cfg := b.config()
 		if cfg.CardTemplateId != "" {
-			err := b.replyWithStreamingCard(asyncCtx, route, userText, threadId, conversationId, conversationType, senderId, senderNick, msgId)
+			err := b.replyWithStreamingCard(asyncCtx, route, userText, threadId, conversationId, conversationType, senderId, senderStaffId, senderNick, msgId)
 			if err == nil {
 				log.Printf("[DingTalk] 流式卡片回复完成")
 				return
@@ -305,6 +306,9 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 			// 仅 errCardCreate 会到这里，降级为 Markdown
 			log.Printf("[DingTalk] 流式卡片创建失败，降级为普通 Markdown: %v", err)
 		}
+
+		// 走 Markdown 路径：先告知用户已收到
+		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte("⏳ 收到，正在处理中..."))
 
 		replyText, newThreadId, err := b.queryEmployeeWithRoute(asyncCtx, userText, threadId, route)
 		if err != nil {
@@ -352,8 +356,9 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		return nil, nil
 	}
 
-	// 入队成功，立即告知用户已收到
-	_ = replier.SimpleReplyText(ctx, webhook, []byte("⏳ 收到，正在处理中..."))
+	// 入队成功
+	// 注意：流式卡片场景下不发"收到"消息（卡片本身就是即时反馈）
+	// 如果卡片降级到 Markdown，会在 work 函数内部补发
 	return nil, nil
 }
 
@@ -995,7 +1000,7 @@ func (b *Bot) replyWithStreamingCard(
 	ctx context.Context,
 	route resolvedRoute,
 	message, threadId string,
-	conversationId, conversationType, senderId, senderNick, msgId string,
+	conversationId, conversationType, senderId, senderStaffId, senderNick, msgId string,
 ) error {
 	cfg := b.config()
 	apiClient := b.openAPIClient
@@ -1019,21 +1024,39 @@ func (b *Bot) replyWithStreamingCard(
 	// 2. 构建投放请求
 	var cardReq *openapi.CreateAndDeliverCardRequest
 	if conversationType == "2" {
+		// 群聊
 		cardReq = &openapi.CreateAndDeliverCardRequest{
 			CardTemplateId: cfg.CardTemplateId,
 			OutTrackId:     outTrackId,
+			CallbackType:   "STREAM",
 			OpenSpaceId:    "dtv1.card//IM_GROUP." + conversationId,
 			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			ImGroupOpenSpaceModel: &openapi.ImGroupOpenSpaceModel{
+				SupportForward: true,
+				Notification: &openapi.ImGroupOpenSpaceModelNotification{
+					AlertContent:    "AI 正在回复...",
+					NotificationOff: false,
+				},
+			},
 			ImGroupOpenDeliverModel: &openapi.ImGroupOpenDeliverModel{
 				RobotCode: cfg.ClientId,
 			},
 		}
 	} else {
+		// 单聊
 		cardReq = &openapi.CreateAndDeliverCardRequest{
 			CardTemplateId: cfg.CardTemplateId,
 			OutTrackId:     outTrackId,
-			OpenSpaceId:    "dtv1.card//IM_ROBOT." + senderId,
+			CallbackType:   "STREAM",
+			OpenSpaceId:    "dtv1.card//IM_ROBOT." + senderStaffId,
 			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			ImRobotOpenSpaceModel: &openapi.ImRobotOpenSpaceModel{
+				SupportForward: true,
+				Notification: &openapi.ImRobotOpenSpaceModelNotification{
+					AlertContent:    "AI 正在回复...",
+					NotificationOff: false,
+				},
+			},
 			ImRobotOpenDeliverModel: &openapi.ImRobotOpenDeliverModel{
 				SpaceType: "IM_ROBOT",
 				RobotCode: cfg.ClientId,
