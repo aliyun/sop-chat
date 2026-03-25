@@ -48,6 +48,9 @@ type Bot struct {
 	// 飞书消息发送客户端
 	larkClient *lark.Client
 
+	// 机器人自身的 open_id，用于群聊 @判断
+	botOpenID string
+
 	// 重连控制
 	shouldRun         bool
 	reconnectAttempts int
@@ -92,6 +95,11 @@ func (b *Bot) Start() error {
 		lark.WithLogLevel(larkcore.LogLevelWarn),
 		lark.WithEnableTokenCache(true),
 	)
+
+	// 获取机器人自身的 open_id，用于群聊精确判断是否被 @
+	if err := b.fetchBotOpenID(context.Background()); err != nil {
+		log.Printf("[Feishu] 获取机器人 open_id 失败（群聊@判断可能不精确）: %v", err)
+	}
 
 	// 创建事件处理器
 	handler := dispatcher.NewEventDispatcher(
@@ -228,6 +236,12 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 	}
 
 	log.Printf("[Feishu] 收到消息 chatId=%s chatType=%s sender=%s: %s", chatID, chatType, senderOpenID, userMessage)
+	fmt.Println("botid:",b.botOpenID)
+	// 群聊中只响应 @机器人 的消息，未被 @则忽略
+	if chatType == "group" && !b.isBotMentioned(msg.Mentions) {
+		log.Printf("[Feishu] 群聊消息未@机器人，忽略 chatId=%s sender=%s", chatID, senderOpenID)
+		return nil
+	}
 
 	// 白名单校验
 	cfg := b.Config()
@@ -368,6 +382,56 @@ func (b *Bot) isUserAllowed(openID string) bool {
 	}
 	for _, u := range cfg.AllowedUsers {
 		if u == openID {
+			return true
+		}
+	}
+	return false
+}
+
+// fetchBotOpenID 通过飞书 API 获取机器人自身的 open_id
+func (b *Bot) fetchBotOpenID(ctx context.Context) error {
+	if b.larkClient == nil {
+		return fmt.Errorf("larkClient 未初始化")
+	}
+
+	resp, err := b.larkClient.Do(ctx, &larkcore.ApiReq{
+		HttpMethod:                "GET",
+		ApiPath:                   "https://open.feishu.cn/open-apis/bot/v3/info",
+		SupportedAccessTokenTypes: []larkcore.AccessTokenType{larkcore.AccessTokenTypeTenant},
+	})
+	if err != nil {
+		return fmt.Errorf("请求失败: %w", err)
+	}
+
+	var result struct {
+		Code int `json:"code"`
+		Bot  struct {
+			OpenID string `json:"open_id"`
+		} `json:"bot"`
+	}
+	if err := json.Unmarshal(resp.RawBody, &result); err != nil {
+		return fmt.Errorf("解析响应失败: %w", err)
+	}
+	if result.Code != 0 {
+		return fmt.Errorf("API 返回错误 code=%d", result.Code)
+	}
+	if result.Bot.OpenID == "" {
+		return fmt.Errorf("API 返回空的 open_id")
+	}
+
+	b.botOpenID = result.Bot.OpenID
+	log.Printf("[Feishu] 获取机器人 open_id 成功: %s", b.botOpenID)
+	return nil
+}
+
+// isBotMentioned 检查消息的 mentions 中是否包含当前机器人
+func (b *Bot) isBotMentioned(mentions []*larkim.MentionEvent) bool {
+	// 如果未获取到 botOpenID，退化为只要有 mention 就认为被 @
+	if b.botOpenID == "" {
+		return len(mentions) > 0
+	}
+	for _, m := range mentions {
+		if m != nil && m.Id != nil && m.Id.OpenId != nil && *m.Id.OpenId == b.botOpenID {
 			return true
 		}
 	}
