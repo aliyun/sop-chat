@@ -308,6 +308,7 @@ func (s *Server) setupRoutes() {
 	s.router.GET("/admin-ui/api/config", s.configUITokenMiddleware(), s.handleGetConfig)
 	s.router.POST("/admin-ui/api/config", s.configUITokenMiddleware(), s.handleSaveConfig)
 	s.router.POST("/admin-ui/api/test-ak", s.configUITokenMiddleware(), s.handleTestAK)
+	s.router.POST("/admin-ui/api/test-cms", s.configUITokenMiddleware(), s.handleTestCMS)
 	s.router.POST("/admin-ui/api/trigger-task", s.configUITokenMiddleware(), s.handleTriggerTask)
 
 	// 静态文件服务（前端资源）

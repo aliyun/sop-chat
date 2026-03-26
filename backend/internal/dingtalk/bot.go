@@ -13,6 +13,7 @@ import (
 
 	"sop-chat/internal/dingtalksdk/chatbot"
 	dingclient "sop-chat/internal/dingtalksdk/client"
+	"sop-chat/internal/dingtalksdk/openapi"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
@@ -44,6 +45,10 @@ type Bot struct {
 	// Stream 客户端生命周期（Start/Stop 时持有锁）
 	cliMu sync.Mutex
 	cli   *dingclient.StreamClient
+
+	// openAPIClient 用于 AI 流式卡片的 OpenAPI 客户端
+	// 在 Start() 时按需创建，Stop() 时置空；热更新配置新增 CardTemplateId 时懒初始化
+	openAPIClient *openapi.Client
 }
 
 // enqueueWork 将 work 投入 key 对应的串行队列。
@@ -142,6 +147,12 @@ func (b *Bot) Start() error {
 
 		b.cli = cli
 		log.Printf("[DingTalk] 机器人已启动，绑定数字员工: %s", b.dtConfig.EmployeeName)
+
+		// 如果配置了卡片模板，初始化 OpenAPI 客户端
+		if b.dtConfig.CardTemplateId != "" {
+			b.openAPIClient = openapi.NewClient(b.dtConfig.ClientId, b.dtConfig.ClientSecret)
+		}
+
 		return nil
 	}
 
@@ -171,6 +182,7 @@ func (b *Bot) Stop() {
 	}()
 
 	b.cli = nil
+	b.openAPIClient = nil
 	log.Printf("[DingTalk] 机器人已停止")
 }
 
@@ -228,8 +240,8 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		return nil, nil
 	}
 
-	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s msgtype=%s: %s",
-		data.ConversationId, data.SenderNick, data.Msgtype, userText)
+	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s senderId=%s senderStaffId=%s chatbotUserId=%s conversationType=%s msgtype=%s: %s",
+		data.ConversationId, data.SenderNick, data.SenderId, data.SenderStaffId, data.ChatbotUserId, data.ConversationType, data.Msgtype, userText)
 
 	// 白名单校验（均在取 cfg 快照之前，直接调用 b.config() 保证读取最新配置）
 	if !b.isConversationAllowed(data.ConversationType, data.ConversationTitle) {
@@ -255,6 +267,8 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	conversationTitle := data.ConversationTitle
 	senderNick := data.SenderNick
 	senderId := data.SenderId
+	senderStaffId := data.SenderStaffId
+	msgId := data.MsgId
 	// 路由解析：按群名匹配，找不到则用默认配置
 	route := b.resolveRoute(conversationType, conversationTitle)
 	if route.employeeName != cfg.EmployeeName {
@@ -280,6 +294,22 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		}
 
 		log.Printf("[DingTalk] 正在调用数字员工 employeeName=%s threadId=%q ...", route.employeeName, threadId)
+
+		// 尝试流式卡片回复
+		cfg := b.config()
+		if cfg.CardTemplateId != "" {
+			err := b.replyWithStreamingCard(asyncCtx, route, userText, threadId, conversationId, conversationType, senderId, senderStaffId, senderNick, msgId)
+			if err == nil {
+				log.Printf("[DingTalk] 流式卡片回复完成")
+				return
+			}
+			// 仅 errCardCreate 会到这里，降级为 Markdown
+			log.Printf("[DingTalk] 流式卡片创建失败，降级为普通 Markdown: %v", err)
+		}
+
+		// 走 Markdown 路径：先告知用户已收到
+		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte("⏳ 收到，正在处理中..."))
+
 		replyText, newThreadId, err := b.queryEmployeeWithRoute(asyncCtx, userText, threadId, route)
 		if err != nil {
 			log.Printf("[DingTalk] 调用数字员工失败: %v", err)
@@ -326,8 +356,9 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		return nil, nil
 	}
 
-	// 入队成功，立即告知用户已收到
-	_ = replier.SimpleReplyText(ctx, webhook, []byte("⏳ 收到，正在处理中..."))
+	// 入队成功
+	// 注意：流式卡片场景下不发"收到"消息（卡片本身就是即时反馈）
+	// 如果卡片降级到 Markdown，会在 work 函数内部补发
 	return nil, nil
 }
 
@@ -776,20 +807,13 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	}
 }
 
-// queryEmployeeWithRoute 向 CMS 数字员工发送消息，使用路由级别的 product/project/workspace。
-func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId string, route resolvedRoute) (string, string, error) {
-	sopClient, err := b.newSopClient()
-	if err != nil {
-		return "", "", err
-	}
-	cms := sopClient.CmsClient
-
+// buildCMSChatRequest 构建 CMS CreateChat 请求（queryEmployeeWithRoute 和 queryEmployeeStreaming 共用）
+func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute) *cmsclient.CreateChatRequest {
 	cfg := b.config()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
 
-	// 使用路由级别的 product/project/workspace/region
 	productType := route.product
 	if productType == "" {
 		productType = b.cmsConfig.Product
@@ -813,12 +837,12 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 		if route.region != "" {
 			variables["region"] = route.region
 		}
-		// CMS product: add fromTime/toTime (15-minute window)
 		now := time.Now()
 		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
 		variables["toTime"] = now.Unix()
 	}
-	request := &cmsclient.CreateChatRequest{
+
+	return &cmsclient.CreateChatRequest{
 		DigitalEmployeeName: tea.String(route.employeeName),
 		ThreadId:            tea.String(threadId),
 		Action:              tea.String("create"),
@@ -835,6 +859,17 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 		},
 		Variables: variables,
 	}
+}
+
+// queryEmployeeWithRoute 向 CMS 数字员工发送消息，使用路由级别的 product/project/workspace。
+func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId string, route resolvedRoute) (string, string, error) {
+	sopClient, err := b.newSopClient()
+	if err != nil {
+		return "", "", err
+	}
+	cms := sopClient.CmsClient
+
+	request := b.buildCMSChatRequest(message, threadId, route)
 
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
@@ -887,4 +922,196 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 			return strings.Join(textParts, ""), returnedThreadId, nil
 		}
 	}
+}
+
+// queryEmployeeStreaming 向 CMS 数字员工发送消息，通过 onChunk 回调流式返回文本片段。
+// onChunk(accumulated) — accumulated 是截至目前累积的完整文本。
+func (b *Bot) queryEmployeeStreaming(
+	ctx context.Context,
+	message, threadId string,
+	route resolvedRoute,
+	onChunk func(accumulated string),
+) (string, string, error) {
+	sopClient, err := b.newSopClient()
+	if err != nil {
+		return "", "", err
+	}
+	cms := sopClient.CmsClient
+
+	request := b.buildCMSChatRequest(message, threadId, route)
+	runtime := sopchat.NewSSERuntimeOptions()
+	responseChan := make(chan *cmsclient.CreateChatResponse)
+	errorChan := make(chan error)
+	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
+
+	var textParts []string
+	returnedThreadId := threadId
+
+	for {
+		select {
+		case <-ctx.Done():
+			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
+
+		case response, ok := <-responseChan:
+			if !ok {
+				return strings.Join(textParts, ""), returnedThreadId, nil
+			}
+			if response.Body == nil {
+				continue
+			}
+			if sopchat.IsDoneMessage(response.Body) {
+				return strings.Join(textParts, ""), returnedThreadId, nil
+			}
+			for _, msg := range response.Body.Messages {
+				if msg == nil {
+					continue
+				}
+				for _, content := range msg.Contents {
+					if content == nil {
+						continue
+					}
+					if t, ok := content["type"]; ok && t == "text" {
+						if v, ok := content["value"]; ok {
+							if s, ok := v.(string); ok {
+								textParts = append(textParts, s)
+								onChunk(strings.Join(textParts, ""))
+							}
+						}
+					}
+				}
+			}
+
+		case err, ok := <-errorChan:
+			if ok && err != nil {
+				return strings.Join(textParts, ""), returnedThreadId, err
+			}
+			return strings.Join(textParts, ""), returnedThreadId, nil
+		}
+	}
+}
+
+// errCardCreate 是卡片创建失败的 sentinel error，用于区分降级场景
+var errCardCreate = errors.New("card create failed")
+
+// replyWithStreamingCard 使用 AI 流式卡片回复钉钉消息。
+// 返回 errCardCreate 表示卡片创建失败，调用方应降级为 Markdown。
+// 返回 nil 表示流式卡片流程已完成（即使 CMS 查询出错，也已通过卡片展示错误信息）。
+func (b *Bot) replyWithStreamingCard(
+	ctx context.Context,
+	route resolvedRoute,
+	message, threadId string,
+	conversationId, conversationType, senderId, senderStaffId, senderNick, msgId string,
+) error {
+	cfg := b.config()
+	apiClient := b.openAPIClient
+	// 懒初始化：热更新配置新增 CardTemplateId 时，无需重启 Bot
+	if apiClient == nil && cfg.CardTemplateId != "" {
+		apiClient = openapi.NewClient(cfg.ClientId, cfg.ClientSecret)
+		b.openAPIClient = apiClient
+	}
+	if apiClient == nil {
+		return errCardCreate
+	}
+
+	contentKey := cfg.CardContentKey
+	if contentKey == "" {
+		contentKey = "content"
+	}
+
+	// 1. 生成唯一的 outTrackId
+	outTrackId := fmt.Sprintf("sop-%s-%d", msgId, time.Now().UnixMilli())
+
+	// 2. 构建投放请求
+	var cardReq *openapi.CreateAndDeliverCardRequest
+	if conversationType == "2" {
+		// 群聊
+		cardReq = &openapi.CreateAndDeliverCardRequest{
+			CardTemplateId: cfg.CardTemplateId,
+			OutTrackId:     outTrackId,
+			CallbackType:   "STREAM",
+			OpenSpaceId:    "dtv1.card//IM_GROUP." + conversationId,
+			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			ImGroupOpenSpaceModel: &openapi.ImGroupOpenSpaceModel{
+				SupportForward: true,
+				Notification: &openapi.ImGroupOpenSpaceModelNotification{
+					AlertContent:    "AI 正在回复...",
+					NotificationOff: false,
+				},
+			},
+			ImGroupOpenDeliverModel: &openapi.ImGroupOpenDeliverModel{
+				RobotCode: cfg.ClientId,
+			},
+		}
+	} else {
+		// 单聊
+		cardReq = &openapi.CreateAndDeliverCardRequest{
+			CardTemplateId: cfg.CardTemplateId,
+			OutTrackId:     outTrackId,
+			CallbackType:   "STREAM",
+			OpenSpaceId:    "dtv1.card//IM_ROBOT." + senderStaffId,
+			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			ImRobotOpenSpaceModel: &openapi.ImRobotOpenSpaceModel{
+				SupportForward: true,
+				Notification: &openapi.ImRobotOpenSpaceModelNotification{
+					AlertContent:    "AI 正在回复...",
+					NotificationOff: false,
+				},
+			},
+			ImRobotOpenDeliverModel: &openapi.ImRobotOpenDeliverModel{
+				SpaceType: "IM_ROBOT",
+				RobotCode: cfg.ClientId,
+			},
+		}
+	}
+
+	// 3. 创建并投放卡片（失败则返回 errCardCreate 触发降级）
+	if _, err := apiClient.CreateAndDeliverCard(ctx, cardReq); err != nil {
+		log.Printf("[DingTalk] 创建流式卡片失败: %v", err)
+		return errCardCreate
+	}
+
+	// 4. 流式查询 CMS 并实时更新卡片
+	var guid int64
+	onChunk := func(accumulated string) {
+		guid++
+		if err := apiClient.StreamingUpdate(ctx, &openapi.StreamingUpdateRequest{
+			OutTrackId: outTrackId,
+			GUID:       fmt.Sprintf("%d", guid),
+			Key:        contentKey,
+			Content:    accumulated,
+			IsFull:     true,
+			IsFinalize: false,
+		}); err != nil {
+			log.Printf("[DingTalk] 流式更新卡片失败（非致命）: %v", err)
+		}
+	}
+
+	replyText, newThreadId, queryErr := b.queryEmployeeStreaming(ctx, message, threadId, route, onChunk)
+
+	// 5. 发送最终帧
+	guid++
+	finalReq := &openapi.StreamingUpdateRequest{
+		OutTrackId: outTrackId,
+		GUID:       fmt.Sprintf("%d", guid),
+		Key:        contentKey,
+		Content:    replyText,
+		IsFull:     true,
+		IsFinalize: true,
+	}
+	if queryErr != nil {
+		finalReq.IsError = true
+		finalReq.Content = "查询失败: " + queryErr.Error()
+	}
+	if err := apiClient.StreamingUpdate(ctx, finalReq); err != nil {
+		log.Printf("[DingTalk] 发送最终帧失败: %v", err)
+	}
+
+	// 6. 更新 threadId 缓存
+	if newThreadId != "" && newThreadId != threadId {
+		variable := route.project + route.workspace
+		cacheKey := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + variable
+		b.threadStore.Store(cacheKey, newThreadId)
+	}
+
+	return nil
 }

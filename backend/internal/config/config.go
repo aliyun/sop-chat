@@ -127,6 +127,11 @@ type DingTalkConfig struct {
 	AllowedDirectUsers []string `yaml:"allowedDirectUsers,omitempty"`
 	// 群白名单（conversationTitle）；为空时允许所有群；有值时仅允许列出的群，单聊不受此限制
 	AllowedConversations []string `yaml:"allowedConversations,omitempty"`
+	// AI 流式卡片配置（可选）：配置后优先使用流式卡片回复，失败时降级为普通 Markdown
+	// 卡片模板 ID，在钉钉开放平台创建的 AI 卡片模板
+	CardTemplateId string `yaml:"cardTemplateId,omitempty"`
+	// 流式更新变量名，对应卡片模板中的变量名，默认 "content"
+	CardContentKey string `yaml:"cardContentKey,omitempty"`
 	// 群名称路由：按群名将消息路由到不同的数字员工；匹配不到时使用顶层 employeeName
 	ConversationRoutes []ConversationRoute `yaml:"conversationRoutes,omitempty"`
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -147,6 +148,8 @@ type configUIDingTalk struct {
 	ClientSecret         string                      `json:"clientSecret"`
 	EmployeeName         string                      `json:"employeeName"`
 	ConciseReply         bool                        `json:"conciseReply"`
+	CardTemplateId       string                      `json:"cardTemplateId"`
+	CardContentKey       string                      `json:"cardContentKey"`
 	Product              string                      `json:"product"`
 	Project              string                      `json:"project"`
 	Workspace            string                      `json:"workspace"`
@@ -302,6 +305,8 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				ClientSecret:         dt.ClientSecret,
 				EmployeeName:         dt.EmployeeName,
 				ConciseReply:         dt.ConciseReply,
+				CardTemplateId:       dt.CardTemplateId,
+				CardContentKey:       dt.CardContentKey,
 				Product:              dt.Product,
 				Project:              dt.Project,
 				Workspace:            dt.Workspace,
@@ -511,6 +516,8 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 					ClientSecret:         dt.ClientSecret,
 					EmployeeName:         dt.EmployeeName,
 					ConciseReply:         dt.ConciseReply,
+					CardTemplateId:       dt.CardTemplateId,
+					CardContentKey:       dt.CardContentKey,
 					Product:              dt.Product,
 					Project:              dt.Project,
 					Workspace:            dt.Workspace,
@@ -869,4 +876,65 @@ func (s *Server) handleTestAK(c *gin.Context) {
 	case <-time.After(60 * time.Second):
 		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "请求超时（60s），请检查网络或 Endpoint 是否正确"})
 	}
+}
+
+// handleTestCMS 校验 CMS Region/Workspace 配置是否有效。
+// 通过创建一个带 workspace 变量的 thread 来验证 workspace 是否存在于指定 region 下。
+func (s *Server) handleTestCMS(c *gin.Context) {
+	var req struct {
+		AccessKeyId     string `json:"accessKeyId"`
+		AccessKeySecret string `json:"accessKeySecret"`
+		Endpoint        string `json:"endpoint"`
+		EmployeeName    string `json:"employeeName"`
+		Region          string `json:"region"`
+		Workspace       string `json:"workspace"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
+		return
+	}
+	if req.AccessKeyId == "" || req.AccessKeySecret == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "AccessKeyId 和 AccessKeySecret 不能为空"})
+		return
+	}
+	if req.Region == "" || req.Workspace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Region 和 Workspace 不能为空"})
+		return
+	}
+
+	employeeName := req.EmployeeName
+	if employeeName == "" {
+		employeeName = "apsara-ops"
+	}
+
+	endpoint := req.Endpoint
+	if endpoint == "" {
+		endpoint = "cms.cn-hangzhou.aliyuncs.com"
+	}
+
+	// 校验 workspace 时使用 region 对应的 endpoint
+	validateEndpoint := fmt.Sprintf("cms.%s.aliyuncs.com", req.Region)
+
+	sopClient, err := client.NewCMSClient(&client.Config{
+		AccessKeyId:     req.AccessKeyId,
+		AccessKeySecret: req.AccessKeySecret,
+		Endpoint:        validateEndpoint,
+	})
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "创建客户端失败: " + err.Error()})
+		return
+	}
+
+	// 通过 GetWorkspace 直接验证 workspace 是否存在
+	_, err = sopClient.CmsClient.GetWorkspace(&req.Workspace)
+	if err != nil {
+		log.Printf("[test-cms] 校验失败: %v", err)
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": fmt.Sprintf("Workspace %q 在 Region %s 下不存在或无权访问: %v", req.Workspace, req.Region, err)})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"ok":      true,
+		"message": fmt.Sprintf("校验通过：Workspace %q 在 Region %s 下存在", req.Workspace, req.Region),
+	})
 }
