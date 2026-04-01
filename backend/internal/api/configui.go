@@ -74,17 +74,18 @@ type configUIResponse struct {
 
 // configUIScheduledTask 定时任务配置（UI 层）
 type configUIScheduledTask struct {
-	Name         string          `json:"name"`
-	Enabled      bool            `json:"enabled"`
-	Cron         string          `json:"cron"`
-	Prompt       string          `json:"prompt"`
-	EmployeeName string          `json:"employeeName"`
-	ConciseReply bool            `json:"conciseReply"`
-	Product      string          `json:"product"`
-	Project      string          `json:"project"`
-	Workspace    string          `json:"workspace"`
-	Region       string          `json:"region"`
-	Webhook      configUIWebhook `json:"webhook"`
+	Name         string            `json:"name"`
+	Enabled      bool              `json:"enabled"`
+	Cron         string            `json:"cron"`
+	Prompt       string            `json:"prompt"`
+	EmployeeName string            `json:"employeeName"`
+	ConciseReply bool              `json:"conciseReply"`
+	Product      string            `json:"product"`
+	Project      string            `json:"project"`
+	Workspace    string            `json:"workspace"`
+	Region       string            `json:"region"`
+	Webhook      *configUIWebhook  `json:"webhook,omitempty"`  // 向后兼容：旧前端可能只传单个
+	Webhooks     []configUIWebhook `json:"webhooks"`
 }
 
 // configUIWebhook Webhook 配置（UI 层）
@@ -93,6 +94,18 @@ type configUIWebhook struct {
 	URL     string `json:"url"`
 	MsgType string `json:"msgType"`
 	Title   string `json:"title"`
+	To      string `json:"to,omitempty"`
+}
+
+// effectiveWebhooks 返回有效的 webhook 列表，兼容旧前端只传 webhook 单个字段的情况。
+func (t *configUIScheduledTask) effectiveWebhooks() []configUIWebhook {
+	if len(t.Webhooks) > 0 {
+		return t.Webhooks
+	}
+	if t.Webhook != nil && t.Webhook.URL != "" {
+		return []configUIWebhook{*t.Webhook}
+	}
+	return nil
 }
 
 type configUIGlobal struct {
@@ -103,6 +116,7 @@ type configUIGlobal struct {
 	Port            int    `json:"port"`
 	TimeZone        string `json:"timeZone"`
 	Language        string `json:"language"`
+	BindThreadToProcess *bool  `json:"bindThreadToProcess,omitempty"`
 	Product         string `json:"product"`
 	Project         string `json:"project"`
 	Workspace       string `json:"workspace"`
@@ -251,6 +265,10 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			Port:            cfg.Global.Port,
 			TimeZone:        cfg.Global.TimeZone,
 			Language:        cfg.Global.Language,
+			BindThreadToProcess: func() *bool {
+				v := cfg.BindThreadToProcess()
+				return &v
+			}(),
 			Product:         cfg.Global.Product,
 			Project:         cfg.Global.Project,
 			Workspace:       cfg.Global.Workspace,
@@ -409,8 +427,21 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	if len(cfg.ScheduledTasks) > 0 {
 		resp.ScheduledTasks = make([]configUIScheduledTask, len(cfg.ScheduledTasks))
 		for i, t := range cfg.ScheduledTasks {
-			// 与调度执行、保存逻辑一致，避免旧配置无 product 时页面展示与后端实际不一致
 			effectiveProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, cfg.Global.Product)
+			webhooks := t.EffectiveWebhooks()
+			uiWebhooks := make([]configUIWebhook, len(webhooks))
+			for j, wh := range webhooks {
+				uiWebhooks[j] = configUIWebhook{
+					Type:    wh.Type,
+					URL:     wh.URL,
+					MsgType: wh.MsgType,
+					Title:   wh.Title,
+					To:      wh.To,
+				}
+			}
+			if len(uiWebhooks) == 0 {
+				uiWebhooks = []configUIWebhook{}
+			}
 			resp.ScheduledTasks[i] = configUIScheduledTask{
 				Name:         t.Name,
 				Enabled:      t.Enabled,
@@ -422,12 +453,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				Project:      t.Project,
 				Workspace:    t.Workspace,
 				Region:       t.Region,
-				Webhook: configUIWebhook{
-					Type:    t.Webhook.Type,
-					URL:     t.Webhook.URL,
-					MsgType: t.Webhook.MsgType,
-					Title:   t.Webhook.Title,
-				},
+				Webhooks:     uiWebhooks,
 			}
 		}
 	} else {
@@ -452,19 +478,25 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	}
 
 	// 构建 config.Config 结构体
+	bindThread := true
+	if req.Global.BindThreadToProcess != nil {
+		bindThread = *req.Global.BindThreadToProcess
+	}
+
 	cfg := &config.Config{
 		Global: config.GlobalConfig{
-			AccessKeyId:     req.Global.AccessKeyId,
-			AccessKeySecret: req.Global.AccessKeySecret,
-			Endpoint:        req.Global.Endpoint,
-			Host:            req.Global.Host,
-			Port:            req.Global.Port,
-			TimeZone:        req.Global.TimeZone,
-			Language:        req.Global.Language,
-			Product:         req.Global.Product,
-			Project:         req.Global.Project,
-			Workspace:       req.Global.Workspace,
-			Region:          req.Global.Region,
+			AccessKeyId:        req.Global.AccessKeyId,
+			AccessKeySecret:    req.Global.AccessKeySecret,
+			Endpoint:           req.Global.Endpoint,
+			Host:               req.Global.Host,
+			Port:               req.Global.Port,
+			TimeZone:           req.Global.TimeZone,
+			Language:           req.Global.Language,
+			BindThreadToProcess: &bindThread,
+			Product:            req.Global.Product,
+			Project:            req.Global.Project,
+			Workspace:          req.Global.Workspace,
+			Region:             req.Global.Region,
 		},
 		Auth: config.AuthConfig{
 			Methods: req.Auth.Methods,
@@ -638,9 +670,20 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 
 	// 定时任务配置
 	for _, t := range req.ScheduledTasks {
-		if t.Name != "" || t.EmployeeName != "" || t.Webhook.URL != "" {
-			// 与 Cron 调度、立即触发使用同一解析规则，保证落盘 product 与页面选择一致
+		webhooks := t.effectiveWebhooks()
+		hasContent := t.Name != "" || t.EmployeeName != "" || len(webhooks) > 0
+		if hasContent {
 			taskProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, strings.TrimSpace(req.Global.Product))
+			cfgWebhooks := make([]config.WebhookConfig, len(webhooks))
+			for j, wh := range webhooks {
+				cfgWebhooks[j] = config.WebhookConfig{
+					Type:    wh.Type,
+					URL:     wh.URL,
+					MsgType: wh.MsgType,
+					Title:   wh.Title,
+					To:      wh.To,
+				}
+			}
 			cfg.ScheduledTasks = append(cfg.ScheduledTasks, config.ScheduledTaskConfig{
 				Name:         t.Name,
 				Enabled:      t.Enabled,
@@ -652,12 +695,7 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Project:      t.Project,
 				Workspace:    t.Workspace,
 				Region:       t.Region,
-				Webhook: config.WebhookConfig{
-					Type:    t.Webhook.Type,
-					URL:     t.Webhook.URL,
-					MsgType: t.Webhook.MsgType,
-					Title:   t.Webhook.Title,
-				},
+				Webhooks:     cfgWebhooks,
 			})
 		}
 	}
@@ -756,33 +794,36 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		log.Printf("[Scheduler] 触发测试完成 task=%q product=%q 问题=%s employee=%q 响应(%d 字): %s",
 			req.Name, taskProduct, promptLog, req.EmployeeName, len([]rune(res.reply)), res.reply)
 
-		// 如果填了 Webhook URL，顺便推送
+		// 如果填了 Webhook，顺便推送
+		webhooks := req.effectiveWebhooks()
 		webhookSent := false
-		var webhookErr string
-		var webhookRaw string
-		if req.Webhook.URL != "" {
+		var webhookErrors []string
+		for _, wh := range webhooks {
+			if wh.URL == "" {
+				continue
+			}
 			raw, err := scheduler.SendToWebhook(config.WebhookConfig{
-				Type:    req.Webhook.Type,
-				URL:     req.Webhook.URL,
-				MsgType: req.Webhook.MsgType,
-				Title:   req.Webhook.Title,
+				Type:    wh.Type,
+				URL:     wh.URL,
+				MsgType: wh.MsgType,
+				Title:   wh.Title,
+				To:      wh.To,
 			}, res.reply)
-			webhookRaw = raw
 			if err != nil {
-				webhookErr = err.Error()
-				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q product=%q 问题=%s: %v（平台响应: %s）", req.Name, taskProduct, promptLog, err, raw)
+				webhookErrors = append(webhookErrors, fmt.Sprintf("[%s] %v", wh.Type, err))
+				log.Printf("[Scheduler] 触发测试 webhook 发送失败 task=%q product=%q 问题=%s type=%s: %v（平台响应: %s）", req.Name, taskProduct, promptLog, wh.Type, err, raw)
 			} else {
 				webhookSent = true
-				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q product=%q 问题=%s type=%s 平台响应: %s", req.Name, taskProduct, promptLog, req.Webhook.Type, raw)
+				log.Printf("[Scheduler] 触发测试 webhook 发送成功 task=%q product=%q 问题=%s type=%s 平台响应: %s", req.Name, taskProduct, promptLog, wh.Type, raw)
 			}
 		}
 
+		webhookErr := strings.Join(webhookErrors, "; ")
 		c.JSON(http.StatusOK, gin.H{
 			"ok":          true,
 			"reply":       res.reply,
 			"webhookSent": webhookSent,
 			"webhookErr":  webhookErr,
-			"webhookRaw":  webhookRaw,
 		})
 
 	case <-time.After(31 * time.Minute):

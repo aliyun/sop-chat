@@ -111,8 +111,8 @@ func (s *Scheduler) registerTask(task config.ScheduledTaskConfig) error {
 	if task.Prompt == "" {
 		return fmt.Errorf("任务 %q 的 prompt 为空", task.Name)
 	}
-	if task.Webhook.URL == "" {
-		return fmt.Errorf("任务 %q 的 webhook.url 为空", task.Name)
+	if len(task.EffectiveWebhooks()) == 0 {
+		return fmt.Errorf("任务 %q 的 webhook 未配置", task.Name)
 	}
 
 	taskCopy := task // 避免闭包捕获循环变量
@@ -125,8 +125,13 @@ func (s *Scheduler) registerTask(task config.ScheduledTaskConfig) error {
 
 	s.entryIDs[task.Name] = id
 	next := s.cron.Entry(id).Next
-	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhook=%s product=%q project=%q workspace=%q region=%q 问题=%s 下次执行: %s",
-		task.Name, task.Cron, task.EmployeeName, task.Webhook.Type, task.Product, task.Project, task.Workspace, task.Region, promptForLog(task.Prompt, 400), next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
+	webhooks := task.EffectiveWebhooks()
+	whTypes := make([]string, len(webhooks))
+	for i, w := range webhooks {
+		whTypes[i] = w.Type
+	}
+	log.Printf("[Scheduler] 注册任务: name=%q cron=%q employee=%q webhooks=%v product=%q project=%q workspace=%q region=%q 问题=%s 下次执行: %s",
+		task.Name, task.Cron, task.EmployeeName, whTypes, task.Product, task.Project, task.Workspace, task.Region, promptForLog(task.Prompt, 400), next.In(s.timezone).Format("2006-01-02 15:04:05 MST"))
 	return nil
 }
 
@@ -155,7 +160,10 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	log.Printf("[Scheduler] 任务名称: %q product=%q（配置中 product=%q）", task.Name, taskProduct, task.Product)
 	log.Printf("[Scheduler] Cron 表达式: %q product=%q", task.Cron, taskProduct)
 	log.Printf("[Scheduler] 数字员工: %q product=%q", task.EmployeeName, taskProduct)
-	log.Printf("[Scheduler] Webhook: type=%s url=%s product=%q", task.Webhook.Type, maskURL(task.Webhook.URL), taskProduct)
+	webhooks := task.EffectiveWebhooks()
+	for i, wh := range webhooks {
+		log.Printf("[Scheduler] Webhook[%d]: type=%s url=%s", i, wh.Type, maskURL(wh.URL))
+	}
 	log.Printf("[Scheduler] 产品配置: product=%q project=%q workspace=%q region=%q 执行用 product=%q",
 		task.Product, task.Project, task.Workspace, task.Region, taskProduct)
 	log.Printf("[Scheduler] 问题: %s", promptLog)
@@ -180,11 +188,12 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 		return
 	}
 
-	log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 开始发送 Webhook (type=%s)...", task.Name, taskProduct, promptLog, task.Webhook.Type)
-	raw, err := sendToWebhook(task.Webhook, reply)
-	if err != nil {
-		log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 发送 webhook 失败: %v（平台响应: %s）", task.Name, taskProduct, promptLog, err, raw)
-		return
+	for i, wh := range webhooks {
+		log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 开始发送 Webhook[%d] (type=%s)...", task.Name, taskProduct, promptLog, i, wh.Type)
+		raw, whErr := sendToWebhook(wh, reply)
+		if whErr != nil {
+			log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 发送 Webhook[%d] 失败: %v（平台响应: %s）", task.Name, taskProduct, promptLog, i, whErr, raw)
+		}
 	}
 
 	elapsed := time.Since(startTime).Round(time.Millisecond)

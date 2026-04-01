@@ -38,6 +38,8 @@ func sendToWebhook(cfg config.WebhookConfig, content string) (string, error) {
 		payload = buildFeishuPayload(msgType, cfg.Title, content)
 	case "wecom":
 		payload = buildWeComPayload(msgType, content)
+	case "email":
+		return "", fmt.Errorf("邮件推送暂未开放")
 	default:
 		return "", fmt.Errorf("不支持的 webhook 类型: %q（支持：dingtalk、feishu、wecom）", cfg.Type)
 	}

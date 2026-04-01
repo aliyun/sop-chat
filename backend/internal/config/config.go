@@ -53,20 +53,36 @@ type ScheduledTaskConfig struct {
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
 	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
-	// Webhook 配置：任务结果的发送目标
-	Webhook WebhookConfig `yaml:"webhook"`
+	// Webhook 配置：任务结果的发送目标（已废弃，保留用于向后兼容旧配置）
+	Webhook WebhookConfig `yaml:"webhook,omitempty"`
+	// Webhooks 配置：任务结果的发送目标（支持多个）
+	Webhooks []WebhookConfig `yaml:"webhooks,omitempty"`
+}
+
+// EffectiveWebhooks 返回该任务的有效 webhook 列表。
+// 兼容旧配置：如果 Webhooks 为空但 Webhook 有值，则返回 [Webhook]。
+func (t *ScheduledTaskConfig) EffectiveWebhooks() []WebhookConfig {
+	if len(t.Webhooks) > 0 {
+		return t.Webhooks
+	}
+	if t.Webhook.URL != "" {
+		return []WebhookConfig{t.Webhook}
+	}
+	return nil
 }
 
 // WebhookConfig Webhook 目标配置
 type WebhookConfig struct {
-	// 类型：dingtalk | feishu | wecom
+	// 类型：dingtalk | feishu | wecom | email
 	Type string `yaml:"type"`
-	// Webhook URL
+	// Webhook URL（IM 平台）或 SMTP 地址（email，格式：smtp(s)://user:pass@host:port）
 	URL string `yaml:"url"`
 	// 消息类型：text | markdown（默认 text）
 	MsgType string `yaml:"msgType,omitempty"`
-	// Markdown 消息标题（钉钉/飞书 markdown 格式时使用）
+	// 消息标题（IM markdown 格式 / 邮件主题）
 	Title string `yaml:"title,omitempty"`
+	// 收件人（email 类型，逗号分隔多个地址）
+	To string `yaml:"to,omitempty"`
 }
 
 // ChannelsConfig 通知渠道配置（聚合所有 IM/消息渠道）
@@ -329,6 +345,9 @@ type GlobalConfig struct {
 	Port            int    `yaml:"port"`     // 服务监听端口，默认 8080
 	TimeZone        string `yaml:"timeZone"` // 时区设置
 	Language        string `yaml:"language"` // 语言设置
+	// 是否将 thread 绑定到进程生命周期（默认 true）。
+	// 关闭后，thread 可跨进程重启复用。
+	BindThreadToProcess *bool `yaml:"bindThreadToProcess,omitempty"`
 	// Product 指定本实例对接的数字员工所属产品：sls（默认）或 cms。
 	// sls：对话时附加 skill=sop 变量；cms：不附加该变量。
 	Product   string `yaml:"product,omitempty"`
@@ -425,13 +444,15 @@ func randomHex(n int) string {
 // - auth.methods 为空（登录功能关闭，配置后重启或热重载生效）
 // - JWT secretKey 随机生成，避免各实例共用同一密钥
 func DefaultConfig() *Config {
+	bindThread := true
 	return &Config{
 		Global: GlobalConfig{
-			Host:     "0.0.0.0",
-			Port:     8080,
-			Endpoint: "cms.cn-hangzhou.aliyuncs.com",
-			TimeZone: "Asia/Shanghai",
-			Language: "zh",
+			Host:               "0.0.0.0",
+			Port:               8080,
+			Endpoint:           "cms.cn-hangzhou.aliyuncs.com",
+			TimeZone:           "Asia/Shanghai",
+			Language:           "zh",
+			BindThreadToProcess: &bindThread,
 		},
 		Auth: AuthConfig{
 			Methods:      []string{"builtin"},
@@ -442,6 +463,15 @@ func DefaultConfig() *Config {
 			},
 		},
 	}
+}
+
+// BindThreadToProcess 返回是否将 thread 绑定到进程生命周期。
+// 配置缺失时默认开启（true）。
+func (c *Config) BindThreadToProcess() bool {
+	if c == nil || c.Global.BindThreadToProcess == nil {
+		return true
+	}
+	return *c.Global.BindThreadToProcess
 }
 
 // LoadConfig 从文件加载统一配置

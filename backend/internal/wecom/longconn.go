@@ -2,7 +2,6 @@ package wecom
 
 import (
 	"context"
-	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,11 +11,11 @@ import (
 	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gorilla/websocket"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
 
@@ -88,7 +87,7 @@ type LongConnBot struct {
 	missedHeartbeats  int
 
 	// 会话 -> 线程 ID 的映射
-	threadStore sync.Map
+	threads *session.ThreadStore
 
 	// key -> chan func()，每个 key 对应一个串行 worker
 	workerQueues sync.Map
@@ -102,6 +101,7 @@ func NewLongConnBot(wbConfig *config.WeComBotConfig, cmsConfig *config.ClientCon
 	return &LongConnBot{
 		cfg:       wbConfig,
 		cmsConfig: cmsConfig,
+		threads:   session.NewThreadStore("[WeCom-LongConn]"),
 		stopCh:    make(chan struct{}),
 	}
 }
@@ -496,11 +496,9 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		}
 
 		if newThreadID != "" && newThreadID != threadID {
-			// 缓存 key 需要包含 variable
 			project, workspace, _ := b.threadVariable()
 			variable := project + workspace
-			cacheKey := longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID) + "\x00" + variable
-			b.threadStore.Store(cacheKey, newThreadID)
+			b.threads.Store(longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID)+"\x00"+variable, newThreadID)
 		}
 
 		log.Printf("[WeCom-LongConn] 回复消息 to=%s 长度=%d isGroup=%v", fromUser, len(replyText), isGroupChat)
@@ -571,15 +569,7 @@ func longConnThreadKey(userID, employeeName, chatID string) string {
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *LongConnBot) threadVariable() (project, workspace, region string) {
-	// 优先使用渠道配置的 product，为空则使用全局配置
-	productType := b.cfg.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
-	}
-	if config.IsSlsProduct(productType) {
-		return b.cfg.Project, "", ""
-	}
-	return "", b.cfg.Workspace, b.cfg.Region
+	return session.ThreadVariable(b.cfg.Product, b.cmsConfig.Product, b.cfg.Project, b.cfg.Workspace, b.cfg.Region)
 }
 
 // getOrCreateThreadID 查找或新建 CMS 线程 ID
@@ -587,42 +577,16 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 	project, workspace, region := b.threadVariable()
 	variable := project + workspace
 
-	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
-	key := longConnThreadKey(userID, employeeName, chatID) + "\x00" + variable
-
-	if v, ok := b.threadStore.Load(key); ok {
-		return v.(string), nil
-	}
-
 	client, err := b.newSopClient()
 	if err != nil {
 		return "", err
 	}
 
+	cacheKey := longConnThreadKey(userID, employeeName, chatID) + "\x00" + variable
+
 	raw := "wecom_lc\x00" + chatID + "\x00" + employeeName
 	if chatID == "" {
 		raw = "wecom_lc\x00" + userID + "\x00" + employeeName
-	}
-	h := md5.Sum([]byte(raw + "\x00" + variable))
-	session := fmt.Sprintf("%x", h)
-
-	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
-		{Key: "session", Value: session},
-	})
-	if listErr != nil {
-		log.Printf("[WeCom-LongConn] 列出线程失败（将尝试新建）: %v", listErr)
-	} else if listResp.Body != nil {
-		for _, t := range listResp.Body.Threads {
-			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
-				continue
-			}
-			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
-				threadID := *t.ThreadId
-				log.Printf("[WeCom-LongConn] 找到已有线程 [employee=%s]: %s", employeeName, threadID)
-				b.threadStore.Store(key, threadID)
-				return threadID, nil
-			}
-		}
 	}
 
 	title := "WeCom-LongConn: " + userID
@@ -630,46 +594,20 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 		title = "WeCom-LongConn-Group: " + chatID
 	}
 
-	log.Printf("[WeCom-LongConn] 创建新线程 [employee=%s] ...", employeeName)
-	resp, err := client.CreateThread(&sopchat.ThreadConfig{
+	return b.threads.GetOrCreate(client, session.ThreadParams{
+		CacheKey:     cacheKey,
+		SessionRaw:   raw + "\x00" + variable,
 		EmployeeName: employeeName,
 		Title:        title,
-		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
 		Workspace:    workspace,
 		Region:       region,
 	})
-	if err != nil {
-		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
-	}
-	if resp.Body == nil || resp.Body.ThreadId == nil || *resp.Body.ThreadId == "" {
-		return "", fmt.Errorf("CreateThread 返回了空的 ThreadId")
-	}
-
-	threadID := *resp.Body.ThreadId
-	log.Printf("[WeCom-LongConn] 新线程创建成功 [employee=%s]: %s", employeeName, threadID)
-	b.threadStore.Store(key, threadID)
-	return threadID, nil
 }
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *LongConnBot) newSopClient() (*sopchat.Client, error) {
-	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(b.cmsConfig.AccessKeyId),
-		AccessKeySecret:  tea.String(b.cmsConfig.AccessKeySecret),
-		Endpoint:         tea.String(b.cmsConfig.Endpoint),
-		SignatureVersion: tea.String("v3"),
-	}
-	rawClient, err := cmsclient.NewClient(cmsConfig)
-	if err != nil {
-		return nil, fmt.Errorf("创建 CMS 客户端失败: %w", err)
-	}
-	return &sopchat.Client{
-		CmsClient:       rawClient,
-		AccessKeyId:     b.cmsConfig.AccessKeyId,
-		AccessKeySecret: b.cmsConfig.AccessKeySecret,
-		Endpoint:        b.cmsConfig.Endpoint,
-	}, nil
+	return session.NewSopClient(b.cmsConfig)
 }
 
 // queryEmployee 向 CMS 数字员工发送消息，返回回复文本和线程 ID

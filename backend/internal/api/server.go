@@ -18,6 +18,7 @@ import (
 	"sop-chat/internal/embed"
 	"sop-chat/internal/feishu"
 	"sop-chat/internal/scheduler"
+	"sop-chat/internal/session"
 	"sop-chat/internal/wecom"
 	"sop-chat/pkg/sopchat"
 
@@ -85,6 +86,8 @@ func GenerateConfigUIToken() (string, error) {
 }
 
 func NewServer(cfg *client.Config, globalConfig *config.Config, configPath string) (*Server, error) {
+	session.SetBindThreadToProcess(globalConfig.BindThreadToProcess())
+
 	// 创建 Gin 引擎
 	router := gin.Default()
 
@@ -719,6 +722,7 @@ func (s *Server) reloadConfig() error {
 	if err != nil {
 		return fmt.Errorf("重新加载配置文件失败: %w", err)
 	}
+	session.SetBindThreadToProcess(newGlobalConfig.BindThreadToProcess())
 
 	// 重建客户端配置（global.accessKeyId / accessKeySecret / endpoint）
 	// 凭据未填写时允许继续（部分功能不可用），不阻断热重载
