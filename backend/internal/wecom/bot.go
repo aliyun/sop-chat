@@ -471,9 +471,6 @@ func (b *Bot) getOrCreateThreadId(userID string, target resolvedTarget) (string,
 	return threadId, nil
 }
 
-// conciseInstruction 简洁模式附加指令
-const conciseInstruction = "\n\n（请用简洁的纯文本回答，避免复杂排版，适合在 IM 中直接阅读，控制在几句话以内。 尽量拟人的语气，少用markdown）"
-
 // queryEmployee 向 CMS 数字员工发送消息，返回回复文本和线程 ID
 func (b *Bot) queryEmployee(ctx context.Context, message, threadId string, target resolvedTarget) (string, string, error) {
 	sopClient, err := b.newSopClientWithConfig(target.clientConfig)
@@ -483,9 +480,6 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId string, targe
 	cms := sopClient.CmsClient
 
 	cfg := b.Config()
-	if cfg.ConciseReply {
-		message += conciseInstruction
-	}
 
 	project, workspace, region := threadVariableForTarget(target)
 	productType := target.product
@@ -495,6 +489,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId string, targe
 	if productType == "" && b.cmsConfig != nil {
 		productType = b.cmsConfig.Product
 	}
+	message = config.ApplyReplyStyleInstruction(message, cfg.ConciseReply, productType)
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{

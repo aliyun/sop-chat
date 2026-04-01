@@ -445,13 +445,13 @@ func threadScope(cloudAccountID, project, workspace, region string) string {
 
 // resolvedRoute 包含路由解析结果
 type resolvedRoute struct {
-	employeeName string
+	employeeName   string
 	cloudAccountID string
-	product      string
-	project      string
-	workspace    string
-	region       string
-	clientConfig *config.ClientConfig
+	product        string
+	project        string
+	workspace      string
+	region         string
+	clientConfig   *config.ClientConfig
 }
 
 // resolveRoute 根据群名称匹配路由规则，返回应处理本次消息的路由信息。
@@ -792,9 +792,6 @@ func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, ro
 	return threadId, nil
 }
 
-// conciseInstruction 是开启简洁模式时附加到用户消息末尾的指令
-const conciseInstruction = "\n\n（请用简洁的回答，控制在几句话以内，尽量拟人的语气。）"
-
 // queryEmployee 向 CMS 数字员工发送消息，返回收集到的回复文本和线程 ID。
 // employeeName 为路由解析后的目标员工（可能与 cfg.EmployeeName 不同）。
 func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName string) (string, string, error) {
@@ -805,9 +802,6 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	cms := sopClient.CmsClient
 
 	cfg := b.config()
-	if cfg.ConciseReply {
-		message += conciseInstruction
-	}
 
 	// 获取 project/workspace/region 用于传递给 CreateChat variables
 	project, workspace, region := b.threadVariable()
@@ -817,6 +811,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	if productType == "" {
 		productType = b.cmsConfig.Product
 	}
+	message = config.ApplyReplyStyleInstruction(message, cfg.ConciseReply, productType)
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
@@ -915,9 +910,6 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 // buildCMSChatRequest 构建 CMS CreateChat 请求（queryEmployeeWithRoute 和 queryEmployeeStreaming 共用）
 func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute) *cmsclient.CreateChatRequest {
 	cfg := b.config()
-	if cfg.ConciseReply {
-		message += conciseInstruction
-	}
 
 	productType := route.product
 	if productType == "" && route.clientConfig != nil {
@@ -926,6 +918,7 @@ func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute)
 	if productType == "" && b.cmsConfig != nil {
 		productType = b.cmsConfig.Product
 	}
+	message = config.ApplyReplyStyleInstruction(message, cfg.ConciseReply, productType)
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{

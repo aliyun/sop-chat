@@ -769,9 +769,6 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID strin
 	cms := sopClient.CmsClient
 
 	cfg := b.Config()
-	if cfg.ConciseReply {
-		message += conciseInstruction
-	}
 
 	project, workspace, region := threadVariableForTarget(target)
 	productType := target.product
@@ -781,6 +778,7 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID strin
 	if productType == "" && b.cmsConfig != nil {
 		productType = b.cmsConfig.Product
 	}
+	message = config.ApplyReplyStyleInstruction(message, cfg.ConciseReply, productType)
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{

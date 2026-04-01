@@ -410,6 +410,13 @@ type ProductContext struct {
 	Region    string
 }
 
+const (
+	// ConciseReplyInstruction 开启简洁模式时附加到用户消息末尾的指令。
+	ConciseReplyInstruction = "\n\n（请用简洁的纯文本回答，避免复杂排版，适合在 IM 中直接阅读，控制在几句话以内。尽量拟人的语气，少用 markdown。）"
+	// StandardSOPReplyInstruction 在关闭简洁模式且对接 SLS/SOP 员工时，提示模型按完整 SOP 规范作答。
+	StandardSOPReplyInstruction = "\n\n（请严格按照 SOP 文档和标准流程完整回答，不要为了适应 IM 而省略关键判断、排查步骤、影响面、结论和建议；如果有既定模板或报告格式，请尽量按模板完整输出。）"
+)
+
 // NormalizeProduct 将 product 规范为 cms 或 sls（大小写与空白容错）。
 func NormalizeProduct(s string) string {
 	if strings.TrimSpace(strings.ToLower(s)) == "cms" {
@@ -456,6 +463,17 @@ func MergeProductContext(base ProductContext, product, project, workspace, regio
 	}
 	ctx.Product = ResolveProduct(ctx.Product, ctx.Project, ctx.Workspace)
 	return ctx
+}
+
+// ApplyReplyStyleInstruction 根据 conciseReply 和产品类型附加消息风格提示。
+func ApplyReplyStyleInstruction(message string, conciseReply bool, product string) string {
+	if conciseReply {
+		return message + ConciseReplyInstruction
+	}
+	if IsSlsProduct(product) {
+		return message + StandardSOPReplyInstruction
+	}
+	return message
 }
 
 // AuthConfig 认证配置

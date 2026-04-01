@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestResolveClientConfigUsesFirstCloudAccountWhenDefaultMissing(t *testing.T) {
 	cfg := &Config{
@@ -159,5 +162,25 @@ func TestResolveProductUsesWorkspaceAndProjectHints(t *testing.T) {
 	}
 	if got := ResolveProduct("cms", "", ""); got != "cms" {
 		t.Fatalf("expected explicit cms to be kept, got %q", got)
+	}
+}
+
+func TestApplyReplyStyleInstruction(t *testing.T) {
+	full := ApplyReplyStyleInstruction("请分析今天的告警", false, "sls")
+	if full == "请分析今天的告警" {
+		t.Fatalf("expected full SOP instruction to be appended for sls when conciseReply=false")
+	}
+	if !strings.Contains(full, "SOP") {
+		t.Fatalf("expected SOP guidance in full reply instruction, got %q", full)
+	}
+
+	concise := ApplyReplyStyleInstruction("请分析今天的告警", true, "sls")
+	if !strings.Contains(concise, "简洁") {
+		t.Fatalf("expected concise instruction to be appended, got %q", concise)
+	}
+
+	cms := ApplyReplyStyleInstruction("请分析今天的告警", false, "cms")
+	if cms != "请分析今天的告警" {
+		t.Fatalf("expected cms non-concise message to remain unchanged, got %q", cms)
 	}
 }
