@@ -16,10 +16,10 @@ import (
 	"sop-chat/internal/dingtalksdk/openapi"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	"github.com/alibabacloud-go/tea/tea"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
 
@@ -38,7 +38,7 @@ type Bot struct {
 	globalConfig *config.Config
 
 	// 会话 -> 线程 ID 的映射，实现多轮对话上下文
-	threadStore sync.Map
+	threads *session.ThreadStore
 
 	// key（机器人+会话+人）-> chan func()，每个 key 对应一个串行 worker
 	workerQueues sync.Map
@@ -81,6 +81,7 @@ func NewBot(dtConfig *config.DingTalkConfig, cmsConfig *config.ClientConfig, glo
 		dtConfig:     dtConfig,
 		cmsConfig:    cmsConfig,
 		globalConfig: globalConfig,
+		threads:      session.NewThreadStore("[DingTalk]"),
 	}
 }
 
@@ -339,7 +340,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 			log.Printf("[DingTalk] 线程 ID 变更: %q -> %q，更新映射", threadId, newThreadId)
 			scope := threadScope(route.cloudAccountID, route.project, route.workspace, route.region)
 			cacheKey := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + scope
-			b.threadStore.Store(cacheKey, newThreadId)
+			b.threads.Store(cacheKey, newThreadId)
 		}
 
 		log.Printf("[DingTalk] 正在回复钉钉消息，sessionWebhook=%s", webhook)
@@ -432,7 +433,7 @@ func extractText(data *chatbot.BotCallbackDataModel) string {
 }
 
 // threadKey 对 conversationId + senderNick + employeeName 取 MD5，
-// 同时作为内存 threadStore 的 key 和 CMS thread attribute session 的值。
+// 作为 thread 缓存 key 的基础部分和 session hash 的稳定输入。
 // 包含 employeeName 确保切换路由后不会复用属于其他员工的旧线程。
 func threadKey(conversationId, senderNick, employeeName string) string {
 	h := md5.Sum([]byte(conversationId + "\x00" + senderNick + "\x00" + employeeName))
@@ -628,37 +629,14 @@ func (b *Bot) newSopClientWithConfig(clientCfg *config.ClientConfig) (*sopchat.C
 	if clientCfg == nil {
 		return nil, fmt.Errorf("CMS 客户端配置为空")
 	}
-	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(clientCfg.AccessKeyId),
-		AccessKeySecret:  tea.String(clientCfg.AccessKeySecret),
-		Endpoint:         tea.String(clientCfg.Endpoint),
-		SignatureVersion: tea.String("v3"),
-	}
-	rawClient, err := cmsclient.NewClient(cmsConfig)
-	if err != nil {
-		return nil, fmt.Errorf("创建 CMS 客户端失败: %w", err)
-	}
-	return &sopchat.Client{
-		CmsClient:       rawClient,
-		AccessKeyId:     clientCfg.AccessKeyId,
-		AccessKeySecret: clientCfg.AccessKeySecret,
-		Endpoint:        clientCfg.Endpoint,
-	}, nil
+	return session.NewSopClient(clientCfg)
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值：
 // SLS 产品返回 project，CMS 产品返回 workspace 和 region。
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *Bot) threadVariable() (project, workspace, region string) {
-	// 优先使用渠道配置的 product，为空则使用全局配置
-	productType := b.dtConfig.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
-	}
-	if config.IsSlsProduct(productType) {
-		return b.dtConfig.Project, "", ""
-	}
-	return "", b.dtConfig.Workspace, b.dtConfig.Region
+	return session.ThreadVariable(b.dtConfig.Product, b.cmsConfig.Product, b.dtConfig.Project, b.dtConfig.Workspace, b.dtConfig.Region)
 }
 
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID。
@@ -667,129 +645,43 @@ func (b *Bot) threadVariable() (project, workspace, region string) {
 func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName string) (string, error) {
 	project, workspace, region := b.threadVariable()
 	scope := threadScope(b.cmsConfig.CloudAccountID, project, workspace, region)
-
-	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
 	key := threadKey(conversationId, senderNick, employeeName) + "\x00" + scope
-
-	// 1. 先查内存缓存
-	if v, ok := b.threadStore.Load(key); ok {
-		return v.(string), nil
-	}
 
 	client, err := b.newSopClient()
 	if err != nil {
 		return "", err
 	}
 
-	// session 带前缀，确保不同平台（钉钉/企业微信）的线程不会冲突
-	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + scope))
-	session := fmt.Sprintf("%x", sh)
-
-	// 2. 缓存 miss：用 session attribute 过滤，找已有的线程（进程重启后恢复上下文）
-	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
-		{Key: "session", Value: session},
-	})
-	if listErr != nil {
-		log.Printf("[DingTalk] 列出线程失败（将尝试新建）: %v", listErr)
-	} else if listResp.Body != nil {
-		for _, t := range listResp.Body.Threads {
-			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
-				continue
-			}
-			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
-				threadId := *t.ThreadId
-				log.Printf("[DingTalk] 会话 %s(%s) 找到已有线程 [employee=%s]: %s", conversationId, senderNick, employeeName, threadId)
-				b.threadStore.Store(key, threadId)
-				return threadId, nil
-			}
-		}
-	}
-
-	// 3. 远端也没有，创建新线程，并写入 session attribute 供后续查找
-	log.Printf("[DingTalk] 为会话 %s(%s) 创建新线程 [employee=%s] ...", conversationId, senderNick, employeeName)
-	resp, err := client.CreateThread(&sopchat.ThreadConfig{
+	return b.threads.GetOrCreate(client, session.ThreadParams{
+		CacheKey:     key,
+		SessionRaw:   "dingtalk\x00" + key + "\x00" + scope,
 		EmployeeName: employeeName,
 		Title:        "DingTalk: " + senderNick,
-		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
 		Workspace:    workspace,
 		Region:       region,
 	})
-	if err != nil {
-		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
-	}
-	if resp.Body == nil || resp.Body.ThreadId == nil || *resp.Body.ThreadId == "" {
-		return "", fmt.Errorf("CreateThread 返回了空的 ThreadId")
-	}
-
-	threadId := *resp.Body.ThreadId
-	log.Printf("[DingTalk] 会话 %s(%s) 新线程创建成功 [employee=%s]: %s", conversationId, senderNick, employeeName, threadId)
-	b.threadStore.Store(key, threadId)
-	return threadId, nil
 }
 
 // getOrCreateThreadIdWithRoute 根据路由信息获取或创建线程
 func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, route resolvedRoute) (string, error) {
 	scope := threadScope(route.cloudAccountID, route.project, route.workspace, route.region)
-
-	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
 	key := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + scope
-
-	// 1. 先查内存缓存
-	if v, ok := b.threadStore.Load(key); ok {
-		return v.(string), nil
-	}
 
 	client, err := b.newSopClientWithConfig(route.clientConfig)
 	if err != nil {
 		return "", err
 	}
 
-	// session 带前缀，确保不同平台（钉钉/企业微信）的线程不会冲突
-	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + scope))
-	session := fmt.Sprintf("%x", sh)
-
-	// 2. 缓存 miss：用 session attribute 过滤，找已有的线程（进程重启后恢复上下文）
-	listResp, listErr := client.ListThreads(route.employeeName, []sopchat.ThreadFilter{
-		{Key: "session", Value: session},
-	})
-	if listErr != nil {
-		log.Printf("[DingTalk] 列出线程失败（将尝试新建）: %v", listErr)
-	} else if listResp.Body != nil {
-		for _, t := range listResp.Body.Threads {
-			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
-				continue
-			}
-			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
-				threadId := *t.ThreadId
-				log.Printf("[DingTalk] 会话 %s(%s) 找到已有线程 [employee=%s]: %s", conversationId, senderNick, route.employeeName, threadId)
-				b.threadStore.Store(key, threadId)
-				return threadId, nil
-			}
-		}
-	}
-
-	// 3. 远端也没有，创建新线程，并写入 session attribute 供后续查找
-	log.Printf("[DingTalk] 为会话 %s(%s) 创建新线程 [cloudAccountId=%s employee=%s] ...", conversationId, senderNick, route.cloudAccountID, route.employeeName)
-	resp, err := client.CreateThread(&sopchat.ThreadConfig{
+	return b.threads.GetOrCreate(client, session.ThreadParams{
+		CacheKey:     key,
+		SessionRaw:   "dingtalk\x00" + key + "\x00" + scope,
 		EmployeeName: route.employeeName,
 		Title:        "DingTalk: " + senderNick,
-		Attributes:   map[string]interface{}{"session": session},
 		Project:      route.project,
 		Workspace:    route.workspace,
 		Region:       route.region,
 	})
-	if err != nil {
-		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
-	}
-	if resp.Body == nil || resp.Body.ThreadId == nil || *resp.Body.ThreadId == "" {
-		return "", fmt.Errorf("CreateThread 返回了空的 ThreadId")
-	}
-
-	threadId := *resp.Body.ThreadId
-	log.Printf("[DingTalk] 会话 %s(%s) 新线程创建成功 [cloudAccountId=%s employee=%s]: %s", conversationId, senderNick, route.cloudAccountID, route.employeeName, threadId)
-	b.threadStore.Store(key, threadId)
-	return threadId, nil
 }
 
 // queryEmployee 向 CMS 数字员工发送消息，返回收集到的回复文本和线程 ID。
@@ -1209,9 +1101,8 @@ func (b *Bot) replyWithStreamingCard(
 
 	// 6. 更新 threadId 缓存
 	if newThreadId != "" && newThreadId != threadId {
-		variable := route.project + route.workspace
-		cacheKey := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + variable
-		b.threadStore.Store(cacheKey, newThreadId)
+		scope := threadScope(route.cloudAccountID, route.project, route.workspace, route.region)
+		b.threads.Store(threadKey(conversationId, senderNick, route.employeeName)+"\x00"+scope, newThreadId)
 	}
 
 	return nil

@@ -284,6 +284,19 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <label>时区 TimeZone</label>
         <input type="text" id="g-tz" placeholder="Asia/Shanghai">
       </div>
+      <div class="field" style="grid-column:1/-1">
+        <div class="toggle-row" style="margin-bottom:0">
+          <div style="flex:1">
+            <div class="toggle-row-label">Thread 绑定进程生命周期</div>
+            <div class="toggle-row-desc">默认开启。关闭后 thread 可跨进程重启复用</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="g-bind-thread-to-process">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+      </div>
     </div>
   </div>
   <div class="reload-note">
@@ -291,6 +304,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <span class="badge-hot">cloudAccounts</span>
     <span class="badge-hot">timeZone</span>
     <span class="badge-hot">language</span>
+    <span class="badge-hot">bindThreadToProcess</span>
     &nbsp;
     <strong>需重启：</strong>
     <span class="badge-cold">host</span>
@@ -2092,6 +2106,8 @@ function populate(data) {
   setVal('g-port', g.port || 8080);
   setVal('g-tz', g.timeZone || 'Asia/Shanghai');
   setVal('g-lang', g.language || 'zh');
+  document.getElementById('g-bind-thread-to-process').checked =
+    g.bindThreadToProcess !== false;
   updateBotVariableFields();
 
   const a = data.auth || {};
@@ -2132,6 +2148,7 @@ function collect() {
       port:            parseInt(val('g-port')) || 8080,
       timeZone:        val('g-tz') || 'Asia/Shanghai',
       language:        val('g-lang') || 'zh',
+      bindThreadToProcess: document.getElementById('g-bind-thread-to-process').checked,
     },
     cloudAccounts:   collectCloudAccounts(),
     auth: {
@@ -2253,6 +2270,51 @@ function renderScheduledTasks(tasks) {
   updateAllTaskVariableFields();
 }
 
+function makeWebhookItem(wh) {
+  var whType = wh.type || '';
+  var whUrl = wh.url || '';
+  var whMsg = wh.msgType || (whType === 'dingtalk' ? 'markdown' : 'text');
+  var whTitle = wh.title || '';
+  var titleField = whMsg === 'text' ? 'style="display:none"' : '';
+  return '<div class="webhook-item" style="position:relative;border:1px solid var(--border2);border-radius:var(--radius);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<button class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px;padding:2px 8px;font-size:11px" onclick="removeWebhookItem(this)">删除</button>' +
+    '<div class="field">' +
+      '<label>平台类型 <span style="color:var(--red)">*</span></label>' +
+      '<select data-field="webhookType" onchange="onWebhookTypeChange(this)">' +
+        '<option value=""' + (!whType ? ' selected' : '') + '>请选择...</option>' +
+        '<option value="dingtalk"' + (whType === 'dingtalk' ? ' selected' : '') + '>钉钉（DingTalk）</option>' +
+        '<option value="feishu"'   + (whType === 'feishu'   ? ' selected' : '') + '>飞书（Feishu）</option>' +
+        '<option value="wecom"'    + (whType === 'wecom'    ? ' selected' : '') + '>企业微信（WeCom）</option>' +
+      '</select>' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>消息类型</label>' +
+      '<select data-field="webhookMsgType" onchange="onMsgTypeChange(this)">' +
+        buildMsgTypeOptions(whType, whMsg) +
+      '</select>' +
+    '</div>' +
+    '<div class="field field-full">' +
+      '<label>Webhook URL <span style="color:var(--red)">*</span></label>' +
+      '<input type="text" data-field="webhookUrl" value="' + esc(whUrl) + '" placeholder="https://oapi.dingtalk.com/robot/send?access_token=..." autocomplete="off">' +
+    '</div>' +
+    '<div class="field field-full" data-title-field ' + titleField + '>' +
+      '<label>消息标题 <span class="hint">（markdown/post 格式时使用）</span></label>' +
+      '<input type="text" data-field="webhookTitle" value="' + esc(whTitle) + '" placeholder="每日通知">' +
+    '</div>' +
+  '</div>';
+}
+
+function addWebhookItem(btn) {
+  var container = btn.closest('.webhook-section').querySelector('.webhooks-container');
+  var tmp = document.createElement('div');
+  tmp.innerHTML = makeWebhookItem({ type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' });
+  container.appendChild(tmp.firstElementChild);
+}
+
+function removeWebhookItem(btn) {
+  btn.closest('.webhook-item').remove();
+}
+
 function makeTaskCard(task, idx, expanded) {
   const div = document.createElement('div');
   div.className = 'task-card' + (expanded ? ' expanded' : '');
@@ -2260,11 +2322,10 @@ function makeTaskCard(task, idx, expanded) {
   const cronChips = CRON_EXAMPLES.map(e =>
     '<span class="cron-chip" onclick="fillCron(this,\'' + esc(e.value) + '\')" title="' + esc(e.value) + '">' + esc(e.label) + '</span>'
   ).join('');
-  const whType = task.webhook ? (task.webhook.type || '') : '';
-  const whUrl  = task.webhook ? (task.webhook.url || '') : '';
-  const whMsg  = task.webhook ? (task.webhook.msgType || (task.webhook.type === 'dingtalk' ? 'markdown' : 'text')) : 'text';
-  const whTitle = task.webhook ? (task.webhook.title || '') : '';
-  const titleField = whMsg === 'text' ? 'style="display:none"' : '';
+  // 兼容旧数据：优先用 webhooks 数组，fallback 到单个 webhook
+  var webhooks = task.webhooks && task.webhooks.length ? task.webhooks : (task.webhook && task.webhook.url ? [task.webhook] : []);
+  var webhookItemsHTML = webhooks.map(function(wh) { return makeWebhookItem(wh); }).join('');
+  const titleField = '';
 
   div.innerHTML =
     '<div class="task-card-header" onclick="toggleTaskCard(this)">' +
@@ -2341,29 +2402,11 @@ function makeTaskCard(task, idx, expanded) {
       '</div>' +
       '<div class="field field-full" style="margin-bottom:0">' +
         '<div class="webhook-section">' +
-          '<div class="webhook-section-title">&#128279; Webhook 推送目标</div>' +
-          '<div class="field">' +
-            '<label>平台类型 <span style="color:var(--red)">*</span></label>' +
-            '<select data-field="webhookType" onchange="onWebhookTypeChange(this)">' +
-              '<option value=""' + (!whType ? ' selected' : '') + '>请选择...</option>' +
-              '<option value="dingtalk"' + (whType === 'dingtalk' ? ' selected' : '') + '>钉钉（DingTalk）</option>' +
-              '<option value="feishu"'   + (whType === 'feishu'   ? ' selected' : '') + '>飞书（Feishu）</option>' +
-              '<option value="wecom"'    + (whType === 'wecom'    ? ' selected' : '') + '>企业微信（WeCom）</option>' +
-            '</select>' +
+          '<div class="webhook-section-title">&#128279; Webhook 推送目标' +
+            '<button class="btn btn-secondary btn-sm" style="margin-left:10px;padding:2px 10px;font-size:11px" onclick="addWebhookItem(this)">+ 添加</button>' +
           '</div>' +
-          '<div class="field">' +
-            '<label>消息类型</label>' +
-            '<select data-field="webhookMsgType" onchange="onMsgTypeChange(this)">' +
-              buildMsgTypeOptions(whType, whMsg) +
-            '</select>' +
-          '</div>' +
-          '<div class="field field-full">' +
-            '<label>Webhook URL <span style="color:var(--red)">*</span></label>' +
-            '<input type="text" data-field="webhookUrl" value="' + esc(whUrl) + '" placeholder="https://oapi.dingtalk.com/robot/send?access_token=..." autocomplete="off">' +
-          '</div>' +
-          '<div class="field field-full" data-title-field ' + titleField + '>' +
-            '<label>消息标题 <span class="hint">（markdown/post 格式时使用）</span></label>' +
-            '<input type="text" data-field="webhookTitle" value="' + esc(whTitle) + '" placeholder="每日通知">' +
+          '<div class="webhooks-container" style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' +
+            webhookItemsHTML +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -2392,6 +2435,7 @@ function addScheduledTask() {
     conciseReply: true,
     product: 'sls',
     webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
+    webhooks: [{ type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' }],
   }, container.children.length, true);
   container.appendChild(card);
   updateSingleTaskVariableFields(card);
@@ -2459,15 +2503,13 @@ function buildMsgTypeOptions(platform, selected) {
 }
 
 function onWebhookTypeChange(sel) {
-  const card = sel.closest('.task-card');
-  const msgSel = card.querySelector('[data-field=webhookMsgType]');
+  var item = sel.closest('.webhook-item');
+  var msgSel = item.querySelector('[data-field=webhookMsgType]');
   if (!msgSel) return;
-  // 钉钉默认使用 markdown，其他平台保留当前选中值（不支持则回退到第一项）
-  const preferredMsg = sel.value === 'dingtalk' ? 'markdown' : msgSel.value;
+  var preferredMsg = sel.value === 'dingtalk' ? 'markdown' : msgSel.value;
   msgSel.innerHTML = buildMsgTypeOptions(sel.value, preferredMsg);
-  // 切换到钉钉且标题为空时，补上默认标题
   if (sel.value === 'dingtalk') {
-    const titleInput = card.querySelector('[data-field=webhookTitle]');
+    var titleInput = item.querySelector('[data-field=webhookTitle]');
     if (titleInput && !titleInput.value.trim()) {
       titleInput.value = '定时任务通知';
     }
@@ -2476,8 +2518,8 @@ function onWebhookTypeChange(sel) {
 }
 
 function onMsgTypeChange(sel) {
-  const card = sel.closest('.task-card');
-  const titleField = card.querySelector('[data-title-field]');
+  var item = sel.closest('.webhook-item');
+  var titleField = item.querySelector('[data-title-field]');
   if (!titleField) return;
   titleField.style.display = sel.value === 'text' ? 'none' : '';
 }
@@ -2494,6 +2536,17 @@ function scheduledTaskProductFromCard(card) {
   return 'sls';
 }
 
+function collectWebhooksFromCard(card) {
+  return Array.from(card.querySelectorAll('.webhook-item')).map(function(item) {
+    return {
+      type:    item.querySelector('[data-field=webhookType]').value,
+      url:     item.querySelector('[data-field=webhookUrl]').value.trim(),
+      msgType: item.querySelector('[data-field=webhookMsgType]').value,
+      title:   item.querySelector('[data-field=webhookTitle]').value.trim(),
+    };
+  }).filter(function(wh) { return wh.url; });
+}
+
 function collectScheduledTasks() {
   return Array.from(document.querySelectorAll('#tasks-list .task-card')).map(card => ({
     name:         card.querySelector('[data-field=name]').value.trim(),
@@ -2507,12 +2560,7 @@ function collectScheduledTasks() {
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     region:       card.querySelector('[data-field=region]')?.value.trim() || '',
-    webhook: {
-      type:    card.querySelector('[data-field=webhookType]').value,
-      url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
-      msgType: card.querySelector('[data-field=webhookMsgType]').value,
-      title:   card.querySelector('[data-field=webhookTitle]').value.trim(),
-    },
+    webhooks:     collectWebhooksFromCard(card),
   }));
 }
 
@@ -2532,12 +2580,7 @@ async function triggerTask(btn) {
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
     workspace:    card.querySelector('[data-field=workspace]')?.value.trim() || '',
     region:       card.querySelector('[data-field=region]')?.value.trim() || '',
-    webhook: {
-      type:    card.querySelector('[data-field=webhookType]').value,
-      url:     card.querySelector('[data-field=webhookUrl]').value.trim(),
-      msgType: card.querySelector('[data-field=webhookMsgType]').value,
-      title:   card.querySelector('[data-field=webhookTitle]').value.trim(),
-    },
+    webhooks:     collectWebhooksFromCard(card),
   };
 
   if (!task.employeeName) { showTaskResult(resultEl, 'error', '❌ 请先填写数字员工 ID'); return; }
@@ -2559,19 +2602,17 @@ async function triggerTask(btn) {
       showTaskResult(resultEl, 'error', '❌ ' + (data.error || '触发失败'));
     } else {
       let msg = '✅ 数字员工回复：\n' + (data.reply || '（空）');
-      if (task.webhook.url) {
+      if (task.webhooks && task.webhooks.length) {
         if (data.webhookSent) {
           msg += '\n\n✅ Webhook 推送成功';
-        } else {
-          msg += '\n\n⚠️ Webhook 推送失败：' + (data.webhookErr || '未知错误');
         }
-        if (data.webhookRaw) {
-          msg += '\n平台响应：' + data.webhookRaw;
+        if (data.webhookErr) {
+          msg += '\n\n⚠️ Webhook 推送失败：' + data.webhookErr;
         }
       } else {
-        msg += '\n\n（未填写 Webhook URL，跳过推送）';
+        msg += '\n\n（未配置 Webhook，跳过推送）';
       }
-      showTaskResult(resultEl, data.webhookSent || !task.webhook.url ? 'success' : 'error', msg);
+      showTaskResult(resultEl, data.webhookSent || !(task.webhooks && task.webhooks.length) ? 'success' : 'error', msg);
     }
   } catch(e) {
     showTaskResult(resultEl, 'error', '❌ 网络错误: ' + e.message);

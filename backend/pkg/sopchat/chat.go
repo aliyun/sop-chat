@@ -85,74 +85,74 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 				break
 			}
 
-		// 检查响应状态码
-		if response.StatusCode != nil && *response.StatusCode != 200 {
-			statusCode := *response.StatusCode
-			errorMsg := fmt.Sprintf("API returned status code %d", statusCode)
-			if response.Body != nil && response.Body.Messages != nil {
-				// 尝试从消息中提取错误信息
-				for _, msg := range response.Body.Messages {
-					if msg != nil && msg.Detail != nil {
-						errorMsg += ": " + *msg.Detail
-						break
+			// 检查响应状态码
+			if response.StatusCode != nil && *response.StatusCode != 200 {
+				statusCode := *response.StatusCode
+				errorMsg := fmt.Sprintf("API returned status code %d", statusCode)
+				if response.Body != nil && response.Body.Messages != nil {
+					// 尝试从消息中提取错误信息
+					for _, msg := range response.Body.Messages {
+						if msg != nil && msg.Detail != nil {
+							errorMsg += ": " + *msg.Detail
+							break
+						}
 					}
 				}
-			}
-			return nil, fmt.Errorf(errorMsg)
-		}
-
-		// 处理响应
-		if response.Body != nil {
-			// 保存元数据 (使用 ThreadId 字段如果存在)
-			if result.RequestId == "" && response.Body.RequestId != nil {
-				result.RequestId = *response.Body.RequestId
-			}
-			if result.TraceId == "" && response.Body.TraceId != nil {
-				result.TraceId = *response.Body.TraceId
+				return nil, fmt.Errorf(errorMsg)
 			}
 
-			// 处理消息
-			if response.Body.Messages != nil {
-				for i, msg := range response.Body.Messages {
-					// #region agent log - Log all messages received from CMS API
-					if msg != nil && len(msg.Tools) > 0 {
-						toolMessageCount++
-						log.Printf("[SOPCHAT] Message %d has %d tools (total tool messages so far: %d)\n", i, len(msg.Tools), toolMessageCount)
-						for j, tool := range msg.Tools {
-							if toolStatus, ok := tool["status"].(string); ok {
-								hasArgs := tool["arguments"] != nil
-								logMsg := fmt.Sprintf("[SOPCHAT] Message %d, Tool[%d]: status=%s, name=%v, hasArgs=%v",
-									i, j, toolStatus, tool["name"], hasArgs)
-								
-								// 如果 hasArgs 为 true，打印参数
-								if hasArgs {
-									args := tool["arguments"]
-									if argsJSON, err := json.Marshal(args); err == nil {
-										logMsg += fmt.Sprintf(", args=%s", string(argsJSON))
-									} else {
-										logMsg += fmt.Sprintf(", args=%+v", args)
+			// 处理响应
+			if response.Body != nil {
+				// 保存元数据 (使用 ThreadId 字段如果存在)
+				if result.RequestId == "" && response.Body.RequestId != nil {
+					result.RequestId = *response.Body.RequestId
+				}
+				if result.TraceId == "" && response.Body.TraceId != nil {
+					result.TraceId = *response.Body.TraceId
+				}
+
+				// 处理消息
+				if response.Body.Messages != nil {
+					for i, msg := range response.Body.Messages {
+						// #region agent log - Log all messages received from CMS API
+						if msg != nil && len(msg.Tools) > 0 {
+							toolMessageCount++
+							log.Printf("[SOPCHAT] Message %d has %d tools (total tool messages so far: %d)\n", i, len(msg.Tools), toolMessageCount)
+							for j, tool := range msg.Tools {
+								if toolStatus, ok := tool["status"].(string); ok {
+									hasArgs := tool["arguments"] != nil
+									logMsg := fmt.Sprintf("[SOPCHAT] Message %d, Tool[%d]: status=%s, name=%v, hasArgs=%v",
+										i, j, toolStatus, tool["name"], hasArgs)
+
+									// 如果 hasArgs 为 true，打印参数
+									if hasArgs {
+										args := tool["arguments"]
+										if argsJSON, err := json.Marshal(args); err == nil {
+											logMsg += fmt.Sprintf(", args=%s", string(argsJSON))
+										} else {
+											logMsg += fmt.Sprintf(", args=%+v", args)
+										}
 									}
+									log.Println(logMsg)
 								}
-								log.Println(logMsg)
+							}
+						}
+						// #endregion
+						if handler != nil {
+							if err := handler(msg); err != nil {
+								return result, err
 							}
 						}
 					}
-					// #endregion
-					if handler != nil {
-						if err := handler(msg); err != nil {
-							return result, err
-						}
-					}
+				} else {
+					// 如果没有消息但 Body 不为空，记录警告
+					log.Printf("[SOPCHAT] Warning: Response body has no messages (RequestId: %v, TraceId: %v)\n",
+						result.RequestId, result.TraceId)
 				}
 			} else {
-				// 如果没有消息但 Body 不为空，记录警告
-				log.Printf("[SOPCHAT] Warning: Response body has no messages (RequestId: %v, TraceId: %v)\n", 
-					result.RequestId, result.TraceId)
+				// Body 为空，记录警告
+				log.Printf("[SOPCHAT] Warning: Response body is nil (StatusCode: %v)\n", response.StatusCode)
 			}
-		} else {
-			// Body 为空，记录警告
-			log.Printf("[SOPCHAT] Warning: Response body is nil (StatusCode: %v)\n", response.StatusCode)
-		}
 
 		case err, ok := <-errorChan:
 			if ok && err != nil {

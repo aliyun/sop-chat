@@ -2,7 +2,6 @@ package wecom
 
 import (
 	"context"
-	"crypto/md5"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -13,10 +12,10 @@ import (
 	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
-	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	"github.com/alibabacloud-go/tea/tea"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
 
@@ -46,7 +45,7 @@ type Bot struct {
 	msgManager *MessageManager
 
 	// 会话 -> 线程 ID 的映射
-	threadStore sync.Map
+	threads *session.ThreadStore
 
 	// key -> chan func()，每个 key 对应一个串行 worker
 	workerQueues sync.Map
@@ -67,6 +66,7 @@ func NewBot(wcConfig *config.WeComConfig, cmsConfig *config.ClientConfig, global
 		globalConfig: globalConfig,
 		cryptor:      cryptor,
 		msgManager:   msgManager,
+		threads:      session.NewThreadStore("[WeCom]"),
 	}, nil
 }
 
@@ -202,7 +202,7 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		if newThreadId != "" && newThreadId != threadId {
 			scope := threadScope(target.cloudAccountID, target.project, target.workspace, target.region)
 			cacheKey := threadKey(msg.FromUserName, target.employeeName) + "\x00" + scope
-			b.threadStore.Store(cacheKey, newThreadId)
+			b.threads.Store(cacheKey, newThreadId)
 		}
 
 		log.Printf("[WeCom] 回复消息 to=%s 长度=%d", msg.FromUserName, len(replyText))
@@ -371,36 +371,13 @@ func (b *Bot) newSopClientWithConfig(clientCfg *config.ClientConfig) (*sopchat.C
 	if clientCfg == nil {
 		return nil, fmt.Errorf("CMS 客户端配置为空")
 	}
-	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(clientCfg.AccessKeyId),
-		AccessKeySecret:  tea.String(clientCfg.AccessKeySecret),
-		Endpoint:         tea.String(clientCfg.Endpoint),
-		SignatureVersion: tea.String("v3"),
-	}
-	rawClient, err := cmsclient.NewClient(cmsConfig)
-	if err != nil {
-		return nil, fmt.Errorf("创建 CMS 客户端失败: %w", err)
-	}
-	return &sopchat.Client{
-		CmsClient:       rawClient,
-		AccessKeyId:     clientCfg.AccessKeyId,
-		AccessKeySecret: clientCfg.AccessKeySecret,
-		Endpoint:        clientCfg.Endpoint,
-	}, nil
+	return session.NewSopClient(clientCfg)
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *Bot) threadVariable() (project, workspace, region string) {
-	// 优先使用渠道配置的 product，为空则使用全局配置
-	productType := b.wcConfig.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
-	}
-	if config.IsSlsProduct(productType) {
-		return b.wcConfig.Project, "", ""
-	}
-	return "", b.wcConfig.Workspace, b.wcConfig.Region
+	return session.ThreadVariable(b.wcConfig.Product, b.cmsConfig.Product, b.wcConfig.Project, b.wcConfig.Workspace, b.wcConfig.Region)
 }
 
 func threadVariableForTarget(target resolvedTarget) (project, workspace, region string) {
@@ -418,57 +395,20 @@ func (b *Bot) getOrCreateThreadId(userID string, target resolvedTarget) (string,
 	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
 	key := threadKey(userID, target.employeeName) + "\x00" + scope
 
-	if v, ok := b.threadStore.Load(key); ok {
-		return v.(string), nil
-	}
-
 	client, err := b.newSopClientWithConfig(target.clientConfig)
 	if err != nil {
 		return "", err
 	}
 
-	h := md5.Sum([]byte("wecom\x00" + userID + "\x00" + target.employeeName + "\x00" + scope))
-	session := fmt.Sprintf("%x", h)
-
-	listResp, listErr := client.ListThreads(target.employeeName, []sopchat.ThreadFilter{
-		{Key: "session", Value: session},
-	})
-	if listErr != nil {
-		log.Printf("[WeCom] 列出线程失败（将尝试新建）: %v", listErr)
-	} else if listResp.Body != nil {
-		for _, t := range listResp.Body.Threads {
-			if t == nil || t.ThreadId == nil || *t.ThreadId == "" {
-				continue
-			}
-			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
-				threadId := *t.ThreadId
-				log.Printf("[WeCom] 找到已有线程 [cloudAccountId=%s employee=%s]: %s", target.cloudAccountID, target.employeeName, threadId)
-				b.threadStore.Store(key, threadId)
-				return threadId, nil
-			}
-		}
-	}
-
-	log.Printf("[WeCom] 为用户 %s 创建新线程 [cloudAccountId=%s employee=%s] ...", userID, target.cloudAccountID, target.employeeName)
-	resp, err := client.CreateThread(&sopchat.ThreadConfig{
+	return b.threads.GetOrCreate(client, session.ThreadParams{
+		CacheKey:     key,
+		SessionRaw:   "wecom\x00" + userID + "\x00" + target.employeeName + "\x00" + scope,
 		EmployeeName: target.employeeName,
 		Title:        "WeCom: " + userID,
-		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
 		Workspace:    workspace,
 		Region:       region,
 	})
-	if err != nil {
-		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
-	}
-	if resp.Body == nil || resp.Body.ThreadId == nil || *resp.Body.ThreadId == "" {
-		return "", fmt.Errorf("CreateThread 返回了空的 ThreadId")
-	}
-
-	threadId := *resp.Body.ThreadId
-	log.Printf("[WeCom] 新线程创建成功 [cloudAccountId=%s employee=%s]: %s", target.cloudAccountID, target.employeeName, threadId)
-	b.threadStore.Store(key, threadId)
-	return threadId, nil
 }
 
 // queryEmployee 向 CMS 数字员工发送消息，返回回复文本和线程 ID

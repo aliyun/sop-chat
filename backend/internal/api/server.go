@@ -19,6 +19,7 @@ import (
 	"sop-chat/internal/embed"
 	"sop-chat/internal/feishu"
 	"sop-chat/internal/scheduler"
+	"sop-chat/internal/session"
 	"sop-chat/internal/wecom"
 	"sop-chat/pkg/sopchat"
 
@@ -85,6 +86,8 @@ func GenerateConfigUIToken() (string, error) {
 }
 
 func NewServer(cfg *client.Config, globalConfig *config.Config, configPath string) (*Server, error) {
+	session.SetBindThreadToProcess(globalConfig.BindThreadToProcess())
+
 	// 创建 Gin 引擎
 	router := gin.Default()
 
@@ -866,6 +869,7 @@ func (s *Server) reloadConfig() error {
 	if err != nil {
 		return fmt.Errorf("重新加载配置文件失败: %w", err)
 	}
+	session.SetBindThreadToProcess(newGlobalConfig.BindThreadToProcess())
 
 	// 默认客户端配置（用于旧 API 兼容路径）；多账号场景下各渠道/任务会按 cloudAccountId 单独解析。
 	newClientConfig, err := newGlobalConfig.ToClientConfig()

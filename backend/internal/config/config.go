@@ -41,10 +41,11 @@ type Config struct {
 
 // ServerConfig 服务级配置
 type ServerConfig struct {
-	Host     string `yaml:"host,omitempty"`     // 服务监听地址，默认 0.0.0.0
-	Port     int    `yaml:"port,omitempty"`     // 服务监听端口，默认 8080
-	TimeZone string `yaml:"timeZone,omitempty"` // 时区设置
-	Language string `yaml:"language,omitempty"` // 语言设置
+	Host                string `yaml:"host,omitempty"`                // 服务监听地址，默认 0.0.0.0
+	Port                int    `yaml:"port,omitempty"`                // 服务监听端口，默认 8080
+	TimeZone            string `yaml:"timeZone,omitempty"`            // 时区设置
+	Language            string `yaml:"language,omitempty"`            // 语言设置
+	BindThreadToProcess *bool  `yaml:"bindThreadToProcess,omitempty"` // 是否将 thread 绑定到进程生命周期
 }
 
 const (
@@ -91,20 +92,36 @@ type ScheduledTaskConfig struct {
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
 	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
 	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
-	// Webhook 配置：任务结果的发送目标
-	Webhook WebhookConfig `yaml:"webhook"`
+	// Webhook 配置：任务结果的发送目标（已废弃，保留用于向后兼容旧配置）
+	Webhook WebhookConfig `yaml:"webhook,omitempty"`
+	// Webhooks 配置：任务结果的发送目标（支持多个）
+	Webhooks []WebhookConfig `yaml:"webhooks,omitempty"`
+}
+
+// EffectiveWebhooks 返回该任务的有效 webhook 列表。
+// 兼容旧配置：如果 Webhooks 为空但 Webhook 有值，则返回 [Webhook]。
+func (t *ScheduledTaskConfig) EffectiveWebhooks() []WebhookConfig {
+	if len(t.Webhooks) > 0 {
+		return t.Webhooks
+	}
+	if t.Webhook.URL != "" {
+		return []WebhookConfig{t.Webhook}
+	}
+	return nil
 }
 
 // WebhookConfig Webhook 目标配置
 type WebhookConfig struct {
-	// 类型：dingtalk | feishu | wecom
+	// 类型：dingtalk | feishu | wecom | email
 	Type string `yaml:"type"`
-	// Webhook URL
+	// Webhook URL（IM 平台）或 SMTP 地址（email，格式：smtp(s)://user:pass@host:port）
 	URL string `yaml:"url"`
 	// 消息类型：text | markdown（默认 text）
 	MsgType string `yaml:"msgType,omitempty"`
-	// Markdown 消息标题（钉钉/飞书 markdown 格式时使用）
+	// 消息标题（IM markdown 格式 / 邮件主题）
 	Title string `yaml:"title,omitempty"`
+	// 收件人（email 类型，逗号分隔多个地址）
+	To string `yaml:"to,omitempty"`
 }
 
 // ChannelsConfig 通知渠道配置（聚合所有 IM/消息渠道）
@@ -395,6 +412,8 @@ type GlobalConfig struct {
 	Port            int    `yaml:"port,omitempty"`     // legacy 服务监听端口
 	TimeZone        string `yaml:"timeZone,omitempty"` // legacy 时区设置
 	Language        string `yaml:"language,omitempty"` // legacy 语言设置
+	// legacy thread 生命周期开关：新配置应写在 server.bindThreadToProcess。
+	BindThreadToProcess *bool `yaml:"bindThreadToProcess,omitempty"`
 	// legacy 对接产品默认值：新配置应在各渠道/任务上显式配置 product。
 	Product   string `yaml:"product,omitempty"`
 	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
@@ -564,12 +583,14 @@ func randomHex(n int) string {
 // - auth.methods 为空（登录功能关闭，配置后重启或热重载生效）
 // - JWT secretKey 随机生成，避免各实例共用同一密钥
 func DefaultConfig() *Config {
+	bindThread := true
 	return &Config{
 		Server: ServerConfig{
-			Host:     "0.0.0.0",
-			Port:     8080,
-			TimeZone: "Asia/Shanghai",
-			Language: "zh",
+			Host:                "0.0.0.0",
+			Port:                8080,
+			TimeZone:            "Asia/Shanghai",
+			Language:            "zh",
+			BindThreadToProcess: &bindThread,
 		},
 		Auth: AuthConfig{
 			Methods:      []string{"builtin"},
@@ -580,6 +601,21 @@ func DefaultConfig() *Config {
 			},
 		},
 	}
+}
+
+// BindThreadToProcess 返回是否将 thread 绑定到进程生命周期。
+// 配置缺失时默认开启（true）。
+func (c *Config) BindThreadToProcess() bool {
+	if c == nil {
+		return true
+	}
+	if c.Server.BindThreadToProcess != nil {
+		return *c.Server.BindThreadToProcess
+	}
+	if c.Global.BindThreadToProcess != nil {
+		return *c.Global.BindThreadToProcess
+	}
+	return true
 }
 
 // LoadConfig 从文件加载统一配置
@@ -798,6 +834,9 @@ func (c *Config) applyCompatibilityDefaults() {
 	}
 	if c.Server.Language == "" {
 		c.Server.Language = c.Global.Language
+	}
+	if c.Server.BindThreadToProcess == nil && c.Global.BindThreadToProcess != nil {
+		c.Server.BindThreadToProcess = c.Global.BindThreadToProcess
 	}
 
 	if len(c.CloudAccounts) == 0 {
