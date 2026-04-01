@@ -20,11 +20,6 @@ const EmployeeSelector = () => {
   // 注意：后端返回的字段是大写开头的 (Roles)，也要兼容小写 (roles)
   const userRoles = user?.Roles || user?.roles || [];
   const isAdmin = userRoles.includes('admin');
-  
-  // 调试日志
-  console.log('[EmployeeSelector] User:', user);
-  console.log('[EmployeeSelector] User roles:', userRoles);
-  console.log('[EmployeeSelector] isAdmin:', isAdmin);
 
   // 图标组件数组
   const iconComponents = [
@@ -176,16 +171,26 @@ const EmployeeSelector = () => {
   };
 
   const handleSelect = (employee) => {
-    navigate(`/chat/${employee.name}`);
+    const params = new URLSearchParams();
+    if (employee.cloudAccountId) {
+      params.set('cloudAccountId', employee.cloudAccountId);
+    }
+    navigate({
+      pathname: `/chat/${employee.name}`,
+      search: params.toString() ? `?${params.toString()}` : '',
+    });
   };
 
   const handleSettingsClick = (e, employee) => {
     e.stopPropagation(); // 阻止触发卡片点击
-    navigate(`/settings/${employee.name}`);
-  };
-
-  const handleCreateEmployee = () => {
-    navigate('/create-employee');
+    const params = new URLSearchParams();
+    if (employee.cloudAccountId) {
+      params.set('cloudAccountId', employee.cloudAccountId);
+    }
+    navigate({
+      pathname: `/settings/${employee.name}`,
+      search: params.toString() ? `?${params.toString()}` : '',
+    });
   };
 
   if (loading) {
@@ -219,12 +224,7 @@ const EmployeeSelector = () => {
         <div className="app-list-empty">
           <div className="empty-icon">📭</div>
           <h3>{t('employeeSelector.noEmployees')}</h3>
-          <p>{isAdmin ? t('employeeSelector.createFirst') : t('employeeSelector.noEmployees')}</p>
-          {isAdmin && (
-            <button className="create-app-btn" onClick={handleCreateEmployee}>
-              ➕ {t('nav.createEmployee')}
-            </button>
-          )}
+          <p>{t('employeeSelector.noEmployeesHint', { defaultValue: '请先在已配置的云账号中确认存在可用数字员工。' })}</p>
         </div>
       </div>
     );
@@ -237,17 +237,12 @@ const EmployeeSelector = () => {
           <h1>{t('employeeSelector.title')}</h1>
           <p className="subtitle">{t('employeeSelector.selectToStart', { defaultValue: 'Select an assistant to start conversation' })}</p>
         </div>
-        {isAdmin && (
-          <button className="create-app-btn" onClick={handleCreateEmployee}>
-            ➕ {t('nav.createEmployee')}
-          </button>
-        )}
       </div>
 
       <div className="app-grid">
         {employees.map((employee, index) => (
           <div
-            key={employee.name}
+            key={`${employee.cloudAccountId || 'default'}:${employee.name}`}
             className="app-card"
             onClick={() => handleSelect(employee)}
           >
@@ -265,6 +260,12 @@ const EmployeeSelector = () => {
                   >
                     ⚙️
                   </button>
+                )}
+              </div>
+              <div className="app-card-meta">
+                <span className="app-card-badge">{employee.cloudAccountId || 'default'}</span>
+                {employee.product && (
+                  <span className="app-card-badge app-card-badge-secondary">{String(employee.product).toUpperCase()}</span>
                 )}
               </div>
               {employee.description && (

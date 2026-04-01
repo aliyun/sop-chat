@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"sop-chat/internal/auth"
@@ -41,7 +42,6 @@ type Server struct {
 	jwtManager     *auth.JWTManager
 	userStore      auth.UserStore
 	authMiddleware *auth.AuthMiddleware
-
 
 	// 钉钉机器人生命周期管理（支持多实例热启停，keyed by clientId）
 	dingtalkMu   sync.Mutex
@@ -119,46 +119,32 @@ func NewServer(cfg *client.Config, globalConfig *config.Config, configPath strin
 	server.setupRoutes()
 
 	if globalConfig != nil {
-		// 无论 CMS 凭据是否完整，都尝试启动 IM 渠道机器人。
-		// 机器人启动只需要各平台自身的凭据（如钉钉 clientId/clientSecret），
-		// CMS 凭据仅在响应消息时才用到；凭据缺失时机器人仍可连接，查询时再报错。
-		// 这与 reloadConfig 的行为保持一致。
-		cmsClientCfg, cmsErr := globalConfig.ToClientConfig()
-		if cmsErr != nil {
-			log.Printf("提示: CMS 凭据未配置或解析失败，消息渠道机器人将以空凭据启动（%v）", cmsErr)
-			cmsClientCfg = &config.ClientConfig{}
-		}
 		if globalConfig.Channels != nil {
 			// 启动钉钉机器人
 			if len(globalConfig.Channels.DingTalk) > 0 {
-				server.syncDingTalkBots(globalConfig.Channels.DingTalk, cmsClientCfg)
+				server.syncDingTalkBots(globalConfig.Channels.DingTalk, globalConfig)
 			}
 			// 启动飞书机器人
 			if len(globalConfig.Channels.Feishu) > 0 {
-				server.syncFeishuBots(globalConfig.Channels.Feishu, cmsClientCfg)
+				server.syncFeishuBots(globalConfig.Channels.Feishu, globalConfig)
 			}
 			// 启动企业微信应用（HTTP 回调）
 			if len(globalConfig.Channels.WeCom) > 0 {
-				server.syncWeComBots(globalConfig.Channels.WeCom, cmsClientCfg)
+				server.syncWeComBots(globalConfig.Channels.WeCom, globalConfig)
 			}
 			// 启动企业微信群聊机器人（长连接）：优先从独立 wecomBot 配置读取，
 			// 同时兼容旧的 wecom[].botLongConn 嵌套配置
 			wecomBotConfigs := server.mergeWeComBotConfigs(globalConfig.Channels)
 			if len(wecomBotConfigs) > 0 {
-				server.syncWeComLongConnBots(wecomBotConfigs, cmsClientCfg)
+				server.syncWeComLongConnBots(wecomBotConfigs, globalConfig)
 			}
 		}
 	}
 
 	// 启动定时任务调度器
 	if globalConfig != nil && len(globalConfig.ScheduledTasks) > 0 {
-		cmsClientCfg, cmsErr := globalConfig.ToClientConfig()
-		if cmsErr != nil {
-			log.Printf("警告: 无法获取 CMS 配置，定时任务未启动: %v", cmsErr)
-		} else {
-			server.taskScheduler = scheduler.New(globalConfig.GetTimeZone())
-			server.taskScheduler.Start(globalConfig.ScheduledTasks, cmsClientCfg)
-		}
+		server.taskScheduler = scheduler.New(globalConfig.GetTimeZone())
+		server.taskScheduler.Start(globalConfig.ScheduledTasks, globalConfig)
 	}
 
 	return server, nil
@@ -284,13 +270,11 @@ func (s *Server) setupRoutes() {
 			adminOnly.Use(s.authMiddleware.RequireAuth())
 			adminOnly.Use(s.authMiddleware.RequireRole("admin"))
 			{
-				// 员工管理接口（创建、更新）- 仅 admin 可访问
-				adminOnly.POST("/employees", s.handleCreateEmployee)
+				// 员工管理接口（更新）- 仅 admin 可访问
 				adminOnly.PUT("/employees/:name", s.handleUpdateEmployee)
 			}
 		} else {
 			// 如果没有认证中间件（disabled 模式），所有用户都可以访问
-			protected.POST("/employees", s.handleCreateEmployee)
 			protected.PUT("/employees/:name", s.handleUpdateEmployee)
 		}
 	}
@@ -397,9 +381,150 @@ func (s *Server) GetConfigUIToken() string {
 	return s.configUIToken
 }
 
+func sameClientConfig(a, b *config.ClientConfig) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return a.CloudAccountID == b.CloudAccountID &&
+		a.AccessKeyId == b.AccessKeyId &&
+		a.AccessKeySecret == b.AccessKeySecret &&
+		a.Endpoint == b.Endpoint &&
+		a.Product == b.Product
+}
+
+func fallbackClientConfig(globalCfg *config.Config, cloudAccountID string) *config.ClientConfig {
+	cfg := &config.ClientConfig{
+		CloudAccountID: config.NormalizeCloudAccountID(cloudAccountID),
+	}
+	if globalCfg != nil {
+		cfg.Product = globalCfg.GetLegacyProduct()
+	}
+	return cfg
+}
+
+func resolveClientConfigForCloud(globalCfg *config.Config, cloudAccountID string) (*config.ClientConfig, error) {
+	if globalCfg == nil {
+		return fallbackClientConfig(nil, cloudAccountID), fmt.Errorf("global config is nil")
+	}
+	cfg, err := globalCfg.ResolveClientConfig(cloudAccountID)
+	if err != nil {
+		return fallbackClientConfig(globalCfg, cloudAccountID), err
+	}
+	return cfg, nil
+}
+
+func hasCloudAccountID(globalCfg *config.Config, cloudAccountID string) bool {
+	if globalCfg == nil {
+		return false
+	}
+	targetID := config.NormalizeCloudAccountID(cloudAccountID)
+	for _, accountID := range globalCfg.ListCloudAccountIDs() {
+		if accountID == targetID {
+			return true
+		}
+	}
+	return false
+}
+
+func resolveClientConfigForReference(globalCfg *config.Config, reference string) (*config.ClientConfig, []string, error) {
+	if globalCfg == nil {
+		return nil, nil, fmt.Errorf("global config is nil")
+	}
+	ref := strings.TrimSpace(reference)
+	if ref == "" {
+		return nil, globalCfg.ListCloudAccountIDs(), fmt.Errorf("未识别到环境别名，请先确认目标环境")
+	}
+
+	// 显式传入 canonical id（或 default）时，沿用严格解析语义，避免吞掉凭据错误。
+	if hasCloudAccountID(globalCfg, ref) || config.NormalizeCloudAccountID(ref) == config.DefaultCloudAccountID {
+		cfg, err := globalCfg.ResolveClientConfig(ref)
+		if err != nil {
+			return nil, nil, err
+		}
+		return cfg, nil, nil
+	}
+
+	// 用户二次确认时允许回复 alias/订阅名，只要能唯一命中即可。
+	matches := globalCfg.MatchCloudAccountIDsByText(ref, nil)
+	if len(matches) == 1 {
+		cfg, err := globalCfg.ResolveClientConfig(matches[0])
+		if err != nil {
+			return nil, nil, err
+		}
+		return cfg, nil, nil
+	}
+	if len(matches) > 1 {
+		return nil, matches, fmt.Errorf("检测到多个环境匹配，请明确指定云账号")
+	}
+	return nil, globalCfg.ListCloudAccountIDs(), fmt.Errorf("未识别到环境别名，请先确认目标环境")
+}
+
+// resolveClientConfigForMessage 按以下优先级解析云账号：
+// 1) 显式 cloudAccountId；
+// 2) 文本中命中的账号 id/alias（唯一命中）；
+// 3) 默认账号（仅单账号或明确 default 时）。
+// 返回值 options 在需要用户确认时给出可选账号列表。
+func resolveClientConfigForMessage(globalCfg *config.Config, explicitCloudAccountID, message string) (*config.ClientConfig, []string, error) {
+	if globalCfg == nil {
+		return nil, nil, fmt.Errorf("global config is nil")
+	}
+	explicitID := strings.TrimSpace(explicitCloudAccountID)
+	if explicitID != "" {
+		return resolveClientConfigForReference(globalCfg, explicitID)
+	}
+
+	accountIDs := globalCfg.ListCloudAccountIDs()
+	// 0/1 账号：直接走默认解析
+	if len(accountIDs) <= 1 {
+		cfg, err := globalCfg.ToClientConfig()
+		if err != nil {
+			return nil, nil, err
+		}
+		return cfg, nil, nil
+	}
+
+	matches := globalCfg.MatchCloudAccountIDsByText(message, nil)
+	if len(matches) == 1 {
+		cfg, err := globalCfg.ResolveClientConfig(matches[0])
+		if err != nil {
+			return nil, nil, err
+		}
+		return cfg, nil, nil
+	}
+	if len(matches) > 1 {
+		return nil, matches, fmt.Errorf("检测到多个环境匹配，请明确指定云账号")
+	}
+	return nil, accountIDs, fmt.Errorf("未识别到环境别名，请先确认目标环境")
+}
+
+func buildRawCMSClient(cfg *config.ClientConfig) (*cmsclient.Client, error) {
+	if cfg == nil || cfg.AccessKeyId == "" || cfg.AccessKeySecret == "" {
+		return nil, fmt.Errorf("cloud credentials are empty")
+	}
+	cmsConfig := &openapiutil.Config{
+		AccessKeyId:      tea.String(cfg.AccessKeyId),
+		AccessKeySecret:  tea.String(cfg.AccessKeySecret),
+		Endpoint:         tea.String(cfg.Endpoint),
+		SignatureVersion: tea.String("v3"),
+	}
+	return cmsclient.NewClient(cmsConfig)
+}
+
+func newSOPChatClientFromClientConfig(cfg *config.ClientConfig) (*sopchat.Client, error) {
+	if cfg == nil {
+		return nil, fmt.Errorf("client config is nil")
+	}
+	return client.NewCMSClient(&client.Config{
+		CloudAccountID:  cfg.CloudAccountID,
+		AccessKeyId:     cfg.AccessKeyId,
+		AccessKeySecret: cfg.AccessKeySecret,
+		Endpoint:        cfg.Endpoint,
+	})
+}
+
 // syncDingTalkBots 将运行中的机器人与新配置列表对齐：
 // 新增或凭据变更的实例会被（重）启动，旧配置中已移除的实例会被停止。
-func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, cmsConfig *config.ClientConfig) {
+func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, globalCfg *config.Config) {
 	s.dingtalkMu.Lock()
 	defer s.dingtalkMu.Unlock()
 
@@ -427,20 +552,24 @@ func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, cmsConfig 
 	// 启动或重启有变化的实例
 	for clientId, dtCfg := range newEnabled {
 		dtCopy := dtCfg // 避免循环变量逃逸
+		cmsCfg, resolveErr := resolveClientConfigForCloud(globalCfg, dtCopy.CloudAccountID)
+		if resolveErr != nil {
+			log.Printf("提示: 钉钉机器人 clientId=%s cloudAccountId=%q 使用空 CMS 凭据启动（%v）", clientId, dtCopy.CloudAccountID, resolveErr)
+		}
 		if existing, ok := s.dingtalkBots[clientId]; ok {
 			// 已存在：检查凭据或员工名是否变化
-			if !dtCopy.CredsEqual(existing.Config()) {
+			if !dtCopy.CredsEqual(existing.Config()) || !sameClientConfig(existing.CMSConfig(), cmsCfg) {
 				log.Printf("重启钉钉机器人（配置变更）: clientId=%s, employee=%s", clientId, dtCopy.EmployeeName)
 				existing.Stop()
 				delete(s.dingtalkBots, clientId)
 			} else {
 				// 凭据未变，但其他字段（如 allowedUsers、conciseReply）可能已更新，热更新配置
-				existing.UpdateConfig(&dtCopy)
+				existing.UpdateConfig(&dtCopy, globalCfg)
 				continue
 			}
 		}
 		log.Printf("启动钉钉机器人: clientId=%s, employee=%s", clientId, dtCopy.EmployeeName)
-		bot := dingtalk.NewBot(&dtCopy, cmsConfig)
+		bot := dingtalk.NewBot(&dtCopy, cmsCfg, globalCfg)
 		if err := bot.Start(); err != nil {
 			log.Printf("警告: 钉钉机器人启动失败 (clientId=%s): %v", clientId, err)
 			continue
@@ -460,7 +589,7 @@ func (s *Server) stopAllDingTalkBots() {
 }
 
 // syncFeishuBots 将运行中的飞书机器人与新配置列表对齐
-func (s *Server) syncFeishuBots(newConfigs []config.FeishuConfig, cmsConfig *config.ClientConfig) {
+func (s *Server) syncFeishuBots(newConfigs []config.FeishuConfig, globalCfg *config.Config) {
 	s.feishuMu.Lock()
 	defer s.feishuMu.Unlock()
 
@@ -485,21 +614,25 @@ func (s *Server) syncFeishuBots(newConfigs []config.FeishuConfig, cmsConfig *con
 
 	for appID, ftCfg := range newEnabled {
 		ftCopy := ftCfg
+		cmsCfg, resolveErr := resolveClientConfigForCloud(globalCfg, ftCopy.CloudAccountID)
+		if resolveErr != nil {
+			log.Printf("提示: 飞书机器人 appId=%s cloudAccountId=%q 使用空 CMS 凭据启动（%v）", appID, ftCopy.CloudAccountID, resolveErr)
+		}
 		if existing, ok := s.feishuBots[appID]; ok {
 			existingCfg := existing.Config()
-			if existingCfg.AppSecret != ftCopy.AppSecret || existingCfg.EmployeeName != ftCopy.EmployeeName {
+			if existingCfg.AppSecret != ftCopy.AppSecret || existingCfg.EmployeeName != ftCopy.EmployeeName || !sameClientConfig(existing.CMSConfig(), cmsCfg) {
 				log.Printf("重启飞书机器人（配置变更）: appId=%s", appID)
 				existing.Stop()
 				delete(s.feishuBots, appID)
 			} else {
-				existing.UpdateConfig(&ftCopy)
+				existing.UpdateConfig(&ftCopy, globalCfg)
 				// 注册/更新 WeCom 回调路由
 				s.registerFeishuRoutes(appID, existing)
 				continue
 			}
 		}
 		log.Printf("启动飞书机器人: appId=%s, employee=%s", appID, ftCopy.EmployeeName)
-		bot := feishu.NewBot(&ftCopy, cmsConfig)
+		bot := feishu.NewBot(&ftCopy, cmsCfg, globalCfg)
 		if err := bot.Start(); err != nil {
 			log.Printf("警告: 飞书机器人启动失败 (appId=%s): %v", appID, err)
 			continue
@@ -523,7 +656,7 @@ func (s *Server) stopAllFeishuBots() {
 }
 
 // syncWeComBots 将运行中的企业微信机器人与新配置列表对齐
-func (s *Server) syncWeComBots(newConfigs []config.WeComConfig, cmsConfig *config.ClientConfig) {
+func (s *Server) syncWeComBots(newConfigs []config.WeComConfig, globalCfg *config.Config) {
 	s.wecomMu.Lock()
 	defer s.wecomMu.Unlock()
 
@@ -550,19 +683,23 @@ func (s *Server) syncWeComBots(newConfigs []config.WeComConfig, cmsConfig *confi
 
 	for key, wcCfg := range newEnabled {
 		wcCopy := wcCfg
+		cmsCfg, resolveErr := resolveClientConfigForCloud(globalCfg, wcCopy.CloudAccountID)
+		if resolveErr != nil {
+			log.Printf("提示: 企业微信机器人 key=%s cloudAccountId=%q 使用空 CMS 凭据启动（%v）", key, wcCopy.CloudAccountID, resolveErr)
+		}
 		if existing, ok := s.wecomBots[key]; ok {
 			existingCfg := existing.Config()
-			if !existingCfg.CredsEqual(&wcCopy) {
+			if !existingCfg.CredsEqual(&wcCopy) || !sameClientConfig(existing.CMSConfig(), cmsCfg) {
 				log.Printf("重建企业微信机器人（配置变更）: %s", key)
 				delete(s.wecomBots, key)
 			} else {
-				existing.UpdateConfig(&wcCopy)
+				existing.UpdateConfig(&wcCopy, globalCfg)
 				s.registerWeComRoutes(key, existing)
 				continue
 			}
 		}
 		log.Printf("启动企业微信机器人: corpId=%s agentId=%d employee=%s", wcCopy.CorpID, wcCopy.AgentID, wcCopy.EmployeeName)
-		bot, err := wecom.NewBot(&wcCopy, cmsConfig)
+		bot, err := wecom.NewBot(&wcCopy, cmsCfg, globalCfg)
 		if err != nil {
 			log.Printf("警告: 企业微信机器人初始化失败 (%s): %v", key, err)
 			continue
@@ -617,7 +754,7 @@ func (s *Server) stopAllWeComBots() {
 }
 
 // syncWeComLongConnBots 将运行中的企业微信长连接群机器人与新配置列表对齐
-func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComBotConfig, cmsConfig *config.ClientConfig) {
+func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComBotConfig, globalCfg *config.Config) {
 	s.wecomLongConnMu.Lock()
 	defer s.wecomLongConnMu.Unlock()
 
@@ -645,10 +782,14 @@ func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComBotConfig, cmsCo
 	// 启动或重启有变化的实例
 	for botID, wbCfg := range newEnabled {
 		wbCopy := wbCfg
+		cmsCfg, resolveErr := resolveClientConfigForCloud(globalCfg, wbCopy.CloudAccountID)
+		if resolveErr != nil {
+			log.Printf("提示: 企业微信长连接机器人 botId=%s cloudAccountId=%q 使用空 CMS 凭据启动（%v）", botID, wbCopy.CloudAccountID, resolveErr)
+		}
 		if existing, ok := s.wecomLongConnBots[botID]; ok {
 			existingCfg := existing.Config()
-			if existingCfg.CredsEqual(&wbCopy) {
-				existing.UpdateConfig(&wbCopy)
+			if existingCfg.CredsEqual(&wbCopy) && sameClientConfig(existing.CMSConfig(), cmsCfg) {
+				existing.UpdateConfig(&wbCopy, globalCfg)
 				continue
 			}
 			log.Printf("重启企业微信长连接机器人（配置变更）: botId=%s", botID)
@@ -656,7 +797,7 @@ func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComBotConfig, cmsCo
 			delete(s.wecomLongConnBots, botID)
 		}
 		log.Printf("启动企业微信长连接机器人: botId=%s employee=%s", botID, wbCopy.EmployeeName)
-		bot := wecom.NewLongConnBot(&wbCopy, cmsConfig)
+		bot := wecom.NewLongConnBot(&wbCopy, cmsCfg, globalCfg)
 		bot.Start()
 		s.wecomLongConnBots[botID] = bot
 	}
@@ -688,11 +829,17 @@ func (s *Server) mergeWeComBotConfigs(channels *config.ChannelsConfig) []config.
 					BotID:                wc.BotLongConn.BotID,
 					BotSecret:            wc.BotLongConn.BotSecret,
 					EmployeeName:         wc.EmployeeName,
+					CloudAccountID:       wc.CloudAccountID,
 					ConciseReply:         wc.ConciseReply,
+					Product:              wc.Product,
+					Project:              wc.Project,
+					Workspace:            wc.Workspace,
+					Region:               wc.Region,
 					URL:                  wc.BotLongConn.URL,
 					PingIntervalSec:      wc.BotLongConn.PingIntervalSec,
 					ReconnectDelaySec:    wc.BotLongConn.ReconnectDelaySec,
 					MaxReconnectDelaySec: wc.BotLongConn.MaxReconnectDelaySec,
+					CloudAccountRoutes:   wc.CloudAccountRoutes,
 				})
 				seen[wc.BotLongConn.BotID] = true
 			}
@@ -724,12 +871,11 @@ func (s *Server) reloadConfig() error {
 	}
 	session.SetBindThreadToProcess(newGlobalConfig.BindThreadToProcess())
 
-	// 重建客户端配置（global.accessKeyId / accessKeySecret / endpoint）
-	// 凭据未填写时允许继续（部分功能不可用），不阻断热重载
+	// 默认客户端配置（用于旧 API 兼容路径）；多账号场景下各渠道/任务会按 cloudAccountId 单独解析。
 	newClientConfig, err := newGlobalConfig.ToClientConfig()
 	if err != nil {
-		log.Printf("提示: 凭据未配置，部分功能不可用（%v）", err)
-		newClientConfig = &config.ClientConfig{}
+		log.Printf("提示: 默认云账号凭据未配置，部分功能不可用（%v）", err)
+		newClientConfig = fallbackClientConfig(newGlobalConfig, config.DefaultCloudAccountID)
 	}
 
 	// 热更新用户存储（auth.users / auth.roles）
@@ -754,25 +900,26 @@ func (s *Server) reloadConfig() error {
 		newFTConfigs = newGlobalConfig.Channels.Feishu
 		newWCConfigs = newGlobalConfig.Channels.WeCom
 	}
-	s.syncDingTalkBots(newDTConfigs, newClientConfig)
-	s.syncFeishuBots(newFTConfigs, newClientConfig)
-	s.syncWeComBots(newWCConfigs, newClientConfig)
+	s.syncDingTalkBots(newDTConfigs, newGlobalConfig)
+	s.syncFeishuBots(newFTConfigs, newGlobalConfig)
+	s.syncWeComBots(newWCConfigs, newGlobalConfig)
 	wecomBotConfigs := s.mergeWeComBotConfigs(newGlobalConfig.Channels)
-	s.syncWeComLongConnBots(wecomBotConfigs, newClientConfig)
+	s.syncWeComLongConnBots(wecomBotConfigs, newGlobalConfig)
 
 	// 热重载定时任务
 	if s.taskScheduler != nil {
-		s.taskScheduler.Reload(newGlobalConfig.ScheduledTasks, newClientConfig)
+		s.taskScheduler.Reload(newGlobalConfig.ScheduledTasks, newGlobalConfig)
 	} else if len(newGlobalConfig.ScheduledTasks) > 0 {
 		// 首次加载定时任务（之前没有调度器实例）
 		s.taskScheduler = scheduler.New(newGlobalConfig.GetTimeZone())
-		s.taskScheduler.Start(newGlobalConfig.ScheduledTasks, newClientConfig)
+		s.taskScheduler.Start(newGlobalConfig.ScheduledTasks, newGlobalConfig)
 	}
 
 	// 原子替换配置指针
 	s.mu.Lock()
 	s.globalConfig = newGlobalConfig
 	s.config = &client.Config{
+		CloudAccountID:  newClientConfig.CloudAccountID,
 		AccessKeyId:     newClientConfig.AccessKeyId,
 		AccessKeySecret: newClientConfig.AccessKeySecret,
 		Endpoint:        newClientConfig.Endpoint,
@@ -783,7 +930,7 @@ func (s *Server) reloadConfig() error {
 	return nil
 }
 
-// isSlsProduct 根据全局配置 global.product 判断当前实例是否对接 SLS 产品。
+// isSlsProduct 根据 legacy product 默认值判断当前实例是否对接 SLS 产品。
 func (s *Server) isSlsProduct() bool {
 	s.mu.RLock()
 	cfg := s.globalConfig
@@ -791,16 +938,32 @@ func (s *Server) isSlsProduct() bool {
 	if cfg == nil {
 		return true
 	}
-	return config.IsSlsProduct(cfg.Global.Product)
+	return config.IsSlsProduct(cfg.GetLegacyProduct())
 }
 
 // createClient 为每个请求创建一个新的客户端实例
 func (s *Server) createClient() (*sopchat.Client, error) {
+	return s.createClientForCloudAccount("")
+}
+
+// createClientForCloudAccount 为指定 cloudAccountId 创建客户端实例。
+// cloudAccountId 为空时使用默认账号。
+func (s *Server) createClientForCloudAccount(cloudAccountID string) (*sopchat.Client, error) {
 	s.mu.RLock()
-	cfg := s.config
+	globalCfg := s.globalConfig
+	cfg := s.config // legacy fallback
 	s.mu.RUnlock()
+	if globalCfg != nil {
+		resolved, err := globalCfg.ResolveClientConfig(cloudAccountID)
+		if err == nil && resolved != nil && resolved.AccessKeyId != "" {
+			return newSOPChatClientFromClientConfig(resolved)
+		}
+		if strings.TrimSpace(cloudAccountID) != "" {
+			return nil, err
+		}
+	}
 	if cfg == nil || cfg.AccessKeyId == "" {
-		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 global.accessKeyId 和 global.accessKeySecret")
+		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 cloudAccounts")
 	}
 	return client.NewCMSClient(cfg)
 }
@@ -808,18 +971,23 @@ func (s *Server) createClient() (*sopchat.Client, error) {
 // createCMSClient 创建 SDK 的 CMS 客户端（用于直接调用 SDK）
 func (s *Server) createCMSClient() (*cmsclient.Client, error) {
 	s.mu.RLock()
-	cfg := s.config
+	globalCfg := s.globalConfig
+	cfg := s.config // legacy fallback
 	s.mu.RUnlock()
+	if globalCfg != nil {
+		if resolved, err := globalCfg.ToClientConfig(); err == nil && resolved != nil && resolved.AccessKeyId != "" {
+			return buildRawCMSClient(resolved)
+		}
+	}
 	if cfg == nil || cfg.AccessKeyId == "" {
-		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 global.accessKeyId 和 global.accessKeySecret")
+		return nil, fmt.Errorf("凭据未配置，请先通过配置 UI 设置 cloudAccounts")
 	}
-	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(cfg.AccessKeyId),
-		AccessKeySecret:  tea.String(cfg.AccessKeySecret),
-		Endpoint:         tea.String(cfg.Endpoint),
-		SignatureVersion: tea.String("v3"),
-	}
-	return cmsclient.NewClient(cmsConfig)
+	return buildRawCMSClient(&config.ClientConfig{
+		CloudAccountID:  cfg.CloudAccountID,
+		AccessKeyId:     cfg.AccessKeyId,
+		AccessKeySecret: cfg.AccessKeySecret,
+		Endpoint:        cfg.Endpoint,
+	})
 }
 
 // handleHealth 健康检查

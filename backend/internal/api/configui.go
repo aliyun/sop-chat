@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"sop-chat/pkg/sopchat"
 
 	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v3"
 )
 
 // configUITokenMiddleware 验证配置 UI 访问令牌的中间件
@@ -61,7 +63,8 @@ code{background:#eef0ff;padding:2px 6px;border-radius:4px;font-size:.8rem}</styl
 
 // configUIResponse 是返回给前端的结构化配置数据（不暴露文件路径）
 type configUIResponse struct {
-	Global         configUIGlobal          `json:"global"`
+	Server         configUIServer          `json:"server"`
+	CloudAccounts  []configUICloudAccount  `json:"cloudAccounts"`
 	Auth           configUIAuth            `json:"auth"`
 	DingTalk       []configUIDingTalk      `json:"dingtalk"`
 	Feishu         []configUIFeishu        `json:"feishu"`
@@ -74,18 +77,19 @@ type configUIResponse struct {
 
 // configUIScheduledTask 定时任务配置（UI 层）
 type configUIScheduledTask struct {
-	Name         string            `json:"name"`
-	Enabled      bool              `json:"enabled"`
-	Cron         string            `json:"cron"`
-	Prompt       string            `json:"prompt"`
-	EmployeeName string            `json:"employeeName"`
-	ConciseReply bool              `json:"conciseReply"`
-	Product      string            `json:"product"`
-	Project      string            `json:"project"`
-	Workspace    string            `json:"workspace"`
-	Region       string            `json:"region"`
-	Webhook      *configUIWebhook  `json:"webhook,omitempty"`  // 向后兼容：旧前端可能只传单个
-	Webhooks     []configUIWebhook `json:"webhooks"`
+	Name           string            `json:"name"`
+	Enabled        bool              `json:"enabled"`
+	Cron           string            `json:"cron"`
+	Prompt         string            `json:"prompt"`
+	EmployeeName   string            `json:"employeeName"`
+	CloudAccountID string            `json:"cloudAccountId"`
+	ConciseReply   bool              `json:"conciseReply"`
+	Product        string            `json:"product"`
+	Project        string            `json:"project"`
+	Workspace      string            `json:"workspace"`
+	Region         string            `json:"region"`
+	Webhook        *configUIWebhook  `json:"webhook,omitempty"` // 向后兼容：旧前端可能只传单个
+	Webhooks       []configUIWebhook `json:"webhooks"`
 }
 
 // configUIWebhook Webhook 配置（UI 层）
@@ -108,19 +112,21 @@ func (t *configUIScheduledTask) effectiveWebhooks() []configUIWebhook {
 	return nil
 }
 
-type configUIGlobal struct {
-	AccessKeyId     string `json:"accessKeyId"`
-	AccessKeySecret string `json:"accessKeySecret"`
-	Endpoint        string `json:"endpoint"`
-	Host            string `json:"host"`
-	Port            int    `json:"port"`
-	TimeZone        string `json:"timeZone"`
-	Language        string `json:"language"`
+type configUIServer struct {
+	Host                string `json:"host"`
+	Port                int    `json:"port"`
+	TimeZone            string `json:"timeZone"`
+	Language            string `json:"language"`
 	BindThreadToProcess *bool  `json:"bindThreadToProcess,omitempty"`
-	Product         string `json:"product"`
-	Project         string `json:"project"`
-	Workspace       string `json:"workspace"`
-	Region          string `json:"region"`
+}
+
+type configUICloudAccount struct {
+	ID              string   `json:"id"`
+	Provider        string   `json:"provider"`
+	Aliases         []string `json:"aliases"`
+	AccessKeyId     string   `json:"accessKeyId"`
+	AccessKeySecret string   `json:"accessKeySecret"`
+	Endpoint        string   `json:"endpoint"`
 }
 
 type configUIAuth struct {
@@ -155,12 +161,22 @@ type configUIConversationRoute struct {
 	Region            string `json:"region"`
 }
 
+type configUICloudAccountRoute struct {
+	CloudAccountID string `json:"cloudAccountId"`
+	EmployeeName   string `json:"employeeName"`
+	Product        string `json:"product"`
+	Project        string `json:"project"`
+	Workspace      string `json:"workspace"`
+	Region         string `json:"region"`
+}
+
 type configUIDingTalk struct {
 	Enabled              bool                        `json:"enabled"`
 	Name                 string                      `json:"name"`
 	ClientId             string                      `json:"clientId"`
 	ClientSecret         string                      `json:"clientSecret"`
 	EmployeeName         string                      `json:"employeeName"`
+	CloudAccountID       string                      `json:"cloudAccountId"`
 	ConciseReply         bool                        `json:"conciseReply"`
 	CardTemplateId       string                      `json:"cardTemplateId"`
 	CardContentKey       string                      `json:"cardContentKey"`
@@ -172,23 +188,26 @@ type configUIDingTalk struct {
 	AllowedDirectUsers   []string                    `json:"allowedDirectUsers"`
 	AllowedConversations []string                    `json:"allowedConversations"`
 	ConversationRoutes   []configUIConversationRoute `json:"conversationRoutes"`
+	CloudAccountRoutes   []configUICloudAccountRoute `json:"cloudAccountRoutes"`
 }
 
 type configUIFeishu struct {
-	Enabled           bool     `json:"enabled"`
-	Name              string   `json:"name"`
-	AppID             string   `json:"appId"`
-	AppSecret         string   `json:"appSecret"`
-	VerificationToken string   `json:"verificationToken"`
-	EventEncryptKey   string   `json:"eventEncryptKey"`
-	EmployeeName      string   `json:"employeeName"`
-	ConciseReply      bool     `json:"conciseReply"`
-	Product           string   `json:"product"`
-	Project           string   `json:"project"`
-	Workspace         string   `json:"workspace"`
-	Region            string   `json:"region"`
-	AllowedUsers      []string `json:"allowedUsers"`
-	AllowedChats      []string `json:"allowedChats"`
+	Enabled            bool                        `json:"enabled"`
+	Name               string                      `json:"name"`
+	AppID              string                      `json:"appId"`
+	AppSecret          string                      `json:"appSecret"`
+	VerificationToken  string                      `json:"verificationToken"`
+	EventEncryptKey    string                      `json:"eventEncryptKey"`
+	EmployeeName       string                      `json:"employeeName"`
+	CloudAccountID     string                      `json:"cloudAccountId"`
+	ConciseReply       bool                        `json:"conciseReply"`
+	Product            string                      `json:"product"`
+	Project            string                      `json:"project"`
+	Workspace          string                      `json:"workspace"`
+	Region             string                      `json:"region"`
+	AllowedUsers       []string                    `json:"allowedUsers"`
+	AllowedChats       []string                    `json:"allowedChats"`
+	CloudAccountRoutes []configUICloudAccountRoute `json:"cloudAccountRoutes"`
 }
 
 type configUIWeCom struct {
@@ -202,6 +221,7 @@ type configUIWeCom struct {
 	CallbackPort   int      `json:"callbackPort"`
 	CallbackPath   string   `json:"callbackPath"`
 	EmployeeName   string   `json:"employeeName"`
+	CloudAccountID string   `json:"cloudAccountId"`
 	ConciseReply   bool     `json:"conciseReply"`
 	Product        string   `json:"product"`
 	Project        string   `json:"project"`
@@ -218,23 +238,425 @@ type configUIWeCom struct {
 		ReconnectDelaySec    int    `json:"reconnectDelaySec"`
 		MaxReconnectDelaySec int    `json:"maxReconnectDelaySec"`
 	} `json:"botLongConn"`
+	CloudAccountRoutes []configUICloudAccountRoute `json:"cloudAccountRoutes"`
 }
 
 type configUIWeComBot struct {
-	Enabled      bool   `json:"enabled"`
-	Name         string `json:"name"`
-	BotID        string `json:"botId"`
-	BotSecret    string `json:"botSecret"`
-	EmployeeName string `json:"employeeName"`
-	ConciseReply bool   `json:"conciseReply"`
-	Product      string `json:"product"`
-	Project      string `json:"project"`
-	Workspace    string `json:"workspace"`
-	Region       string `json:"region"`
+	Enabled              bool                        `json:"enabled"`
+	Name                 string                      `json:"name"`
+	BotID                string                      `json:"botId"`
+	BotSecret            string                      `json:"botSecret"`
+	EmployeeName         string                      `json:"employeeName"`
+	CloudAccountID       string                      `json:"cloudAccountId"`
+	ConciseReply         bool                        `json:"conciseReply"`
+	Product              string                      `json:"product"`
+	Project              string                      `json:"project"`
+	Workspace            string                      `json:"workspace"`
+	Region               string                      `json:"region"`
+	URL                  string                      `json:"url"`
+	PingIntervalSec      int                         `json:"pingIntervalSec"`
+	ReconnectDelaySec    int                         `json:"reconnectDelaySec"`
+	MaxReconnectDelaySec int                         `json:"maxReconnectDelaySec"`
+	CloudAccountRoutes   []configUICloudAccountRoute `json:"cloudAccountRoutes"`
 }
 
 type configUIOpenAI struct {
 	APIKeys []string `json:"apiKeys"`
+}
+
+type configUIFieldPresence struct {
+	Server         bool
+	CloudAccounts  bool
+	Auth           bool
+	DingTalk       bool
+	Feishu         bool
+	WeCom          bool
+	WeComBot       bool
+	OpenAIEnabled  bool
+	OpenAI         bool
+	ScheduledTasks bool
+}
+
+func detectConfigUIFieldPresence(raw map[string]json.RawMessage) configUIFieldPresence {
+	_, hasServer := raw["server"]
+	_, hasCloudAccounts := raw["cloudAccounts"]
+	_, hasAuth := raw["auth"]
+	_, hasDingTalk := raw["dingtalk"]
+	_, hasFeishu := raw["feishu"]
+	_, hasWeCom := raw["wecom"]
+	_, hasWeComBot := raw["wecomBot"]
+	_, hasOpenAIEnabled := raw["openaiEnabled"]
+	_, hasOpenAI := raw["openai"]
+	_, hasScheduledTasks := raw["scheduledTasks"]
+	return configUIFieldPresence{
+		Server:         hasServer,
+		CloudAccounts:  hasCloudAccounts,
+		Auth:           hasAuth,
+		DingTalk:       hasDingTalk,
+		Feishu:         hasFeishu,
+		WeCom:          hasWeCom,
+		WeComBot:       hasWeComBot,
+		OpenAIEnabled:  hasOpenAIEnabled,
+		OpenAI:         hasOpenAI,
+		ScheduledTasks: hasScheduledTasks,
+	}
+}
+
+func cloneConfigForSave(existing *config.Config) (*config.Config, error) {
+	if existing == nil {
+		return &config.Config{}, nil
+	}
+	data, err := yaml.Marshal(existing)
+	if err != nil {
+		return nil, fmt.Errorf("序列化现有配置失败: %w", err)
+	}
+	var cloned config.Config
+	if err := yaml.Unmarshal(data, &cloned); err != nil {
+		return nil, fmt.Errorf("复制现有配置失败: %w", err)
+	}
+	return &cloned, nil
+}
+
+func buildConfigFromUI(existing *config.Config, req configUIResponse, presence configUIFieldPresence) (*config.Config, error) {
+	cfg, err := cloneConfigForSave(existing)
+	if err != nil {
+		return nil, err
+	}
+
+	if presence.Server {
+		cfg.Server.Host = req.Server.Host
+		cfg.Server.Port = req.Server.Port
+		cfg.Server.TimeZone = req.Server.TimeZone
+		cfg.Server.Language = req.Server.Language
+		if req.Server.BindThreadToProcess != nil {
+			cfg.Server.BindThreadToProcess = req.Server.BindThreadToProcess
+		}
+		// 保存为新结构时，不再重复写回 legacy 的服务配置字段。
+		cfg.Global.Host = ""
+		cfg.Global.Port = 0
+		cfg.Global.TimeZone = ""
+		cfg.Global.Language = ""
+		cfg.Global.BindThreadToProcess = nil
+	}
+
+	if presence.CloudAccounts {
+		cfg.CloudAccounts = nil
+		if len(req.CloudAccounts) > 0 {
+			cfg.CloudAccounts = make([]config.CloudAccountConfig, 0, len(req.CloudAccounts))
+			for _, account := range req.CloudAccounts {
+				if account.AccessKeyId == "" && account.AccessKeySecret == "" && account.Endpoint == "" {
+					continue
+				}
+				accountID := config.NormalizeCloudAccountID(account.ID)
+				provider := strings.TrimSpace(strings.ToLower(account.Provider))
+				if provider == "" {
+					provider = "aliyun"
+				}
+				cfg.CloudAccounts = append(cfg.CloudAccounts, config.CloudAccountConfig{
+					ID:              accountID,
+					Provider:        provider,
+					Aliases:         account.Aliases,
+					AccessKeyId:     account.AccessKeyId,
+					AccessKeySecret: account.AccessKeySecret,
+					Endpoint:        account.Endpoint,
+				})
+			}
+		}
+		// 只有在 UI 已显式写入 cloudAccounts 时，才清理 legacy AK/SK，避免部分页面/旧前端把配置抹空。
+		if len(cfg.CloudAccounts) > 0 {
+			cfg.Global.AccessKeyId = ""
+			cfg.Global.AccessKeySecret = ""
+			cfg.Global.Endpoint = ""
+		}
+	}
+
+	if presence.Auth {
+		ldapCfg := cfg.Auth.LDAP
+		oidcCfg := cfg.Auth.OIDC
+		cfg.Auth.Methods = req.Auth.Methods
+		cfg.Auth.JWT = config.JWTConfig{
+			SecretKey: req.Auth.JWTSecretKey,
+			ExpiresIn: req.Auth.JWTExpiresIn,
+		}
+		cfg.Auth.PasswordSalt = req.Auth.PasswordSalt
+		cfg.Auth.LDAP = ldapCfg
+		cfg.Auth.OIDC = oidcCfg
+		if req.Auth.Local != nil {
+			cfg.Auth.BuiltinUsers = make([]config.UserConfig, len(req.Auth.Local.Users))
+			cfg.Auth.Roles = make([]config.RoleConfig, len(req.Auth.Local.Roles))
+			for i, u := range req.Auth.Local.Users {
+				cfg.Auth.BuiltinUsers[i] = config.UserConfig{Name: u.Name, Password: u.Password}
+			}
+			for i, r := range req.Auth.Local.Roles {
+				cfg.Auth.Roles[i] = config.RoleConfig{Name: r.Name, Users: r.Users}
+			}
+		}
+	}
+
+	if presence.DingTalk {
+		if cfg.Channels == nil {
+			cfg.Channels = &config.ChannelsConfig{}
+		}
+		cfg.Channels.DingTalk = make([]config.DingTalkConfig, 0, len(req.DingTalk))
+		for _, dt := range req.DingTalk {
+			if dt.ClientId != "" || dt.ClientSecret != "" || dt.EmployeeName != "" {
+				routes := make([]config.ConversationRoute, 0, len(dt.ConversationRoutes))
+				for _, r := range dt.ConversationRoutes {
+					if r.ConversationTitle != "" && r.EmployeeName != "" {
+						routes = append(routes, config.ConversationRoute{
+							ConversationTitle: r.ConversationTitle,
+							EmployeeName:      r.EmployeeName,
+							Product:           r.Product,
+							Project:           r.Project,
+							Workspace:         r.Workspace,
+							Region:            r.Region,
+						})
+					}
+				}
+				cfg.Channels.DingTalk = append(cfg.Channels.DingTalk, config.DingTalkConfig{
+					Enabled:              dt.Enabled,
+					Name:                 dt.Name,
+					ClientId:             dt.ClientId,
+					ClientSecret:         dt.ClientSecret,
+					EmployeeName:         dt.EmployeeName,
+					CloudAccountID:       config.NormalizeCloudAccountID(dt.CloudAccountID),
+					ConciseReply:         dt.ConciseReply,
+					CardTemplateId:       dt.CardTemplateId,
+					CardContentKey:       dt.CardContentKey,
+					Product:              dt.Product,
+					Project:              dt.Project,
+					Workspace:            dt.Workspace,
+					Region:               dt.Region,
+					AllowedGroupUsers:    dt.AllowedGroupUsers,
+					AllowedDirectUsers:   dt.AllowedDirectUsers,
+					AllowedConversations: dt.AllowedConversations,
+					ConversationRoutes:   routes,
+					CloudAccountRoutes:   fromUICloudAccountRoutes(dt.CloudAccountRoutes),
+				})
+			}
+		}
+	}
+
+	if presence.Feishu {
+		if cfg.Channels == nil {
+			cfg.Channels = &config.ChannelsConfig{}
+		}
+		cfg.Channels.Feishu = make([]config.FeishuConfig, 0, len(req.Feishu))
+		for _, ft := range req.Feishu {
+			if ft.AppID != "" || ft.AppSecret != "" || ft.EmployeeName != "" {
+				allowedUsers := ft.AllowedUsers
+				if allowedUsers == nil {
+					allowedUsers = []string{}
+				}
+				allowedChats := ft.AllowedChats
+				if allowedChats == nil {
+					allowedChats = []string{}
+				}
+				cfg.Channels.Feishu = append(cfg.Channels.Feishu, config.FeishuConfig{
+					Enabled:            ft.Enabled,
+					Name:               ft.Name,
+					AppID:              ft.AppID,
+					AppSecret:          ft.AppSecret,
+					VerificationToken:  ft.VerificationToken,
+					EventEncryptKey:    ft.EventEncryptKey,
+					EmployeeName:       ft.EmployeeName,
+					CloudAccountID:     config.NormalizeCloudAccountID(ft.CloudAccountID),
+					ConciseReply:       ft.ConciseReply,
+					Product:            ft.Product,
+					Project:            ft.Project,
+					Workspace:          ft.Workspace,
+					Region:             ft.Region,
+					AllowedUsers:       allowedUsers,
+					AllowedChats:       allowedChats,
+					CloudAccountRoutes: fromUICloudAccountRoutes(ft.CloudAccountRoutes),
+				})
+			}
+		}
+	}
+
+	if presence.WeCom {
+		if cfg.Channels == nil {
+			cfg.Channels = &config.ChannelsConfig{}
+		}
+		cfg.Channels.WeCom = make([]config.WeComConfig, 0, len(req.WeCom))
+		for _, wc := range req.WeCom {
+			if wc.CorpID != "" || wc.Secret != "" || wc.EmployeeName != "" {
+				allowedUsers := wc.AllowedUsers
+				if allowedUsers == nil {
+					allowedUsers = []string{}
+				}
+				cfg.Channels.WeCom = append(cfg.Channels.WeCom, config.WeComConfig{
+					Enabled:            wc.Enabled,
+					Name:               wc.Name,
+					CorpID:             wc.CorpID,
+					AgentID:            wc.AgentID,
+					Secret:             wc.Secret,
+					Token:              wc.Token,
+					EncodingAESKey:     wc.EncodingAESKey,
+					CallbackPort:       wc.CallbackPort,
+					CallbackPath:       wc.CallbackPath,
+					EmployeeName:       wc.EmployeeName,
+					CloudAccountID:     config.NormalizeCloudAccountID(wc.CloudAccountID),
+					ConciseReply:       wc.ConciseReply,
+					Product:            wc.Product,
+					Project:            wc.Project,
+					Workspace:          wc.Workspace,
+					Region:             wc.Region,
+					AllowedUsers:       allowedUsers,
+					WebhookURL:         wc.WebhookURL,
+					CloudAccountRoutes: fromUICloudAccountRoutes(wc.CloudAccountRoutes),
+				})
+				if wc.BotLongConn.Enabled || wc.BotLongConn.BotID != "" || wc.BotLongConn.BotSecret != "" || wc.BotLongConn.URL != "" {
+					last := &cfg.Channels.WeCom[len(cfg.Channels.WeCom)-1]
+					last.BotLongConn = &config.WeComBotLongConnConfig{
+						Enabled:              wc.BotLongConn.Enabled,
+						BotID:                wc.BotLongConn.BotID,
+						BotSecret:            wc.BotLongConn.BotSecret,
+						URL:                  wc.BotLongConn.URL,
+						PingIntervalSec:      wc.BotLongConn.PingIntervalSec,
+						ReconnectDelaySec:    wc.BotLongConn.ReconnectDelaySec,
+						MaxReconnectDelaySec: wc.BotLongConn.MaxReconnectDelaySec,
+					}
+				}
+			}
+		}
+	}
+
+	if presence.WeComBot {
+		if cfg.Channels == nil {
+			cfg.Channels = &config.ChannelsConfig{}
+		}
+		cfg.Channels.WeComBot = make([]config.WeComBotConfig, 0, len(req.WeComBot))
+		for _, wb := range req.WeComBot {
+			if wb.BotID != "" || wb.BotSecret != "" || wb.EmployeeName != "" {
+				cfg.Channels.WeComBot = append(cfg.Channels.WeComBot, config.WeComBotConfig{
+					Enabled:              wb.Enabled,
+					Name:                 wb.Name,
+					BotID:                wb.BotID,
+					BotSecret:            wb.BotSecret,
+					EmployeeName:         wb.EmployeeName,
+					CloudAccountID:       config.NormalizeCloudAccountID(wb.CloudAccountID),
+					ConciseReply:         wb.ConciseReply,
+					Product:              wb.Product,
+					Project:              wb.Project,
+					Workspace:            wb.Workspace,
+					Region:               wb.Region,
+					URL:                  wb.URL,
+					PingIntervalSec:      wb.PingIntervalSec,
+					ReconnectDelaySec:    wb.ReconnectDelaySec,
+					MaxReconnectDelaySec: wb.MaxReconnectDelaySec,
+					CloudAccountRoutes:   fromUICloudAccountRoutes(wb.CloudAccountRoutes),
+				})
+			}
+		}
+	}
+
+	if presence.OpenAI || presence.OpenAIEnabled {
+		cfg.OpenAI = nil
+		if len(req.OpenAI.APIKeys) > 0 {
+			cfg.OpenAI = &config.OpenAICompatConfig{
+				Enabled: req.OpenAIEnabled,
+				APIKeys: req.OpenAI.APIKeys,
+			}
+		}
+		if cfg.OpenAI == nil && req.OpenAIEnabled {
+			cfg.OpenAI = &config.OpenAICompatConfig{Enabled: true}
+		}
+	}
+
+	if presence.ScheduledTasks {
+		cfg.ScheduledTasks = nil
+		for _, t := range req.ScheduledTasks {
+			webhooks := t.effectiveWebhooks()
+			if t.Name != "" || t.EmployeeName != "" || len(webhooks) > 0 {
+				taskProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, cfg.GetLegacyProduct())
+				cfgWebhooks := make([]config.WebhookConfig, len(webhooks))
+				for j, wh := range webhooks {
+					cfgWebhooks[j] = config.WebhookConfig{
+						Type:    wh.Type,
+						URL:     wh.URL,
+						MsgType: wh.MsgType,
+						Title:   wh.Title,
+						To:      wh.To,
+					}
+				}
+				cfg.ScheduledTasks = append(cfg.ScheduledTasks, config.ScheduledTaskConfig{
+					Name:           t.Name,
+					Enabled:        t.Enabled,
+					Cron:           t.Cron,
+					Prompt:         t.Prompt,
+					EmployeeName:   t.EmployeeName,
+					CloudAccountID: config.NormalizeCloudAccountID(t.CloudAccountID),
+					ConciseReply:   t.ConciseReply,
+					Product:        taskProduct,
+					Project:        t.Project,
+					Workspace:      t.Workspace,
+					Region:         t.Region,
+					Webhooks:       cfgWebhooks,
+				})
+			}
+		}
+	}
+
+	if cfg.Channels != nil &&
+		len(cfg.Channels.DingTalk) == 0 &&
+		len(cfg.Channels.Feishu) == 0 &&
+		len(cfg.Channels.WeCom) == 0 &&
+		len(cfg.Channels.WeComBot) == 0 {
+		cfg.Channels = nil
+	}
+
+	return cfg, nil
+}
+
+func toUIConversationRoutes(routes []config.ConversationRoute, base config.ProductContext) []configUIConversationRoute {
+	result := make([]configUIConversationRoute, 0, len(routes))
+	for _, route := range routes {
+		ctx := config.MergeProductContext(base, route.Product, route.Project, route.Workspace, route.Region)
+		result = append(result, configUIConversationRoute{
+			ConversationTitle: route.ConversationTitle,
+			EmployeeName:      route.EmployeeName,
+			Product:           ctx.Product,
+			Project:           ctx.Project,
+			Workspace:         ctx.Workspace,
+			Region:            ctx.Region,
+		})
+	}
+	return result
+}
+
+func toUICloudAccountRoutes(routes []config.CloudAccountRoute, base config.ProductContext) []configUICloudAccountRoute {
+	result := make([]configUICloudAccountRoute, 0, len(routes))
+	for _, route := range routes {
+		ctx := config.MergeProductContext(base, route.Product, route.Project, route.Workspace, route.Region)
+		result = append(result, configUICloudAccountRoute{
+			CloudAccountID: config.NormalizeCloudAccountID(route.CloudAccountID),
+			EmployeeName:   route.EmployeeName,
+			Product:        ctx.Product,
+			Project:        ctx.Project,
+			Workspace:      ctx.Workspace,
+			Region:         ctx.Region,
+		})
+	}
+	return result
+}
+
+func fromUICloudAccountRoutes(routes []configUICloudAccountRoute) []config.CloudAccountRoute {
+	result := make([]config.CloudAccountRoute, 0, len(routes))
+	for _, route := range routes {
+		if strings.TrimSpace(route.CloudAccountID) == "" || strings.TrimSpace(route.EmployeeName) == "" {
+			continue
+		}
+		result = append(result, config.CloudAccountRoute{
+			CloudAccountID: config.NormalizeCloudAccountID(route.CloudAccountID),
+			EmployeeName:   route.EmployeeName,
+			Product:        route.Product,
+			Project:        route.Project,
+			Workspace:      route.Workspace,
+			Region:         route.Region,
+		})
+	}
+	return result
 }
 
 // handleGetConfig 返回结构化的配置 JSON（不包含文件路径）
@@ -246,6 +668,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	if cfg == nil {
 		// 配置文件不存在时返回空配置，让前端呈现空表单供用户填写
 		c.JSON(http.StatusOK, configUIResponse{
+			CloudAccounts:  []configUICloudAccount{},
 			DingTalk:       []configUIDingTalk{},
 			Feishu:         []configUIFeishu{},
 			WeCom:          []configUIWeCom{},
@@ -257,22 +680,15 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	}
 
 	resp := configUIResponse{
-		Global: configUIGlobal{
-			AccessKeyId:     cfg.Global.AccessKeyId,
-			AccessKeySecret: cfg.Global.AccessKeySecret,
-			Endpoint:        cfg.Global.Endpoint,
-			Host:            cfg.Global.Host,
-			Port:            cfg.Global.Port,
-			TimeZone:        cfg.Global.TimeZone,
-			Language:        cfg.Global.Language,
+		Server: configUIServer{
+			Host:     cfg.GetHost(),
+			Port:     cfg.GetPort(),
+			TimeZone: cfg.GetTimeZone(),
+			Language: cfg.GetLanguage(),
 			BindThreadToProcess: func() *bool {
 				v := cfg.BindThreadToProcess()
 				return &v
 			}(),
-			Product:         cfg.Global.Product,
-			Project:         cfg.Global.Project,
-			Workspace:       cfg.Global.Workspace,
-			Region:          cfg.Global.Region,
 		},
 		Auth: configUIAuth{
 			Methods:      cfg.Auth.Methods,
@@ -281,6 +697,22 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			PasswordSalt: cfg.Auth.PasswordSalt,
 		},
 		OpenAIEnabled: cfg.OpenAI != nil && cfg.OpenAI.Enabled,
+	}
+
+	if len(cfg.CloudAccounts) > 0 {
+		resp.CloudAccounts = make([]configUICloudAccount, len(cfg.CloudAccounts))
+		for i, account := range cfg.CloudAccounts {
+			resp.CloudAccounts[i] = configUICloudAccount{
+				ID:              config.NormalizeCloudAccountID(account.ID),
+				Provider:        account.Provider,
+				Aliases:         account.Aliases,
+				AccessKeyId:     account.AccessKeyId,
+				AccessKeySecret: account.AccessKeySecret,
+				Endpoint:        account.Endpoint,
+			}
+		}
+	} else {
+		resp.CloudAccounts = []configUICloudAccount{}
 	}
 
 	if len(cfg.Auth.BuiltinUsers) > 0 || len(cfg.Auth.Roles) > 0 {
@@ -304,35 +736,28 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	// 始终返回所有钉钉实例（包括 enabled=false 的，凭据应保留显示）
 	if cfg.Channels != nil && len(cfg.Channels.DingTalk) > 0 {
 		resp.DingTalk = make([]configUIDingTalk, len(cfg.Channels.DingTalk))
+		legacyDefaults := cfg.GetLegacyProductContext()
 		for i, dt := range cfg.Channels.DingTalk {
-			routes := make([]configUIConversationRoute, len(dt.ConversationRoutes))
-			for j, r := range dt.ConversationRoutes {
-				routes[j] = configUIConversationRoute{
-					ConversationTitle: r.ConversationTitle,
-					EmployeeName:      r.EmployeeName,
-					Product:           r.Product,
-					Project:           r.Project,
-					Workspace:         r.Workspace,
-					Region:            r.Region,
-				}
-			}
+			base := config.MergeProductContext(legacyDefaults, dt.Product, dt.Project, dt.Workspace, dt.Region)
 			resp.DingTalk[i] = configUIDingTalk{
 				Enabled:              dt.Enabled,
 				Name:                 dt.Name,
 				ClientId:             dt.ClientId,
 				ClientSecret:         dt.ClientSecret,
 				EmployeeName:         dt.EmployeeName,
+				CloudAccountID:       config.NormalizeCloudAccountID(dt.CloudAccountID),
 				ConciseReply:         dt.ConciseReply,
 				CardTemplateId:       dt.CardTemplateId,
 				CardContentKey:       dt.CardContentKey,
-				Product:              dt.Product,
-				Project:              dt.Project,
-				Workspace:            dt.Workspace,
-				Region:               dt.Region,
+				Product:              base.Product,
+				Project:              base.Project,
+				Workspace:            base.Workspace,
+				Region:               base.Region,
 				AllowedGroupUsers:    dt.AllowedGroupUsers,
 				AllowedDirectUsers:   dt.AllowedDirectUsers,
 				AllowedConversations: dt.AllowedConversations,
-				ConversationRoutes:   routes,
+				ConversationRoutes:   toUIConversationRoutes(dt.ConversationRoutes, base),
+				CloudAccountRoutes:   toUICloudAccountRoutes(dt.CloudAccountRoutes, base),
 			}
 		}
 	} else {
@@ -342,22 +767,26 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	// 飞书配置
 	if cfg.Channels != nil && len(cfg.Channels.Feishu) > 0 {
 		resp.Feishu = make([]configUIFeishu, len(cfg.Channels.Feishu))
+		legacyDefaults := cfg.GetLegacyProductContext()
 		for i, ft := range cfg.Channels.Feishu {
+			base := config.MergeProductContext(legacyDefaults, ft.Product, ft.Project, ft.Workspace, ft.Region)
 			resp.Feishu[i] = configUIFeishu{
-				Enabled:           ft.Enabled,
-				Name:              ft.Name,
-				AppID:             ft.AppID,
-				AppSecret:         ft.AppSecret,
-				VerificationToken: ft.VerificationToken,
-				EventEncryptKey:   ft.EventEncryptKey,
-				EmployeeName:      ft.EmployeeName,
-				ConciseReply:      ft.ConciseReply,
-				Product:           ft.Product,
-				Project:           ft.Project,
-				Workspace:         ft.Workspace,
-				Region:            ft.Region,
-				AllowedUsers:      ft.AllowedUsers,
-				AllowedChats:      ft.AllowedChats,
+				Enabled:            ft.Enabled,
+				Name:               ft.Name,
+				AppID:              ft.AppID,
+				AppSecret:          ft.AppSecret,
+				VerificationToken:  ft.VerificationToken,
+				EventEncryptKey:    ft.EventEncryptKey,
+				EmployeeName:       ft.EmployeeName,
+				CloudAccountID:     config.NormalizeCloudAccountID(ft.CloudAccountID),
+				ConciseReply:       ft.ConciseReply,
+				Product:            base.Product,
+				Project:            base.Project,
+				Workspace:          base.Workspace,
+				Region:             base.Region,
+				AllowedUsers:       ft.AllowedUsers,
+				AllowedChats:       ft.AllowedChats,
+				CloudAccountRoutes: toUICloudAccountRoutes(ft.CloudAccountRoutes, base),
 			}
 		}
 	} else {
@@ -367,24 +796,38 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	// 企业微信配置
 	if cfg.Channels != nil && len(cfg.Channels.WeCom) > 0 {
 		resp.WeCom = make([]configUIWeCom, len(cfg.Channels.WeCom))
+		legacyDefaults := cfg.GetLegacyProductContext()
 		for i, wc := range cfg.Channels.WeCom {
+			base := config.MergeProductContext(legacyDefaults, wc.Product, wc.Project, wc.Workspace, wc.Region)
 			resp.WeCom[i] = configUIWeCom{
-				Enabled:        wc.Enabled,
-				Name:           wc.Name,
-				CorpID:         wc.CorpID,
-				AgentID:        wc.AgentID,
-				Secret:         wc.Secret,
-				Token:          wc.Token,
-				EncodingAESKey: wc.EncodingAESKey,
-				CallbackPort:   wc.CallbackPort,
-				CallbackPath:   wc.CallbackPath,
-				EmployeeName:   wc.EmployeeName,
-				ConciseReply:   wc.ConciseReply,
-				Product:        wc.Product,
-				Project:        wc.Project,
-				Workspace:      wc.Workspace,
-				Region:         wc.Region,
-				AllowedUsers:   wc.AllowedUsers,
+				Enabled:            wc.Enabled,
+				Name:               wc.Name,
+				CorpID:             wc.CorpID,
+				AgentID:            wc.AgentID,
+				Secret:             wc.Secret,
+				Token:              wc.Token,
+				EncodingAESKey:     wc.EncodingAESKey,
+				CallbackPort:       wc.CallbackPort,
+				CallbackPath:       wc.CallbackPath,
+				EmployeeName:       wc.EmployeeName,
+				CloudAccountID:     config.NormalizeCloudAccountID(wc.CloudAccountID),
+				ConciseReply:       wc.ConciseReply,
+				Product:            base.Product,
+				Project:            base.Project,
+				Workspace:          base.Workspace,
+				Region:             base.Region,
+				AllowedUsers:       wc.AllowedUsers,
+				WebhookURL:         wc.WebhookURL,
+				CloudAccountRoutes: toUICloudAccountRoutes(wc.CloudAccountRoutes, base),
+			}
+			if wc.BotLongConn != nil {
+				resp.WeCom[i].BotLongConn.Enabled = wc.BotLongConn.Enabled
+				resp.WeCom[i].BotLongConn.BotID = wc.BotLongConn.BotID
+				resp.WeCom[i].BotLongConn.BotSecret = wc.BotLongConn.BotSecret
+				resp.WeCom[i].BotLongConn.URL = wc.BotLongConn.URL
+				resp.WeCom[i].BotLongConn.PingIntervalSec = wc.BotLongConn.PingIntervalSec
+				resp.WeCom[i].BotLongConn.ReconnectDelaySec = wc.BotLongConn.ReconnectDelaySec
+				resp.WeCom[i].BotLongConn.MaxReconnectDelaySec = wc.BotLongConn.MaxReconnectDelaySec
 			}
 		}
 	} else {
@@ -394,18 +837,26 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	// 企业微信群聊机器人配置（独立渠道）
 	if cfg.Channels != nil && len(cfg.Channels.WeComBot) > 0 {
 		resp.WeComBot = make([]configUIWeComBot, len(cfg.Channels.WeComBot))
+		legacyDefaults := cfg.GetLegacyProductContext()
 		for i, wb := range cfg.Channels.WeComBot {
+			base := config.MergeProductContext(legacyDefaults, wb.Product, wb.Project, wb.Workspace, wb.Region)
 			resp.WeComBot[i] = configUIWeComBot{
-				Enabled:      wb.Enabled,
-				Name:         wb.Name,
-				BotID:        wb.BotID,
-				BotSecret:    wb.BotSecret,
-				EmployeeName: wb.EmployeeName,
-				ConciseReply: wb.ConciseReply,
-				Product:      wb.Product,
-				Project:      wb.Project,
-				Workspace:    wb.Workspace,
-				Region:       wb.Region,
+				Enabled:              wb.Enabled,
+				Name:                 wb.Name,
+				BotID:                wb.BotID,
+				BotSecret:            wb.BotSecret,
+				EmployeeName:         wb.EmployeeName,
+				CloudAccountID:       config.NormalizeCloudAccountID(wb.CloudAccountID),
+				ConciseReply:         wb.ConciseReply,
+				Product:              base.Product,
+				Project:              base.Project,
+				Workspace:            base.Workspace,
+				Region:               base.Region,
+				URL:                  wb.URL,
+				PingIntervalSec:      wb.PingIntervalSec,
+				ReconnectDelaySec:    wb.ReconnectDelaySec,
+				MaxReconnectDelaySec: wb.MaxReconnectDelaySec,
+				CloudAccountRoutes:   toUICloudAccountRoutes(wb.CloudAccountRoutes, base),
 			}
 		}
 	} else {
@@ -427,7 +878,7 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	if len(cfg.ScheduledTasks) > 0 {
 		resp.ScheduledTasks = make([]configUIScheduledTask, len(cfg.ScheduledTasks))
 		for i, t := range cfg.ScheduledTasks {
-			effectiveProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, cfg.Global.Product)
+			effectiveProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, cfg.GetLegacyProduct())
 			webhooks := t.EffectiveWebhooks()
 			uiWebhooks := make([]configUIWebhook, len(webhooks))
 			for j, wh := range webhooks {
@@ -443,17 +894,18 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				uiWebhooks = []configUIWebhook{}
 			}
 			resp.ScheduledTasks[i] = configUIScheduledTask{
-				Name:         t.Name,
-				Enabled:      t.Enabled,
-				Cron:         t.Cron,
-				Prompt:       t.Prompt,
-				EmployeeName: t.EmployeeName,
-				ConciseReply: t.ConciseReply,
-				Product:      effectiveProduct,
-				Project:      t.Project,
-				Workspace:    t.Workspace,
-				Region:       t.Region,
-				Webhooks:     uiWebhooks,
+				Name:           t.Name,
+				Enabled:        t.Enabled,
+				Cron:           t.Cron,
+				Prompt:         t.Prompt,
+				EmployeeName:   t.EmployeeName,
+				CloudAccountID: config.NormalizeCloudAccountID(t.CloudAccountID),
+				ConciseReply:   t.ConciseReply,
+				Product:        effectiveProduct,
+				Project:        t.Project,
+				Workspace:      t.Workspace,
+				Region:         t.Region,
+				Webhooks:       uiWebhooks,
 			}
 		}
 	} else {
@@ -471,233 +923,32 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 		log.Printf("首次保存配置，将创建新文件: %s", s.configPath)
 	}
 
+	body, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "读取请求失败: " + err.Error()})
+		return
+	}
+
 	var req configUIResponse
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := json.Unmarshal(body, &req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
 		return
 	}
 
-	// 构建 config.Config 结构体
-	bindThread := true
-	if req.Global.BindThreadToProcess != nil {
-		bindThread = *req.Global.BindThreadToProcess
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(body, &raw); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
+		return
 	}
 
-	cfg := &config.Config{
-		Global: config.GlobalConfig{
-			AccessKeyId:        req.Global.AccessKeyId,
-			AccessKeySecret:    req.Global.AccessKeySecret,
-			Endpoint:           req.Global.Endpoint,
-			Host:               req.Global.Host,
-			Port:               req.Global.Port,
-			TimeZone:           req.Global.TimeZone,
-			Language:           req.Global.Language,
-			BindThreadToProcess: &bindThread,
-			Product:            req.Global.Product,
-			Project:            req.Global.Project,
-			Workspace:          req.Global.Workspace,
-			Region:             req.Global.Region,
-		},
-		Auth: config.AuthConfig{
-			Methods: req.Auth.Methods,
-			JWT: config.JWTConfig{
-				SecretKey: req.Auth.JWTSecretKey,
-				ExpiresIn: req.Auth.JWTExpiresIn,
-			},
-			PasswordSalt: req.Auth.PasswordSalt,
-		},
-	}
+	s.mu.RLock()
+	existing := s.globalConfig
+	s.mu.RUnlock()
 
-	if req.Auth.Local != nil {
-		cfg.Auth.BuiltinUsers = make([]config.UserConfig, len(req.Auth.Local.Users))
-		cfg.Auth.Roles = make([]config.RoleConfig, len(req.Auth.Local.Roles))
-		for i, u := range req.Auth.Local.Users {
-			cfg.Auth.BuiltinUsers[i] = config.UserConfig{Name: u.Name, Password: u.Password}
-		}
-		for i, r := range req.Auth.Local.Roles {
-			cfg.Auth.Roles[i] = config.RoleConfig{Name: r.Name, Users: r.Users}
-		}
-	}
-
-	// 渠道配置：钉钉（多实例列表）
-	if len(req.DingTalk) > 0 {
-		if cfg.Channels == nil {
-			cfg.Channels = &config.ChannelsConfig{}
-		}
-		cfg.Channels.DingTalk = make([]config.DingTalkConfig, 0, len(req.DingTalk))
-		for _, dt := range req.DingTalk {
-			// 只保留有实质内容的条目
-			if dt.ClientId != "" || dt.ClientSecret != "" || dt.EmployeeName != "" {
-				routes := make([]config.ConversationRoute, 0, len(dt.ConversationRoutes))
-				for _, r := range dt.ConversationRoutes {
-					if r.ConversationTitle != "" && r.EmployeeName != "" {
-						routes = append(routes, config.ConversationRoute{
-							ConversationTitle: r.ConversationTitle,
-							EmployeeName:      r.EmployeeName,
-							Product:           r.Product,
-							Project:           r.Project,
-							Workspace:         r.Workspace,
-							Region:            r.Region,
-						})
-					}
-				}
-				cfg.Channels.DingTalk = append(cfg.Channels.DingTalk, config.DingTalkConfig{
-					Enabled:              dt.Enabled,
-					Name:                 dt.Name,
-					ClientId:             dt.ClientId,
-					ClientSecret:         dt.ClientSecret,
-					EmployeeName:         dt.EmployeeName,
-					ConciseReply:         dt.ConciseReply,
-					CardTemplateId:       dt.CardTemplateId,
-					CardContentKey:       dt.CardContentKey,
-					Product:              dt.Product,
-					Project:              dt.Project,
-					Workspace:            dt.Workspace,
-					Region:               dt.Region,
-					AllowedGroupUsers:    dt.AllowedGroupUsers,
-					AllowedDirectUsers:   dt.AllowedDirectUsers,
-					AllowedConversations: dt.AllowedConversations,
-					ConversationRoutes:   routes,
-				})
-			}
-		}
-	}
-
-	// 飞书配置
-	if len(req.Feishu) > 0 {
-		if cfg.Channels == nil {
-			cfg.Channels = &config.ChannelsConfig{}
-		}
-		cfg.Channels.Feishu = make([]config.FeishuConfig, 0, len(req.Feishu))
-		for _, ft := range req.Feishu {
-			if ft.AppID != "" || ft.AppSecret != "" || ft.EmployeeName != "" {
-				allowedUsers := ft.AllowedUsers
-				if allowedUsers == nil {
-					allowedUsers = []string{}
-				}
-				allowedChats := ft.AllowedChats
-				if allowedChats == nil {
-					allowedChats = []string{}
-				}
-				cfg.Channels.Feishu = append(cfg.Channels.Feishu, config.FeishuConfig{
-					Enabled:           ft.Enabled,
-					Name:              ft.Name,
-					AppID:             ft.AppID,
-					AppSecret:         ft.AppSecret,
-					VerificationToken: ft.VerificationToken,
-					EventEncryptKey:   ft.EventEncryptKey,
-					EmployeeName:      ft.EmployeeName,
-					ConciseReply:      ft.ConciseReply,
-					Product:           ft.Product,
-					Project:           ft.Project,
-					Workspace:         ft.Workspace,
-					Region:            ft.Region,
-					AllowedUsers:      allowedUsers,
-					AllowedChats:      allowedChats,
-				})
-			}
-		}
-	}
-
-	// 企业微信配置
-	if len(req.WeCom) > 0 {
-		if cfg.Channels == nil {
-			cfg.Channels = &config.ChannelsConfig{}
-		}
-		cfg.Channels.WeCom = make([]config.WeComConfig, 0, len(req.WeCom))
-		for _, wc := range req.WeCom {
-			if wc.CorpID != "" || wc.Secret != "" || wc.EmployeeName != "" {
-				allowedUsers := wc.AllowedUsers
-				if allowedUsers == nil {
-					allowedUsers = []string{}
-				}
-				cfg.Channels.WeCom = append(cfg.Channels.WeCom, config.WeComConfig{
-					Enabled:        wc.Enabled,
-					Name:           wc.Name,
-					CorpID:         wc.CorpID,
-					AgentID:        wc.AgentID,
-					Secret:         wc.Secret,
-					Token:          wc.Token,
-					EncodingAESKey: wc.EncodingAESKey,
-					CallbackPort:   wc.CallbackPort,
-					CallbackPath:   wc.CallbackPath,
-					EmployeeName:   wc.EmployeeName,
-					ConciseReply:   wc.ConciseReply,
-					Product:        wc.Product,
-					Project:        wc.Project,
-					Workspace:      wc.Workspace,
-					Region:         wc.Region,
-					AllowedUsers:   allowedUsers,
-				})
-			}
-		}
-	}
-
-	// 企业微信群聊机器人配置（独立渠道）
-	if len(req.WeComBot) > 0 {
-		if cfg.Channels == nil {
-			cfg.Channels = &config.ChannelsConfig{}
-		}
-		cfg.Channels.WeComBot = make([]config.WeComBotConfig, 0, len(req.WeComBot))
-		for _, wb := range req.WeComBot {
-			if wb.BotID != "" || wb.BotSecret != "" || wb.EmployeeName != "" {
-				cfg.Channels.WeComBot = append(cfg.Channels.WeComBot, config.WeComBotConfig{
-					Enabled:      wb.Enabled,
-					Name:         wb.Name,
-					BotID:        wb.BotID,
-					BotSecret:    wb.BotSecret,
-					EmployeeName: wb.EmployeeName,
-					ConciseReply: wb.ConciseReply,
-					Product:      wb.Product,
-					Project:      wb.Project,
-					Workspace:    wb.Workspace,
-					Region:       wb.Region,
-				})
-			}
-		}
-	}
-
-	// OpenAI：只要填了任意密钥就保留配置块
-	if len(req.OpenAI.APIKeys) > 0 {
-		cfg.OpenAI = &config.OpenAICompatConfig{
-			Enabled: req.OpenAIEnabled,
-			APIKeys: req.OpenAI.APIKeys,
-		}
-	}
-	if cfg.OpenAI == nil && req.OpenAIEnabled {
-		cfg.OpenAI = &config.OpenAICompatConfig{Enabled: true}
-	}
-
-	// 定时任务配置
-	for _, t := range req.ScheduledTasks {
-		webhooks := t.effectiveWebhooks()
-		hasContent := t.Name != "" || t.EmployeeName != "" || len(webhooks) > 0
-		if hasContent {
-			taskProduct := config.ResolveScheduledTaskProduct(t.Product, t.Project, t.Workspace, strings.TrimSpace(req.Global.Product))
-			cfgWebhooks := make([]config.WebhookConfig, len(webhooks))
-			for j, wh := range webhooks {
-				cfgWebhooks[j] = config.WebhookConfig{
-					Type:    wh.Type,
-					URL:     wh.URL,
-					MsgType: wh.MsgType,
-					Title:   wh.Title,
-					To:      wh.To,
-				}
-			}
-			cfg.ScheduledTasks = append(cfg.ScheduledTasks, config.ScheduledTaskConfig{
-				Name:         t.Name,
-				Enabled:      t.Enabled,
-				Cron:         t.Cron,
-				Prompt:       t.Prompt,
-				EmployeeName: t.EmployeeName,
-				ConciseReply: t.ConciseReply,
-				Product:      taskProduct,
-				Project:      t.Project,
-				Workspace:    t.Workspace,
-				Region:       t.Region,
-				Webhooks:     cfgWebhooks,
-			})
-		}
+	cfg, err := buildConfigFromUI(existing, req, detectConfigUIFieldPresence(raw))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	// 保存到文件
@@ -742,18 +993,27 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 	globalCfg := s.globalConfig
 	s.mu.RUnlock()
 
-	if cfg == nil || cfg.AccessKeyId == "" {
-		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "CMS 凭据未配置，请先在基础设置中填写 AccessKeyId / AccessKeySecret"})
-		return
-	}
-
-	clientCfg := &config.ClientConfig{
-		AccessKeyId:     cfg.AccessKeyId,
-		AccessKeySecret: cfg.AccessKeySecret,
-		Endpoint:        cfg.Endpoint,
-	}
+	var (
+		clientCfg *config.ClientConfig
+		err       error
+	)
 	if globalCfg != nil {
-		clientCfg.Product = globalCfg.Global.Product
+		clientCfg, err = globalCfg.ResolveClientConfig(req.CloudAccountID)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"ok": false, "error": "CMS 凭据未配置或云账号无效: " + err.Error()})
+			return
+		}
+	} else if cfg != nil && cfg.AccessKeyId != "" {
+		// 兼容极端场景：globalCfg 暂不可用时，回退到旧的单账号缓存配置
+		clientCfg = &config.ClientConfig{
+			CloudAccountID:  config.DefaultCloudAccountID,
+			AccessKeyId:     cfg.AccessKeyId,
+			AccessKeySecret: cfg.AccessKeySecret,
+			Endpoint:        cfg.Endpoint,
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": "CMS 凭据未配置，请先在基础设置中新增 cloudAccounts"})
+		return
 	}
 
 	// 与保存/Cron 使用同一 Resolve，保证与页面「对接产品」一致（仅 cms|sls）
@@ -766,8 +1026,8 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		fullPrompt += "\n\n简化最终输出 适合聊天工具上阅读"
 	}
 	promptLog := scheduler.PromptForLog(fullPrompt, 1200)
-	log.Printf("[trigger-task] task=%q 使用 product=%q 问题=%s（原始 product=%q 全局=%q workspace=%q project=%q）",
-		req.Name, taskProduct, promptLog, req.Product, clientCfg.Product, req.Workspace, req.Project)
+	log.Printf("[trigger-task] task=%q cloudAccountId=%q 使用 product=%q 问题=%s（原始 product=%q 全局=%q workspace=%q project=%q）",
+		req.Name, clientCfg.CloudAccountID, taskProduct, promptLog, req.Product, clientCfg.Product, req.Workspace, req.Project)
 
 	type triggerResult struct {
 		reply string

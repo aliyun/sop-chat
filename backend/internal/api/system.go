@@ -11,7 +11,24 @@ import (
 
 // handleGetAccountId 获取当前阿里云账号ID
 func (s *Server) handleGetAccountId(c *gin.Context) {
-	accountId, err := sopchat.GetAccountId(s.config.AccessKeyId, s.config.AccessKeySecret)
+	s.mu.RLock()
+	globalCfg := s.globalConfig
+	legacyCfg := s.config
+	s.mu.RUnlock()
+
+	accessKeyID := ""
+	accessKeySecret := ""
+	if globalCfg != nil {
+		if cfg, err := globalCfg.ToClientConfig(); err == nil && cfg != nil {
+			accessKeyID = cfg.AccessKeyId
+			accessKeySecret = cfg.AccessKeySecret
+		}
+	}
+	if accessKeyID == "" && legacyCfg != nil {
+		accessKeyID = legacyCfg.AccessKeyId
+		accessKeySecret = legacyCfg.AccessKeySecret
+	}
+	accountId, err := sopchat.GetAccountId(accessKeyID, accessKeySecret)
 	if err != nil {
 		log.Printf("Failed to get account ID: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -47,11 +64,20 @@ func (s *Server) handleGetSystemConfig(c *gin.Context) {
 func (s *Server) handleGetSetupStatus(c *gin.Context) {
 	s.mu.RLock()
 	cfg := s.config
+	globalCfg := s.globalConfig
 	authConfigured := len(s.authModes) > 0
 	userStore := s.userStore
 	s.mu.RUnlock()
 
-	credConfigured := cfg != nil && cfg.AccessKeyId != ""
+	credConfigured := false
+	if globalCfg != nil {
+		if resolved, err := globalCfg.ToClientConfig(); err == nil && resolved != nil && resolved.AccessKeyId != "" {
+			credConfigured = true
+		}
+	}
+	if !credConfigured {
+		credConfigured = cfg != nil && cfg.AccessKeyId != ""
+	}
 
 	// 检查是否存在至少一个用户账号
 	usersConfigured := false

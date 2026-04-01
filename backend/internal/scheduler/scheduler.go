@@ -22,7 +22,7 @@ type Scheduler struct {
 	mu        sync.Mutex
 	cron      *cron.Cron
 	entryIDs  map[string]cron.EntryID // task name -> cron entry id
-	clientCfg *config.ClientConfig
+	globalCfg *config.Config
 	tasks     []config.ScheduledTaskConfig
 	timezone  *time.Location
 }
@@ -50,11 +50,11 @@ func New(timezone string) *Scheduler {
 }
 
 // Start 启动调度器并注册所有定时任务
-func (s *Scheduler) Start(tasks []config.ScheduledTaskConfig, clientCfg *config.ClientConfig) {
+func (s *Scheduler) Start(tasks []config.ScheduledTaskConfig, globalCfg *config.Config) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.clientCfg = clientCfg
+	s.globalCfg = globalCfg
 	s.tasks = tasks
 	s.registerAll()
 	s.cron.Start()
@@ -62,7 +62,7 @@ func (s *Scheduler) Start(tasks []config.ScheduledTaskConfig, clientCfg *config.
 }
 
 // Reload 热重载：停止所有旧任务，注册新任务列表
-func (s *Scheduler) Reload(tasks []config.ScheduledTaskConfig, clientCfg *config.ClientConfig) {
+func (s *Scheduler) Reload(tasks []config.ScheduledTaskConfig, globalCfg *config.Config) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -73,7 +73,7 @@ func (s *Scheduler) Reload(tasks []config.ScheduledTaskConfig, clientCfg *config
 	}
 	s.entryIDs = make(map[string]cron.EntryID)
 
-	s.clientCfg = clientCfg
+	s.globalCfg = globalCfg
 	s.tasks = tasks
 	s.registerAll()
 	log.Printf("[Scheduler] 调度器热重载完成，共 %d 个任务", len(s.entryIDs))
@@ -138,17 +138,18 @@ func (s *Scheduler) registerTask(task config.ScheduledTaskConfig) error {
 // runTask 执行单个定时任务：向数字员工提问，然后发送结果到 Webhook
 func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	s.mu.Lock()
-	clientCfg := s.clientCfg
+	globalCfg := s.globalCfg
 	s.mu.Unlock()
 
 	globalProduct := ""
-	if clientCfg != nil {
-		globalProduct = clientCfg.Product
+	if globalCfg != nil {
+		globalProduct = globalCfg.GetLegacyProduct()
 	}
 	taskProduct := config.ResolveScheduledTaskProduct(task.Product, task.Project, task.Workspace, globalProduct)
 	taskProject := task.Project
 	taskWorkspace := task.Workspace
 	taskRegion := task.Region
+	taskCloudAccountID := config.NormalizeCloudAccountID(task.CloudAccountID)
 
 	prompt := task.Prompt
 	if task.ConciseReply {
@@ -166,12 +167,20 @@ func (s *Scheduler) runTask(task config.ScheduledTaskConfig) {
 	}
 	log.Printf("[Scheduler] 产品配置: product=%q project=%q workspace=%q region=%q 执行用 product=%q",
 		task.Product, task.Project, task.Workspace, task.Region, taskProduct)
+	log.Printf("[Scheduler] 云账号配置: cloudAccountId=%q", taskCloudAccountID)
 	log.Printf("[Scheduler] 问题: %s", promptLog)
 
 	startTime := time.Now()
 
-	if clientCfg == nil || clientCfg.AccessKeyId == "" {
-		log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 跳过：CMS 凭据未配置", task.Name, taskProduct, promptLog)
+	if globalCfg == nil {
+		log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 跳过：全局配置未加载", task.Name, taskProduct, promptLog)
+		return
+	}
+
+	clientCfg, err := globalCfg.ResolveClientConfig(taskCloudAccountID)
+	if err != nil || clientCfg == nil || clientCfg.AccessKeyId == "" {
+		log.Printf("[Scheduler] 任务 %q product=%q 问题=%s 跳过：cloudAccountId=%q 凭据未配置或无效 (%v)",
+			task.Name, taskProduct, promptLog, taskCloudAccountID, err)
 		return
 	}
 
@@ -218,6 +227,7 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	log.Printf("[Scheduler] queryEmployee 开始: task=%q employee=%q product=%q 问题=%s", taskName, employeeName, product, msgLog)
 
 	sopClient, err := client.NewCMSClient(&client.Config{
+		CloudAccountID:  clientCfg.CloudAccountID,
 		AccessKeyId:     clientCfg.AccessKeyId,
 		AccessKeySecret: clientCfg.AccessKeySecret,
 		Endpoint:        clientCfg.Endpoint,

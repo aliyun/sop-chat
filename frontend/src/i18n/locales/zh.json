@@ -18,6 +18,7 @@
     "selectToStart": "请选择一个助手开始对话",
     "noEmployees": "暂无员工",
     "createFirst": "请先创建员工",
+    "noEmployeesHint": "请先在已配置的云账号中确认存在可用数字员工。",
     "loading": "加载中...",
     "loadFailed": "加载失败"
   },

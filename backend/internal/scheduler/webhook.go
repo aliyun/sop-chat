@@ -65,12 +65,12 @@ func checkPlatformError(platform, raw string) error {
 	// 钉钉 / 企业微信：{"errcode":0,"errmsg":"ok"}
 	// 飞书：{"code":0,"msg":"success"} 或 {"StatusCode":0,"StatusMessage":"success"}
 	var resp struct {
-		ErrCode     int    `json:"errcode"`
-		ErrMsg      string `json:"errmsg"`
-		Code        int    `json:"code"`
-		Msg         string `json:"msg"`
-		StatusCode  int    `json:"StatusCode"`
-		StatusMsg   string `json:"StatusMessage"`
+		ErrCode    int    `json:"errcode"`
+		ErrMsg     string `json:"errmsg"`
+		Code       int    `json:"code"`
+		Msg        string `json:"msg"`
+		StatusCode int    `json:"StatusCode"`
+		StatusMsg  string `json:"StatusMessage"`
 	}
 	if err := json.Unmarshal([]byte(raw), &resp); err != nil {
 		return nil // 无法解析时不视为错误

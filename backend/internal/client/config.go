@@ -10,6 +10,7 @@ import (
 
 // Config 存储客户端配置
 type Config struct {
+	CloudAccountID string
 	AccessKeyId     string
 	AccessKeySecret string
 	Endpoint        string
@@ -34,7 +35,8 @@ func LoadConfig() (*Config, error) {
 			return &Config{}, nil
 		}
 		return &Config{
-			AccessKeyId:     clientConfig.AccessKeyId,
+			CloudAccountID: clientConfig.CloudAccountID,
+			AccessKeyId:    clientConfig.AccessKeyId,
 			AccessKeySecret: clientConfig.AccessKeySecret,
 			Endpoint:        clientConfig.Endpoint,
 		}, nil
@@ -49,6 +51,7 @@ func LoadConfig() (*Config, error) {
 
 	// 凭据未配置时也正常返回（空配置），服务照常启动
 	return &Config{
+		CloudAccountID: config.DefaultCloudAccountID,
 		AccessKeyId:     accessKeyId,
 		AccessKeySecret: accessKeySecret,
 		Endpoint:        endpoint,

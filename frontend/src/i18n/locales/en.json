@@ -18,6 +18,7 @@
     "selectToStart": "Select an assistant to start conversation",
     "noEmployees": "No employees",
     "createFirst": "Please create your first employee",
+    "noEmployeesHint": "Please confirm there are available digital employees under the configured cloud accounts.",
     "loading": "Loading...",
     "loadFailed": "Failed to load"
   },

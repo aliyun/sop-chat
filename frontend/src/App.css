@@ -1746,6 +1746,41 @@ body {
   box-shadow: 0 -2px 12px rgba(102, 126, 234, 0.08);
 }
 
+.chat-notice {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.chat-notice-confirm {
+  background: rgba(255, 247, 214, 0.95);
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  color: #92400e;
+}
+
+.chat-notice-error {
+  background: rgba(254, 242, 242, 0.95);
+  border: 1px solid rgba(220, 38, 38, 0.14);
+  color: #b91c1c;
+}
+
+.chat-notice-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.chat-notice-text + .chat-notice-text {
+  margin-top: 4px;
+}
+
+.chat-notice-original {
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(120, 53, 15, 0.9);
+}
+
 .message-input-form {
   display: flex;
   flex-direction: column;
@@ -2538,6 +2573,30 @@ body {
   overflow: hidden;
 }
 
+.app-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.app-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.12);
+  color: #5563d6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.app-card-badge-secondary {
+  background: rgba(17, 24, 39, 0.08);
+  color: #334155;
+}
+
 .app-card-arrow {
   font-size: 24px;
   color: #667eea;
@@ -2738,6 +2797,18 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.chat-account-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 /* Branch Selector */

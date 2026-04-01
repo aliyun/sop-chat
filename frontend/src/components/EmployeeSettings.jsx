@@ -3,21 +3,22 @@
  * Full page settings view to display and edit employee configuration with tabs
  */
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getEmployee, updateEmployee, getAccountId } from '../services/api';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { getEmployee, updateEmployee } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const EmployeeSettings = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const cloudAccountId = searchParams.get('cloudAccountId') || '';
   const [activeTab, setActiveTab] = useState('info'); // info, knowledges
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [accountId, setAccountId] = useState(null);
   
   // 检查用户是否有 admin 角色
   // 注意：后端返回的字段是大写开头的 (Roles)，也要兼容小写 (roles)
@@ -40,7 +41,7 @@ const EmployeeSettings = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getEmployee(employeeId);
+      const data = await getEmployee(employeeId, cloudAccountId);
       setConfig(data);
       
       // 初始化表单数据
@@ -88,20 +89,7 @@ const EmployeeSettings = () => {
 
   useEffect(() => {
     loadConfig();
-  }, [employeeId]);
-
-  // 获取 AccountID
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const id = await getAccountId();
-        setAccountId(id);
-      } catch (err) {
-        console.error('获取账号ID失败:', err);
-      }
-    };
-    fetchAccountId();
-  }, []);
+  }, [employeeId, cloudAccountId]);
 
   // 从完整 ARN 中提取角色名
   const extractRoleName = (arn) => {
@@ -113,15 +101,6 @@ const EmployeeSettings = () => {
       }
     }
     return arn;
-  };
-
-  // 构建完整的 RoleARN
-  const getFullRoleArn = () => {
-    if (!formData.roleArn) return '';
-    if (accountId) {
-      return `acs:ram::${accountId}:role/${formData.roleArn}`;
-    }
-    return formData.roleArn;
   };
 
   const handleInputChange = (e) => {
@@ -251,7 +230,7 @@ const EmployeeSettings = () => {
         sopKnowledges: sopKnowledges
       };
 
-      await updateEmployee(employeeId, updateData);
+      await updateEmployee(employeeId, updateData, cloudAccountId);
 
       // 更新成功，重新加载配置
       await loadConfig();
