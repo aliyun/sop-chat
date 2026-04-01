@@ -32,9 +32,10 @@ const workerQueueSize = 8
 // Bot 封装钉钉机器人及其与 CMS 的对接逻辑
 type Bot struct {
 	// dtConfig 受 cfgMu 保护，所有读取须调用 config() 方法
-	cfgMu     sync.RWMutex
-	dtConfig  *config.DingTalkConfig
-	cmsConfig *config.ClientConfig
+	cfgMu        sync.RWMutex
+	dtConfig     *config.DingTalkConfig
+	cmsConfig    *config.ClientConfig
+	globalConfig *config.Config
 
 	// 会话 -> 线程 ID 的映射，实现多轮对话上下文
 	threadStore sync.Map
@@ -75,10 +76,11 @@ func (b *Bot) enqueueWork(key string, work func()) bool {
 }
 
 // NewBot 创建一个新的钉钉机器人实例
-func NewBot(dtConfig *config.DingTalkConfig, cmsConfig *config.ClientConfig) *Bot {
+func NewBot(dtConfig *config.DingTalkConfig, cmsConfig *config.ClientConfig, globalConfig *config.Config) *Bot {
 	return &Bot{
-		dtConfig:  dtConfig,
-		cmsConfig: cmsConfig,
+		dtConfig:     dtConfig,
+		cmsConfig:    cmsConfig,
+		globalConfig: globalConfig,
 	}
 }
 
@@ -94,11 +96,24 @@ func (b *Bot) Config() *config.DingTalkConfig {
 	return b.config()
 }
 
+// GlobalConfig 返回当前机器人引用的全局配置（供运行时按消息解析订阅）。
+func (b *Bot) GlobalConfig() *config.Config {
+	b.cfgMu.RLock()
+	defer b.cfgMu.RUnlock()
+	return b.globalConfig
+}
+
+// CMSConfig 返回当前绑定的云账号客户端配置（用于热重载比较）。
+func (b *Bot) CMSConfig() *config.ClientConfig {
+	return b.cmsConfig
+}
+
 // UpdateConfig 热更新运行时配置（凭据不变的情况下生效）
-func (b *Bot) UpdateConfig(newCfg *config.DingTalkConfig) {
+func (b *Bot) UpdateConfig(newCfg *config.DingTalkConfig, globalConfig *config.Config) {
 	b.cfgMu.Lock()
 	defer b.cfgMu.Unlock()
 	b.dtConfig = newCfg
+	b.globalConfig = globalConfig
 	log.Printf("[DingTalk] 配置已热更新: clientId=%s allowedGroupUsers=%v allowedDirectUsers=%v conciseReply=%v",
 		newCfg.ClientId, newCfg.AllowedGroupUsers, newCfg.AllowedDirectUsers, newCfg.ConciseReply)
 }
@@ -270,9 +285,11 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	senderStaffId := data.SenderStaffId
 	msgId := data.MsgId
 	// 路由解析：按群名匹配，找不到则用默认配置
-	route := b.resolveRoute(conversationType, conversationTitle)
+	route := b.resolveRoute(conversationType, conversationTitle, userText)
 	if route.employeeName != cfg.EmployeeName {
-		log.Printf("[DingTalk] 群 %q 命中路由规则，路由到数字员工: %s product=%s project=%s workspace=%s", conversationTitle, route.employeeName, route.product, route.project, route.workspace)
+		log.Printf("[DingTalk] 群 %q 命中路由规则，路由到数字员工: %s cloudAccountId=%s product=%s project=%s workspace=%s", conversationTitle, route.employeeName, route.cloudAccountID, route.product, route.project, route.workspace)
+	} else if route.cloudAccountID != config.NormalizeCloudAccountID(cfg.CloudAccountID) {
+		log.Printf("[DingTalk] 群 %q 命中订阅路由，切换到 cloudAccountId=%s employee=%s", conversationTitle, route.cloudAccountID, route.employeeName)
 	}
 
 	// worker queue key 不含 variable，保证同一会话的消息串行处理
@@ -320,9 +337,8 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 
 		if newThreadId != "" && newThreadId != threadId {
 			log.Printf("[DingTalk] 线程 ID 变更: %q -> %q，更新映射", threadId, newThreadId)
-			// 缓存 key 需要包含 variable
-			variable := route.project + route.workspace
-			cacheKey := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + variable
+			scope := threadScope(route.cloudAccountID, route.project, route.workspace, route.region)
+			cacheKey := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + scope
 			b.threadStore.Store(cacheKey, newThreadId)
 		}
 
@@ -423,25 +439,33 @@ func threadKey(conversationId, senderNick, employeeName string) string {
 	return fmt.Sprintf("%x", h)
 }
 
+func threadScope(cloudAccountID, project, workspace, region string) string {
+	return config.NormalizeCloudAccountID(cloudAccountID) + "\x00" + project + "\x00" + workspace + "\x00" + region
+}
+
 // resolvedRoute 包含路由解析结果
 type resolvedRoute struct {
 	employeeName string
+	cloudAccountID string
 	product      string
 	project      string
 	workspace    string
 	region       string
+	clientConfig *config.ClientConfig
 }
 
 // resolveRoute 根据群名称匹配路由规则，返回应处理本次消息的路由信息。
 // 单聊（conversationType != "2"）或匹配不到规则时，返回默认配置。
-func (b *Bot) resolveRoute(conversationType, conversationTitle string) resolvedRoute {
+func (b *Bot) resolveRoute(conversationType, conversationTitle, message string) resolvedRoute {
 	cfg := b.config()
 	result := resolvedRoute{
-		employeeName: cfg.EmployeeName,
-		product:      cfg.Product,
-		project:      cfg.Project,
-		workspace:    cfg.Workspace,
-		region:       cfg.Region,
+		employeeName:   cfg.EmployeeName,
+		cloudAccountID: config.NormalizeCloudAccountID(cfg.CloudAccountID),
+		product:        cfg.Product,
+		project:        cfg.Project,
+		workspace:      cfg.Workspace,
+		region:         cfg.Region,
+		clientConfig:   b.cmsConfig,
 	}
 	if conversationType == "2" {
 		for _, route := range cfg.ConversationRoutes {
@@ -464,11 +488,86 @@ func (b *Bot) resolveRoute(conversationType, conversationTitle string) resolvedR
 			}
 		}
 	}
-	// 如果 product 为空，使用全局配置
-	if result.product == "" {
+
+	if result.product == "" && b.cmsConfig != nil {
 		result.product = b.cmsConfig.Product
 	}
+
+	globalCfg := b.GlobalConfig()
+	if globalCfg != nil {
+		targetAccountID, matched, ambiguous := globalCfg.ResolveMessageCloudAccountID(message, result.cloudAccountID)
+		if len(ambiguous) > 1 {
+			log.Printf("[DingTalk] 消息 %q 命中多个 cloudAccountId=%v，继续使用默认账号 %q", promptForRouteLog(message), ambiguous, result.cloudAccountID)
+		}
+		if matched {
+			if clientCfg, err := globalCfg.ResolveClientConfig(targetAccountID); err == nil {
+				result.cloudAccountID = clientCfg.CloudAccountID
+				result.clientConfig = clientCfg
+				if route := config.FindCloudAccountRoute(cfg.CloudAccountRoutes, targetAccountID); route != nil {
+					if route.EmployeeName != "" {
+						result.employeeName = route.EmployeeName
+					}
+					if route.Product != "" {
+						result.product = route.Product
+					}
+					if route.Project != "" {
+						result.project = route.Project
+					}
+					if route.Workspace != "" {
+						result.workspace = route.Workspace
+					}
+					if route.Region != "" {
+						result.region = route.Region
+					}
+				}
+			} else {
+				log.Printf("[DingTalk] cloudAccountId=%q 解析失败，继续使用默认账号 %q: %v", targetAccountID, result.cloudAccountID, err)
+			}
+		}
+	}
+
+	if route := config.FindCloudAccountRoute(cfg.CloudAccountRoutes, result.cloudAccountID); route != nil {
+		if route.EmployeeName != "" {
+			result.employeeName = route.EmployeeName
+		}
+		if route.Product != "" {
+			result.product = route.Product
+		}
+		if route.Project != "" {
+			result.project = route.Project
+		}
+		if route.Workspace != "" {
+			result.workspace = route.Workspace
+		}
+		if route.Region != "" {
+			result.region = route.Region
+		}
+	}
+
+	if result.clientConfig == nil {
+		result.clientConfig = &config.ClientConfig{
+			CloudAccountID: result.cloudAccountID,
+		}
+		if b.cmsConfig != nil {
+			result.clientConfig.AccessKeyId = b.cmsConfig.AccessKeyId
+			result.clientConfig.AccessKeySecret = b.cmsConfig.AccessKeySecret
+			result.clientConfig.Endpoint = b.cmsConfig.Endpoint
+			result.clientConfig.Product = b.cmsConfig.Product
+		}
+	}
+	if result.product == "" && result.clientConfig != nil {
+		result.product = result.clientConfig.Product
+	}
 	return result
+}
+
+func promptForRouteLog(message string) string {
+	text := strings.TrimSpace(strings.ReplaceAll(message, "\n", " "))
+	runes := []rune(text)
+	if len(runes) <= 80 {
+		return text
+	}
+	return string(runes[:80]) + "..."
 }
 
 // isSenderAllowed 按会话类型检查发送者是否在对应白名单内。
@@ -521,10 +620,18 @@ func (b *Bot) isConversationAllowed(conversationType, conversationTitle string) 
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
+	return b.newSopClientWithConfig(b.cmsConfig)
+}
+
+// newSopClientWithConfig 使用指定账号凭据构造与 CMS 通信的 sopchat.Client。
+func (b *Bot) newSopClientWithConfig(clientCfg *config.ClientConfig) (*sopchat.Client, error) {
+	if clientCfg == nil {
+		return nil, fmt.Errorf("CMS 客户端配置为空")
+	}
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(b.cmsConfig.AccessKeyId),
-		AccessKeySecret:  tea.String(b.cmsConfig.AccessKeySecret),
-		Endpoint:         tea.String(b.cmsConfig.Endpoint),
+		AccessKeyId:      tea.String(clientCfg.AccessKeyId),
+		AccessKeySecret:  tea.String(clientCfg.AccessKeySecret),
+		Endpoint:         tea.String(clientCfg.Endpoint),
 		SignatureVersion: tea.String("v3"),
 	}
 	rawClient, err := cmsclient.NewClient(cmsConfig)
@@ -533,9 +640,9 @@ func (b *Bot) newSopClient() (*sopchat.Client, error) {
 	}
 	return &sopchat.Client{
 		CmsClient:       rawClient,
-		AccessKeyId:     b.cmsConfig.AccessKeyId,
-		AccessKeySecret: b.cmsConfig.AccessKeySecret,
-		Endpoint:        b.cmsConfig.Endpoint,
+		AccessKeyId:     clientCfg.AccessKeyId,
+		AccessKeySecret: clientCfg.AccessKeySecret,
+		Endpoint:        clientCfg.Endpoint,
 	}, nil
 }
 
@@ -559,10 +666,10 @@ func (b *Bot) threadVariable() (project, workspace, region string) {
 // employeeName 决定线程归属的数字员工（路由后的目标员工）。
 func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName string) (string, error) {
 	project, workspace, region := b.threadVariable()
-	variable := project + workspace // 两者互斥，至多一个非空
+	scope := threadScope(b.cmsConfig.CloudAccountID, project, workspace, region)
 
-	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
-	key := threadKey(conversationId, senderNick, employeeName) + "\x00" + variable
+	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
+	key := threadKey(conversationId, senderNick, employeeName) + "\x00" + scope
 
 	// 1. 先查内存缓存
 	if v, ok := b.threadStore.Load(key); ok {
@@ -575,8 +682,7 @@ func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName strin
 	}
 
 	// session 带前缀，确保不同平台（钉钉/企业微信）的线程不会冲突
-	// 格式: md5("dingtalk\x00" + key + "\x00" + variable)
-	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + variable))
+	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + scope))
 	session := fmt.Sprintf("%x", sh)
 
 	// 2. 缓存 miss：用 session attribute 过滤，找已有的线程（进程重启后恢复上下文）
@@ -624,24 +730,23 @@ func (b *Bot) getOrCreateThreadId(conversationId, senderNick, employeeName strin
 
 // getOrCreateThreadIdWithRoute 根据路由信息获取或创建线程
 func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, route resolvedRoute) (string, error) {
-	variable := route.project + route.workspace // 两者互斥，至多一个非空
+	scope := threadScope(route.cloudAccountID, route.project, route.workspace, route.region)
 
-	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
-	key := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + variable
+	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
+	key := threadKey(conversationId, senderNick, route.employeeName) + "\x00" + scope
 
 	// 1. 先查内存缓存
 	if v, ok := b.threadStore.Load(key); ok {
 		return v.(string), nil
 	}
 
-	client, err := b.newSopClient()
+	client, err := b.newSopClientWithConfig(route.clientConfig)
 	if err != nil {
 		return "", err
 	}
 
 	// session 带前缀，确保不同平台（钉钉/企业微信）的线程不会冲突
-	// 格式: md5("dingtalk\x00" + key + "\x00" + variable)
-	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + variable))
+	sh := md5.Sum([]byte("dingtalk\x00" + key + "\x00" + scope))
 	session := fmt.Sprintf("%x", sh)
 
 	// 2. 缓存 miss：用 session attribute 过滤，找已有的线程（进程重启后恢复上下文）
@@ -665,7 +770,7 @@ func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, ro
 	}
 
 	// 3. 远端也没有，创建新线程，并写入 session attribute 供后续查找
-	log.Printf("[DingTalk] 为会话 %s(%s) 创建新线程 [employee=%s] ...", conversationId, senderNick, route.employeeName)
+	log.Printf("[DingTalk] 为会话 %s(%s) 创建新线程 [cloudAccountId=%s employee=%s] ...", conversationId, senderNick, route.cloudAccountID, route.employeeName)
 	resp, err := client.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: route.employeeName,
 		Title:        "DingTalk: " + senderNick,
@@ -682,7 +787,7 @@ func (b *Bot) getOrCreateThreadIdWithRoute(conversationId, senderNick string, ro
 	}
 
 	threadId := *resp.Body.ThreadId
-	log.Printf("[DingTalk] 会话 %s(%s) 新线程创建成功 [employee=%s]: %s", conversationId, senderNick, route.employeeName, threadId)
+	log.Printf("[DingTalk] 会话 %s(%s) 新线程创建成功 [cloudAccountId=%s employee=%s]: %s", conversationId, senderNick, route.cloudAccountID, route.employeeName, threadId)
 	b.threadStore.Store(key, threadId)
 	return threadId, nil
 }
@@ -815,7 +920,10 @@ func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute)
 	}
 
 	productType := route.product
-	if productType == "" {
+	if productType == "" && route.clientConfig != nil {
+		productType = route.clientConfig.Product
+	}
+	if productType == "" && b.cmsConfig != nil {
 		productType = b.cmsConfig.Product
 	}
 
@@ -863,7 +971,7 @@ func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute)
 
 // queryEmployeeWithRoute 向 CMS 数字员工发送消息，使用路由级别的 product/project/workspace。
 func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId string, route resolvedRoute) (string, string, error) {
-	sopClient, err := b.newSopClient()
+	sopClient, err := b.newSopClientWithConfig(route.clientConfig)
 	if err != nil {
 		return "", "", err
 	}

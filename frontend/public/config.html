@@ -241,63 +241,23 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <!-- ── Tab 1: Global ── -->
 <div class="tab-panel active" id="panel-global">
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128279;</span> 阿里云连接</div>
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> 云账号配置</div>
     <div class="field-grid">
-      <div class="field">
-        <label>AccessKeyId <span style="color:var(--red)">*</span></label>
-        <input type="text" id="g-akid" placeholder="your-access-key-id" autocomplete="off" oninput="onAKFieldChange()">
+      <div class="field field-full">
+        <div class="list-header">
+          <span class="list-label">cloudAccounts</span>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="addCloudAccount()">+ 添加云账号</button>
+        </div>
+        <div id="cloud-accounts-list" style="display:flex;flex-direction:column;gap:10px"></div>
+        <span class="hint">所有阿里云凭据统一配置在这里。默认账号规则：优先使用 id=default 的账号；若不存在，则使用第一个账号。</span>
       </div>
-      <div class="field">
-        <label>AccessKeySecret <span style="color:var(--red)">*</span></label>
-        <div class="input-wrap">
-          <input type="password" id="g-aks" placeholder="your-access-key-secret" autocomplete="new-password" oninput="onAKFieldChange()">
-          <button class="eye-btn" onclick="toggleEye('g-aks',this)" tabindex="-1">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+      <div class="field field-full">
+        <label>说明</label>
+        <div class="reload-note" style="margin-top:0">
+          <strong>现在不再提供全局默认 Product：</strong>
+          Channels 机器人、`cloudAccountRoutes`、定时任务都应按自己的场景显式填写 `product/project/workspace/region`。
         </div>
       </div>
-      <div class="field">
-        <label>Endpoint（服务地址）</label>
-        <input type="text" id="g-endpoint" placeholder="cms.cn-hangzhou.aliyuncs.com" oninput="onAKFieldChange()">
-        <span class="hint">不填则使用默认地址</span>
-      </div>
-      <div class="field">
-        <label>默认数字员工产品 Product</label>
-        <select id="g-product" onchange="updateGlobalVariableFields()">
-          <option value="sls">SLS</option>
-          <option value="cms">CMS</option>
-        </select>
-        <span class="hint">Channels 机器人未单独配置时使用此默认值</span>
-      </div>
-      <div class="field" id="g-project-field">
-        <label>Project</label>
-        <input type="text" id="g-project" placeholder="Project(可选)">
-        <span class="hint">SLS 产品对应的 Project</span>
-      </div>
-      <div class="field" id="g-region-field" style="display:none">
-        <label>Region</label>
-        <input type="text" id="g-region" placeholder="">
-        <span class="hint">CMS 产品对应的 Region</span>
-      </div>
-      <div class="field" id="g-workspace-field" style="display:none">
-        <label>Workspace</label>
-        <input type="text" id="g-workspace" placeholder="">
-        <span class="hint">CMS 产品对应的 Workspace</span>
-      </div>
-      <div class="field" id="g-cms-validate-field" style="display:none;grid-column:1/-1">
-        <button class="btn btn-secondary" id="test-cms-btn" onclick="testCMS()" style="flex-shrink:0">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          校验 Region / Workspace
-        </button>
-        <div id="test-cms-result" class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
-      </div>
-    </div>
-    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
-      <button class="btn btn-primary" id="test-ak-btn" onclick="testAK()" style="flex-shrink:0">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        测试连接
-      </button>
-      <div id="test-ak-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="card">
@@ -328,12 +288,9 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   </div>
   <div class="reload-note">
     <strong>保存后立即生效：</strong>
-    <span class="badge-hot">accessKeyId</span>
-    <span class="badge-hot">accessKeySecret</span>
-    <span class="badge-hot">endpoint</span>
+    <span class="badge-hot">cloudAccounts</span>
     <span class="badge-hot">timeZone</span>
     <span class="badge-hot">language</span>
-    <span class="badge-hot">product</span>
     &nbsp;
     <strong>需重启：</strong>
     <span class="badge-cold">host</span>
@@ -353,7 +310,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       </button>
     </div>
     <div id="users-list" style="display:flex;flex-direction:column;gap:8px"></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">密码以 MD5 哈希形式存储。修改密码时输入明文，点击"确认"后自动计算哈希（含盐，与下方密码盐保持一致）。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">密码在保存时自动按 <code>MD5(passwordSalt + 明文密码)</code> 计算哈希；已有用户密码留空即可保持不变。</p>
   </div>
   <div class="card">
     <div class="card-title">
@@ -584,7 +541,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <div style="margin-top:10px;padding:12px 14px;background:#faf5ff;border:1px solid rgba(128,90,213,.22);border-radius:8px;font-size:12px;line-height:1.9;color:#44337a">
       <div style="font-weight:600;margin-bottom:4px">定时任务使用说明</div>
       <ul style="padding-left:18px;margin:0;color:#553c9a">
-        <li>Cron 格式采用标准 5 字段：<code style="background:rgba(128,90,213,.1);padding:1px 5px;border-radius:3px">分 时 日 月 周</code>，时区取全局配置的 TimeZone</li>
+        <li>Cron 格式采用标准 5 字段：<code style="background:rgba(128,90,213,.1);padding:1px 5px;border-radius:3px">分 时 日 月 周</code>，时区取基础设置里的 TimeZone</li>
         <li>每次触发时向数字员工发送 Prompt，完整回复将推送到指定 Webhook</li>
         <li>Webhook 类型支持 <strong>dingtalk</strong>（钉钉）、<strong>feishu</strong>（飞书）、<strong>wecom</strong>（企业微信群机器人）</li>
         <li>消息类型：<strong>text</strong> = 纯文本，<strong>markdown</strong> = Markdown 格式（钉钉/企业微信），<strong>post</strong> = 富文本（飞书）</li>
@@ -608,15 +565,8 @@ function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,
 
 const token = new URLSearchParams(window.location.search).get('token') || '';
 let currentData = null;
-
-// AK 连通性状态跟踪
-// akSnapshot 保存"上次成功测试"或"配置加载"时的 AK 快照，null 表示从未确认
-let akSnapshot = null;
-function currentAKSnapshot() {
-  return val('g-akid') + '\0' + val('g-aks') + '\0' + val('g-endpoint');
-}
-function markAKTested() { akSnapshot = currentAKSnapshot(); }
-function isAKDirty()    { return akSnapshot !== null && akSnapshot !== currentAKSnapshot(); }
+const DEFAULT_CLOUD_ACCOUNT_ID = 'default';
+const DEFAULT_CMS_ENDPOINT = 'cms.cn-hangzhou.aliyuncs.com';
 
 // ── Tab switching ─────────────────────────────────────────────────────────
 function switchTab(id) {
@@ -643,61 +593,190 @@ function toggleEyeEl(inp, btn) {
     : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 }
 
-// ── AK 字段变化监听 ────────────────────────────────────────────────────────
-function onAKFieldChange() {
-  const btn = document.getElementById('test-ak-btn');
-  if (!btn) return;
-  if (isAKDirty()) {
-    // 高亮提示：橙色边框 + 脉冲动画
-    btn.style.cssText = 'background:linear-gradient(135deg,#ed8936,#dd6b20);box-shadow:0 0 0 3px rgba(237,137,54,0.35);animation:pulse-orange .9s ease-in-out infinite alternate;flex-shrink:0';
-    btn.title = 'AK 已修改，建议先测试连通性';
-  } else {
-    btn.style.cssText = 'flex-shrink:0';
-    btn.title = '';
-  }
+// ── Cloud accounts ────────────────────────────────────────────────────────
+function normalizeCloudAccountId(id) {
+  const v = (id || '').trim();
+  return v || DEFAULT_CLOUD_ACCOUNT_ID;
 }
 
-// ── Test AK ───────────────────────────────────────────────────────────────
-async function testAK() {
-  const akid = val('g-akid');
-  const aks  = val('g-aks');
-  if (!akid || !aks) {
-    showTestAKResult(false, 'AccessKeyId 和 AccessKeySecret 均需填写后才能测试');
-    return;
+function splitAliases(text) {
+  return (text || '')
+    .split(/[\n,]/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+function joinAliases(aliases) {
+  return (aliases || []).map(s => (s || '').trim()).filter(Boolean).join(', ');
+}
+
+function cloudAccountDisplayName(account, fallbackIndex) {
+  const rawID = account && account.id ? account.id.trim() : '';
+  const aliases = (account && account.aliases ? account.aliases : []).filter(Boolean);
+  if (!rawID) {
+    return aliases[0] || ('云账号 ' + (fallbackIndex + 1));
   }
+  const id = normalizeCloudAccountId(rawID);
+  if (aliases.length > 0) {
+    return id + ' · ' + aliases[0];
+  }
+  return id || ('云账号 ' + (fallbackIndex + 1));
+}
 
-  const btn = document.getElementById('test-ak-btn');
-  const origHTML = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 测试中…';
-  showTestAKResult('loading', '正在向 apsara-ops 发送测试请求，请稍候（最长 60s）…');
+function collectCloudAccountFromCard(card) {
+  return {
+    id: card.querySelector('[data-field=id]').value.trim(),
+    provider: 'aliyun',
+    aliases: splitAliases(card.querySelector('[data-field=aliases]').value),
+    accessKeyId: card.querySelector('[data-field=accessKeyId]').value.trim(),
+    accessKeySecret: card.querySelector('[data-field=accessKeySecret]').value.trim(),
+    endpoint: card.querySelector('[data-field=endpoint]').value.trim(),
+  };
+}
 
-  try {
-    const res = await fetch('/admin-ui/api/test-ak?token=' + encodeURIComponent(token), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ accessKeyId: akid, accessKeySecret: aks, endpoint: val('g-endpoint') }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      showTestAKResult(false, data.error || '请求失败');
-    } else if (data.ok) {
-      markAKTested();
-      showTestAKResult(true, data.preview ? '连接正常，收到回复：「' + data.preview + '」' : '连接正常，凭据有效');
-    } else {
-      showTestAKResult(false, data.error || '测试失败');
+function syncCloudAccountTitle(card) {
+  if (!card) return;
+  const titleEl = card.querySelector('.dt-bot-title');
+  if (!titleEl) return;
+  const cards = Array.from(document.querySelectorAll('#cloud-accounts-list .cloud-account-card'));
+  const idx = Math.max(cards.indexOf(card), 0);
+  titleEl.textContent = cloudAccountDisplayName(collectCloudAccountFromCard(card), idx);
+}
+
+function makeCloudAccountCard(account, idx) {
+  const acc = account || {};
+  const div = document.createElement('div');
+  div.className = 'dt-bot-card cloud-account-card';
+  div.innerHTML =
+    '<div class="dt-bot-header">' +
+      '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
+      '<span class="dt-bot-type" style="background:rgba(43,108,176,.1);color:#2b6cb0">Cloud</span>' +
+      '<div class="dt-bot-title">' + esc(cloudAccountDisplayName(acc, idx)) + '</div>' +
+      '<button type="button" class="btn btn-danger btn-sm" style="margin-left:auto" onclick="removeCloudAccount(this)">删除</button>' +
+    '</div>' +
+    '<div class="dt-bot-fields">' +
+      '<div class="field">' +
+        '<label>云账号 ID <span style="color:var(--red)">*</span></label>' +
+        '<input type="text" data-field="id" value="' + esc(acc.id || '') + '" placeholder="default" autocomplete="off" oninput="onCloudAccountMetaInput(this)">' +
+        '<span class="hint">渠道和定时任务通过 cloudAccountId 引用；默认账号建议命名为 default</span>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>别名 Aliases</label>' +
+        '<input type="text" data-field="aliases" value="' + esc(joinAliases(acc.aliases)) + '" placeholder="prod, 线上, subscription-prod" autocomplete="off" oninput="onCloudAccountMetaInput(this)">' +
+        '<span class="hint">用英文逗号分隔；建议覆盖环境简称、团队叫法、订阅全名</span>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>AccessKeyId <span style="color:var(--red)">*</span></label>' +
+        '<input type="text" data-field="accessKeyId" value="' + esc(acc.accessKeyId || '') + '" placeholder="your-access-key-id" autocomplete="off">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>AccessKeySecret <span style="color:var(--red)">*</span></label>' +
+        '<div class="input-wrap">' +
+          '<input type="password" data-field="accessKeySecret" value="' + esc(acc.accessKeySecret || '') + '" placeholder="your-access-key-secret" autocomplete="new-password">' +
+          '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Endpoint（服务地址）</label>' +
+        '<input type="text" data-field="endpoint" value="' + esc(acc.endpoint || '') + '" placeholder="' + DEFAULT_CMS_ENDPOINT + '" autocomplete="off">' +
+        '<span class="hint">可留空；未填写时使用默认地址</span>' +
+      '</div>' +
+      '<div class="field field-full">' +
+        '<button class="btn btn-primary" type="button" onclick="testCloudAccount(this)" style="flex-shrink:0">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>' +
+          ' 测试连接' +
+        '</button>' +
+        '<div class="cloud-account-test-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
+      '</div>' +
+    '</div>';
+  return div;
+}
+
+function renderCloudAccounts(accounts) {
+  const container = document.getElementById('cloud-accounts-list');
+  container.innerHTML = '';
+  const items = (accounts && accounts.length) ? accounts : [{ id: DEFAULT_CLOUD_ACCOUNT_ID, provider: 'aliyun' }];
+  items.forEach((account, idx) => container.appendChild(makeCloudAccountCard(account, idx)));
+}
+
+function addCloudAccount() {
+  const container = document.getElementById('cloud-accounts-list');
+  const defaultId = container.children.length === 0 ? DEFAULT_CLOUD_ACCOUNT_ID : '';
+  container.appendChild(makeCloudAccountCard({ id: defaultId, provider: 'aliyun' }, container.children.length));
+}
+
+function removeCloudAccount(btn) {
+  const card = btn.closest('.cloud-account-card');
+  if (!card) return;
+  card.remove();
+  document.querySelectorAll('#cloud-accounts-list .cloud-account-card').forEach((item, idx) => {
+    const num = item.querySelector('.dt-bot-num');
+    if (num) num.textContent = idx + 1;
+    syncCloudAccountTitle(item);
+  });
+}
+
+function onCloudAccountMetaInput(inp) {
+  syncCloudAccountTitle(inp.closest('.cloud-account-card'));
+}
+
+function collectCloudAccounts() {
+  return Array.from(document.querySelectorAll('#cloud-accounts-list .cloud-account-card')).map(collectCloudAccountFromCard);
+}
+
+function isMeaningfulCloudAccount(account) {
+  const rawID = account && account.id ? account.id.trim() : '';
+  return !!(account && (
+    account.accessKeyId ||
+    account.accessKeySecret ||
+    account.endpoint ||
+    (account.aliases || []).length ||
+    (rawID && rawID !== DEFAULT_CLOUD_ACCOUNT_ID)
+  ));
+}
+
+function findCloudAccountById(id) {
+  const target = normalizeCloudAccountId(id);
+  return collectCloudAccounts().find(account => normalizeCloudAccountId(account.id) === target) || null;
+}
+
+function defaultCloudAccount() {
+  const accounts = collectCloudAccounts();
+  if (!accounts.length) return null;
+  const meaningfulAccounts = accounts.filter(isMeaningfulCloudAccount);
+  const source = meaningfulAccounts.length > 0 ? meaningfulAccounts : accounts;
+  return source.find(account => normalizeCloudAccountId(account.id) === DEFAULT_CLOUD_ACCOUNT_ID) || source[0];
+}
+
+function preferredDefaultCloudAccountId() {
+  const account = defaultCloudAccount();
+  return account ? normalizeCloudAccountId(account.id) : DEFAULT_CLOUD_ACCOUNT_ID;
+}
+
+function resolveCloudAccountForElement(el) {
+  const card = el.closest('.dt-bot-card, .task-card, .card');
+  const accountInput = card ? card.querySelector('[data-field=cloudAccountId]') : null;
+  const requested = accountInput ? accountInput.value.trim() : '';
+
+  if (requested) {
+    const account = findCloudAccountById(requested);
+    if (!account) {
+      return { error: '未找到 cloudAccountId=' + normalizeCloudAccountId(requested) + ' 对应的云账号，请先在基础设置中创建' };
     }
-  } catch(e) {
-    showTestAKResult(false, '网络错误: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = origHTML;
-    onAKFieldChange(); // 根据当前状态决定是否保留高亮
+    return { account, requestedId: normalizeCloudAccountId(requested) };
   }
+
+  const account = defaultCloudAccount();
+  if (!account) {
+    return { error: '请先在基础设置中配置至少一个云账号' };
+  }
+  return { account, requestedId: normalizeCloudAccountId(account.id) };
 }
 
-function showTestAKResult(status, msg) {
-  const el = document.getElementById('test-ak-result');
+function showCloudAccountTestResult(el, status, msg) {
+  if (!el) return;
   el.style.display = 'block';
   if (status === 'loading') {
     el.style.background = 'var(--blue-bg)';
@@ -717,28 +796,69 @@ function showTestAKResult(status, msg) {
   }
 }
 
+async function testCloudAccount(btn) {
+  const card = btn.closest('.cloud-account-card');
+  const resultEl = card ? card.querySelector('.cloud-account-test-result') : null;
+  const account = card ? collectCloudAccountFromCard(card) : null;
+  const accountID = normalizeCloudAccountId(account && account.id);
+
+  if (!account || !account.accessKeyId || !account.accessKeySecret) {
+    showCloudAccountTestResult(resultEl, false, '云账号 ' + accountID + ' 的 AccessKeyId 和 AccessKeySecret 均需填写后才能测试');
+    return;
+  }
+
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 测试中…';
+  showCloudAccountTestResult(resultEl, 'loading', '正在向 apsara-ops 发送测试请求，请稍候（最长 60s）…');
+
+  try {
+    const res = await fetch('/admin-ui/api/test-ak?token=' + encodeURIComponent(token), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accessKeyId: account.accessKeyId,
+        accessKeySecret: account.accessKeySecret,
+        endpoint: account.endpoint,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showCloudAccountTestResult(resultEl, false, data.error || '请求失败');
+    } else if (data.ok) {
+      showCloudAccountTestResult(resultEl, true, data.preview ? '连接正常，收到回复：「' + data.preview + '」' : '连接正常，凭据有效');
+    } else {
+      showCloudAccountTestResult(resultEl, false, data.error || '测试失败');
+    }
+  } catch (e) {
+    showCloudAccountTestResult(resultEl, false, '网络错误: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+  }
+}
+
 // 通用校验 Workspace 函数，btn 为触发按钮，自动从最近的卡片容器中读取 region/workspace
 async function validateWorkspace(btn) {
   const card = btn.closest('.dt-bot-card, .fs-bot-card, .wc-bot-card, .wcb-bot-card, .task-card, .card');
   const resultEl = btn.parentElement.querySelector('.validate-ws-result');
 
-  let region, workspace;
-  if (card && card.querySelector('[data-field=region]')) {
-    region = card.querySelector('[data-field=region]').value.trim();
-    workspace = card.querySelector('[data-field=workspace]').value.trim();
-  } else {
-    region = val('g-region');
-    workspace = val('g-workspace');
-  }
-  const akid = val('g-akid');
-  const aks  = val('g-aks');
+  const region = card?.querySelector('[data-field=region]')?.value.trim() || '';
+  const workspace = card?.querySelector('[data-field=workspace]')?.value.trim() || '';
 
-  if (!akid || !aks) {
-    showValidateResult(resultEl, false, '请先在全局配置中填写 AccessKeyId 和 AccessKeySecret');
+  const resolved = resolveCloudAccountForElement(btn);
+  if (resolved.error) {
+    showValidateResult(resultEl, false, resolved.error);
     return;
   }
   if (!region || !workspace) {
     showValidateResult(resultEl, false, 'Region 和 Workspace 均需填写后才能校验');
+    return;
+  }
+
+  const account = resolved.account;
+  if (!account.accessKeyId || !account.accessKeySecret) {
+    showValidateResult(resultEl, false, '云账号 ' + resolved.requestedId + ' 的 AccessKeyId 和 AccessKeySecret 均需填写后才能校验');
     return;
   }
 
@@ -752,9 +872,9 @@ async function validateWorkspace(btn) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        accessKeyId: akid,
-        accessKeySecret: aks,
-        endpoint: val('g-endpoint'),
+        accessKeyId: account.accessKeyId,
+        accessKeySecret: account.accessKeySecret,
+        endpoint: account.endpoint,
         region: region,
         workspace: workspace,
       }),
@@ -767,7 +887,7 @@ async function validateWorkspace(btn) {
     } else {
       showValidateResult(resultEl, false, data.error || '校验失败');
     }
-  } catch(e) {
+  } catch (e) {
     showValidateResult(resultEl, false, '网络错误: ' + e.message);
   } finally {
     btn.disabled = false;
@@ -795,10 +915,6 @@ function showValidateResult(el, status, msg) {
     el.textContent = '\u274c ' + msg;
   }
 }
-
-// 兼容旧的全局校验按钮调用
-function testCMS() { validateWorkspace(document.getElementById('test-cms-btn')); }
-function showTestCMSResult(status, msg) { showValidateResult(document.getElementById('test-cms-result'), status, msg); }
 
 // ── OpenAI toggle ─────────────────────────────────────────────────────────
 function onOpenAIToggle() {
@@ -925,20 +1041,20 @@ function makeUserRow(name, hash, idx) {
   const div = document.createElement('div');
   div.className = 'list-row user-row';
   div.dataset.idx = idx;
-  const shortHash = hash ? hash.substring(0, 16) + '...' : '(无密码)';
+  const hasPassword = !!hash;
   div.innerHTML =
     '<div class="name-field">' +
       '<input type="text" placeholder="用户名" value="' + esc(name) + '" data-field="username" style="width:100%">' +
     '</div>' +
-    '<div class="hash-display" title="当前密码哈希: ' + esc(hash) + '">' + shortHash + '</div>' +
     '<input type="hidden" data-field="hash" value="' + esc(hash) + '">' +
+    '<div class="hash-display" title="' + esc(hasPassword ? ('当前密码哈希: ' + hash) : '新建用户需设置密码') + '">' + (hasPassword ? '已设置密码' : '未设置密码') + '</div>' +
     '<div class="pwd-change">' +
-      '<div class="new-pwd-wrap" style="display:none">' +
-        '<input type="text" placeholder="新密码(明文)" data-field="newpwd" autocomplete="new-password" style="width:100%">' +
-        '<button class="btn btn-ghost btn-sm" onclick="confirmPwd(this)">确认</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="cancelPwd(this)">取消</button>' +
+      '<div class="input-wrap" style="min-width:220px;flex:1">' +
+        '<input type="password" placeholder="' + esc(hasPassword ? '新密码（留空保持不变）' : '初始密码（明文）') + '" data-field="newpwd" autocomplete="new-password" style="width:100%">' +
+        '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+        '</button>' +
       '</div>' +
-      '<button class="btn btn-ghost btn-sm change-btn" onclick="showPwdInput(this)">修改密码</button>' +
     '</div>' +
     '<button class="btn btn-danger btn-icon" onclick="removeUser(this)" title="删除用户">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>' +
@@ -955,39 +1071,16 @@ function removeUser(btn) {
   btn.closest('.user-row').remove();
 }
 
-function showPwdInput(btn) {
-  const row = btn.closest('.user-row');
-  row.querySelector('.new-pwd-wrap').style.display = 'flex';
-  row.querySelector('.hash-display').style.display = 'none';
-  btn.style.display = 'none';
-}
-
-function confirmPwd(btn) {
-  const row = btn.closest('.user-row');
-  const newPwd = row.querySelector('[data-field=newpwd]').value.trim();
-  if (newPwd) {
-    const salt = document.getElementById('a-salt') ? document.getElementById('a-salt').value : '';
-    const hashed = md5(salt + newPwd);
-    row.querySelector('[data-field=hash]').value = hashed;
-    row.querySelector('.hash-display').textContent = hashed.substring(0, 16) + '…';
-    row.querySelector('.hash-display').title = '当前密码哈希: ' + hashed;
-  }
-  cancelPwd(btn);
-}
-
-function cancelPwd(btn) {
-  const row = btn.closest('.user-row');
-  row.querySelector('.new-pwd-wrap').style.display = 'none';
-  row.querySelector('[data-field=newpwd]').value = '';
-  row.querySelector('.hash-display').style.display = '';
-  row.querySelector('.change-btn').style.display = '';
-}
-
 function collectUsers() {
   const rows = document.querySelectorAll('#users-list .user-row');
+  const salt = document.getElementById('a-salt') ? document.getElementById('a-salt').value : '';
   return Array.from(rows).map(row => ({
     name: row.querySelector('[data-field=username]').value.trim(),
-    password: row.querySelector('[data-field=hash]').value.trim(),
+    password: (() => {
+      const nextPassword = row.querySelector('[data-field=newpwd]').value.trim();
+      if (nextPassword) return md5(salt + nextPassword);
+      return row.querySelector('[data-field=hash]').value.trim();
+    })(),
   })).filter(u => u.name);
 }
 
@@ -1093,6 +1186,11 @@ function makeDingTalkBotCard(bot, idx) {
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
+        '<label>cloudAccountId</label>' +
+        '<input type="text" data-field="cloudAccountId" value="' + esc(bot.cloudAccountId || preferredDefaultCloudAccountId()) + '" placeholder="' + preferredDefaultCloudAccountId() + '">' +
+        '<span class="hint">留空默认使用 ' + preferredDefaultCloudAccountId() + '</span>' +
+      '</div>' +
+      '<div class="field">' +
         '<label>对接产品</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.dt-bot-card\'))">' +
           '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
@@ -1134,6 +1232,7 @@ function makeDingTalkBotCard(bot, idx) {
           '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addDtRoute(this)">+ 添加路由</button>' +
         '</div>' +
       '</details>' +
+      makeCloudRouteDetails(bot.cloudAccountRoutes, '云账号路由', '（按 cloudAccountId 切换不同数字员工）') +
       '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
         '<label class="toggle">' +
           '<input type="checkbox" data-field="conciseReply"' + (bot.conciseReply ? ' checked' : '') + '>' +
@@ -1193,8 +1292,7 @@ function makeDingTalkBotCard(bot, idx) {
 
 function addDingTalkBot() {
   const container = document.getElementById('dt-bots-list');
-  const defaultProduct = val('g-product') || 'sls';
-  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  container.appendChild(makeDingTalkBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', cloudAccountId: preferredDefaultCloudAccountId(), product: 'sls' }, container.children.length));
   updateBotVariableFields();
 }
 
@@ -1260,6 +1358,31 @@ function makeDtRouteRow(route) {
   '</div>';
 }
 
+function makeCloudRouteRow(route) {
+  const r = route || {};
+  const product = r.product || 'sls';
+  const accountValue = (r.cloudAccountId || r.cloudAccountID || '').trim();
+  return '<div class="list-row" style="gap:6px;align-items:flex-start;flex-wrap:wrap">' +
+    '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:220px">' +
+      '<input type="text" class="flex1" placeholder="cloudAccountId" value="' + esc(accountValue) + '" data-cloud-route-account>' +
+      '<span style="color:var(--text3);font-size:12px;flex-shrink:0">→</span>' +
+      '<input type="text" class="flex1" placeholder="数字员工 ID" value="' + esc(r.employeeName || '') + '" data-cloud-route-employee>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:300px">' +
+      '<select data-cloud-route-product style="width:80px" onchange="updateCloudRouteVariableFields(this)">' +
+        '<option value="sls"' + (product === 'sls' ? ' selected' : '') + '>SLS</option>' +
+        '<option value="cms"' + (product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+      '</select>' +
+      '<input type="text" placeholder="Project（可选）" value="' + esc(r.project || '') + '" data-cloud-route-project style="flex:1;display:' + (product === 'sls' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="Region" value="' + esc(r.region || '') + '" data-cloud-route-region style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="Workspace（可选）" value="' + esc(r.workspace || '') + '" data-cloud-route-workspace style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
+    '</div>' +
+    '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="删除路由">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+
 function updateRouteVariableFields(select) {
   const row = select.closest('.list-row');
   const projectInput = row.querySelector('[data-dt-route-project]');
@@ -1271,9 +1394,53 @@ function updateRouteVariableFields(select) {
   if (workspaceInput) workspaceInput.style.display = isSls ? 'none' : 'block';
 }
 
+function updateCloudRouteVariableFields(select) {
+  const row = select.closest('.list-row');
+  const projectInput = row.querySelector('[data-cloud-route-project]');
+  const regionInput = row.querySelector('[data-cloud-route-region]');
+  const workspaceInput = row.querySelector('[data-cloud-route-workspace]');
+  const isSls = select.value === 'sls';
+  if (projectInput) projectInput.style.display = isSls ? 'block' : 'none';
+  if (regionInput) regionInput.style.display = isSls ? 'none' : 'block';
+  if (workspaceInput) workspaceInput.style.display = isSls ? 'none' : 'block';
+}
+
 function addDtRoute(btn) {
   const wrap = btn.previousElementSibling;
   wrap.insertAdjacentHTML('beforeend', makeDtRouteRow({}));
+}
+
+function addCloudRoute(btn) {
+  const wrap = btn.previousElementSibling;
+  wrap.insertAdjacentHTML('beforeend', makeCloudRouteRow({}));
+}
+
+function makeCloudRouteDetails(routes, title, hint) {
+  const routeList = routes || [];
+  return '<details class="field field-full" style="padding:0;border:none;background:none"' + (routeList.length > 0 ? ' open' : '') + '>' +
+    '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
+      '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
+      esc(title) +
+      '<span class="hint" style="font-weight:400;font-size:12px">' + esc(hint || '') + '</span>' +
+    '</summary>' +
+    '<div style="padding:8px 0 4px">' +
+      '<div data-cloud-routes style="display:flex;flex-direction:column;gap:6px">' +
+        routeList.map(r => makeCloudRouteRow(r)).join('') +
+      '</div>' +
+      '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addCloudRoute(this)">+ 添加路由</button>' +
+    '</div>' +
+  '</details>';
+}
+
+function collectCloudRoutesFromCard(card) {
+  return Array.from(card.querySelectorAll('[data-cloud-routes] .list-row')).map(row => ({
+    cloudAccountId: normalizeCloudAccountId(row.querySelector('[data-cloud-route-account]').value.trim()),
+    employeeName:   row.querySelector('[data-cloud-route-employee]').value.trim(),
+    product:        row.querySelector('[data-cloud-route-product]')?.value || 'sls',
+    project:        row.querySelector('[data-cloud-route-project]')?.value.trim() || '',
+    workspace:      row.querySelector('[data-cloud-route-workspace]')?.value.trim() || '',
+    region:         row.querySelector('[data-cloud-route-region]')?.value.trim() || '',
+  })).filter(r => r.cloudAccountId && r.employeeName);
 }
 
 function collectDingTalkBots() {
@@ -1283,6 +1450,7 @@ function collectDingTalkBots() {
     clientId:     card.querySelector('[data-field=clientId]').value.trim(),
     clientSecret: card.querySelector('[data-field=clientSecret]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId: card.querySelector('[data-field=cloudAccountId]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     cardTemplateId: (card.querySelector('[data-field=cardTemplateId]') || {}).value?.trim() || '',
     cardContentKey: (card.querySelector('[data-field=cardContentKey]') || {}).value?.trim() || '',
@@ -1301,6 +1469,7 @@ function collectDingTalkBots() {
       workspace:         row.querySelector('[data-dt-route-workspace]')?.value.trim() || '',
       region:            row.querySelector('[data-dt-route-region]')?.value.trim() || '',
     })).filter(r => r.conversationTitle && r.employeeName),
+    cloudAccountRoutes: collectCloudRoutesFromCard(card),
   }));
 }
 
@@ -1350,6 +1519,11 @@ function makeFeishuBotCard(bot, idx) {
       '<div class="field">' +
         '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>cloudAccountId</label>' +
+        '<input type="text" data-field="cloudAccountId" value="' + esc(bot.cloudAccountId || preferredDefaultCloudAccountId()) + '" placeholder="' + preferredDefaultCloudAccountId() + '">' +
+        '<span class="hint">留空默认使用 ' + preferredDefaultCloudAccountId() + '</span>' +
       '</div>' +
       '<div class="field">' +
         '<label>对接产品</label>' +
@@ -1415,14 +1589,14 @@ function makeFeishuBotCard(bot, idx) {
           '<input class="tag-input" type="text" placeholder="输入 chat_id 后回车" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
+      makeCloudRouteDetails(bot.cloudAccountRoutes, '云账号路由', '（按 cloudAccountId 切换不同数字员工）') +
     '</div>';
   return div;
 }
 
 function addFeishuBot() {
   const container = document.getElementById('feishu-bots-list');
-  const defaultProduct = val('g-product') || 'sls';
-  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  container.appendChild(makeFeishuBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', cloudAccountId: preferredDefaultCloudAccountId(), product: 'sls' }, container.children.length));
   updateBotVariableFields();
 }
 
@@ -1457,6 +1631,7 @@ function collectFeishuBots() {
     appId:             card.querySelector('[data-field=appId]').value.trim(),
     appSecret:         card.querySelector('[data-field=appSecret]').value.trim(),
     employeeName:      card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId:    card.querySelector('[data-field=cloudAccountId]').value.trim(),
     verificationToken: card.querySelector('[data-field=verificationToken]').value.trim(),
     eventEncryptKey:   card.querySelector('[data-field=eventEncryptKey]').value.trim(),
     conciseReply:      card.querySelector('[data-field=conciseReply]').checked,
@@ -1466,6 +1641,7 @@ function collectFeishuBots() {
     region:            card.querySelector('[data-field=region]').value.trim(),
     allowedUsers:      Array.from(card.querySelectorAll('[data-feishu-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
     allowedChats:      Array.from(card.querySelectorAll('[data-feishu-allowed-chats] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
+    cloudAccountRoutes: collectCloudRoutesFromCard(card),
   }));
 }
 
@@ -1519,6 +1695,11 @@ function makeWeComBotCard(bot, idx) {
       '<div class="field">' +
         '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>cloudAccountId</label>' +
+        '<input type="text" data-field="cloudAccountId" value="' + esc(bot.cloudAccountId || preferredDefaultCloudAccountId()) + '" placeholder="' + preferredDefaultCloudAccountId() + '">' +
+        '<span class="hint">留空默认使用 ' + preferredDefaultCloudAccountId() + '</span>' +
       '</div>' +
       '<div class="field">' +
         '<label>对接产品</label>' +
@@ -1582,14 +1763,68 @@ function makeWeComBotCard(bot, idx) {
           '<input class="tag-input" type="text" placeholder="输入 userid 后回车" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
+      '<div class="field field-full">' +
+        '<label>群聊 Webhook URL <span class="hint">（可选，同步推送 AI 回复）</span></label>' +
+        '<input type="text" data-field="webhookUrl" value="' + esc(bot.webhookUrl || '') + '" placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...">' +
+      '</div>' +
+      makeCloudRouteDetails(bot.cloudAccountRoutes, '云账号路由', '（按 cloudAccountId 切换不同数字员工）') +
+      '<details class="field field-full" style="padding:0;border:none;background:none"' + (((bot.botLongConn || {}).botId || (bot.botLongConn || {}).botSecret) ? ' open' : '') + '>' +
+        '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
+          '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '兼容旧版长连接群机器人' +
+          '<span class="hint" style="font-weight:400;font-size:12px">（建议迁移到下方独立的企业微信机器人）</span>' +
+        '</summary>' +
+        '<div class="field-grid" style="padding:8px 0 4px">' +
+          '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
+            '<label class="toggle">' +
+              '<input type="checkbox" data-field="botLongConnEnabled"' + ((bot.botLongConn || {}).enabled ? ' checked' : '') + '>' +
+              '<span class="toggle-track"></span>' +
+              '<span class="toggle-thumb"></span>' +
+            '</label>' +
+            '<div style="display:flex;flex-direction:column;gap:2px">' +
+              '<span style="font-size:13px;font-weight:500;color:var(--text)">启用兼容群机器人</span>' +
+              '<span class="hint" style="margin:0">保留旧配置时可继续工作；新配置建议使用独立企业微信机器人</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Bot ID</label>' +
+            '<input type="text" data-field="botLongConnBotId" value="' + esc((bot.botLongConn || {}).botId || '') + '" placeholder="aibXXXXXXXXXXXXXXXX">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Bot Secret</label>' +
+            '<div class="input-wrap">' +
+              '<input type="password" data-field="botLongConnBotSecret" value="' + esc((bot.botLongConn || {}).botSecret || '') + '" autocomplete="new-password">' +
+              '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>WebSocket URL</label>' +
+            '<input type="text" data-field="botLongConnUrl" value="' + esc((bot.botLongConn || {}).url || '') + '" placeholder="wss://openws.work.weixin.qq.com">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>心跳间隔（秒）</label>' +
+            '<input type="number" data-field="botLongConnPingIntervalSec" value="' + esc((bot.botLongConn || {}).pingIntervalSec || 30) + '" placeholder="30">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>重连延迟（秒）</label>' +
+            '<input type="number" data-field="botLongConnReconnectDelaySec" value="' + esc((bot.botLongConn || {}).reconnectDelaySec || 5) + '" placeholder="5">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>最大重连延迟（秒）</label>' +
+            '<input type="number" data-field="botLongConnMaxReconnectDelaySec" value="' + esc((bot.botLongConn || {}).maxReconnectDelaySec || 60) + '" placeholder="60">' +
+          '</div>' +
+        '</div>' +
+      '</details>' +
+      '</div>' +
     '</div>';
   return div;
 }
 
 function addWeComBot() {
   const container = document.getElementById('wecom-bots-list');
-  const defaultProduct = val('g-product') || 'sls';
-  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback', employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  container.appendChild(makeWeComBotCard({ enabled: true, conciseReply: true, callbackPath: '/wecom/callback', employeeName: 'apsara-ops', cloudAccountId: preferredDefaultCloudAccountId(), product: 'sls' }, container.children.length));
   updateBotVariableFields();
 }
 
@@ -1628,12 +1863,24 @@ function collectWeComBots() {
     encodingAESKey: card.querySelector('[data-field=encodingAESKey]').value.trim(),
     callbackPath:   card.querySelector('[data-field=callbackPath]').value.trim() || '/wecom/callback',
     employeeName:   card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId: card.querySelector('[data-field=cloudAccountId]').value.trim(),
     conciseReply:   card.querySelector('[data-field=conciseReply]').checked,
     product:        card.querySelector('[data-field=product]').value,
     project:        card.querySelector('[data-field=project]').value.trim(),
     workspace:      card.querySelector('[data-field=workspace]').value.trim(),
     region:         card.querySelector('[data-field=region]').value.trim(),
     allowedUsers:   Array.from(card.querySelectorAll('[data-wecom-allowed-users] .tag span:first-child')).map(el => el.textContent.trim()).filter(Boolean),
+    webhookUrl:     card.querySelector('[data-field=webhookUrl]').value.trim(),
+    botLongConn: {
+      enabled:              card.querySelector('[data-field=botLongConnEnabled]').checked,
+      botId:                card.querySelector('[data-field=botLongConnBotId]').value.trim(),
+      botSecret:            card.querySelector('[data-field=botLongConnBotSecret]').value.trim(),
+      url:                  card.querySelector('[data-field=botLongConnUrl]').value.trim(),
+      pingIntervalSec:      parseInt(card.querySelector('[data-field=botLongConnPingIntervalSec]').value, 10) || 0,
+      reconnectDelaySec:    parseInt(card.querySelector('[data-field=botLongConnReconnectDelaySec]').value, 10) || 0,
+      maxReconnectDelaySec: parseInt(card.querySelector('[data-field=botLongConnMaxReconnectDelaySec]').value, 10) || 0,
+    },
+    cloudAccountRoutes: collectCloudRoutesFromCard(card),
   }));
 }
 
@@ -1653,7 +1900,7 @@ function makeWeComGroupBotCard(bot, idx) {
     '<div class="dt-bot-header">' +
       '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
       '<span class="dt-bot-type" style="background:rgba(43,108,176,.1);color:#2b6cb0">WeComBot</span>' +
-      '<div class="dt-bot-title">' + esc(bot.botId || '未配置') + '</div>' +
+      '<div class="dt-bot-title">' + esc(bot.name || bot.botId || '未配置') + '</div>' +
       '<label class="toggle" style="margin-left:auto">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
@@ -1662,6 +1909,11 @@ function makeWeComGroupBotCard(bot, idx) {
       '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComGroupBot(this)">删除</button>' +
     '</div>' +
     '<div class="dt-bot-fields">' +
+      '<div class="field field-full">' +
+        '<label>机器人名称</label>' +
+        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="例如：企业微信群助手" autocomplete="off" oninput="onWeComGroupBotNameInput(this)">' +
+        '<span class="hint">仅用于在此页面标识，不影响功能</span>' +
+      '</div>' +
       '<div class="field">' +
         '<label>机器人 ID（BotID）<span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="botId" value="' + esc(bot.botId || '') + '" placeholder="aibXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" oninput="onWeComGroupBotIdInput(this)">' +
@@ -1678,6 +1930,11 @@ function makeWeComGroupBotCard(bot, idx) {
       '<div class="field">' +
         '<label>默认数字员工 ID（EmployeeId）</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>cloudAccountId</label>' +
+        '<input type="text" data-field="cloudAccountId" value="' + esc(bot.cloudAccountId || preferredDefaultCloudAccountId()) + '" placeholder="' + preferredDefaultCloudAccountId() + '">' +
+        '<span class="hint">留空默认使用 ' + preferredDefaultCloudAccountId() + '</span>' +
       '</div>' +
       '<div class="field">' +
         '<label>对接产品</label>' +
@@ -1716,14 +1973,39 @@ function makeWeComGroupBotCard(bot, idx) {
           '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
         '</div>' +
       '</div>' +
+      makeCloudRouteDetails(bot.cloudAccountRoutes, '云账号路由', '（按 cloudAccountId 切换不同数字员工）') +
+      '<details class="field field-full" style="padding:0;border:none;background:none"' + (((bot.url || '') || bot.pingIntervalSec || bot.reconnectDelaySec || bot.maxReconnectDelaySec) ? ' open' : '') + '>' +
+        '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
+          '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '长连接高级设置' +
+          '<span class="hint" style="font-weight:400;font-size:12px">（留空时使用系统默认值）</span>' +
+        '</summary>' +
+        '<div class="field-grid" style="padding:8px 0 4px">' +
+          '<div class="field">' +
+            '<label>WebSocket URL</label>' +
+            '<input type="text" data-field="url" value="' + esc(bot.url || '') + '" placeholder="wss://openws.work.weixin.qq.com">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>心跳间隔（秒）</label>' +
+            '<input type="number" data-field="pingIntervalSec" value="' + esc(bot.pingIntervalSec || 30) + '" placeholder="30">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>重连延迟（秒）</label>' +
+            '<input type="number" data-field="reconnectDelaySec" value="' + esc(bot.reconnectDelaySec || 5) + '" placeholder="5">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>最大重连延迟（秒）</label>' +
+            '<input type="number" data-field="maxReconnectDelaySec" value="' + esc(bot.maxReconnectDelaySec || 60) + '" placeholder="60">' +
+          '</div>' +
+        '</div>' +
+      '</details>' +
     '</div>';
   return div;
 }
 
 function addWeComGroupBot() {
   const container = document.getElementById('wecom-group-bots-list');
-  const defaultProduct = val('g-product') || 'sls';
-  container.appendChild(makeWeComGroupBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', product: defaultProduct }, container.children.length));
+  container.appendChild(makeWeComGroupBotCard({ enabled: true, conciseReply: true, employeeName: 'apsara-ops', cloudAccountId: preferredDefaultCloudAccountId(), product: 'sls' }, container.children.length));
   updateBotVariableFields();
 }
 
@@ -1735,7 +2017,15 @@ function removeWeComGroupBot(btn) {
 function onWeComGroupBotIdInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
-  titleEl.textContent = inp.value.trim() || '未配置';
+  const name = card.querySelector('[data-field=name]').value.trim();
+  titleEl.textContent = name || inp.value.trim() || '未配置';
+}
+
+function onWeComGroupBotNameInput(inp) {
+  const card = inp.closest('.dt-bot-card');
+  const titleEl = card.querySelector('.dt-bot-title');
+  const botId = card.querySelector('[data-field=botId]').value.trim();
+  titleEl.textContent = inp.value.trim() || botId || '未配置';
 }
 
 function renumberWeComGroupBots() {
@@ -1747,14 +2037,21 @@ function renumberWeComGroupBots() {
 function collectWeComGroupBots() {
   return Array.from(document.querySelectorAll('#wecom-group-bots-list .dt-bot-card')).map(card => ({
     enabled:      card.querySelector('[data-field=enabled]').checked,
+    name:         card.querySelector('[data-field=name]').value.trim(),
     botId:        card.querySelector('[data-field=botId]').value.trim(),
     botSecret:    card.querySelector('[data-field=botSecret]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId: card.querySelector('[data-field=cloudAccountId]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     product:      card.querySelector('[data-field=product]').value,
     project:      card.querySelector('[data-field=project]').value.trim(),
     workspace:    card.querySelector('[data-field=workspace]').value.trim(),
     region:       card.querySelector('[data-field=region]').value.trim(),
+    url:                  card.querySelector('[data-field=url]').value.trim(),
+    pingIntervalSec:      parseInt(card.querySelector('[data-field=pingIntervalSec]').value, 10) || 0,
+    reconnectDelaySec:    parseInt(card.querySelector('[data-field=reconnectDelaySec]').value, 10) || 0,
+    maxReconnectDelaySec: parseInt(card.querySelector('[data-field=maxReconnectDelaySec]').value, 10) || 0,
+    cloudAccountRoutes: collectCloudRoutesFromCard(card),
   }));
 }
 
@@ -1789,20 +2086,12 @@ function collectApiKeys() {
 // ── Populate form from data ───────────────────────────────────────────────
 function populate(data) {
   currentData = data;
-  const g = data.global || {};
-  setVal('g-akid', g.accessKeyId);
-  setVal('g-aks', g.accessKeySecret);
-  setVal('g-endpoint', g.endpoint);
+  const g = data.server || data.global || {};
+  renderCloudAccounts((data.cloudAccounts || []).length ? data.cloudAccounts : [{ id: DEFAULT_CLOUD_ACCOUNT_ID, provider: 'aliyun' }]);
   setVal('g-host', g.host || '0.0.0.0');
   setVal('g-port', g.port || 8080);
   setVal('g-tz', g.timeZone || 'Asia/Shanghai');
   setVal('g-lang', g.language || 'zh');
-  setVal('g-product', g.product || 'sls');
-  setVal('g-project', g.project || '');
-  setVal('g-workspace', g.workspace || '');
-  setVal('g-region', g.region || '');
-
-  updateGlobalVariableFields();
   updateBotVariableFields();
 
   const a = data.auth || {};
@@ -1824,9 +2113,6 @@ function populate(data) {
 
   renderScheduledTasks(data.scheduledTasks || []);
   updateAllTaskVariableFields();
-
-  // 记录当前 AK 快照（加载完成 = 已知状态，不需要重新测试）
-  markAKTested();
 }
 
 function setVal(id, v) {
@@ -1841,19 +2127,13 @@ function collect() {
   const users = collectUsers();
   const roles = collectRoles();
   return {
-    global: {
-      accessKeyId:     val('g-akid'),
-      accessKeySecret: val('g-aks'),
-      endpoint:        val('g-endpoint'),
+    server: {
       host:            val('g-host') || '0.0.0.0',
       port:            parseInt(val('g-port')) || 8080,
       timeZone:        val('g-tz') || 'Asia/Shanghai',
       language:        val('g-lang') || 'zh',
-      product:         val('g-product') || 'sls',
-      project:         val('g-project') || '',
-      workspace:       val('g-workspace') || '',
-      region:          val('g-region') || '',
     },
+    cloudAccounts:   collectCloudAccounts(),
     auth: {
       methods:      collectMethods(),
       jwtSecretKey: val('a-jwt-key'),
@@ -1881,23 +2161,6 @@ function esc(s) {
 }
 
 // ── Bot variable fields visibility ────────────────────────────────────────
-// 更新全局配置中 project/workspace/region 字段的显示
-function updateGlobalVariableFields() {
-  const product = val('g-product') || 'sls';
-  const projectField = document.getElementById('g-project-field');
-  const workspaceField = document.getElementById('g-workspace-field');
-  const regionField = document.getElementById('g-region-field');
-  
-  const isSls = product === 'sls';
-  if (projectField) projectField.style.display = isSls ? '' : 'none';
-  if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
-  if (regionField) regionField.style.display = isSls ? 'none' : '';
-  const cmsValidateField = document.getElementById('g-cms-validate-field');
-  if (cmsValidateField) {
-    cmsValidateField.style.display = isSls ? 'none' : '';
-  }
-}
-
 function updateBotVariableFields() {
   // 更新所有 bot 卡片中根据 product 选择显示/隐藏 project/workspace/region 字段
   document.querySelectorAll('.dt-bot-card').forEach(card => {
@@ -2034,6 +2297,11 @@ function makeTaskCard(task, idx, expanded) {
         '<input type="text" data-field="employeeName" value="' + esc(task.employeeName || '') + '" placeholder="apsara-ops" autocomplete="off">' +
       '</div>' +
       '<div class="field">' +
+        '<label>cloudAccountId</label>' +
+        '<input type="text" data-field="cloudAccountId" value="' + esc(task.cloudAccountId || preferredDefaultCloudAccountId()) + '" placeholder="' + preferredDefaultCloudAccountId() + '" autocomplete="off">' +
+        '<span class="hint">留空默认使用 ' + preferredDefaultCloudAccountId() + '</span>' +
+      '</div>' +
+      '<div class="field">' +
         '<label>对接产品</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleTaskVariableFields(this.closest(\'.task-card\'))">' +
           '<option value="sls"' + (task.product === 'sls' || !task.product ? ' selected' : '') + '>SLS</option>' +
@@ -2116,13 +2384,13 @@ function makeTaskCard(task, idx, expanded) {
 
 function addScheduledTask() {
   const container = document.getElementById('tasks-list');
-  const defaultProduct = val('g-product') || 'sls';
   const card = makeTaskCard({
     enabled: true,
     cron: '0 9 * * 1-5',
     employeeName: 'apsara-ops',
+    cloudAccountId: preferredDefaultCloudAccountId(),
     conciseReply: true,
-    product: defaultProduct,
+    product: 'sls',
     webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
   }, container.children.length, true);
   container.appendChild(card);
@@ -2223,9 +2491,7 @@ function taskCardProductSelect(card) {
 function scheduledTaskProductFromCard(card) {
   const v = (taskCardProductSelect(card)?.value || '').trim();
   if (v === 'cms') return 'cms';
-  if (v === 'sls') return 'sls';
-  const g = (val('g-product') || 'sls').trim();
-  return g === 'cms' ? 'cms' : 'sls';
+  return 'sls';
 }
 
 function collectScheduledTasks() {
@@ -2235,6 +2501,7 @@ function collectScheduledTasks() {
     cron:         card.querySelector('[data-field=cron]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId: card.querySelector('[data-field=cloudAccountId]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     product:      scheduledTaskProductFromCard(card),
     project:      card.querySelector('[data-field=project]')?.value.trim() || '',
@@ -2258,6 +2525,7 @@ async function triggerTask(btn) {
   const task = {
     name:         card.querySelector('[data-field=name]').value.trim(),
     employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    cloudAccountId: card.querySelector('[data-field=cloudAccountId]').value.trim(),
     prompt:       card.querySelector('[data-field=prompt]').value.trim(),
     conciseReply: card.querySelector('[data-field=conciseReply]').checked,
     product:      scheduledTaskProductFromCard(card),
@@ -2375,21 +2643,64 @@ async function doSave() {
 }
 
 async function saveConfig() {
-  const akid = val('g-akid');
-  const aks  = val('g-aks');
-  if (!akid || !aks) {
-    const missing = [];
-    if (!akid) missing.push('AccessKeyId');
-    if (!aks)  missing.push('AccessKeySecret');
-    showStatus('warning', '⚠️ ' + missing.join(' 和 ') + ' 未填写，阿里云 CMS 功能将不可用', { label: '仍要保存', fn: 'doSave' });
+  const accounts = collectCloudAccounts().filter(isMeaningfulCloudAccount);
+  if (!accounts.length) {
+    showStatus('warning', '⚠️ 尚未配置任何云账号，阿里云 CMS 功能将不可用', { label: '仍要保存', fn: 'doSave' });
     return;
   }
-  if (isAKDirty()) {
-    showStatus('warning', '⚠️ AK 凭据已修改但尚未验证连通性，建议先点「测试连接」确认配置正确', { label: '仍要保存', fn: 'doSave' });
-    // 滚动到基础设置并高亮测试按钮
+
+  const duplicateIDs = new Set();
+  const seenIDs = new Set();
+  accounts.forEach(account => {
+    const normalizedID = normalizeCloudAccountId(account.id);
+    if (seenIDs.has(normalizedID)) {
+      duplicateIDs.add(normalizedID);
+      return;
+    }
+    seenIDs.add(normalizedID);
+  });
+  if (duplicateIDs.size > 0) {
+    showStatus('warning', '⚠️ 存在重复的 cloudAccountId：' + Array.from(duplicateIDs).join(', ') + '，请先调整后再保存');
     switchTab('global');
-    const btn = document.getElementById('test-ak-btn');
-    if (btn) { btn.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    const list = document.getElementById('cloud-accounts-list');
+    if (list) { list.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return;
+  }
+
+  const incomplete = accounts.find(account => !account.accessKeyId || !account.accessKeySecret);
+  if (incomplete) {
+    showStatus('warning', '⚠️ 云账号 ' + normalizeCloudAccountId(incomplete.id) + ' 的 AccessKeyId / AccessKeySecret 未填写完整，相关功能将不可用', { label: '仍要保存', fn: 'doSave' });
+    switchTab('global');
+    const list = document.getElementById('cloud-accounts-list');
+    if (list) { list.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return;
+  }
+
+  const userRows = Array.from(document.querySelectorAll('#users-list .user-row')).map(row => ({
+    name: row.querySelector('[data-field=username]').value.trim(),
+    hash: row.querySelector('[data-field=hash]').value.trim(),
+    newpwd: row.querySelector('[data-field=newpwd]').value.trim(),
+  })).filter(user => user.name);
+  const duplicateUsers = new Set();
+  const seenUsers = new Set();
+  userRows.forEach(user => {
+    const normalizedName = user.name.toLowerCase();
+    if (seenUsers.has(normalizedName)) {
+      duplicateUsers.add(user.name);
+      return;
+    }
+    seenUsers.add(normalizedName);
+  });
+  if (duplicateUsers.size > 0) {
+    showStatus('warning', '⚠️ 存在重复用户名：' + Array.from(duplicateUsers).join(', ') + '，请先调整后再保存');
+    switchTab('auth');
+    return;
+  }
+
+  const userWithoutPassword = userRows.find(user => !user.hash && !user.newpwd);
+  if (userWithoutPassword) {
+    showStatus('warning', '⚠️ 用户 ' + userWithoutPassword.name + ' 还没有设置密码，请先填写明文密码后再保存');
+    switchTab('auth');
     return;
   }
   doSave();

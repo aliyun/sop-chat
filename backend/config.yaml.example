@@ -1,23 +1,31 @@
 # SOP Chat 统一配置文件示例
 # 复制此文件为 config.yaml 并填入实际配置
 
-# ─── 全局配置 ─────────────────────────────────────────────────────────────────
-global:
-  # 支持直接填值或环境变量引用（$VAR / ${VAR}），变量不存在时保留原字面量
-  accessKeyId: "$ACCESS_KEY_ID"
-  accessKeySecret: "$ACCESS_KEY_SECRET"
-  endpoint: "cms.cn-hangzhou.aliyuncs.com"
+# ─── 服务配置 ─────────────────────────────────────────────────────────────────
+server:
   port: 8080          # 监听端口，0 时读取 PORT 环境变量，默认 8080
   timeZone: "Asia/Shanghai"
   language: "zh"      # zh | en
-  # product 指定本实例对接的数字员工所属产品，影响所有渠道和定时任务
-  #   sls（默认）：对话时附加 skill=sop 变量（适用于 SLS 产品的数字员工）
-  #   cms：不附加 skill=sop（适用于 CMS 产品的数字员工）
-  product: sls
-  # project 与 workspace 根据产品类型二选一
-  # project: "etl-dev"    # SLS 产品对应的 Project
-  # workspace: ""         # CMS 产品对应的 Workspace
-  # region: ""             # CMS 产品对应的 Region
+
+# ─── 多云账号配置（可选，推荐）───────────────────────────────────────────────
+# 每个账号一套凭据；渠道/定时任务通过 cloudAccountId 绑定。
+# 未显式绑定 cloudAccountId 时，默认使用 id=default 的账号；
+# 若不存在 id=default，则使用第一个账号。
+# aliases 建议同时覆盖：环境简称、团队叫法、订阅全名。
+# 例如用户问“uat 环境 waf 告警”或后续只回复订阅名，都能路由到同一账号。
+# cloudAccounts:
+#   - id: default
+#     provider: aliyun
+#     aliases: ["prod", "线上", "subscription-prod"]
+#     accessKeyId: "$ACCESS_KEY_ID"
+#     accessKeySecret: "$ACCESS_KEY_SECRET"
+#     endpoint: "cms.cn-shanghai.aliyuncs.com"   # 可选；为空时回退 CMS_ENDPOINT 或默认 endpoint
+#   - id: uat
+#     provider: aliyun
+#     aliases: ["uat", "测试", "预发", "subscription-uat"]
+#     accessKeyId: "$ACCESS_KEY_ID_UAT"
+#     accessKeySecret: "$ACCESS_KEY_SECRET_UAT"
+#     endpoint: "cms.cn-shanghai.aliyuncs.com"
 
 # ─── 认证配置 ─────────────────────────────────────────────────────────────────
 auth:
@@ -76,14 +84,17 @@ auth:
 # ─── 通知渠道配置（可选）────────────────────────────────────────────────────────
 # 所有 IM / 消息渠道统一在 channels 下管理，新增渠道只需追加子字段
 # 钉钉支持多实例：每个条目对接一个数字员工（clientId 唯一标识一个实例）
+# 多订阅场景下，同一个渠道实例可以通过 cloudAccountRoutes 把不同订阅路由到不同员工，
+# 不必为每个订阅重复配置一套钉钉/飞书/企微凭据。
 # channels:
 #   dingtalk:
 #     - enabled: true
 #       clientId: "$DINGTALK_CLIENT_ID_1"
 #       clientSecret: "$DINGTALK_CLIENT_SECRET_1"
 #       employeeName: "employee-name-1"
+#       cloudAccountId: "default"   # 绑定云账号（默认 default）
 #       conciseReply: true        # 开启后回复内容会更简洁，适合 IM 阅读
-#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       product: "sls"            # 数字员工对应的 product（建议显式配置）
 #       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
 #       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       region: ""                 # CMS 产品：数字员工所属 region（product=cms 时生效，写入 Thread Variables）
@@ -95,13 +106,19 @@ auth:
 #       allowedConversations:     # 群白名单（conversationTitle）：为空则所有群均可；单聊不受此限制
 #         - "研发一群"
 #         - "SRE 值班群"
+#       cloudAccountRoutes:       # 可选：按消息里识别到的订阅切换员工
+#         - cloudAccountId: "uat"
+#           employeeName: "employee-name-uat"
+#         - cloudAccountId: "prod"
+#           employeeName: "employee-name-prod"
 #   feishu:
 #     - enabled: true
 #       appId: "$FEISHU_APP_ID"           # 飞书应用 App ID
 #       appSecret: "$FEISHU_APP_SECRET"   # 飞书应用 App Secret
 #       employeeName: "employee-name-1"
+#       cloudAccountId: "default"   # 绑定云账号（默认 default）
 #       conciseReply: true
-#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       product: "sls"            # 数字员工对应的 product（建议显式配置）
 #       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
 #       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       region: ""                 # CMS 产品：数字员工所属 region（product=cms 时生效，写入 Thread Variables）
@@ -109,6 +126,9 @@ auth:
 #       eventEncryptKey: ""               # WebSocket 模式可留空
 #       allowedUsers: []                  # 飞书用户 open_id 白名单，为空则允许所有用户
 #       allowedChats: []                  # 飞书群聊 chat_id 白名单，为空则允许所有群聊
+#       cloudAccountRoutes:
+#         - cloudAccountId: "uat"
+#           employeeName: "employee-name-uat"
 #   wecom:
 #     - enabled: true
 #       corpId: "$WECOM_CORP_ID"          # 企业 ID
@@ -118,13 +138,17 @@ auth:
 #       encodingAESKey: "$WECOM_AES_KEY"  # 回调消息加密密钥（43位字符）
 #       callbackPath: "/wecom/callback"   # 回调路径（必须以 /wecom/ 开头）
 #       employeeName: "employee-name-1"
+#       cloudAccountId: "default"   # 绑定云账号（默认 default）
 #       conciseReply: true
-#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       product: "sls"            # 数字员工对应的 product（建议显式配置）
 #       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
 #       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       region: ""                 # CMS 产品：数字员工所属 region（product=cms 时生效，写入 Thread Variables）
 #       allowedUsers: []                  # 企业微信 userid 白名单，为空则允许所有用户
 #       webhookUrl: ""                    # 群机器人 Webhook URL（可选）；配置后 AI 回复会同步推送到群聊
+#       cloudAccountRoutes:
+#         - cloudAccountId: "uat"
+#           employeeName: "employee-name-uat"
 #       # 旧版嵌套配置（向后兼容，推荐使用下方独立 wecomBot 节点）
 #       botLongConn:
 #         enabled: true
@@ -135,8 +159,9 @@ auth:
 #       botId: "$WECOM_BOT_ID"            # 机器人 ID（从企业微信管理后台 AI 助手页面获取）
 #       botSecret: "$WECOM_BOT_SECRET"    # 机器人 Secret
 #       employeeName: "employee-name-1"   # 默认数字员工名称
+#       cloudAccountId: "default"   # 绑定云账号（默认 default）
 #       conciseReply: true
-#       product: "sls"            # 数字员工对应的product（为空则使用 global.product）
+#       product: "sls"            # 数字员工对应的 product（建议显式配置）
 #       project: ""               # SLS 产品：数字员工所属 project（product=sls 时生效，写入 Thread Variables）
 #       workspace: ""             # CMS 产品：数字员工所属 workspace（product=cms 时生效，写入 Thread Variables）
 #       region: ""                 # CMS 产品：数字员工所属 region（product=cms 时生效，写入 Thread Variables）
@@ -144,6 +169,9 @@ auth:
 #       # pingIntervalSec: 30             # 心跳间隔（秒）
 #       # reconnectDelaySec: 5            # 重连基础延迟（秒，指数退避）
 #       # maxReconnectDelaySec: 60        # 最大重连延迟（秒）
+#       cloudAccountRoutes:
+#         - cloudAccountId: "uat"
+#           employeeName: "employee-name-uat"
 
 # ─── OpenAI 兼容接口（可选）─────────────────────────────────────────────────────
 # 接口路径：POST /openai/v1/chat/completions、GET /openai/v1/models
@@ -158,7 +186,7 @@ auth:
 
 # ─── 定时任务配置 ──────────────────────────────────────────────────────────────
 # 定时向指定数字员工提问，并将回复通过 Webhook 推送到钉钉/飞书/企业微信群
-# cron 格式：标准 5 字段（分 时 日 月 周），时区取 global.timeZone
+# cron 格式：标准 5 字段（分 时 日 月 周），时区取 server.timeZone
 #   示例："0 9 * * 1-5"   = 工作日每天 09:00
 #         "30 8 * * *"    = 每天 08:30
 #         "0 */2 * * *"   = 每 2 小时整点
@@ -171,7 +199,8 @@ auth:
 #     cron: "0 9 * * 1-5"           # 工作日每天 9:00
 #     prompt: "请总结昨日工作进展和今日计划"
 #     employeeName: "my-sop-employee"
-#     # product/project/workspace/region 可选，为空时使用全局配置
+#     cloudAccountId: "default"      # 绑定云账号（默认 default）
+#     # product/project/workspace/region 可选；未显式填写时按 project/workspace 推断 product
 #     # product: sls                  # sls 或 cms
 #     # project: "etl-dev"           # SLS 产品对应的 Project
 #     # workspace: ""                 # CMS 产品对应的 Workspace

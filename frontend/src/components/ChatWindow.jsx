@@ -14,7 +14,7 @@
  * 3. 将调试逻辑移到开发环境配置中
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Message from './Message';
 import MessageInput from './MessageInput';
 import { sendChatMessageStream, createThread, getEmployee, listThreads, getThreadMessages } from '../services/api';
@@ -24,11 +24,13 @@ import { copyToClipboard } from '../utils/clipboard';
 const ChatWindow = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [employee, setEmployee] = useState(null);
   const [employeeLoading, setEmployeeLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pendingCloudAccountConfirm, setPendingCloudAccountConfirm] = useState(null);
   const [streamingMessage, setStreamingMessage] = useState(null);
   const [threadId, setThreadId] = useState(null);
   const [autoScroll, setAutoScroll] = useState(true); // 是否自动滚动
@@ -44,13 +46,15 @@ const ChatWindow = () => {
   const scrollTimeoutRef = useRef(null);
   const lastScrollTopRef = useRef(0);
   const shareTimeoutRef = useRef(null);
+  const requestedCloudAccountId = searchParams.get('cloudAccountId') || '';
+  const selectedCloudAccountId = employee?.cloudAccountId || requestedCloudAccountId;
 
   // Load employee data on mount
   useEffect(() => {
     const loadEmployee = async () => {
       try {
         setEmployeeLoading(true);
-        const employeeData = await getEmployee(employeeId);
+        const employeeData = await getEmployee(employeeId, requestedCloudAccountId);
         setEmployee(employeeData);
       } catch (err) {
         console.error('Failed to load employee:', err);
@@ -64,7 +68,7 @@ const ChatWindow = () => {
     if (employeeId) {
       loadEmployee();
     }
-  }, [employeeId, navigate]);
+  }, [employeeId, navigate, requestedCloudAccountId]);
 
   // Function to load and refresh thread list (only top 10)
   const refreshThreadList = useCallback(async () => {
@@ -72,7 +76,7 @@ const ChatWindow = () => {
     
     try {
       setThreadsLoading(true);
-      const threadList = await listThreads(employee.name);
+      const threadList = await listThreads(employee.name, selectedCloudAccountId);
       // Sort by createTime descending (newest first) and take only top 10
       const sortedThreads = threadList.sort((a, b) => {
         const timeA = a.createTime || 0;
@@ -85,7 +89,7 @@ const ChatWindow = () => {
     } finally {
       setThreadsLoading(false);
     }
-  }, [employee]);
+  }, [employee, selectedCloudAccountId]);
 
   // Load thread list when employee is loaded
   useEffect(() => {
@@ -398,11 +402,12 @@ const ChatWindow = () => {
     try {
       setLoading(true);
       setError(null);
+      setPendingCloudAccountConfirm(null);
       setMessages([]);
       setStreamingMessage(null);
       
       // Load messages for the selected thread
-      const backendMessages = await getThreadMessages(employee.name, selectedThreadId);
+      const backendMessages = await getThreadMessages(employee.name, selectedThreadId, selectedCloudAccountId);
       const convertedMessages = convertMessages(backendMessages);
       setMessages(convertedMessages);
       setThreadId(selectedThreadId);
@@ -424,40 +429,42 @@ const ChatWindow = () => {
     setMessages([]);
     setThreadId(null);
     setError(null);
+    setPendingCloudAccountConfirm(null);
     setStreamingMessage(null);
   };
 
   const handleSendMessage = async (content) => {
+    const pendingConfirmation = pendingCloudAccountConfirm;
+    const isCloudAccountConfirmation = Boolean(pendingConfirmation);
+
     // Create abort controller for this request
     abortControllerRef.current = new AbortController();
-    
-    // Add user message to chat
-    const userMessage = { 
-      role: 'user', 
-      content
-    };
-    setMessages((prev) => [...prev, userMessage]);
     setError(null);
     setLoading(true);
-    
+
+    if (!isCloudAccountConfirmation) {
+      // Add user message to chat only for real questions.
+      // 环境确认属于本地路由步骤，不写入会话历史，避免与后端 thread 历史不一致。
+      const userMessage = {
+        role: 'user',
+        content
+      };
+      setMessages((prev) => [...prev, userMessage]);
+    } else {
+      setPendingCloudAccountConfirm(null);
+    }
+
     // Reset scroll state for new message
     setAutoScroll(true);
     userInteractingRef.current = false;
 
-    // If no threadId, create one first
-    let currentThreadId = threadId;
-
-    // Initialize streaming message
-    streamingMessageRef.current = {
-      role: 'assistant',
-      events: [],  // Store all events (content chunks, tool calls) in chronological order
-      stage: 'thinking'
-    };
-    setStreamingMessage(streamingMessageRef.current);
+    let currentThreadId = pendingConfirmation?.threadId || threadId;
+    const requestMessage = pendingConfirmation?.originalMessage || content;
+    const requestCloudAccountId = isCloudAccountConfirmation ? content : selectedCloudAccountId;
 
     if (!currentThreadId) {
       try {
-        const threadData = await createThread(employee.name, '');
+        const threadData = await createThread(employee.name, '', {}, selectedCloudAccountId);
         currentThreadId = threadData.threadId;
         setThreadId(currentThreadId);
         // Reload thread list after creating new thread
@@ -470,11 +477,20 @@ const ChatWindow = () => {
       }
     }
 
+    // Initialize streaming message
+    streamingMessageRef.current = {
+      role: 'assistant',
+      events: [],  // Store all events (content chunks, tool calls) in chronological order
+      stage: 'thinking'
+    };
+    setStreamingMessage(streamingMessageRef.current);
+
     // Send to backend with SSE streaming
     await sendChatMessageStream(
       employee.name,
       currentThreadId,
-      content,
+      requestMessage,
+      requestCloudAccountId,
       // onMeta: handle meta info
       (receivedThreadId) => {
         if (receivedThreadId && !threadId) {
@@ -697,10 +713,23 @@ const ChatWindow = () => {
       },
       // onError: handle errors
       (err) => {
-        setError(err.message);
-        
+        if (err.needConfirm) {
+          const options = Array.isArray(err.options) ? err.options : [];
+          setPendingCloudAccountConfirm({
+            originalMessage: pendingConfirmation?.originalMessage || content,
+            threadId: currentThreadId,
+            options,
+          });
+          setError(null);
+          setStreamingMessage(null);
+          streamingMessageRef.current = null;
+          setLoading(false);
+          abortControllerRef.current = null;
+          return;
+        }
+
         const isCancelled = err.message.includes('取消');
-        
+
         if (isCancelled) {
           // User cancelled - preserve any content received so far
           if (streamingMessageRef.current && streamingMessageRef.current.events && streamingMessageRef.current.events.length > 0) {
@@ -767,7 +796,11 @@ const ChatWindow = () => {
     
     // Generate share URL
     const baseUrl = window.location.href.split('#')[0];
-    const shareUrl = `${baseUrl}#/share/${encodeURIComponent(employee.name)}/${encodeURIComponent(threadId)}`;
+    const shareParams = new URLSearchParams();
+    if (selectedCloudAccountId) {
+      shareParams.set('cloudAccountId', selectedCloudAccountId);
+    }
+    const shareUrl = `${baseUrl}#/share/${encodeURIComponent(employee.name)}/${encodeURIComponent(threadId)}${shareParams.toString() ? `?${shareParams.toString()}` : ''}`;
 
     // Copy to clipboard (robust fallback across browsers / contexts)
     (async () => {
@@ -828,6 +861,11 @@ const ChatWindow = () => {
     return '新对话';
   };
 
+  const cloudAccountOptionsText = pendingCloudAccountConfirm?.options?.join(' / ') || '';
+  const messageInputPlaceholder = pendingCloudAccountConfirm
+    ? '请输入环境别名、云账号 ID 或订阅全名...'
+    : '请输入您的问题...';
+
   return (
     <div className="chat-window">
       {/* Thread List Sidebar */}
@@ -881,6 +919,9 @@ const ChatWindow = () => {
               ← 返回
             </button>
             <h2>{employee.displayName || employee.name}</h2>
+            {selectedCloudAccountId && (
+              <span className="chat-account-badge">{selectedCloudAccountId}</span>
+            )}
           </div>
           <div className="header-buttons">
             {threadId && (
@@ -945,11 +986,25 @@ const ChatWindow = () => {
       )}
 
         <div className="input-container">
+          {pendingCloudAccountConfirm && (
+            <div className="chat-notice chat-notice-confirm">
+              <div className="chat-notice-title">需要确认目标环境</div>
+              <div className="chat-notice-text">请回复云账号 ID、环境别名或订阅全名后继续执行原问题。</div>
+              {cloudAccountOptionsText && (
+                <div className="chat-notice-text">可用账号：{cloudAccountOptionsText}</div>
+              )}
+              <div className="chat-notice-original">原问题：{pendingCloudAccountConfirm.originalMessage}</div>
+            </div>
+          )}
+          {error && !pendingCloudAccountConfirm && (
+            <div className="chat-notice chat-notice-error">{error}</div>
+          )}
           <MessageInput 
             onSend={handleSendMessage} 
             onStop={handleStopGeneration}
             disabled={loading}
             isGenerating={loading}
+            placeholder={messageInputPlaceholder}
           />
         </div>
       </div>

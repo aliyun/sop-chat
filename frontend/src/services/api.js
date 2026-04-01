@@ -131,11 +131,14 @@ apiClient.interceptors.response.use(
  * @param {string} namePrefix - Optional name prefix filter
  * @returns {Promise} List of employees
  */
-export const listEmployees = async (namePrefix = null) => {
+export const listEmployees = async (namePrefix = null, cloudAccountId = '') => {
   try {
     const params = {};
     if (namePrefix) {
       params.namePrefix = namePrefix;
+    }
+    if (cloudAccountId) {
+      params.cloudAccountId = cloudAccountId;
     }
     const response = await apiClient.get('/api/employees', { params });
     return response.data.employees;
@@ -163,9 +166,11 @@ export const createEmployee = async (employeeData) => {
  * @param {string} employeeName - Employee name
  * @returns {Promise} Employee info
  */
-export const getEmployee = async (employeeName) => {
+export const getEmployee = async (employeeName, cloudAccountId = '') => {
   try {
-    const response = await apiClient.get(`/api/employees/${employeeName}`);
+    const response = await apiClient.get(`/api/employees/${employeeName}`, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '获取员工信息失败');
@@ -178,9 +183,11 @@ export const getEmployee = async (employeeName) => {
  * @param {Object} employeeData - Employee configuration (without name)
  * @returns {Promise} Update result
  */
-export const updateEmployee = async (employeeName, employeeData) => {
+export const updateEmployee = async (employeeName, employeeData, cloudAccountId = '') => {
   try {
-    const response = await apiClient.put(`/api/employees/${employeeName}`, employeeData);
+    const response = await apiClient.put(`/api/employees/${employeeName}`, employeeData, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '更新员工失败');
@@ -196,10 +203,11 @@ export const updateEmployee = async (employeeName, employeeData) => {
  * @param {Object} attributes - Thread attributes
  * @returns {Promise} Created thread info
  */
-export const createThread = async (employeeName, title = '', attributes = {}) => {
+export const createThread = async (employeeName, title = '', attributes = {}, cloudAccountId = '') => {
   try {
     const response = await apiClient.post('/api/threads', {
       employeeName,
+      cloudAccountId,
       title,
       attributes,
     });
@@ -214,9 +222,11 @@ export const createThread = async (employeeName, title = '', attributes = {}) =>
  * @param {string} employeeName - Employee name
  * @returns {Promise} List of threads
  */
-export const listThreads = async (employeeName) => {
+export const listThreads = async (employeeName, cloudAccountId = '') => {
   try {
-    const response = await apiClient.get(`/api/threads/${employeeName}`);
+    const response = await apiClient.get(`/api/threads/${employeeName}`, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data.threads;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '获取会话列表失败');
@@ -229,9 +239,11 @@ export const listThreads = async (employeeName) => {
  * @param {string} threadId - Thread ID
  * @returns {Promise} Thread details
  */
-export const getThread = async (employeeName, threadId) => {
+export const getThread = async (employeeName, threadId, cloudAccountId = '') => {
   try {
-    const response = await apiClient.get(`/api/threads/${employeeName}/${threadId}`);
+    const response = await apiClient.get(`/api/threads/${employeeName}/${threadId}`, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '获取会话信息失败');
@@ -244,9 +256,11 @@ export const getThread = async (employeeName, threadId) => {
  * @param {string} threadId - Thread ID
  * @returns {Promise} Thread messages
  */
-export const getThreadMessages = async (employeeName, threadId) => {
+export const getThreadMessages = async (employeeName, threadId, cloudAccountId = '') => {
   try {
-    const response = await apiClient.get(`/api/threads/${employeeName}/${threadId}/messages`);
+    const response = await apiClient.get(`/api/threads/${employeeName}/${threadId}/messages`, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data.messages;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '获取消息列表失败');
@@ -261,10 +275,11 @@ export const getThreadMessages = async (employeeName, threadId) => {
  * @param {string} threadId - Thread ID
  * @returns {Promise} Thread details
  */
-export const getSharedThread = async (employeeName, threadId) => {
+export const getSharedThread = async (employeeName, threadId, cloudAccountId = '') => {
   try {
     const response = await publicApiClient.get(
-      `/api/share/${encodeURIComponent(employeeName)}/${encodeURIComponent(threadId)}`
+      `/api/share/${encodeURIComponent(employeeName)}/${encodeURIComponent(threadId)}`,
+      { params: cloudAccountId ? { cloudAccountId } : undefined }
     );
     return response.data;
   } catch (error) {
@@ -278,10 +293,11 @@ export const getSharedThread = async (employeeName, threadId) => {
  * @param {string} threadId - Thread ID
  * @returns {Promise} Thread messages
  */
-export const getSharedThreadMessages = async (employeeName, threadId) => {
+export const getSharedThreadMessages = async (employeeName, threadId, cloudAccountId = '') => {
   try {
     const response = await publicApiClient.get(
-      `/api/share/${encodeURIComponent(employeeName)}/${encodeURIComponent(threadId)}/messages`
+      `/api/share/${encodeURIComponent(employeeName)}/${encodeURIComponent(threadId)}/messages`,
+      { params: cloudAccountId ? { cloudAccountId } : undefined }
     );
     return response.data.messages;
   } catch (error) {
@@ -294,9 +310,11 @@ export const getSharedThreadMessages = async (employeeName, threadId) => {
  * @param {string} employeeName - Employee name
  * @returns {Promise} Employee info
  */
-export const getSharedEmployee = async (employeeName) => {
+export const getSharedEmployee = async (employeeName, cloudAccountId = '') => {
   try {
-    const response = await publicApiClient.get(`/api/share/employee/${encodeURIComponent(employeeName)}`);
+    const response = await publicApiClient.get(`/api/share/employee/${encodeURIComponent(employeeName)}`, {
+      params: cloudAccountId ? { cloudAccountId } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || '获取员工信息失败');
@@ -323,6 +341,7 @@ export const sendChatMessageStream = async (
   employeeName,
   threadId,
   message,
+  cloudAccountId,
   onMeta,
   onChunk,
   onToolCall,
@@ -339,6 +358,9 @@ export const sendChatMessageStream = async (
     };
     if (threadId) {
       requestBody.threadId = threadId;
+    }
+    if (cloudAccountId) {
+      requestBody.cloudAccountId = cloudAccountId;
     }
 
     // Get token for SSE request
@@ -362,15 +384,25 @@ export const sendChatMessageStream = async (
     if (!response.ok) {
       // Try to extract error detail from response
       let errorMessage = `HTTP ${response.status} 错误`;
+      let errorData = null;
       try {
-        const errorData = await response.json();
+        errorData = await response.json();
         if (errorData.detail) {
           errorMessage = errorData.detail;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
         }
       } catch (parseError) {
         // Ignore parse error, use default message
       }
-      throw new Error(errorMessage);
+
+      const error = new Error(errorMessage);
+      if (errorData && typeof errorData === 'object') {
+        error.needConfirm = errorData.needConfirm === true;
+        error.options = Array.isArray(errorData.options) ? errorData.options : [];
+        error.detail = typeof errorData.detail === 'string' ? errorData.detail : '';
+      }
+      throw error;
     }
 
     const reader = response.body.getReader();

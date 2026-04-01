@@ -10,7 +10,6 @@ import Layout from './components/Layout';
 import Login from './components/Login';
 import EmployeeSelector from './components/EmployeeSelector';
 import ChatWindow from './components/ChatWindow';
-import CreateEmployee from './components/CreateEmployee';
 import EmployeeSettings from './components/EmployeeSettings';
 import ShareChat from './components/ShareChat';
 import api from './services/api';
@@ -70,16 +69,6 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <ChatWindow />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/create-employee"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <CreateEmployee />
                   </Layout>
                 </ProtectedRoute>
               }

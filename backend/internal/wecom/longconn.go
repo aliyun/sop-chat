@@ -75,9 +75,10 @@ type longConnStreamReplyBody struct {
 
 // LongConnBot 企业微信 AI 助手群机器人长连接管理器
 type LongConnBot struct {
-	mu        sync.RWMutex
-	cfg       *config.WeComBotConfig
-	cmsConfig *config.ClientConfig
+	mu           sync.RWMutex
+	cfg          *config.WeComBotConfig
+	cmsConfig    *config.ClientConfig
+	globalConfig *config.Config
 
 	conn              *websocket.Conn
 	connected         bool
@@ -98,11 +99,12 @@ type LongConnBot struct {
 }
 
 // NewLongConnBot 创建长连接机器人实例
-func NewLongConnBot(wbConfig *config.WeComBotConfig, cmsConfig *config.ClientConfig) *LongConnBot {
+func NewLongConnBot(wbConfig *config.WeComBotConfig, cmsConfig *config.ClientConfig, globalConfig *config.Config) *LongConnBot {
 	return &LongConnBot{
-		cfg:       wbConfig,
-		cmsConfig: cmsConfig,
-		stopCh:    make(chan struct{}),
+		cfg:          wbConfig,
+		cmsConfig:    cmsConfig,
+		globalConfig: globalConfig,
+		stopCh:       make(chan struct{}),
 	}
 }
 
@@ -113,11 +115,24 @@ func (b *LongConnBot) Config() *config.WeComBotConfig {
 	return b.cfg
 }
 
+// GlobalConfig 返回当前机器人引用的全局配置。
+func (b *LongConnBot) GlobalConfig() *config.Config {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.globalConfig
+}
+
+// CMSConfig 返回当前绑定的云账号客户端配置（用于热重载比较）。
+func (b *LongConnBot) CMSConfig() *config.ClientConfig {
+	return b.cmsConfig
+}
+
 // UpdateConfig 热更新配置
-func (b *LongConnBot) UpdateConfig(newCfg *config.WeComBotConfig) {
+func (b *LongConnBot) UpdateConfig(newCfg *config.WeComBotConfig, globalConfig *config.Config) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.cfg = newCfg
+	b.globalConfig = globalConfig
 	log.Printf("[WeCom-LongConn] 配置已热更新: botId=%s employee=%s",
 		newCfg.BotID, newCfg.EmployeeName)
 }
@@ -460,13 +475,13 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 	}
 
 	userMessage := strings.TrimSpace(body.Text.Content)
-	cfg := b.Config()
 	isGroupChat := body.ChatType == "group" || body.ChatID != ""
 
 	// 生成 streamId 用于流式回复
 	streamID := fmt.Sprintf("stream_%d", time.Now().UnixNano())
 
-	key := longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID)
+	target := b.resolveTarget(userMessage)
+	key := longConnThreadKey(fromUser, target.employeeName, body.ChatID)
 
 	// worker queue key 不含 variable，保证同一会话的消息串行处理
 	queueKey := key
@@ -478,17 +493,17 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		// 立即发送"思考中"提示，让用户知道消息已收到
 		b.sendStreamReply(reqID, streamID, "💭 思考中...", false)
 
-		threadID, err := b.getOrCreateThreadID(fromUser, cfg.EmployeeName, body.ChatID)
+		threadID, err := b.getOrCreateThreadID(fromUser, target, body.ChatID)
 		if err != nil {
 			log.Printf("[WeCom-LongConn] 创建线程失败: %v", err)
 			b.sendStreamReply(reqID, streamID, "❌ 创建会话失败，请稍后重试", true)
 			return
 		}
 
-		log.Printf("[WeCom-LongConn] 调用数字员工 employee=%s threadId=%s isGroup=%v",
-			cfg.EmployeeName, threadID, isGroupChat)
+		log.Printf("[WeCom-LongConn] 调用数字员工 cloudAccountId=%s employee=%s threadId=%s isGroup=%v",
+			target.cloudAccountID, target.employeeName, threadID, isGroupChat)
 
-		replyText, newThreadID, err := b.queryEmployee(workCtx, userMessage, threadID, cfg.EmployeeName)
+		replyText, newThreadID, err := b.queryEmployee(workCtx, userMessage, threadID, target)
 		if err != nil {
 			log.Printf("[WeCom-LongConn] 调用数字员工失败: %v", err)
 			b.sendStreamReply(reqID, streamID, "❌ "+err.Error(), true)
@@ -496,10 +511,8 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		}
 
 		if newThreadID != "" && newThreadID != threadID {
-			// 缓存 key 需要包含 variable
-			project, workspace, _ := b.threadVariable()
-			variable := project + workspace
-			cacheKey := longConnThreadKey(fromUser, cfg.EmployeeName, body.ChatID) + "\x00" + variable
+			scope := threadScope(target.cloudAccountID, target.project, target.workspace, target.region)
+			cacheKey := longConnThreadKey(fromUser, target.employeeName, body.ChatID) + "\x00" + scope
 			b.threadStore.Store(cacheKey, newThreadID)
 		}
 
@@ -568,6 +581,73 @@ func longConnThreadKey(userID, employeeName, chatID string) string {
 	return "lc:" + userID + "\x00" + employeeName
 }
 
+func (b *LongConnBot) resolveTarget(message string) resolvedTarget {
+	cfg := b.Config()
+	target := resolvedTarget{
+		employeeName:   cfg.EmployeeName,
+		cloudAccountID: config.NormalizeCloudAccountID(cfg.CloudAccountID),
+		product:        cfg.Product,
+		project:        cfg.Project,
+		workspace:      cfg.Workspace,
+		region:         cfg.Region,
+		clientConfig:   b.cmsConfig,
+	}
+	if target.product == "" && b.cmsConfig != nil {
+		target.product = b.cmsConfig.Product
+	}
+
+	globalCfg := b.GlobalConfig()
+	if globalCfg != nil {
+		accountID, matched, ambiguous := globalCfg.ResolveMessageCloudAccountID(message, target.cloudAccountID)
+		if len(ambiguous) > 1 {
+			log.Printf("[WeCom-LongConn] 消息 %q 命中多个 cloudAccountId=%v，继续使用默认账号 %q", promptForRouteLog(message), ambiguous, target.cloudAccountID)
+		}
+		if matched {
+			if clientCfg, err := globalCfg.ResolveClientConfig(accountID); err == nil {
+				target.cloudAccountID = clientCfg.CloudAccountID
+				target.clientConfig = clientCfg
+			} else {
+				log.Printf("[WeCom-LongConn] cloudAccountId=%q 解析失败，继续使用默认账号 %q: %v", accountID, target.cloudAccountID, err)
+			}
+		}
+	}
+
+	if route := config.FindCloudAccountRoute(cfg.CloudAccountRoutes, target.cloudAccountID); route != nil {
+		if route.EmployeeName != "" {
+			target.employeeName = route.EmployeeName
+		}
+		if route.Product != "" {
+			target.product = route.Product
+		}
+		if route.Project != "" {
+			target.project = route.Project
+		}
+		if route.Workspace != "" {
+			target.workspace = route.Workspace
+		}
+		if route.Region != "" {
+			target.region = route.Region
+		}
+	}
+
+	if target.clientConfig == nil {
+		target.clientConfig = &config.ClientConfig{
+			CloudAccountID: target.cloudAccountID,
+		}
+		if b.cmsConfig != nil {
+			target.clientConfig.AccessKeyId = b.cmsConfig.AccessKeyId
+			target.clientConfig.AccessKeySecret = b.cmsConfig.AccessKeySecret
+			target.clientConfig.Endpoint = b.cmsConfig.Endpoint
+			target.clientConfig.Product = b.cmsConfig.Product
+		}
+	}
+	if target.product == "" && target.clientConfig != nil {
+		target.product = target.clientConfig.Product
+	}
+
+	return target
+}
+
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *LongConnBot) threadVariable() (project, workspace, region string) {
@@ -583,30 +663,30 @@ func (b *LongConnBot) threadVariable() (project, workspace, region string) {
 }
 
 // getOrCreateThreadID 查找或新建 CMS 线程 ID
-func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (string, error) {
-	project, workspace, region := b.threadVariable()
-	variable := project + workspace
+func (b *LongConnBot) getOrCreateThreadID(userID string, target resolvedTarget, chatID string) (string, error) {
+	project, workspace, region := threadVariableForTarget(target)
+	scope := threadScope(target.cloudAccountID, project, workspace, region)
 
-	// 缓存 key 包含 variable，确保 project/workspace 变更后使用新的 thread
-	key := longConnThreadKey(userID, employeeName, chatID) + "\x00" + variable
+	// 缓存 key 包含订阅和变量，确保 cloudAccountId / project / workspace / region 变更后使用新的 thread
+	key := longConnThreadKey(userID, target.employeeName, chatID) + "\x00" + scope
 
 	if v, ok := b.threadStore.Load(key); ok {
 		return v.(string), nil
 	}
 
-	client, err := b.newSopClient()
+	client, err := b.newSopClientWithConfig(target.clientConfig)
 	if err != nil {
 		return "", err
 	}
 
-	raw := "wecom_lc\x00" + chatID + "\x00" + employeeName
+	raw := "wecom_lc\x00" + chatID + "\x00" + target.employeeName
 	if chatID == "" {
-		raw = "wecom_lc\x00" + userID + "\x00" + employeeName
+		raw = "wecom_lc\x00" + userID + "\x00" + target.employeeName
 	}
-	h := md5.Sum([]byte(raw + "\x00" + variable))
+	h := md5.Sum([]byte(raw + "\x00" + scope))
 	session := fmt.Sprintf("%x", h)
 
-	listResp, listErr := client.ListThreads(employeeName, []sopchat.ThreadFilter{
+	listResp, listErr := client.ListThreads(target.employeeName, []sopchat.ThreadFilter{
 		{Key: "session", Value: session},
 	})
 	if listErr != nil {
@@ -618,7 +698,7 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 			}
 			if v, ok := t.Attributes["session"]; ok && v != nil && *v == session {
 				threadID := *t.ThreadId
-				log.Printf("[WeCom-LongConn] 找到已有线程 [employee=%s]: %s", employeeName, threadID)
+				log.Printf("[WeCom-LongConn] 找到已有线程 [cloudAccountId=%s employee=%s]: %s", target.cloudAccountID, target.employeeName, threadID)
 				b.threadStore.Store(key, threadID)
 				return threadID, nil
 			}
@@ -630,9 +710,9 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 		title = "WeCom-LongConn-Group: " + chatID
 	}
 
-	log.Printf("[WeCom-LongConn] 创建新线程 [employee=%s] ...", employeeName)
+	log.Printf("[WeCom-LongConn] 创建新线程 [cloudAccountId=%s employee=%s] ...", target.cloudAccountID, target.employeeName)
 	resp, err := client.CreateThread(&sopchat.ThreadConfig{
-		EmployeeName: employeeName,
+		EmployeeName: target.employeeName,
 		Title:        title,
 		Attributes:   map[string]interface{}{"session": session},
 		Project:      project,
@@ -647,17 +727,25 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 	}
 
 	threadID := *resp.Body.ThreadId
-	log.Printf("[WeCom-LongConn] 新线程创建成功 [employee=%s]: %s", employeeName, threadID)
+	log.Printf("[WeCom-LongConn] 新线程创建成功 [cloudAccountId=%s employee=%s]: %s", target.cloudAccountID, target.employeeName, threadID)
 	b.threadStore.Store(key, threadID)
 	return threadID, nil
 }
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *LongConnBot) newSopClient() (*sopchat.Client, error) {
+	return b.newSopClientWithConfig(b.cmsConfig)
+}
+
+// newSopClientWithConfig 使用指定账号凭据构造与 CMS 通信的 sopchat.Client。
+func (b *LongConnBot) newSopClientWithConfig(clientCfg *config.ClientConfig) (*sopchat.Client, error) {
+	if clientCfg == nil {
+		return nil, fmt.Errorf("CMS 客户端配置为空")
+	}
 	cmsConfig := &openapiutil.Config{
-		AccessKeyId:      tea.String(b.cmsConfig.AccessKeyId),
-		AccessKeySecret:  tea.String(b.cmsConfig.AccessKeySecret),
-		Endpoint:         tea.String(b.cmsConfig.Endpoint),
+		AccessKeyId:      tea.String(clientCfg.AccessKeyId),
+		AccessKeySecret:  tea.String(clientCfg.AccessKeySecret),
+		Endpoint:         tea.String(clientCfg.Endpoint),
 		SignatureVersion: tea.String("v3"),
 	}
 	rawClient, err := cmsclient.NewClient(cmsConfig)
@@ -666,15 +754,15 @@ func (b *LongConnBot) newSopClient() (*sopchat.Client, error) {
 	}
 	return &sopchat.Client{
 		CmsClient:       rawClient,
-		AccessKeyId:     b.cmsConfig.AccessKeyId,
-		AccessKeySecret: b.cmsConfig.AccessKeySecret,
-		Endpoint:        b.cmsConfig.Endpoint,
+		AccessKeyId:     clientCfg.AccessKeyId,
+		AccessKeySecret: clientCfg.AccessKeySecret,
+		Endpoint:        clientCfg.Endpoint,
 	}, nil
 }
 
 // queryEmployee 向 CMS 数字员工发送消息，返回回复文本和线程 ID
-func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, employeeName string) (string, string, error) {
-	sopClient, err := b.newSopClient()
+func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID string, target resolvedTarget) (string, string, error) {
+	sopClient, err := b.newSopClientWithConfig(target.clientConfig)
 	if err != nil {
 		return "", "", err
 	}
@@ -685,12 +773,12 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 		message += conciseInstruction
 	}
 
-	// 获取 project/workspace/region 用于传递给 CreateChat variables
-	project, workspace, region := b.threadVariable()
-
-	// 获取渠道配置的 product，为空则使用全局配置
-	productType := cfg.Product
-	if productType == "" {
+	project, workspace, region := threadVariableForTarget(target)
+	productType := target.product
+	if productType == "" && target.clientConfig != nil {
+		productType = target.clientConfig.Product
+	}
+	if productType == "" && b.cmsConfig != nil {
 		productType = b.cmsConfig.Product
 	}
 
@@ -718,7 +806,7 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 		variables["toTime"] = now.Unix()
 	}
 	request := &cmsclient.CreateChatRequest{
-		DigitalEmployeeName: tea.String(employeeName),
+		DigitalEmployeeName: tea.String(target.employeeName),
 		ThreadId:            tea.String(threadID),
 		Action:              tea.String("create"),
 		Messages: []*cmsclient.CreateChatRequestMessages{

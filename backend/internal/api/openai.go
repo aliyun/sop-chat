@@ -12,6 +12,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-gonic/gin"
 
+	"sop-chat/internal/config"
 	"sop-chat/pkg/sopchat"
 )
 
@@ -217,21 +218,18 @@ func (s *Server) handleOpenAIListModels(c *gin.Context) {
 		return
 	}
 
-	// 根据全局 product 配置决定列举哪类员工：SLS 用带 domain=sop 过滤的接口，CMS 列举全部
 	var employeeNames []string
-	if s.isSlsProduct() {
-		list, err := cmsClient.ListEmployees()
-		if err != nil {
-			log.Printf("[OpenAI] 列举数字员工失败: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": gin.H{"message": err.Error(), "type": "server_error"},
-			})
-			return
-		}
-		for _, e := range list {
-			if e.Name != nil {
-				employeeNames = append(employeeNames, *e.Name)
+	s.mu.RLock()
+	globalCfg := s.globalConfig
+	s.mu.RUnlock()
+	if refs := collectConfiguredEmployeeRefs(globalCfg, ""); len(refs) > 0 {
+		seen := make(map[string]struct{}, len(refs))
+		for _, ref := range refs {
+			if _, exists := seen[ref.EmployeeName]; exists {
+				continue
 			}
+			seen[ref.EmployeeName] = struct{}{}
+			employeeNames = append(employeeNames, ref.EmployeeName)
 		}
 	} else {
 		list, err := cmsClient.ListAllEmployees()
@@ -295,10 +293,26 @@ func (s *Server) handleOpenAIChatCompletions(c *gin.Context) {
 
 	employeeName := req.Model
 	threadID := req.ThreadID
+	runtimeCfg, options, err := s.resolveEmployeeRuntime(employeeName, "", userMessage)
+	if err != nil {
+		log.Printf("[OpenAI] 解析员工运行时配置失败 employee=%s: %v", employeeName, err)
+		message := err.Error()
+		if len(options) > 0 {
+			message = "目标环境不明确，请在消息中明确云账号"
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": gin.H{
+				"message": message,
+				"type":    "invalid_request_error",
+				"code":    "invalid_request",
+			},
+		})
+		return
+	}
 
 	// 如果没有提供 thread_id，自动创建新线程
 	if threadID == "" {
-		newThreadID, err := s.createOpenAIThread(employeeName)
+		newThreadID, err := s.createOpenAIThread(employeeName, runtimeCfg)
 		if err != nil {
 			log.Printf("[OpenAI] 创建线程失败 employee=%s: %v", employeeName, err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -309,19 +323,19 @@ func (s *Server) handleOpenAIChatCompletions(c *gin.Context) {
 		threadID = newThreadID
 	}
 
-	// 根据全局 product 配置判断是否为 SLS 产品（需传 skill=sop）
-	isSLS := s.isSlsProduct()
-
 	if req.Stream {
-		s.handleOpenAIStreamResponse(c, employeeName, threadID, userMessage, isSLS)
+		s.handleOpenAIStreamResponse(c, employeeName, threadID, userMessage, runtimeCfg)
 	} else {
-		s.handleOpenAINonStreamResponse(c, employeeName, threadID, userMessage, isSLS)
+		s.handleOpenAINonStreamResponse(c, employeeName, threadID, userMessage, runtimeCfg)
 	}
 }
 
 // createOpenAIThread 为 OpenAI 请求创建新线程
-func (s *Server) createOpenAIThread(employeeName string) (string, error) {
-	cmsClient, err := s.createClient()
+func (s *Server) createOpenAIThread(employeeName string, runtimeCfg *employeeRuntime) (string, error) {
+	if runtimeCfg == nil || runtimeCfg.ClientConfig == nil {
+		return "", fmt.Errorf("运行时配置缺失")
+	}
+	cmsClient, err := newSOPChatClientFromClientConfig(runtimeCfg.ClientConfig)
 	if err != nil {
 		return "", fmt.Errorf("创建客户端失败: %w", err)
 	}
@@ -329,6 +343,9 @@ func (s *Server) createOpenAIThread(employeeName string) (string, error) {
 	resp, err := cmsClient.CreateThread(&sopchat.ThreadConfig{
 		EmployeeName: employeeName,
 		Title:        fmt.Sprintf("OpenAI API: %s", time.Now().Format("2006-01-02 15:04:05")),
+		Project:      runtimeCfg.Context.Project,
+		Workspace:    runtimeCfg.Context.Workspace,
+		Region:       runtimeCfg.Context.Region,
 	})
 	if err != nil {
 		return "", fmt.Errorf("调用 CreateThread 失败: %w", err)
@@ -340,38 +357,12 @@ func (s *Server) createOpenAIThread(employeeName string) (string, error) {
 }
 
 // buildChatRequest 构造 CMS CreateChatRequest
-// isSLS 为 true 时表示对接 SLS 产品的数字员工，需在 Variables 中附加 skill=sop
-func (s *Server) buildChatRequest(employeeName, threadID, message string, isSLS bool) *cmsclient.CreateChatRequest {
+func (s *Server) buildChatRequest(employeeName, threadID, message string, ctx config.ProductContext) *cmsclient.CreateChatRequest {
 	timeZone := "Asia/Shanghai"
 	language := "zh"
 	if s.globalConfig != nil {
 		timeZone = s.globalConfig.GetTimeZone()
 		language = s.globalConfig.GetLanguage()
-	}
-
-	variables := map[string]interface{}{
-		"timeStamp": fmt.Sprintf("%d", time.Now().Unix()),
-		"timeZone":  timeZone,
-		"language":  language,
-	}
-	if isSLS {
-		variables["skill"] = "sop"
-		if s.globalConfig != nil && s.globalConfig.Global.Project != "" {
-			variables["project"] = s.globalConfig.Global.Project
-		}
-	} else {
-		if s.globalConfig != nil {
-			if s.globalConfig.Global.Workspace != "" {
-				variables["workspace"] = s.globalConfig.Global.Workspace
-			}
-			if s.globalConfig.Global.Region != "" {
-				variables["region"] = s.globalConfig.Global.Region
-			}
-		}
-		// CMS 产品：添加 fromTime/toTime（15 分钟窗口）
-		now := time.Now()
-		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
-		variables["toTime"] = now.Unix()
 	}
 
 	return &cmsclient.CreateChatRequest{
@@ -389,13 +380,19 @@ func (s *Server) buildChatRequest(employeeName, threadID, message string, isSLS 
 				},
 			},
 		},
-		Variables: variables,
+		Variables: buildEmployeeChatVariables(timeZone, language, ctx),
 	}
 }
 
 // handleOpenAIStreamResponse 流式模式：以 SSE 格式返回 OpenAI 兼容的 chunks
-func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, threadID, message string, isSLS bool) {
-	cmsClient, err := s.createCMSClient()
+func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, threadID, message string, runtimeCfg *employeeRuntime) {
+	if runtimeCfg == nil || runtimeCfg.ClientConfig == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": gin.H{"message": "missing runtime config", "type": "server_error"},
+		})
+		return
+	}
+	cmsClient, err := buildRawCMSClient(runtimeCfg.ClientConfig)
 	if err != nil {
 		log.Printf("[OpenAI] 创建 CMS 客户端失败: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -442,7 +439,7 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 	// 发送角色 delta
 	sendChunk("", nil, "")
 
-	request := s.buildChatRequest(employeeName, threadID, message, isSLS)
+	request := s.buildChatRequest(employeeName, threadID, message, runtimeCfg.Context)
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
@@ -514,8 +511,14 @@ func (s *Server) handleOpenAIStreamResponse(c *gin.Context, employeeName, thread
 }
 
 // handleOpenAINonStreamResponse 非流式模式：收集完整回复后一次性返回
-func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, threadID, message string, isSLS bool) {
-	cmsClient, err := s.createCMSClient()
+func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, threadID, message string, runtimeCfg *employeeRuntime) {
+	if runtimeCfg == nil || runtimeCfg.ClientConfig == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": gin.H{"message": "missing runtime config", "type": "server_error"},
+		})
+		return
+	}
+	cmsClient, err := buildRawCMSClient(runtimeCfg.ClientConfig)
 	if err != nil {
 		log.Printf("[OpenAI] 创建 CMS 客户端失败: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -524,7 +527,7 @@ func (s *Server) handleOpenAINonStreamResponse(c *gin.Context, employeeName, thr
 		return
 	}
 
-	request := s.buildChatRequest(employeeName, threadID, message, isSLS)
+	request := s.buildChatRequest(employeeName, threadID, message, runtimeCfg.Context)
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 

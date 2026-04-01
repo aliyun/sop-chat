@@ -3,17 +3,19 @@
  * Displays a shared conversation by threadId (read-only)
  */
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Message from './Message';
 import { getSharedThread, getSharedThreadMessages, getSharedEmployee } from '../services/api';
 
 const ShareChat = () => {
   const { employeeName, threadId } = useParams();
+  const [searchParams] = useSearchParams();
   const [employee, setEmployee] = useState(null);
   const [thread, setThread] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const cloudAccountId = searchParams.get('cloudAccountId') || '';
 
   useEffect(() => {
     const loadData = async () => {
@@ -22,15 +24,15 @@ const ShareChat = () => {
         setError(null);
 
         // Load thread info (public API, no auth required)
-        const threadData = await getSharedThread(employeeName, threadId);
+        const threadData = await getSharedThread(employeeName, threadId, cloudAccountId);
         setThread(threadData);
 
         // Load employee info (public API, no auth required)
-        const employeeData = await getSharedEmployee(employeeName);
+        const employeeData = await getSharedEmployee(employeeName, cloudAccountId);
         setEmployee(employeeData);
 
         // Load messages (public API, no auth required)
-        const messagesData = await getSharedThreadMessages(employeeName, threadId);
+        const messagesData = await getSharedThreadMessages(employeeName, threadId, cloudAccountId);
         
         // Convert backend message format to frontend format
         const convertedMessages = convertMessages(messagesData);
@@ -46,7 +48,7 @@ const ShareChat = () => {
     if (employeeName && threadId) {
       loadData();
     }
-  }, [employeeName, threadId]);
+  }, [employeeName, threadId, cloudAccountId]);
 
   /**
    * Convert backend message format to frontend format
@@ -340,7 +342,11 @@ const ShareChat = () => {
             onClick={() => {
               // 在新窗口打开该SOP问答助手的新会话页面
               if (employeeName) {
-                window.open(`/#/chat/${employeeName}`, '_blank');
+                const params = new URLSearchParams();
+                if (cloudAccountId) {
+                  params.set('cloudAccountId', cloudAccountId);
+                }
+                window.open(`/#/chat/${employeeName}${params.toString() ? `?${params.toString()}` : ''}`, '_blank');
               } else {
                 // 如果没有员工信息，打开首页
                 window.open('/', '_blank');

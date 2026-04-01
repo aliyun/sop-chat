@@ -4,7 +4,7 @@
  */
 import React, { useState, useRef } from 'react';
 
-const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
+const MessageInput = ({ onSend, onStop, disabled, isGenerating, placeholder = '请输入您的问题...' }) => {
   const [input, setInput] = useState('');
   const textareaRef = useRef(null);
 
@@ -38,7 +38,7 @@ const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="请输入您的问题..."
+          placeholder={placeholder}
           disabled={disabled}
           rows="3"
           className="message-input"

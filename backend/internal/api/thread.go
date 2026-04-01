@@ -12,9 +12,10 @@ import (
 
 // CreateThreadRequest 创建线程请求
 type CreateThreadRequest struct {
-	EmployeeName string                 `json:"employeeName" binding:"required"`
-	Title        string                 `json:"title"`
-	Attributes   map[string]interface{} `json:"attributes"`
+	EmployeeName   string                 `json:"employeeName" binding:"required"`
+	CloudAccountID string                 `json:"cloudAccountId,omitempty"`
+	Title          string                 `json:"title"`
+	Attributes     map[string]interface{} `json:"attributes"`
 }
 
 // handleCreateThread 创建会话线程
@@ -22,17 +23,35 @@ func (s *Server) handleCreateThread(c *gin.Context) {
 	var req CreateThreadRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request parameters",
+			"error":  "Invalid request parameters",
 			"detail": err.Error(),
 		})
 		return
 	}
 
-	client, err := s.createClient()
+	runtimeCfg, options, err := s.resolveEmployeeRuntime(req.EmployeeName, req.CloudAccountID, "")
+	if err != nil {
+		log.Printf("Failed to resolve thread runtime: %v", err)
+		statusCode := http.StatusInternalServerError
+		payload := gin.H{
+			"error":  "Failed to create client",
+			"detail": err.Error(),
+		}
+		if len(options) > 0 {
+			statusCode = http.StatusBadRequest
+			payload["error"] = "目标环境不明确，请确认云账号"
+			payload["needConfirm"] = true
+			payload["options"] = options
+		}
+		c.JSON(statusCode, payload)
+		return
+	}
+
+	client, err := newSOPChatClientFromClientConfig(runtimeCfg.ClientConfig)
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create client",
+			"error":  "Failed to create client",
 			"detail": err.Error(),
 		})
 		return
@@ -52,13 +71,16 @@ func (s *Server) handleCreateThread(c *gin.Context) {
 		EmployeeName: req.EmployeeName,
 		Title:        req.Title,
 		Attributes:   attributes,
+		Project:      runtimeCfg.Context.Project,
+		Workspace:    runtimeCfg.Context.Workspace,
+		Region:       runtimeCfg.Context.Region,
 	}
 
 	response, err := client.CreateThread(config)
 	if err != nil {
 		log.Printf("Failed to create thread: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create thread",
+			"error":  "Failed to create thread",
 			"detail": err.Error(),
 		})
 		return
@@ -78,6 +100,7 @@ func (s *Server) handleCreateThread(c *gin.Context) {
 	if response.Body.RequestId != nil {
 		result["requestId"] = *response.Body.RequestId
 	}
+	result["cloudAccountId"] = runtimeCfg.CloudAccountID
 
 	c.JSON(http.StatusOK, result)
 }
@@ -92,11 +115,12 @@ func (s *Server) handleListThreads(c *gin.Context) {
 		return
 	}
 
-	client, err := s.createClient()
+	cloudAccountID := c.Query("cloudAccountId")
+	client, err := s.createClientForCloudAccount(cloudAccountID)
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create client",
+			"error":  "Failed to create client",
 			"detail": err.Error(),
 		})
 		return
@@ -115,7 +139,7 @@ func (s *Server) handleListThreads(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to list threads: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to list threads",
+			"error":  "Failed to list threads",
 			"detail": err.Error(),
 		})
 		return
@@ -143,6 +167,9 @@ func (s *Server) handleListThreads(c *gin.Context) {
 		if thread.Status != nil {
 			item["status"] = *thread.Status
 		}
+		if cloudAccountID != "" {
+			item["cloudAccountId"] = cloudAccountID
+		}
 		threads = append(threads, item)
 	}
 
@@ -163,11 +190,12 @@ func (s *Server) handleGetThread(c *gin.Context) {
 		return
 	}
 
-	client, err := s.createClient()
+	cloudAccountID := c.Query("cloudAccountId")
+	client, err := s.createClientForCloudAccount(cloudAccountID)
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create client",
+			"error":  "Failed to create client",
 			"detail": err.Error(),
 		})
 		return
@@ -177,7 +205,7 @@ func (s *Server) handleGetThread(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to get thread info: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to get thread info",
+			"error":  "Failed to get thread info",
 			"detail": err.Error(),
 		})
 		return
@@ -204,6 +232,9 @@ func (s *Server) handleGetThread(c *gin.Context) {
 	if body.Status != nil {
 		result["status"] = *body.Status
 	}
+	if cloudAccountID != "" {
+		result["cloudAccountId"] = cloudAccountID
+	}
 
 	c.JSON(http.StatusOK, result)
 }
@@ -220,11 +251,12 @@ func (s *Server) handleGetThreadMessages(c *gin.Context) {
 		return
 	}
 
-	client, err := s.createClient()
+	cloudAccountID := c.Query("cloudAccountId")
+	client, err := s.createClientForCloudAccount(cloudAccountID)
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create client",
+			"error":  "Failed to create client",
 			"detail": err.Error(),
 		})
 		return
@@ -234,7 +266,7 @@ func (s *Server) handleGetThreadMessages(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to get thread messages: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to get thread messages",
+			"error":  "Failed to get thread messages",
 			"detail": err.Error(),
 		})
 		return
@@ -309,11 +341,11 @@ func (s *Server) handleGetSharedEmployee(c *gin.Context) {
 		return
 	}
 
-	client, err := s.createClient()
+	client, err := s.createClientForCloudAccount(c.Query("cloudAccountId"))
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create client",
+			"error":  "Failed to create client",
 			"detail": err.Error(),
 		})
 		return
@@ -323,7 +355,7 @@ func (s *Server) handleGetSharedEmployee(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to get employee info: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to get employee info",
+			"error":  "Failed to get employee info",
 			"detail": err.Error(),
 		})
 		return

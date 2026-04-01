@@ -17,9 +17,10 @@ import (
 
 // ChatStreamRequest 聊天流式请求
 type ChatStreamRequest struct {
-	EmployeeName string `json:"employeeName" binding:"required"`
-	ThreadId     string `json:"threadId"`
-	Message      string `json:"message" binding:"required"`
+	EmployeeName   string `json:"employeeName" binding:"required"`
+	ThreadId       string `json:"threadId"`
+	Message        string `json:"message" binding:"required"`
+	CloudAccountID string `json:"cloudAccountId,omitempty"`
 }
 
 // handleChatStream 处理流式聊天请求 (SSE)
@@ -34,9 +35,31 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		return
 	}
 
-	cmsClient, err := s.createCMSClient()
+	var (
+		cmsClient *cmsclient.Client
+		err       error
+	)
+	runtimeCfg, options, err := s.resolveEmployeeRuntime(req.EmployeeName, req.CloudAccountID, req.Message)
 	if err != nil {
-		log.Printf("Failed to create client: %v", err)
+		log.Printf("chat stream runtime unresolved: %v", err)
+		statusCode := http.StatusInternalServerError
+		payload := gin.H{
+			"error":  "Failed to create client",
+			"detail": err.Error(),
+		}
+		if len(options) > 0 {
+			statusCode = http.StatusBadRequest
+			payload["error"] = "目标环境不明确，请确认云账号"
+			payload["needConfirm"] = true
+			payload["options"] = options
+		}
+		c.JSON(statusCode, payload)
+		return
+	}
+
+	cmsClient, err = buildRawCMSClient(runtimeCfg.ClientConfig)
+	if err != nil {
+		log.Printf("Failed to create client from resolved cloud account: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":  "Failed to create client",
 			"detail": err.Error(),
@@ -59,8 +82,6 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		c.Writer.Flush()
 	}
 
-	nowTimeStamp := time.Now().Unix()
-
 	// 从配置中获取时区和语言设置，如果未配置则使用默认值
 	timeZone := "Asia/Shanghai"
 	language := "zh"
@@ -69,31 +90,7 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		language = s.globalConfig.GetLanguage()
 	}
 
-	variables := map[string]interface{}{
-		"timeStamp": fmt.Sprintf("%d", nowTimeStamp),
-		"timeZone":  timeZone,
-		"language":  language,
-	}
-	// 根据全局 product 配置决定附加的变量
-	if s.isSlsProduct() {
-		variables["skill"] = "sop"
-		if s.globalConfig != nil && s.globalConfig.Global.Project != "" {
-			variables["project"] = s.globalConfig.Global.Project
-		}
-	} else {
-		if s.globalConfig != nil {
-			if s.globalConfig.Global.Workspace != "" {
-				variables["workspace"] = s.globalConfig.Global.Workspace
-			}
-			if s.globalConfig.Global.Region != "" {
-				variables["region"] = s.globalConfig.Global.Region
-			}
-		}
-		// CMS 产品：添加 fromTime/toTime（15 分钟窗口）
-		now := time.Now()
-		variables["fromTime"] = now.Add(-15 * time.Minute).Unix()
-		variables["toTime"] = now.Unix()
-	}
+	variables := buildEmployeeChatVariables(timeZone, language, runtimeCfg.Context)
 
 	// 创建聊天请求
 	request := &cmsclient.CreateChatRequest{
