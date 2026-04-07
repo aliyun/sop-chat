@@ -2,7 +2,7 @@
  * Login Component
  */
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
@@ -14,8 +14,33 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [setupStatus, setSetupStatus] = useState(null);
-  const { login } = useAuth();
+  const { login, loginWithToken, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 处理 OIDC 回调：从 URL 参数中提取 token 和 user
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const userStr = params.get('user');
+
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userStr));
+        loginWithToken(token, user);
+        // 不在这里 navigate，由下方 isAuthenticated 的 useEffect 统一处理跳转
+      } catch (e) {
+        setError(t('login.loginFailed'));
+      }
+    }
+  }, [location.search, loginWithToken, navigate, t]);
+
+  // 如果已登录，直接跳转
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     fetch('/api/system/setup-status')
@@ -39,14 +64,25 @@ function Login() {
     }
   };
 
+  const handleOIDCLogin = () => {
+    setError('');
+    setLoading(true);
+    // 直接跳转，由后端 302 到 OIDC Provider
+    window.location.href = '/api/auth/oidc/login';
+  };
+
   // 状态尚未加载完成时渲染空白，避免登录表单闪烁后被替换
   if (setupStatus === null) {
     return <div className="login-container" />;
   }
 
   const notConfigured = !setupStatus.configured;
+  const authMethods = setupStatus.authMethods || [];
+  const hasBuiltin = authMethods.includes('builtin');
+  const hasOIDC = authMethods.includes('oidc');
+  const oidcDisplayName = setupStatus.oidcDisplayName;
 
-  if (notConfigured) {
+  if (notConfigured && !hasOIDC) {
     const reasons = [];
     if (!setupStatus.credConfigured) reasons.push('阿里云 AccessKey 未填写');
     if (!setupStatus.authConfigured) reasons.push('登录认证方式（auth.methods）未配置');
@@ -75,38 +111,57 @@ function Login() {
     <div className="login-container">
       <div className="login-box">
         <h1 className="login-title">{t('login.title')}</h1>
-        <form onSubmit={handleSubmit} className="login-form">
-          {error && <div className="error-message">{error}</div>}
 
-          <div className="form-group">
-            <label htmlFor="username">{t('login.username')}</label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoFocus
-              disabled={loading}
-            />
+        {error && <div className="error-message">{error}</div>}
+
+        {hasBuiltin && (
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label htmlFor="username">{t('login.username')}</label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                autoFocus
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">{t('login.password')}</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <button type="submit" className="login-button" disabled={loading}>
+              {loading ? t('login.loggingIn') : t('login.loginButton')}
+            </button>
+          </form>
+        )}
+
+        {hasOIDC && hasBuiltin && (
+          <div className="login-divider">
+            <span>{t('login.or')}</span>
           </div>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="password">{t('login.password')}</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? t('login.loggingIn') : t('login.loginButton')}
+        {hasOIDC && (
+          <button
+            type="button"
+            className="login-button oidc-login-button"
+            onClick={handleOIDCLogin}
+          >
+            {oidcDisplayName}
           </button>
-        </form>
+        )}
       </div>
     </div>
   );

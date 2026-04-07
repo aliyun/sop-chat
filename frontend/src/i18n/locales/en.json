@@ -11,7 +11,10 @@
     "password": "Password",
     "loginButton": "Login",
     "loggingIn": "Logging in...",
-    "loginFailed": "Login failed"
+    "loginFailed": "Login failed",
+    "ssoLogin": "SSO Login",
+    "ssoLoggingIn": "Redirecting to SSO...",
+    "or": "or"
   },
   "employeeSelector": {
     "title": "Select Digital Employee",

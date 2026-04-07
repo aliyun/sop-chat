@@ -3,7 +3,7 @@
  * Provides authentication state and methods throughout the app
  */
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getToken, getUser, getCurrentUser, clearAuth, login as loginService, logout as logoutService } from '../services/auth';
+import { getToken, getUser, getCurrentUser, clearAuth, setToken as setStoredToken, setUser as setStoredUser, login as loginService, logout as logoutService } from '../services/auth';
 
 const AuthContext = createContext(null);
 
@@ -64,6 +64,16 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
+  // OIDC 回调登录：直接使用 token 和 user 信息完成登录
+  const loginWithToken = (tokenStr, userObj) => {
+    setStoredToken(tokenStr);
+    setStoredUser(userObj);
+    setToken(tokenStr);
+    setUser(userObj);
+    setIsAuthenticated(true);
+    setLoading(false);
+  };
+
   const logout = async () => {
     await logoutService();
     setToken(null);
@@ -77,6 +87,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     loading,
     login,
+    loginWithToken,
     logout,
   };
 

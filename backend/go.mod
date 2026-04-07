@@ -1,8 +1,6 @@
 module sop-chat
 
-go 1.23.0
-
-toolchain go1.24.12
+go 1.25.0
 
 require (
 	github.com/alibabacloud-go/cms-20240330/v6 v6.2.1
@@ -12,6 +10,7 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.7
 	github.com/aliyun/credentials-go v1.4.5
 	github.com/chzyer/readline v1.5.1
+	github.com/coreos/go-oidc/v3 v3.17.0
 	github.com/gin-contrib/cors v1.6.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.3.0
@@ -22,6 +21,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/oauth2 v0.28.0
 	gopkg.in/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -36,6 +36,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.19.0 // indirect

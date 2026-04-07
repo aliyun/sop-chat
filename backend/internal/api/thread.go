@@ -28,6 +28,11 @@ func (s *Server) handleCreateThread(c *gin.Context) {
 		return
 	}
 
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[req.EmployeeName] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
+		return
+	}
+
 	client, err := s.createClient()
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
@@ -89,6 +94,11 @@ func (s *Server) handleListThreads(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Employee name cannot be empty",
 		})
+		return
+	}
+
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[employeeName] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
 		return
 	}
 
@@ -163,6 +173,11 @@ func (s *Server) handleGetThread(c *gin.Context) {
 		return
 	}
 
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[employeeName] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
+		return
+	}
+
 	client, err := s.createClient()
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)
@@ -217,6 +232,11 @@ func (s *Server) handleGetThreadMessages(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Employee name and thread ID cannot be empty",
 		})
+		return
+	}
+
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[employeeName] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
 		return
 	}
 

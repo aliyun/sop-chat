@@ -31,8 +31,9 @@ type UserConfig struct {
 
 // RoleConfig 角色配置
 type RoleConfig struct {
-	Name  string   `yaml:"name"`
-	Users []string `yaml:"user"`
+	Name      string   `yaml:"name"`
+	Users     []string `yaml:"user"`
+	Employees []string `yaml:"employees,omitempty"` // 该角色可见的数字员工列表，为空表示不限制
 }
 
 // LDAPConfig LDAP 认证配置
@@ -57,6 +58,7 @@ type OIDCConfig struct {
 	RedirectURL   string   `yaml:"redirectURL"`
 	Scopes        []string `yaml:"scopes,omitempty"`
 	UsernameClaim string   `yaml:"usernameClaim,omitempty"`
+	DisplayName   string   `yaml:"displayName,omitempty"`
 }
 
 // LoadYAMLConfig 从文件加载 YAML 配置

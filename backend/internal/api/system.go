@@ -48,23 +48,53 @@ func (s *Server) handleGetSetupStatus(c *gin.Context) {
 	s.mu.RLock()
 	cfg := s.config
 	authConfigured := len(s.authModes) > 0
+	authModes := s.authModes
 	userStore := s.userStore
+	globalCfg := s.globalConfig
 	s.mu.RUnlock()
+
+	// 构建 authMethods 列表
+	authMethods := make([]string, len(authModes))
+	for i, m := range authModes {
+		authMethods[i] = string(m)
+	}
 
 	credConfigured := cfg != nil && cfg.AccessKeyId != ""
 
 	// 检查是否存在至少一个用户账号
+	// OIDC 模式下不需要内置用户，用户通过 SSO 登录
 	usersConfigured := false
-	if userStore != nil {
+	hasOIDC := false
+	for _, m := range authModes {
+		if m == "oidc" {
+			hasOIDC = true
+			break
+		}
+	}
+	if hasOIDC {
+		usersConfigured = true
+	} else if userStore != nil {
 		if users, err := userStore.ListUsers(); err == nil && len(users) > 0 {
 			usersConfigured = true
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	resp := gin.H{
 		"configured":      credConfigured && authConfigured && usersConfigured,
 		"credConfigured":  credConfigured,
 		"authConfigured":  authConfigured,
 		"usersConfigured": usersConfigured,
-	})
+		"authMethods":     authMethods,
+	}
+
+	// 返回 OIDC 显示名称供前端登录按钮使用（默认 "OIDC 登录"）
+	if hasOIDC {
+		displayName := "OIDC 登录"
+		if globalCfg != nil && globalCfg.Auth.OIDC != nil && globalCfg.Auth.OIDC.DisplayName != "" {
+			displayName = globalCfg.Auth.OIDC.DisplayName
+		}
+		resp["oidcDisplayName"] = displayName
+	}
+
+	c.JSON(http.StatusOK, resp)
 }

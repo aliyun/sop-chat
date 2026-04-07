@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -41,6 +42,7 @@ type Server struct {
 	jwtManager     *auth.JWTManager
 	userStore      auth.UserStore
 	authMiddleware *auth.AuthMiddleware
+	oidcProvider   *auth.OIDCProvider // OIDC 认证提供者（仅当 methods 包含 oidc 时非 nil）
 
 
 	// 钉钉机器人生命周期管理（支持多实例热启停，keyed by clientId）
@@ -218,8 +220,20 @@ func (s *Server) initAuth() error {
 			return auth.ErrUnsupportedAuthMode
 
 		case auth.AuthModeOIDC:
-			// TODO: 实现 OIDC 认证提供者
-			return auth.ErrUnsupportedAuthMode
+			if authConfig.YAMLConfig == nil || authConfig.YAMLConfig.OIDC == nil {
+				return fmt.Errorf("OIDC 配置缺失，请在 config.yaml 中配置 auth.oidc 部分")
+			}
+			oidcCfg := authConfig.YAMLConfig.OIDC
+			var roles []auth.RoleConfig
+			if authConfig.YAMLConfig.Local != nil {
+				roles = authConfig.YAMLConfig.Local.Roles
+			}
+			oidcProvider, err := auth.NewOIDCProvider(context.Background(), oidcCfg, roles)
+			if err != nil {
+				return fmt.Errorf("初始化 OIDC 认证失败: %w", err)
+			}
+			s.oidcProvider = oidcProvider
+			providers = append(providers, oidcProvider)
 
 		default:
 			return auth.ErrUnsupportedAuthMode
@@ -246,6 +260,8 @@ func (s *Server) setupRoutes() {
 		// 认证相关接口（无需认证）
 		api.POST("/auth/login", s.handleLogin)
 		api.POST("/auth/logout", s.handleLogout)
+		api.GET("/auth/oidc/login", s.handleOIDCLogin)
+		api.GET("/auth/oidc/callback", s.handleOIDCCallback)
 
 		// 分享相关接口（无需认证，公开访问）
 		api.GET("/share/:employeeName/:threadId", s.handleGetSharedThread)
@@ -312,6 +328,7 @@ func (s *Server) setupRoutes() {
 	s.router.POST("/admin-ui/api/config", s.configUITokenMiddleware(), s.handleSaveConfig)
 	s.router.POST("/admin-ui/api/test-ak", s.configUITokenMiddleware(), s.handleTestAK)
 	s.router.POST("/admin-ui/api/test-cms", s.configUITokenMiddleware(), s.handleTestCMS)
+	s.router.POST("/admin-ui/api/test-oidc", s.configUITokenMiddleware(), s.handleTestOIDC)
 	s.router.POST("/admin-ui/api/trigger-task", s.configUITokenMiddleware(), s.handleTriggerTask)
 
 	// 静态文件服务（前端资源）

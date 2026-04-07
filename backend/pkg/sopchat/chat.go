@@ -3,6 +3,7 @@ package sopchat
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -98,7 +99,7 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 						}
 					}
 				}
-				return nil, fmt.Errorf(errorMsg)
+				return nil, errors.New(errorMsg)
 			}
 
 			// 处理响应

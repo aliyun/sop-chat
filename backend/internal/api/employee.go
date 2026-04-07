@@ -4,10 +4,40 @@ import (
 	"log"
 	"net/http"
 
+	"sop-chat/internal/auth"
 	"sop-chat/pkg/sopchat"
 
 	"github.com/gin-gonic/gin"
 )
+
+// getAllowedEmployees 根据用户角色返回允许访问的数字员工名称集合。
+// 返回 nil 表示不限制（用户无角色或所有角色均未配置 employees）。
+func (s *Server) getAllowedEmployees(c *gin.Context) map[string]bool {
+	user, exists := auth.GetUserFromContext(c)
+	if !exists || len(user.Roles) == 0 {
+		return nil
+	}
+	s.mu.RLock()
+	roles := s.globalConfig.Auth.Roles
+	s.mu.RUnlock()
+
+	allowed := map[string]bool{}
+	hasRestriction := false
+	for _, userRole := range user.Roles {
+		for _, rc := range roles {
+			if rc.Name == userRole && len(rc.Employees) > 0 {
+				hasRestriction = true
+				for _, e := range rc.Employees {
+					allowed[e] = true
+				}
+			}
+		}
+	}
+	if !hasRestriction {
+		return nil
+	}
+	return allowed
+}
 
 // handleListEmployees 列出所有数字员工
 func (s *Server) handleListEmployees(c *gin.Context) {
@@ -32,8 +62,12 @@ func (s *Server) handleListEmployees(c *gin.Context) {
 	}
 
 	// 转换为简化的响应格式
+	allowed := s.getAllowedEmployees(c)
 	result := make([]gin.H, 0, len(employees))
 	for _, emp := range employees {
+		if allowed != nil && emp.Name != nil && !allowed[*emp.Name] {
+			continue
+		}
 		item := gin.H{}
 		if emp.Name != nil {
 			item["name"] = *emp.Name
@@ -59,6 +93,11 @@ func (s *Server) handleGetEmployee(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Employee name cannot be empty",
 		})
+		return
+	}
+
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[name] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
 		return
 	}
 

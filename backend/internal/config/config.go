@@ -400,8 +400,9 @@ type UserConfig struct {
 
 // RoleConfig 角色配置
 type RoleConfig struct {
-	Name  string   `yaml:"name"`
-	Users []string `yaml:"user"`
+	Name      string   `yaml:"name"`
+	Users     []string `yaml:"user"`
+	Employees []string `yaml:"employees,omitempty"` // 该角色可见的数字员工列表，为空表示不限制
 }
 
 // LDAPConfig LDAP 认证配置
@@ -427,6 +428,7 @@ type OIDCConfig struct {
 	RedirectURL   string   `yaml:"redirectURL"`             // 回调地址，如 http://your-server/api/auth/oidc/callback
 	Scopes        []string `yaml:"scopes,omitempty"`        // 默认: [openid, profile, email]
 	UsernameClaim string   `yaml:"usernameClaim,omitempty"` // 用于提取用户名的 claim，默认 preferred_username
+	DisplayName   string   `yaml:"displayName,omitempty"`   // 登录按钮显示名称，如 "Keycloak"，默认 "OIDC 登录"
 }
 
 // randomHex 生成 n 字节的随机十六进制字符串

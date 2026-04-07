@@ -379,7 +379,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       </button>
     </div>
     <div id="roles-list" style="display:flex;flex-direction:column;gap:8px"></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">在角色输入框中输入用户名后按回车添加。系统内置 <span class="badge-cold">admin</span> 角色用于管理员权限。角色为全局概念，未来 LDAP/OIDC 用户也将映射至此。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">在角色输入框中输入用户名后按回车添加。系统内置 <span class="badge-cold">admin</span> 角色用于管理员权限。可为角色配置可见的数字员工；只要用户命中的任一角色配置了 employees，就会进入限制模式（按所有已配置角色的并集生效）。若用户不属于任何角色，默认可见所有员工。</p>
   </div>
   <div class="card">
     <div class="card-title"><span class="card-title-icon">&#128272;</span> 鉴权链</div>
@@ -389,7 +389,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
           <option value="">选择认证方式...</option>
           <option value="builtin">builtin（内置账号）</option>
           <option value="ldap">ldap（LDAP，待实现）</option>
-          <option value="oidc">oidc（OpenID Connect，待实现）</option>
+          <option value="oidc">oidc（OpenID Connect）</option>
         </select>
         <button class="btn btn-ghost btn-sm" onclick="addMethod()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -430,6 +430,65 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         </button>
       </div>
       <span class="hint">设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)</span>
+    </div>
+  </div>
+  <div class="card" id="oidc-config-card" style="display:none">
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> OIDC / OpenID Connect 配置</div>
+    <div class="field-grid">
+      <div class="field">
+        <label>显示名称 <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-oidc-display-name" placeholder="如 Keycloak、企业SSO" value="OIDC 登录">
+        <span class="hint">登录页按钮显示的文字，默认 OIDC 登录</span>
+      </div>
+      <div class="field field-full">
+        <label>Issuer URL <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-oidc-issuer" placeholder="https://accounts.example.com">
+        <span class="hint">OIDC Provider 地址，如 Keycloak、Dex、Okta、Azure AD 等</span>
+      </div>
+      <div class="field">
+        <label>Client ID <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-oidc-client-id" placeholder="your-client-id">
+      </div>
+      <div class="field">
+        <label>Client Secret <span style="color:var(--red)">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="a-oidc-client-secret" placeholder="your-client-secret" autocomplete="new-password">
+          <button class="eye-btn" onclick="toggleEye('a-oidc-client-secret',this)" tabindex="-1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field field-full">
+        <label>Redirect URL（回调地址）</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="text" id="a-oidc-base-url" placeholder="https://your-domain.com" style="flex:1" oninput="updateOIDCRedirectDisplay()">
+          <code style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);white-space:nowrap">/api/auth/oidc/callback</code>
+          <button class="btn btn-ghost btn-sm" onclick="copyOIDCRedirect()" title="复制">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            复制
+          </button>
+        </div>
+        <span class="hint">请填写服务的外部访问域名（含协议），回调路径固定为 /api/auth/oidc/callback，完整地址需填入 OIDC Provider 的回调 URL 配置中</span>
+        <input type="hidden" id="a-oidc-redirect">
+      </div>
+      <div class="field">
+        <label>Scopes</label>
+        <input type="text" id="a-oidc-scopes" placeholder="openid profile email">
+        <span class="hint">空格分隔，默认 openid profile email</span>
+      </div>
+      <div class="field">
+        <label>Username Claim</label>
+        <input type="text" id="a-oidc-username-claim" placeholder="preferred_username">
+        <span class="hint">从 ID Token 中提取用户名的 claim，默认 preferred_username</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">OIDC 用户的角色通过上方「角色与权限」配置映射，将 OIDC 用户名添加到对应角色即可。</p>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="test-oidc-btn" onclick="testOIDC()" style="flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        测试 OIDC 连接
+      </button>
+      <div id="test-oidc-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="reload-note">
@@ -860,7 +919,7 @@ function showStatus(type, msg, action) {
 const METHOD_LABELS = {
   builtin: '内置账号（builtinUsers）',
   ldap:    'LDAP 认证（待实现）',
-  oidc:    'OpenID Connect（待实现）',
+  oidc:    'OpenID Connect',
 };
 
 function renderMethods(methods) {
@@ -897,11 +956,13 @@ function addMethod() {
   container.appendChild(makeMethodRow(method, container.children.length));
   sel.value = '';
   renumberMethods();
+  updateOIDCCardVisibility();
 }
 
 function removeMethod(btn) {
   btn.closest('[data-method]').remove();
   renumberMethods();
+  updateOIDCCardVisibility();
 }
 
 function moveMethod(btn, dir) {
@@ -924,6 +985,125 @@ function renumberMethods() {
 
 function collectMethods() {
   return Array.from(document.querySelectorAll('#methods-list [data-method]')).map(el => el.dataset.method);
+}
+
+// ── OIDC config ──────────────────────────────────────────────────────────
+function updateOIDCCardVisibility() {
+  const methods = collectMethods();
+  const card = document.getElementById('oidc-config-card');
+  if (card) {
+    card.style.display = methods.includes('oidc') ? '' : 'none';
+    if (methods.includes('oidc')) {
+      updateOIDCRedirectDisplay();
+      if (!val('a-oidc-display-name')) setVal('a-oidc-display-name', 'OIDC 登录');
+    }
+  }
+}
+
+function updateOIDCRedirectDisplay() {
+  const baseEl = document.getElementById('a-oidc-base-url');
+  const hiddenEl = document.getElementById('a-oidc-redirect');
+  if (!baseEl || !hiddenEl) return;
+  if (!baseEl.value) {
+    baseEl.value = window.location.origin;
+  }
+  hiddenEl.value = baseEl.value.replace(/\/+$/, '') + '/api/auth/oidc/callback';
+}
+
+function copyOIDCRedirect() {
+  updateOIDCRedirectDisplay();
+  const url = document.getElementById('a-oidc-redirect').value;
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(function() {
+    showStatus('success', '已复制 Redirect URL');
+  }).catch(function() {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showStatus('success', '已复制 Redirect URL');
+  });
+}
+
+function collectOIDC() {
+  const issuer = val('a-oidc-issuer');
+  const clientId = val('a-oidc-client-id');
+  if (!issuer && !clientId) return null;
+  updateOIDCRedirectDisplay();
+  const scopesStr = val('a-oidc-scopes').trim();
+  const scopes = scopesStr ? scopesStr.split(/\s+/) : [];
+  const displayName = val('a-oidc-display-name') || 'OIDC 登录';
+  return {
+    issuerURL:     issuer,
+    clientId:      clientId,
+    clientSecret:  val('a-oidc-client-secret'),
+    redirectURL:   val('a-oidc-redirect'),
+    scopes:        scopes,
+    usernameClaim: val('a-oidc-username-claim'),
+    displayName:   displayName,
+  };
+}
+
+async function testOIDC() {
+  const issuer = val('a-oidc-issuer');
+  const clientId = val('a-oidc-client-id');
+  if (!issuer) { showTestOIDCResult(false, 'Issuer URL 不能为空'); return; }
+  if (!clientId) { showTestOIDCResult(false, 'Client ID 不能为空'); return; }
+
+  const btn = document.getElementById('test-oidc-btn');
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 测试中…';
+  showTestOIDCResult('loading', '正在执行 OIDC Discovery，请稍候…');
+
+  try {
+    const res = await fetch('/admin-ui/api/test-oidc?token=' + encodeURIComponent(token), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        issuerURL:    issuer,
+        clientId:     clientId,
+        clientSecret: val('a-oidc-client-secret'),
+        redirectURL:  val('a-oidc-redirect'),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showTestOIDCResult(false, data.error || '请求失败');
+    } else if (data.ok) {
+      const msg = data.message + (data.details ? '\n' + data.details : '');
+      showTestOIDCResult(true, msg);
+    } else {
+      showTestOIDCResult(false, data.error || '测试失败');
+    }
+  } catch(e) {
+    showTestOIDCResult(false, '网络错误: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+  }
+}
+
+function showTestOIDCResult(status, msg) {
+  const el = document.getElementById('test-oidc-result');
+  el.style.display = 'block';
+  if (status === 'loading') {
+    el.style.background = 'var(--blue-bg)';
+    el.style.border = '1px solid var(--blue-bd)';
+    el.style.color = 'var(--blue)';
+    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:8px"><div class="spinner"></div>' + esc(msg) + '</div>';
+  } else if (status === true) {
+    el.style.background = 'var(--green-bg)';
+    el.style.border = '1px solid var(--green-bd)';
+    el.style.color = 'var(--green)';
+    el.style.whiteSpace = 'pre-line';
+    el.textContent = '\u2705 ' + msg;
+  } else {
+    el.style.background = 'var(--red-bg)';
+    el.style.border = '1px solid var(--red-bd)';
+    el.style.color = 'var(--red)';
+    el.textContent = '\u274c ' + msg;
+  }
 }
 
 // ── User list ─────────────────────────────────────────────────────────────
@@ -1009,13 +1189,14 @@ function collectUsers() {
 function renderRoles(roles) {
   const container = document.getElementById('roles-list');
   container.innerHTML = '';
-  (roles || []).forEach(r => container.appendChild(makeRoleRow(r.name, r.users)));
+  (roles || []).forEach(r => container.appendChild(makeRoleRow(r.name, r.users, r.employees)));
 }
 
-function makeRoleRow(name, users) {
+function makeRoleRow(name, users, employees) {
   const div = document.createElement('div');
   div.className = 'list-row role-row';
   const tagsHtml = (users || []).map(u => makeUserTag(u)).join('');
+  const empTagsHtml = (employees || []).map(e => makeUserTag(e)).join('');
   div.innerHTML =
     '<div class="role-name-row">' +
       '<input type="text" placeholder="角色名，如 admin" value="' + esc(name) + '" data-field="rolename" style="width:160px;flex-shrink:0">' +
@@ -1028,6 +1209,13 @@ function makeRoleRow(name, users) {
     '<div class="tag-input-wrap" data-role-users>' +
       tagsHtml +
       '<input class="tag-input" type="text" placeholder="输入用户名后回车" onkeydown="roleTagKey(event,this)">' +
+    '</div>' +
+    '<div style="margin-top:4px">' +
+      '<span style="font-size:12px;color:var(--text3)">可见数字员工（留空则不限制）:</span>' +
+    '</div>' +
+    '<div class="tag-input-wrap" data-role-employees>' +
+      empTagsHtml +
+      '<input class="tag-input" type="text" placeholder="输入数字员工名称后回车" onkeydown="roleTagKey(event,this)">' +
     '</div>';
   return div;
 }
@@ -1048,14 +1236,15 @@ function roleTagKey(e, inp) {
 }
 
 function addRole() {
-  document.getElementById('roles-list').appendChild(makeRoleRow('', []));
+  document.getElementById('roles-list').appendChild(makeRoleRow('', [], []));
 }
 
 function collectRoles() {
   return Array.from(document.querySelectorAll('#roles-list .role-row')).map(row => {
     const name = row.querySelector('[data-field=rolename]').value.trim();
     const users = Array.from(row.querySelectorAll('[data-role-users] .tag span:first-child')).map(el => el.textContent.trim());
-    return { name, users };
+    const employees = Array.from(row.querySelectorAll('[data-role-employees] .tag span:first-child')).map(el => el.textContent.trim());
+    return { name, users, employees };
   }).filter(r => r.name);
 }
 
@@ -1829,6 +2018,22 @@ function populate(data) {
   renderUsers((a.local || {}).users);
   renderRoles((a.local || {}).roles);
 
+  // OIDC 配置
+  const oidc = (a.oidc) || {};
+  setVal('a-oidc-issuer', oidc.issuerURL);
+  setVal('a-oidc-client-id', oidc.clientId);
+  setVal('a-oidc-client-secret', oidc.clientSecret);
+  // 从完整 redirectURL 中提取 base URL 部分
+  if (oidc.redirectURL) {
+    setVal('a-oidc-base-url', oidc.redirectURL.replace(/\/api\/auth\/oidc\/callback\/?$/, ''));
+  }
+  setVal('a-oidc-redirect', oidc.redirectURL);
+  setVal('a-oidc-scopes', (oidc.scopes || []).join(' '));
+  setVal('a-oidc-username-claim', oidc.usernameClaim);
+  setVal('a-oidc-display-name', oidc.displayName || 'OIDC 登录');
+  updateOIDCCardVisibility();
+  updateOIDCRedirectDisplay();
+
   renderDingTalkBots(data.dingtalk || []);
   renderFeishuBots(data.feishu || []);
   renderWeComBots(data.wecom || []);
@@ -1877,6 +2082,7 @@ function collect() {
       jwtExpiresIn: val('a-jwt-exp') || '24h',
       passwordSalt: val('a-salt'),
       local: { users, roles },
+      oidc: collectOIDC(),
     },
     dingtalk:       collectDingTalkBots(),
     feishu:         collectFeishuBots(),

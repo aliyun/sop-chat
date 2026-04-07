@@ -11,7 +11,10 @@
     "password": "密码",
     "loginButton": "登录",
     "loggingIn": "登录中...",
-    "loginFailed": "登录失败"
+    "loginFailed": "登录失败",
+    "ssoLogin": "SSO 登录",
+    "ssoLoggingIn": "正在跳转到 SSO 登录...",
+    "or": "或"
   },
   "employeeSelector": {
     "title": "选择数字员工",

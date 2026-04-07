@@ -66,7 +66,7 @@ func (r *ChatbotReplier) ReplyMessage(ctx context.Context, sessionWebhook string
 			return err
 		}
 
-		return fmt.Errorf(string(responseJsonBody))
+		return fmt.Errorf("%s", string(responseJsonBody))
 	}
 
 	return nil

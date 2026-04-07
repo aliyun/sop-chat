@@ -34,6 +34,11 @@ func (s *Server) handleChatStream(c *gin.Context) {
 		return
 	}
 
+	if allowed := s.getAllowedEmployees(c); allowed != nil && !allowed[req.EmployeeName] {
+		c.JSON(http.StatusForbidden, gin.H{"error": "无权访问该数字员工"})
+		return
+	}
+
 	cmsClient, err := s.createCMSClient()
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)

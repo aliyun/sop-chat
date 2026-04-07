@@ -132,8 +132,9 @@ func convertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
 		}
 		for i, r := range cfg.Local.Roles {
 			result.Local.Roles[i] = RoleConfig{
-				Name:  r.Name,
-				Users: r.Users,
+				Name:      r.Name,
+				Users:     r.Users,
+				Employees: r.Employees,
 			}
 		}
 	}
@@ -161,6 +162,7 @@ func convertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
 			RedirectURL:   cfg.OIDC.RedirectURL,
 			Scopes:        cfg.OIDC.Scopes,
 			UsernameClaim: cfg.OIDC.UsernameClaim,
+			DisplayName:   cfg.OIDC.DisplayName,
 		}
 	}
 

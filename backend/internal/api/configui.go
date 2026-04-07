@@ -1,9 +1,11 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -13,6 +15,7 @@ import (
 	"sop-chat/internal/scheduler"
 	"sop-chat/pkg/sopchat"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gin-gonic/gin"
 )
 
@@ -129,6 +132,17 @@ type configUIAuth struct {
 	JWTExpiresIn string         `json:"jwtExpiresIn"`           // maps to auth.jwt.expiresIn
 	PasswordSalt string         `json:"passwordSalt,omitempty"` // MD5(salt+password)
 	Local        *configUILocal `json:"local,omitempty"`
+	OIDC         *configUIOIDC  `json:"oidc,omitempty"`
+}
+
+type configUIOIDC struct {
+	IssuerURL     string   `json:"issuerURL"`
+	ClientID      string   `json:"clientId"`
+	ClientSecret  string   `json:"clientSecret"`
+	RedirectURL   string   `json:"redirectURL"`
+	Scopes        []string `json:"scopes"`
+	UsernameClaim string   `json:"usernameClaim"`
+	DisplayName   string   `json:"displayName"`
 }
 
 type configUILocal struct {
@@ -142,8 +156,9 @@ type configUIUser struct {
 }
 
 type configUIRole struct {
-	Name  string   `json:"name"`
-	Users []string `json:"users"`
+	Name      string   `json:"name"`
+	Users     []string `json:"users"`
+	Employees []string `json:"employees"` // 该角色可见的数字员工列表
 }
 
 type configUIConversationRoute struct {
@@ -296,9 +311,34 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			if users == nil {
 				users = []string{}
 			}
-			local.Roles[i] = configUIRole{Name: r.Name, Users: users}
+			employees := r.Employees
+			if employees == nil {
+				employees = []string{}
+			}
+			local.Roles[i] = configUIRole{Name: r.Name, Users: users, Employees: employees}
 		}
 		resp.Auth.Local = local
+	}
+
+	// OIDC 配置
+	if cfg.Auth.OIDC != nil {
+		scopes := cfg.Auth.OIDC.Scopes
+		if scopes == nil {
+			scopes = []string{}
+		}
+		displayName := strings.TrimSpace(cfg.Auth.OIDC.DisplayName)
+		if displayName == "" {
+			displayName = "OIDC 登录"
+		}
+		resp.Auth.OIDC = &configUIOIDC{
+			IssuerURL:     cfg.Auth.OIDC.IssuerURL,
+			ClientID:      cfg.Auth.OIDC.ClientID,
+			ClientSecret:  cfg.Auth.OIDC.ClientSecret,
+			RedirectURL:   cfg.Auth.OIDC.RedirectURL,
+			Scopes:        scopes,
+			UsernameClaim: cfg.Auth.OIDC.UsernameClaim,
+			DisplayName:   displayName,
+		}
 	}
 
 	// 始终返回所有钉钉实例（包括 enabled=false 的，凭据应保留显示）
@@ -478,6 +518,10 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	}
 
 	// 构建 config.Config 结构体
+	s.mu.RLock()
+	oldGlobalCfg := s.globalConfig
+	s.mu.RUnlock()
+
 	bindThread := true
 	if req.Global.BindThreadToProcess != nil {
 		bindThread = *req.Global.BindThreadToProcess
@@ -515,7 +559,24 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 			cfg.Auth.BuiltinUsers[i] = config.UserConfig{Name: u.Name, Password: u.Password}
 		}
 		for i, r := range req.Auth.Local.Roles {
-			cfg.Auth.Roles[i] = config.RoleConfig{Name: r.Name, Users: r.Users}
+			cfg.Auth.Roles[i] = config.RoleConfig{Name: r.Name, Users: r.Users, Employees: r.Employees}
+		}
+	}
+
+	// OIDC 配置
+	if req.Auth.OIDC != nil && (req.Auth.OIDC.IssuerURL != "" || req.Auth.OIDC.ClientID != "") {
+		displayName := strings.TrimSpace(req.Auth.OIDC.DisplayName)
+		if displayName == "" {
+			displayName = "OIDC 登录"
+		}
+		cfg.Auth.OIDC = &config.OIDCConfig{
+			IssuerURL:     req.Auth.OIDC.IssuerURL,
+			ClientID:      req.Auth.OIDC.ClientID,
+			ClientSecret:  req.Auth.OIDC.ClientSecret,
+			RedirectURL:   req.Auth.OIDC.RedirectURL,
+			Scopes:        req.Auth.OIDC.Scopes,
+			UsernameClaim: req.Auth.OIDC.UsernameClaim,
+			DisplayName:   displayName,
 		}
 	}
 
@@ -708,11 +769,26 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 
 	log.Printf("配置已保存: %s，开始热重载...", s.configPath)
 
+	oidcChanged := false
+	if oldGlobalCfg != nil {
+		oidcChanged = !reflect.DeepEqual(oldGlobalCfg.Auth.OIDC, cfg.Auth.OIDC)
+	} else {
+		oidcChanged = cfg.Auth.OIDC != nil
+	}
+
 	// 热重载内存中的配置
 	if err := s.reloadConfig(); err != nil {
 		log.Printf("热重载失败: %v", err)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "配置已保存，但热重载失败（" + err.Error() + "），请手动重启服务器",
+			"warning": true,
+		})
+		return
+	}
+
+	if oidcChanged {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "配置已保存并应用。检测到 OIDC 配置变更，需重启服务进程后生效",
 			"warning": true,
 		})
 		return
@@ -977,5 +1053,51 @@ func (s *Server) handleTestCMS(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"ok":      true,
 		"message": fmt.Sprintf("校验通过：Workspace %q 在 Region %s 下存在", req.Workspace, req.Region),
+	})
+}
+
+// handleTestOIDC 校验 OIDC 配置：执行 OIDC Discovery 验证 issuerURL 可达且返回合法的 endpoints
+func (s *Server) handleTestOIDC(c *gin.Context) {
+	var req struct {
+		IssuerURL    string `json:"issuerURL"`
+		ClientID     string `json:"clientId"`
+		ClientSecret string `json:"clientSecret"`
+		RedirectURL  string `json:"redirectURL"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
+		return
+	}
+	if req.IssuerURL == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Issuer URL 不能为空"})
+		return
+	}
+	if req.ClientID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Client ID 不能为空"})
+		return
+	}
+
+	// 使用带超时的 context 执行 OIDC Discovery
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 15*time.Second)
+	defer cancel()
+
+	provider, err := oidc.NewProvider(ctx, req.IssuerURL)
+	if err != nil {
+		log.Printf("[test-oidc] Discovery 失败: %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"ok":    false,
+			"error": fmt.Sprintf("OIDC Discovery 失败: %v（请检查 Issuer URL 是否正确且可访问）", err),
+		})
+		return
+	}
+
+	// 提取 Discovery 返回的 endpoints 信息
+	endpoint := provider.Endpoint()
+	details := fmt.Sprintf("Authorization Endpoint: %s\nToken Endpoint: %s", endpoint.AuthURL, endpoint.TokenURL)
+
+	c.JSON(http.StatusOK, gin.H{
+		"ok":      true,
+		"message": fmt.Sprintf("OIDC Discovery 成功（Issuer: %s）", req.IssuerURL),
+		"details": details,
 	})
 }
