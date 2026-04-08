@@ -417,6 +417,13 @@ type LDAPConfig struct {
 	UsernameAttr string `yaml:"usernameAttr"` // 用户名属性，默认 uid
 	DisplayAttr  string `yaml:"displayAttr"`  // 显示名属性，默认 cn
 	EmailAttr    string `yaml:"emailAttr"`    // 邮箱属性，默认 mail
+	// LDAP 组角色映射：用户 memberOf 命中 groupDN 时，授予对应 role
+	GroupRoleMappings []LDAPGroupRoleMapping `yaml:"groupRoleMappings,omitempty"`
+}
+
+type LDAPGroupRoleMapping struct {
+	GroupDN string `yaml:"groupDN"`
+	Role    string `yaml:"role"`
 }
 
 // OIDCConfig OIDC / OAuth2 认证配置
@@ -449,11 +456,11 @@ func DefaultConfig() *Config {
 	bindThread := true
 	return &Config{
 		Global: GlobalConfig{
-			Host:               "0.0.0.0",
-			Port:               8080,
-			Endpoint:           "cms.cn-hangzhou.aliyuncs.com",
-			TimeZone:           "Asia/Shanghai",
-			Language:           "zh",
+			Host:                "0.0.0.0",
+			Port:                8080,
+			Endpoint:            "cms.cn-hangzhou.aliyuncs.com",
+			TimeZone:            "Asia/Shanghai",
+			Language:            "zh",
 			BindThreadToProcess: &bindThread,
 		},
 		Auth: AuthConfig{

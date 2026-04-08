@@ -388,7 +388,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <select id="method-select">
           <option value="">选择认证方式...</option>
           <option value="builtin">builtin（内置账号）</option>
-          <option value="ldap">ldap（LDAP，待实现）</option>
+          <option value="ldap">ldap（LDAP）</option>
           <option value="oidc">oidc（OpenID Connect）</option>
         </select>
         <button class="btn btn-ghost btn-sm" onclick="addMethod()">
@@ -430,6 +430,77 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         </button>
       </div>
       <span class="hint">设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)</span>
+    </div>
+  </div>
+  <div class="card" id="ldap-config-card" style="display:none">
+    <div class="card-title"><span class="card-title-icon">&#128272;</span> LDAP 配置</div>
+    <div class="field-grid">
+      <div class="field">
+        <label>LDAP Host <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-ldap-host" placeholder="ldap.example.com">
+      </div>
+      <div class="field">
+        <label>Port</label>
+        <input type="number" id="a-ldap-port" placeholder="389">
+        <span class="hint">不填时默认：LDAP 389，LDAPS 636</span>
+      </div>
+      <div class="field">
+        <label>Use TLS (LDAPS)</label>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-weight:500">
+          <input type="checkbox" id="a-ldap-use-tls"> 启用
+        </label>
+      </div>
+      <div class="field field-full">
+        <label>Base DN <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-ldap-base-dn" placeholder="ou=people,dc=example,dc=com">
+      </div>
+      <div class="field field-full">
+        <label>Bind DN（可选）</label>
+        <input type="text" id="a-ldap-bind-dn" placeholder="cn=readonly,dc=example,dc=com">
+      </div>
+      <div class="field field-full">
+        <label>Bind Password（可选）</label>
+        <div class="input-wrap">
+          <input type="password" id="a-ldap-bind-password" placeholder="bind password" autocomplete="new-password">
+          <button class="eye-btn" onclick="toggleEye('a-ldap-bind-password',this)" tabindex="-1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label>User Filter</label>
+        <input type="text" id="a-ldap-user-filter" placeholder="(uid={username})">
+        <span class="hint">支持占位符 {username}</span>
+      </div>
+      <div class="field">
+        <label>Username Attr</label>
+        <input type="text" id="a-ldap-username-attr" placeholder="uid">
+      </div>
+      <div class="field">
+        <label>Display Attr</label>
+        <input type="text" id="a-ldap-display-attr" placeholder="cn">
+      </div>
+      <div class="field">
+        <label>Email Attr</label>
+        <input type="text" id="a-ldap-email-attr" placeholder="mail">
+      </div>
+      <div class="field field-full">
+        <label>组角色映射（Group → Role）</label>
+        <div id="ldap-group-role-list"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addLDAPGroupRoleRow('','')" style="margin-top:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          添加映射
+        </button>
+        <span class="hint">按用户的 memberOf 进行匹配，左侧填 LDAP 组 DN，右侧填系统角色名</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">仅在鉴权链包含 ldap 时生效。LDAP 用户角色通过上方「角色与权限」映射。</p>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="test-ldap-btn" onclick="testLDAP()" style="flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        测试 LDAP 连接
+      </button>
+      <div id="test-ldap-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="card" id="oidc-config-card" style="display:none">
@@ -918,7 +989,7 @@ function showStatus(type, msg, action) {
 // ── Auth methods list ─────────────────────────────────────────────────────
 const METHOD_LABELS = {
   builtin: '内置账号（builtinUsers）',
-  ldap:    'LDAP 认证（待实现）',
+  ldap:    'LDAP 认证',
   oidc:    'OpenID Connect',
 };
 
@@ -956,12 +1027,14 @@ function addMethod() {
   container.appendChild(makeMethodRow(method, container.children.length));
   sel.value = '';
   renumberMethods();
+  updateLDAPCardVisibility();
   updateOIDCCardVisibility();
 }
 
 function removeMethod(btn) {
   btn.closest('[data-method]').remove();
   renumberMethods();
+  updateLDAPCardVisibility();
   updateOIDCCardVisibility();
 }
 
@@ -988,6 +1061,122 @@ function collectMethods() {
 }
 
 // ── OIDC config ──────────────────────────────────────────────────────────
+function updateLDAPCardVisibility() {
+  const methods = collectMethods();
+  const card = document.getElementById('ldap-config-card');
+  if (card) {
+    card.style.display = methods.includes('ldap') ? '' : 'none';
+  }
+}
+
+function collectLDAP() {
+  const host = val('a-ldap-host');
+  const baseDN = val('a-ldap-base-dn');
+  if (!host && !baseDN) return null;
+  const port = parseInt(val('a-ldap-port'), 10) || 0;
+  const groupRoleMappings = collectLDAPGroupRoleMappings();
+  return {
+    host:         host,
+    port:         port,
+    useTLS:       !!document.getElementById('a-ldap-use-tls')?.checked,
+    bindDN:       val('a-ldap-bind-dn'),
+    bindPassword: val('a-ldap-bind-password'),
+    baseDN:       baseDN,
+    userFilter:   val('a-ldap-user-filter'),
+    usernameAttr: val('a-ldap-username-attr'),
+    displayAttr:  val('a-ldap-display-attr'),
+    emailAttr:    val('a-ldap-email-attr'),
+    groupRoleMappings: groupRoleMappings,
+  };
+}
+
+function addLDAPGroupRoleRow(groupDN, role) {
+  const container = document.getElementById('ldap-group-role-list');
+  const div = document.createElement('div');
+  div.className = 'list-row ldap-grm-row';
+  div.style.marginBottom = '6px';
+  div.innerHTML =
+    '<input type="text" data-field="groupDN" value="' + esc(groupDN || '') + '" placeholder="cn=sre,ou=groups,dc=example,dc=com" style="flex:2;min-width:0">' +
+    '<span style="color:var(--text3);font-size:13px;flex-shrink:0">→</span>' +
+    '<input type="text" data-field="role" value="' + esc(role || '') + '" placeholder="admin" style="flex:0 0 140px">' +
+    '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.ldap-grm-row\').remove()" title="删除">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+    '</button>';
+  container.appendChild(div);
+}
+
+function collectLDAPGroupRoleMappings() {
+  return Array.from(document.querySelectorAll('#ldap-group-role-list .ldap-grm-row')).map(row => ({
+    groupDN: (row.querySelector('[data-field=groupDN]').value || '').trim(),
+    role:    (row.querySelector('[data-field=role]').value || '').trim(),
+  })).filter(m => m.groupDN && m.role);
+}
+
+function renderLDAPGroupRoleMappings(mappings) {
+  document.getElementById('ldap-group-role-list').innerHTML = '';
+  (mappings || []).forEach(m => addLDAPGroupRoleRow(m.groupDN, m.role));
+}
+
+async function testLDAP() {
+  const host = val('a-ldap-host');
+  if (!host) { showTestLDAPResult(false, 'LDAP Host 不能为空'); return; }
+
+  const btn = document.getElementById('test-ldap-btn');
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 测试中…';
+  showTestLDAPResult('loading', '正在测试 LDAP 连接，请稍候…');
+
+  try {
+    const res = await fetch('/admin-ui/api/test-ldap?token=' + encodeURIComponent(token), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        host:         host,
+        port:         parseInt(val('a-ldap-port'), 10) || 0,
+        useTLS:       !!document.getElementById('a-ldap-use-tls')?.checked,
+        bindDN:       val('a-ldap-bind-dn'),
+        bindPassword: val('a-ldap-bind-password'),
+        baseDN:       val('a-ldap-base-dn'),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showTestLDAPResult(false, data.error || '请求失败');
+    } else if (data.ok) {
+      showTestLDAPResult(true, data.message);
+    } else {
+      showTestLDAPResult(false, data.error || '测试失败');
+    }
+  } catch(e) {
+    showTestLDAPResult(false, '网络错误: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+  }
+}
+
+function showTestLDAPResult(status, msg) {
+  const el = document.getElementById('test-ldap-result');
+  el.style.display = 'block';
+  if (status === 'loading') {
+    el.style.background = 'var(--blue-bg)';
+    el.style.border = '1px solid var(--blue-bd)';
+    el.style.color = 'var(--blue)';
+    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:8px"><div class="spinner"></div>' + esc(msg) + '</div>';
+  } else if (status === true) {
+    el.style.background = 'var(--green-bg)';
+    el.style.border = '1px solid var(--green-bd)';
+    el.style.color = 'var(--green)';
+    el.textContent = '\u2705 ' + msg;
+  } else {
+    el.style.background = 'var(--red-bg)';
+    el.style.border = '1px solid var(--red-bd)';
+    el.style.color = 'var(--red)';
+    el.textContent = '\u274c ' + msg;
+  }
+}
+
 function updateOIDCCardVisibility() {
   const methods = collectMethods();
   const card = document.getElementById('oidc-config-card');
@@ -2018,6 +2207,20 @@ function populate(data) {
   renderUsers((a.local || {}).users);
   renderRoles((a.local || {}).roles);
 
+  // LDAP 配置
+  const ldap = (a.ldap) || {};
+  setVal('a-ldap-host', ldap.host);
+  setVal('a-ldap-port', ldap.port || '');
+  document.getElementById('a-ldap-use-tls').checked = !!ldap.useTLS;
+  setVal('a-ldap-bind-dn', ldap.bindDN);
+  setVal('a-ldap-bind-password', ldap.bindPassword);
+  setVal('a-ldap-base-dn', ldap.baseDN);
+  setVal('a-ldap-user-filter', ldap.userFilter);
+  setVal('a-ldap-username-attr', ldap.usernameAttr);
+  setVal('a-ldap-display-attr', ldap.displayAttr);
+  setVal('a-ldap-email-attr', ldap.emailAttr);
+  renderLDAPGroupRoleMappings(ldap.groupRoleMappings);
+
   // OIDC 配置
   const oidc = (a.oidc) || {};
   setVal('a-oidc-issuer', oidc.issuerURL);
@@ -2031,6 +2234,7 @@ function populate(data) {
   setVal('a-oidc-scopes', (oidc.scopes || []).join(' '));
   setVal('a-oidc-username-claim', oidc.usernameClaim);
   setVal('a-oidc-display-name', oidc.displayName || 'OIDC 登录');
+  updateLDAPCardVisibility();
   updateOIDCCardVisibility();
   updateOIDCRedirectDisplay();
 
@@ -2082,6 +2286,7 @@ function collect() {
       jwtExpiresIn: val('a-jwt-exp') || '24h',
       passwordSalt: val('a-salt'),
       local: { users, roles },
+      ldap: collectLDAP(),
       oidc: collectOIDC(),
     },
     dingtalk:       collectDingTalkBots(),

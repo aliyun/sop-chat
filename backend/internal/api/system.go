@@ -62,16 +62,19 @@ func (s *Server) handleGetSetupStatus(c *gin.Context) {
 	credConfigured := cfg != nil && cfg.AccessKeyId != ""
 
 	// 检查是否存在至少一个用户账号
-	// OIDC 模式下不需要内置用户，用户通过 SSO 登录
+	// OIDC/LDAP 模式下不需要内置用户
 	usersConfigured := false
 	hasOIDC := false
+	hasLDAP := false
 	for _, m := range authModes {
 		if m == "oidc" {
 			hasOIDC = true
-			break
+		}
+		if m == "ldap" {
+			hasLDAP = true
 		}
 	}
-	if hasOIDC {
+	if hasOIDC || hasLDAP {
 		usersConfigured = true
 	} else if userStore != nil {
 		if users, err := userStore.ListUsers(); err == nil && len(users) > 0 {

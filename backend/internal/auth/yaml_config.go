@@ -38,16 +38,22 @@ type RoleConfig struct {
 
 // LDAPConfig LDAP 认证配置
 type LDAPConfig struct {
-	Host         string `yaml:"host"`
-	Port         int    `yaml:"port"`
-	UseTLS       bool   `yaml:"useTLS"`
-	BindDN       string `yaml:"bindDN"`
-	BindPassword string `yaml:"bindPassword"`
-	BaseDN       string `yaml:"baseDN"`
-	UserFilter   string `yaml:"userFilter"`
-	UsernameAttr string `yaml:"usernameAttr"`
-	DisplayAttr  string `yaml:"displayAttr"`
-	EmailAttr    string `yaml:"emailAttr"`
+	Host              string                 `yaml:"host"`
+	Port              int                    `yaml:"port"`
+	UseTLS            bool                   `yaml:"useTLS"`
+	BindDN            string                 `yaml:"bindDN"`
+	BindPassword      string                 `yaml:"bindPassword"`
+	BaseDN            string                 `yaml:"baseDN"`
+	UserFilter        string                 `yaml:"userFilter"`
+	UsernameAttr      string                 `yaml:"usernameAttr"`
+	DisplayAttr       string                 `yaml:"displayAttr"`
+	EmailAttr         string                 `yaml:"emailAttr"`
+	GroupRoleMappings []LDAPGroupRoleMapping `yaml:"groupRoleMappings,omitempty"`
+}
+
+type LDAPGroupRoleMapping struct {
+	GroupDN string `yaml:"groupDN"`
+	Role    string `yaml:"role"`
 }
 
 // OIDCConfig OIDC / OAuth2 认证配置

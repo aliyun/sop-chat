@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"reflect"
 	"strings"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gin-gonic/gin"
+	"github.com/go-ldap/ldap/v3"
 )
 
 // configUITokenMiddleware 验证配置 UI 访问令牌的中间件
@@ -87,7 +89,7 @@ type configUIScheduledTask struct {
 	Project      string            `json:"project"`
 	Workspace    string            `json:"workspace"`
 	Region       string            `json:"region"`
-	Webhook      *configUIWebhook  `json:"webhook,omitempty"`  // 向后兼容：旧前端可能只传单个
+	Webhook      *configUIWebhook  `json:"webhook,omitempty"` // 向后兼容：旧前端可能只传单个
 	Webhooks     []configUIWebhook `json:"webhooks"`
 }
 
@@ -112,18 +114,18 @@ func (t *configUIScheduledTask) effectiveWebhooks() []configUIWebhook {
 }
 
 type configUIGlobal struct {
-	AccessKeyId     string `json:"accessKeyId"`
-	AccessKeySecret string `json:"accessKeySecret"`
-	Endpoint        string `json:"endpoint"`
-	Host            string `json:"host"`
-	Port            int    `json:"port"`
-	TimeZone        string `json:"timeZone"`
-	Language        string `json:"language"`
+	AccessKeyId         string `json:"accessKeyId"`
+	AccessKeySecret     string `json:"accessKeySecret"`
+	Endpoint            string `json:"endpoint"`
+	Host                string `json:"host"`
+	Port                int    `json:"port"`
+	TimeZone            string `json:"timeZone"`
+	Language            string `json:"language"`
 	BindThreadToProcess *bool  `json:"bindThreadToProcess,omitempty"`
-	Product         string `json:"product"`
-	Project         string `json:"project"`
-	Workspace       string `json:"workspace"`
-	Region          string `json:"region"`
+	Product             string `json:"product"`
+	Project             string `json:"project"`
+	Workspace           string `json:"workspace"`
+	Region              string `json:"region"`
 }
 
 type configUIAuth struct {
@@ -132,7 +134,27 @@ type configUIAuth struct {
 	JWTExpiresIn string         `json:"jwtExpiresIn"`           // maps to auth.jwt.expiresIn
 	PasswordSalt string         `json:"passwordSalt,omitempty"` // MD5(salt+password)
 	Local        *configUILocal `json:"local,omitempty"`
+	LDAP         *configUILDAP  `json:"ldap,omitempty"`
 	OIDC         *configUIOIDC  `json:"oidc,omitempty"`
+}
+
+type configUILDAP struct {
+	Host              string                         `json:"host"`
+	Port              int                            `json:"port"`
+	UseTLS            bool                           `json:"useTLS"`
+	BindDN            string                         `json:"bindDN"`
+	BindPassword      string                         `json:"bindPassword"`
+	BaseDN            string                         `json:"baseDN"`
+	UserFilter        string                         `json:"userFilter"`
+	UsernameAttr      string                         `json:"usernameAttr"`
+	DisplayAttr       string                         `json:"displayAttr"`
+	EmailAttr         string                         `json:"emailAttr"`
+	GroupRoleMappings []configUILDAPGroupRoleMapping `json:"groupRoleMappings"`
+}
+
+type configUILDAPGroupRoleMapping struct {
+	GroupDN string `json:"groupDN"`
+	Role    string `json:"role"`
 }
 
 type configUIOIDC struct {
@@ -284,10 +306,10 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 				v := cfg.BindThreadToProcess()
 				return &v
 			}(),
-			Product:         cfg.Global.Product,
-			Project:         cfg.Global.Project,
-			Workspace:       cfg.Global.Workspace,
-			Region:          cfg.Global.Region,
+			Product:   cfg.Global.Product,
+			Project:   cfg.Global.Project,
+			Workspace: cfg.Global.Workspace,
+			Region:    cfg.Global.Region,
 		},
 		Auth: configUIAuth{
 			Methods:      cfg.Auth.Methods,
@@ -318,6 +340,33 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 			local.Roles[i] = configUIRole{Name: r.Name, Users: users, Employees: employees}
 		}
 		resp.Auth.Local = local
+	}
+
+	// LDAP 配置
+	if cfg.Auth.LDAP != nil {
+		mappings := make([]configUILDAPGroupRoleMapping, 0, len(cfg.Auth.LDAP.GroupRoleMappings))
+		for _, m := range cfg.Auth.LDAP.GroupRoleMappings {
+			if strings.TrimSpace(m.GroupDN) == "" || strings.TrimSpace(m.Role) == "" {
+				continue
+			}
+			mappings = append(mappings, configUILDAPGroupRoleMapping{
+				GroupDN: m.GroupDN,
+				Role:    m.Role,
+			})
+		}
+		resp.Auth.LDAP = &configUILDAP{
+			Host:              cfg.Auth.LDAP.Host,
+			Port:              cfg.Auth.LDAP.Port,
+			UseTLS:            cfg.Auth.LDAP.UseTLS,
+			BindDN:            cfg.Auth.LDAP.BindDN,
+			BindPassword:      cfg.Auth.LDAP.BindPassword,
+			BaseDN:            cfg.Auth.LDAP.BaseDN,
+			UserFilter:        cfg.Auth.LDAP.UserFilter,
+			UsernameAttr:      cfg.Auth.LDAP.UsernameAttr,
+			DisplayAttr:       cfg.Auth.LDAP.DisplayAttr,
+			EmailAttr:         cfg.Auth.LDAP.EmailAttr,
+			GroupRoleMappings: mappings,
+		}
 	}
 
 	// OIDC 配置
@@ -529,18 +578,18 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 
 	cfg := &config.Config{
 		Global: config.GlobalConfig{
-			AccessKeyId:        req.Global.AccessKeyId,
-			AccessKeySecret:    req.Global.AccessKeySecret,
-			Endpoint:           req.Global.Endpoint,
-			Host:               req.Global.Host,
-			Port:               req.Global.Port,
-			TimeZone:           req.Global.TimeZone,
-			Language:           req.Global.Language,
+			AccessKeyId:         req.Global.AccessKeyId,
+			AccessKeySecret:     req.Global.AccessKeySecret,
+			Endpoint:            req.Global.Endpoint,
+			Host:                req.Global.Host,
+			Port:                req.Global.Port,
+			TimeZone:            req.Global.TimeZone,
+			Language:            req.Global.Language,
 			BindThreadToProcess: &bindThread,
-			Product:            req.Global.Product,
-			Project:            req.Global.Project,
-			Workspace:          req.Global.Workspace,
-			Region:             req.Global.Region,
+			Product:             req.Global.Product,
+			Project:             req.Global.Project,
+			Workspace:           req.Global.Workspace,
+			Region:              req.Global.Region,
 		},
 		Auth: config.AuthConfig{
 			Methods: req.Auth.Methods,
@@ -560,6 +609,43 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 		}
 		for i, r := range req.Auth.Local.Roles {
 			cfg.Auth.Roles[i] = config.RoleConfig{Name: r.Name, Users: r.Users, Employees: r.Employees}
+		}
+	}
+
+	// LDAP 配置
+	if req.Auth.LDAP != nil && (req.Auth.LDAP.Host != "" || req.Auth.LDAP.BaseDN != "" || req.Auth.LDAP.BindDN != "") {
+		port := req.Auth.LDAP.Port
+		if port == 0 {
+			if req.Auth.LDAP.UseTLS {
+				port = 636
+			} else {
+				port = 389
+			}
+		}
+		mappings := make([]config.LDAPGroupRoleMapping, 0, len(req.Auth.LDAP.GroupRoleMappings))
+		for _, m := range req.Auth.LDAP.GroupRoleMappings {
+			groupDN := strings.TrimSpace(m.GroupDN)
+			role := strings.TrimSpace(m.Role)
+			if groupDN == "" || role == "" {
+				continue
+			}
+			mappings = append(mappings, config.LDAPGroupRoleMapping{
+				GroupDN: groupDN,
+				Role:    role,
+			})
+		}
+		cfg.Auth.LDAP = &config.LDAPConfig{
+			Host:              req.Auth.LDAP.Host,
+			Port:              port,
+			UseTLS:            req.Auth.LDAP.UseTLS,
+			BindDN:            req.Auth.LDAP.BindDN,
+			BindPassword:      req.Auth.LDAP.BindPassword,
+			BaseDN:            req.Auth.LDAP.BaseDN,
+			UserFilter:        req.Auth.LDAP.UserFilter,
+			UsernameAttr:      req.Auth.LDAP.UsernameAttr,
+			DisplayAttr:       req.Auth.LDAP.DisplayAttr,
+			EmailAttr:         req.Auth.LDAP.EmailAttr,
+			GroupRoleMappings: mappings,
 		}
 	}
 
@@ -770,10 +856,13 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	log.Printf("配置已保存: %s，开始热重载...", s.configPath)
 
 	oidcChanged := false
+	ldapChanged := false
 	if oldGlobalCfg != nil {
 		oidcChanged = !reflect.DeepEqual(oldGlobalCfg.Auth.OIDC, cfg.Auth.OIDC)
+		ldapChanged = !reflect.DeepEqual(oldGlobalCfg.Auth.LDAP, cfg.Auth.LDAP)
 	} else {
 		oidcChanged = cfg.Auth.OIDC != nil
+		ldapChanged = cfg.Auth.LDAP != nil
 	}
 
 	// 热重载内存中的配置
@@ -789,6 +878,13 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	if oidcChanged {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "配置已保存并应用。检测到 OIDC 配置变更，需重启服务进程后生效",
+			"warning": true,
+		})
+		return
+	}
+	if ldapChanged {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "配置已保存并应用。检测到 LDAP 配置变更，需重启服务进程后生效",
 			"warning": true,
 		})
 		return
@@ -1099,5 +1195,108 @@ func (s *Server) handleTestOIDC(c *gin.Context) {
 		"ok":      true,
 		"message": fmt.Sprintf("OIDC Discovery 成功（Issuer: %s）", req.IssuerURL),
 		"details": details,
+	})
+}
+
+// handleTestLDAP 测试 LDAP 连接：无 BindDN 时仅探测端口联通性，有 BindDN 时执行 Bind 验证
+func (s *Server) handleTestLDAP(c *gin.Context) {
+	var req struct {
+		Host         string `json:"host"`
+		Port         int    `json:"port"`
+		UseTLS       bool   `json:"useTLS"`
+		BindDN       string `json:"bindDN"`
+		BindPassword string `json:"bindPassword"`
+		BaseDN       string `json:"baseDN"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
+		return
+	}
+	if req.Host == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "LDAP Host 不能为空"})
+		return
+	}
+
+	port := req.Port
+	if port == 0 {
+		if req.UseTLS {
+			port = 636
+		} else {
+			port = 389
+		}
+	}
+
+	scheme := "ldap"
+	if req.UseTLS {
+		scheme = "ldaps"
+	}
+	addr := fmt.Sprintf("%s://%s:%d", scheme, req.Host, port)
+
+	conn, err := ldap.DialURL(
+		addr,
+		ldap.DialWithDialer(&net.Dialer{Timeout: 10 * time.Second}),
+	)
+	if err != nil {
+		if ne, ok := err.(net.Error); ok && ne.Timeout() {
+			c.JSON(http.StatusOK, gin.H{"ok": false, "error": fmt.Sprintf("连接超时: %s", addr)})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"ok": false, "error": fmt.Sprintf("连接失败: %v", err)})
+		return
+	}
+	defer conn.Close()
+
+	// 无 BindDN：仅端口联通性测试
+	if req.BindDN == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"ok":      true,
+			"message": fmt.Sprintf("端口联通性测试通过（%s）", addr),
+		})
+		return
+	}
+
+	// 有 BindDN：执行 Bind 验证
+	if err := conn.Bind(req.BindDN, req.BindPassword); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"ok":    false,
+			"error": fmt.Sprintf("Bind 失败: %v（请检查 Bind DN 和密码）", err),
+		})
+		return
+	}
+
+	// 如果填写了 BaseDN，进一步验证该 BaseDN 在目录中存在且可访问，
+	// 避免“Bind 成功但登录搜索失败”的假阳性。
+	baseDN := strings.TrimSpace(req.BaseDN)
+	if baseDN != "" {
+		searchReq := ldap.NewSearchRequest(
+			baseDN,
+			ldap.ScopeBaseObject,
+			ldap.NeverDerefAliases,
+			1,
+			5,
+			false,
+			"(objectClass=*)",
+			[]string{"dn"},
+			nil,
+		)
+		if _, err := conn.Search(searchReq); err != nil {
+			if ldapErr, ok := err.(*ldap.Error); ok && ldapErr.ResultCode == ldap.LDAPResultNoSuchObject {
+				c.JSON(http.StatusOK, gin.H{
+					"ok":    false,
+					"error": fmt.Sprintf("Bind 成功，但 Base DN 不存在或不可访问: %q（登录搜索会失败）", baseDN),
+				})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"ok":    false,
+				"error": fmt.Sprintf("Bind 成功，但 Base DN 校验失败: %v", err),
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"ok":      true,
+		"message": fmt.Sprintf("LDAP Bind 成功（%s，DN: %s）", addr, req.BindDN),
 	})
 }

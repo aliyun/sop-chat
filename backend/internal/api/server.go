@@ -216,8 +216,19 @@ func (s *Server) initAuth() error {
 			providers = append(providers, auth.NewLocalAuthProvider(userStore, s.jwtManager))
 
 		case auth.AuthModeLDAP:
-			// TODO: 实现 LDAP 认证提供者
-			return auth.ErrUnsupportedAuthMode
+			if authConfig.YAMLConfig == nil || authConfig.YAMLConfig.LDAP == nil {
+				return fmt.Errorf("LDAP 配置缺失，请在 config.yaml 中配置 auth.ldap 部分")
+			}
+			ldapCfg := authConfig.YAMLConfig.LDAP
+			var roles []auth.RoleConfig
+			if authConfig.YAMLConfig.Local != nil {
+				roles = authConfig.YAMLConfig.Local.Roles
+			}
+			ldapProvider, err := auth.NewLDAPProvider(ldapCfg, roles)
+			if err != nil {
+				return fmt.Errorf("初始化 LDAP 认证失败: %w", err)
+			}
+			providers = append(providers, ldapProvider)
 
 		case auth.AuthModeOIDC:
 			if authConfig.YAMLConfig == nil || authConfig.YAMLConfig.OIDC == nil {
@@ -329,6 +340,7 @@ func (s *Server) setupRoutes() {
 	s.router.POST("/admin-ui/api/test-ak", s.configUITokenMiddleware(), s.handleTestAK)
 	s.router.POST("/admin-ui/api/test-cms", s.configUITokenMiddleware(), s.handleTestCMS)
 	s.router.POST("/admin-ui/api/test-oidc", s.configUITokenMiddleware(), s.handleTestOIDC)
+	s.router.POST("/admin-ui/api/test-ldap", s.configUITokenMiddleware(), s.handleTestLDAP)
 	s.router.POST("/admin-ui/api/trigger-task", s.configUITokenMiddleware(), s.handleTriggerTask)
 
 	// 静态文件服务（前端资源）

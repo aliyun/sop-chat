@@ -140,17 +140,25 @@ func convertYAMLConfig(cfg *config.YAMLConfigForAuth) *YAMLConfig {
 	}
 
 	if cfg.LDAP != nil {
+		mappings := make([]LDAPGroupRoleMapping, len(cfg.LDAP.GroupRoleMappings))
+		for i, m := range cfg.LDAP.GroupRoleMappings {
+			mappings[i] = LDAPGroupRoleMapping{
+				GroupDN: m.GroupDN,
+				Role:    m.Role,
+			}
+		}
 		result.LDAP = &LDAPConfig{
-			Host:         cfg.LDAP.Host,
-			Port:         cfg.LDAP.Port,
-			UseTLS:       cfg.LDAP.UseTLS,
-			BindDN:       cfg.LDAP.BindDN,
-			BindPassword: cfg.LDAP.BindPassword,
-			BaseDN:       cfg.LDAP.BaseDN,
-			UserFilter:   cfg.LDAP.UserFilter,
-			UsernameAttr: cfg.LDAP.UsernameAttr,
-			DisplayAttr:  cfg.LDAP.DisplayAttr,
-			EmailAttr:    cfg.LDAP.EmailAttr,
+			Host:              cfg.LDAP.Host,
+			Port:              cfg.LDAP.Port,
+			UseTLS:            cfg.LDAP.UseTLS,
+			BindDN:            cfg.LDAP.BindDN,
+			BindPassword:      cfg.LDAP.BindPassword,
+			BaseDN:            cfg.LDAP.BaseDN,
+			UserFilter:        cfg.LDAP.UserFilter,
+			UsernameAttr:      cfg.LDAP.UsernameAttr,
+			DisplayAttr:       cfg.LDAP.DisplayAttr,
+			EmailAttr:         cfg.LDAP.EmailAttr,
+			GroupRoleMappings: mappings,
 		}
 	}
 
