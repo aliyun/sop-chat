@@ -3,8 +3,10 @@
  * Input field for user messages
  */
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const textareaRef = useRef(null);
 
@@ -38,7 +40,7 @@ const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="请输入您的问题..."
+          placeholder={t('messageInput.placeholder')}
           disabled={disabled}
           rows="3"
           className="message-input"
@@ -49,7 +51,7 @@ const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
             onClick={handleStop}
             className="stop-button"
           >
-            ⬛ 停止
+            ⬛ {t('messageInput.stop')}
           </button>
         ) : (
           <button 
@@ -57,7 +59,7 @@ const MessageInput = ({ onSend, onStop, disabled, isGenerating }) => {
             disabled={disabled || !input.trim()}
             className="send-button"
           >
-            发送
+            {t('messageInput.send')}
           </button>
         )}
       </div>

@@ -4,8 +4,10 @@
  */
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 function ProtectedRoute({ children }) {
+  const { t } = useTranslation();
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -17,7 +19,7 @@ function ProtectedRoute({ children }) {
         alignItems: 'center', 
         height: '100vh' 
       }}>
-        <div>加载中...</div>
+        <div>{t('protectedRoute.loading')}</div>
       </div>
     );
   }

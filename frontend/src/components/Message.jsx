@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { submitFeedback } from '../services/api';
 import { copyToClipboard } from '../utils/clipboard';
+import { useTranslation } from 'react-i18next';
 
 // Custom link renderer for ReactMarkdown - open links in new tab
 const LinkRenderer = ({ href, children }) => {
@@ -34,6 +35,7 @@ const Message = ({
   isShared = false,       // Is this a shared conversation (read-only)
   assistantName = null    // Assistant display name (from employee config)
 }) => {
+  const { t } = useTranslation();
   const isUser = role === 'user';
   const [expandedThinking, setExpandedThinking] = useState({});
   const [expandedTools, setExpandedTools] = useState({});
@@ -425,7 +427,7 @@ const Message = ({
   const renderSimpleArgs = (args) => {
     // Check for null, undefined, or empty values
     if (args === null || args === undefined) {
-      return <span className="tool-args-inline">(无参数)</span>;
+      return <span className="tool-args-inline">{t('message.noArgs')}</span>;
     }
     
     let argsObj = args;
@@ -433,7 +435,7 @@ const Message = ({
     if (typeof args === 'string') {
       // If empty string, show no args
       if (args.trim() === '' || args === '{}') {
-        return <span className="tool-args-inline">(无参数)</span>;
+        return <span className="tool-args-inline">{t('message.noArgs')}</span>;
       }
       try {
         argsObj = JSON.parse(args);
@@ -447,7 +449,7 @@ const Message = ({
     // Handle array case (shouldn't happen but handle it)
     if (Array.isArray(argsObj)) {
       if (argsObj.length === 0) {
-        return <span className="tool-args-inline">(无参数)</span>;
+        return <span className="tool-args-inline">{t('message.noArgs')}</span>;
       }
       const displayStr = argsObj.slice(0, 3).map(v => 
         typeof v === 'string' ? `"${truncateString(v, 20)}"` : String(v)
@@ -460,7 +462,7 @@ const Message = ({
 
       // If empty object, show a placeholder
       if (entries.length === 0) {
-        return <span className="tool-args-inline">(无参数)</span>;
+        return <span className="tool-args-inline">{t('message.noArgs')}</span>;
       }
       
       // Limit to first 3 parameters for inline display
@@ -569,12 +571,12 @@ const Message = ({
   const processedEvents = !isUser ? processEvents(events) : [];
   
   // Get assistant display name
-  const assistantDisplayName = assistantName || 'SLS 助手';
+  const assistantDisplayName = assistantName || t('message.defaultAssistant');
   
   return (
     <div className={`message ${isUser ? 'user-message' : 'assistant-message'} ${isStreaming ? 'streaming' : ''}`}>
       <div className="message-header">
-        {isUser ? '👤 您' : `🤖 ${assistantDisplayName}`}
+        {isUser ? `👤 ${t('message.you')}` : `🤖 ${assistantDisplayName}`}
         {isStreaming && <span className="streaming-indicator">▊</span>}
       </div>
       
@@ -584,9 +586,9 @@ const Message = ({
           {/* Stage indicator (shown when loading, no events yet) */}
           {isStreaming && stage && processedEvents.length === 0 && (
             <div className="stage-indicator">
-              {stage === 'thinking' && '🤔 正在思考...'}
-              {stage === 'tool_calling' && '🔧 正在调用工具...'}
-              {stage === 'answering' && '✍️ 正在生成回答...'}
+              {stage === 'thinking' && t('message.stageThinking')}
+              {stage === 'tool_calling' && t('message.stageToolCalling')}
+              {stage === 'answering' && t('message.stageAnswering')}
             </div>
           )}
           
@@ -599,7 +601,7 @@ const Message = ({
                 <div key={event.id} className="error-event">
                   <div className="error-event-header">
                     <span className="error-icon">⚠️</span>
-                    <span className="error-title">错误</span>
+                    <span className="error-title">{t('message.errorTitle')}</span>
                     {errorData.code && (
                       <span className="error-code">{errorData.code}</span>
                     )}
@@ -643,9 +645,9 @@ const Message = ({
                     {/* 显示阶段标签 */}
                     {call.phase && (
                       <span className="tool-phase-badge">
-                        {call.phase === 'start' ? '开始调用' : 
-                         call.phase === 'fail' ? '调用失败' :
-                         '执行完成'}
+                        {call.phase === 'start' ? t('message.toolPhaseStart') : 
+                         call.phase === 'fail' ? t('message.toolPhaseFail') :
+                         t('message.toolPhaseSuccess')}
                       </span>
                     )}
                     {/* 显示工具参数 */}
@@ -662,7 +664,7 @@ const Message = ({
                       {/* 显示工具参数 */}
                       {call.args && Object.keys(call.args).length > 0 && (
                         <div className="tool-detail-section">
-                          <div className="tool-detail-label">参数:</div>
+                          <div className="tool-detail-label">{t('message.toolParams')}</div>
                           <div className="tool-item-args">
                             {renderToolArgs(call.args)}
                           </div>
@@ -672,7 +674,7 @@ const Message = ({
                       {call.result && (
                         <div className="tool-detail-section">
                           <div className="tool-detail-label">
-                            {call.success !== false ? '结果:' : '错误:'}
+                            {call.success !== false ? t('message.toolResult') : t('message.toolError')}
                           </div>
                           <div className={call.success !== false ? "tool-item-result" : "tool-item-error"}>
                             {call.success !== false ? (
@@ -711,7 +713,7 @@ const Message = ({
                                       }).filter(Boolean)
                                     : JSON.stringify(call.result.contents)
                                 ) : (
-                                  '工具调用失败'
+                                  t('message.toolCallFailed')
                                 )}
                               </div>
                             )}
@@ -721,9 +723,9 @@ const Message = ({
                       {/* 如果没有 result 但是状态是失败，显示失败提示 */}
                       {!call.result && call.phase === 'fail' && (
                         <div className="tool-detail-section">
-                          <div className="tool-detail-label">错误:</div>
+                          <div className="tool-detail-label">{t('message.toolError')}</div>
                           <div className="tool-item-error">
-                            工具调用失败
+                            {t('message.toolCallFailed')}
                           </div>
                         </div>
                       )}
@@ -752,7 +754,7 @@ const Message = ({
                               {isExpanded ? '🧠' : '💭'}
                             </span>
                             <span className="thinking-title">
-                              {isExpanded ? 'AI 思考过程' : '查看 AI 思考过程'}
+                              {isExpanded ? t('message.thinkingExpanded') : t('message.thinkingCollapsed')}
                             </span>
                             <span className="thinking-toggle">
                               {isExpanded ? '▼' : '▶'}
@@ -782,8 +784,8 @@ const Message = ({
           {/* Stage indicator during streaming */}
           {isStreaming && stage && processedEvents.length > 0 && (
             <div className="stage-indicator-inline">
-              {stage === 'tool_calling' && '🔧 调用中...'}
-              {stage === 'answering' && '✍️ 生成中...'}
+              {stage === 'tool_calling' && t('message.stageToolCallingInline')}
+              {stage === 'answering' && t('message.stageAnsweringInline')}
             </div>
           )}
           
@@ -798,17 +800,17 @@ const Message = ({
                       className={`feedback-btn like-btn ${feedbackStatus === 'like' ? 'active' : ''} ${feedbackStatus ? 'disabled' : ''}`}
                       onClick={handleLike}
                       disabled={!!feedbackStatus || isSubmittingFeedback}
-                      title="这个回答有帮助"
+                      title={t('message.helpfulTitle')}
                     >
-                      👍 {feedbackStatus === 'like' ? '已点赞' : '有帮助'}
+                      👍 {feedbackStatus === 'like' ? t('message.liked') : t('message.helpful')}
                     </button>
                     <button 
                       className={`feedback-btn dislike-btn ${feedbackStatus === 'dislike' ? 'active' : ''} ${feedbackStatus ? 'disabled' : ''}`}
                       onClick={handleDislike}
                       disabled={!!feedbackStatus || isSubmittingFeedback}
-                      title="这个回答需要改进"
+                      title={t('message.improvementTitle')}
                     >
-                      👎 {feedbackStatus === 'dislike' ? '已反馈' : '需改进'}
+                      👎 {feedbackStatus === 'dislike' ? t('message.feedbackSent') : t('message.needsImprovement')}
                     </button>
                   </>
                 )}
@@ -816,15 +818,15 @@ const Message = ({
                 <button 
                   className={`feedback-btn copy-btn ${copySuccess ? 'active' : ''}`}
                   onClick={handleCopy}
-                  title="复制回答内容"
+                  title={t('message.copyTitle')}
                 >
-                  {copySuccess ? '✓ 已复制' : '📋 复制'}
+                  {copySuccess ? `✓ ${t('message.copied')}` : `📋 ${t('message.copy')}`}
                 </button>
               </div>
               {/* Thank you message after feedback */}
               {!isShared && feedbackStatus && (
                 <span className="feedback-message">
-                  感谢您的反馈！
+                  {t('message.thanksFeedback')}
                 </span>
               )}
             </div>
@@ -837,13 +839,13 @@ const Message = ({
         <div className="feedback-modal-overlay" onClick={handleCloseModal}>
           <div className="feedback-modal" onClick={e => e.stopPropagation()}>
             <div className="feedback-modal-header">
-              <h3>👎 请告诉我们哪里需要改进</h3>
+              <h3>{t('message.feedbackModalTitle')}</h3>
               <button className="feedback-modal-close" onClick={handleCloseModal}>×</button>
             </div>
             <div className="feedback-modal-body">
               <textarea
                 className="feedback-textarea"
-                placeholder="请描述回答中不准确或需要改进的地方（可选）..."
+                placeholder={t('message.feedbackPlaceholder')}
                 value={feedbackReason}
                 onChange={e => setFeedbackReason(e.target.value)}
                 rows={4}
@@ -855,14 +857,14 @@ const Message = ({
                 onClick={handleCloseModal}
                 disabled={isSubmittingFeedback}
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button 
                 className="feedback-modal-submit" 
                 onClick={handleDislikeSubmit}
                 disabled={isSubmittingFeedback}
               >
-                {isSubmittingFeedback ? '提交中...' : '提交反馈'}
+                {isSubmittingFeedback ? t('message.submitting') : t('message.submitFeedback')}
               </button>
             </div>
           </div>
@@ -876,8 +878,8 @@ const Message = ({
             <div className="user-images-container">
               {images.map((img, index) => (
                 <div key={index} className="user-image-preview" onClick={() => handleImageClick(index)}>
-                  <img src={img} alt={`用户上传的图片 ${index + 1}`} />
-                  <div className="image-zoom-hint">🔍 点击查看大图</div>
+                  <img src={img} alt={`${t('message.userImage')} ${index + 1}`} />
+                  <div className="image-zoom-hint">{t('message.clickToEnlarge')}</div>
                   {images.length > 1 && (
                     <div className="image-number-badge">{index + 1}/{images.length}</div>
                   )}
@@ -903,7 +905,7 @@ const Message = ({
                 </div>
               </>
             )}
-            <img src={images[previewImageIndex]} alt={`图片预览 ${previewImageIndex + 1}`} className="image-preview-full" />
+            <img src={images[previewImageIndex]} alt={`${t('message.imagePreview')} ${previewImageIndex + 1}`} className="image-preview-full" />
           </div>
         </div>
       )}

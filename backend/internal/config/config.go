@@ -684,6 +684,7 @@ func (c *Config) ToClientConfig() (*ClientConfig, error) {
 		AccessKeySecret: accessKeySecret,
 		Endpoint:        endpoint,
 		Product:         c.Global.Product,
+		Language:        c.GetLanguage(),
 	}, nil
 }
 
@@ -719,6 +720,8 @@ type ClientConfig struct {
 	Endpoint        string
 	// Product 来自 global.product，供各渠道 Bot 和调度器直接读取
 	Product string
+	// Language 来自 global.language，默认 "zh"
+	Language string
 }
 
 // GetPort 获取端口配置（优先级: 配置文件 > 环境变量 > 默认值）

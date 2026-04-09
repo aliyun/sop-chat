@@ -6,8 +6,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Message from './Message';
 import { getSharedThread, getSharedThreadMessages, getSharedEmployee } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 const ShareChat = () => {
+  const { t } = useTranslation();
   const { employeeName, threadId } = useParams();
   const [employee, setEmployee] = useState(null);
   const [thread, setThread] = useState(null);
@@ -37,7 +39,7 @@ const ShareChat = () => {
         setMessages(convertedMessages);
       } catch (err) {
         console.error('Failed to load shared conversation:', err);
-        setError(err.message || '加载对话失败');
+        setError(err.message || t('shareChat.chatLoadFailed'));
       } finally {
         setLoading(false);
       }
@@ -126,13 +128,13 @@ const ShareChat = () => {
                   if (errorTexts) {
                     toolResult.error = errorTexts;
                   } else {
-                    toolResult.error = '工具调用失败';
+                    toolResult.error = t('shareChat.toolCallFailed');
                   }
                 }
               } else if (!toolSuccess) {
                 toolResult = {
                   success: false,
-                  error: '工具调用失败'
+                  error: t('shareChat.toolCallFailed')
                 };
               }
               
@@ -213,13 +215,13 @@ const ShareChat = () => {
                   if (errorTexts) {
                     toolResult.error = errorTexts;
                   } else {
-                    toolResult.error = '工具调用失败';
+                    toolResult.error = t('shareChat.toolCallFailed');
                   }
                 }
               } else if (!toolSuccess) {
                 toolResult = {
                   success: false,
-                  error: '工具调用失败'
+                  error: t('shareChat.toolCallFailed')
                 };
               }
               
@@ -303,7 +305,7 @@ const ShareChat = () => {
       <div className="chat-window chat-window-shared">
         <div className="loading-center">
           <div className="loading-spinner"></div>
-          <p>正在加载对话...</p>
+          <p>{t('shareChat.loadingChat')}</p>
         </div>
       </div>
     );
@@ -313,7 +315,7 @@ const ShareChat = () => {
     return (
       <div className="chat-window chat-window-shared">
         <div className="error-center">
-          <h3>❌ 加载失败</h3>
+          <h3>❌ {t('shareChat.loadFailed')}</h3>
           <p>{error}</p>
         </div>
       </div>
@@ -328,8 +330,8 @@ const ShareChat = () => {
     <div className="chat-window chat-window-shared">
       <div className="chat-header chat-header-shared">
         <div className="header-left">
-          <h2>🔗 分享的对话</h2>
-          <span className="read-only-badge">只读</span>
+          <h2>🔗 {t('shareChat.sharedChat')}</h2>
+          <span className="read-only-badge">{t('shareChat.readOnly')}</span>
         </div>
         <div className="header-center">
           <span className="thread-id">ID: {threadId}</span>
@@ -347,7 +349,7 @@ const ShareChat = () => {
               }
             }}
           >
-            ✨ 创建新会话
+            ✨ {t('shareChat.createNewSession')}
           </button>
         </div>
       </div>
@@ -355,7 +357,7 @@ const ShareChat = () => {
       <div className="messages-container">
         {messages.length === 0 ? (
           <div className="welcome-message">
-            <h3>📭 此对话暂无消息</h3>
+            <h3>📭 {t('shareChat.noMessages')}</h3>
           </div>
         ) : (
           messages.map((message, index) => (

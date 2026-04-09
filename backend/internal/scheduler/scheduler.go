@@ -250,7 +250,7 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  "zh",
+		"language":  clientCfg.Language,
 	}
 	// 根据 product 配置决定是否附加 skill=sop
 	if config.IsSlsProduct(product) {

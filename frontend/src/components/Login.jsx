@@ -84,23 +84,23 @@ function Login() {
 
   if (notConfigured && !hasOIDC) {
     const reasons = [];
-    if (!setupStatus.credConfigured) reasons.push('阿里云 AccessKey 未填写');
-    if (!setupStatus.authConfigured) reasons.push('登录认证方式（auth.methods）未配置');
-    if (!setupStatus.usersConfigured) reasons.push('尚未创建任何登录用户');
+    if (!setupStatus.credConfigured) reasons.push(t('login.akNotConfigured'));
+    if (!setupStatus.authConfigured) reasons.push(t('login.authNotConfigured'));
+    if (!setupStatus.usersConfigured) reasons.push(t('login.usersNotConfigured'));
 
     return (
       <div className="login-container">
         <div className="setup-required-box">
           <div className="setup-required-icon">⚙️</div>
-          <h2 className="setup-required-title">暂时无法登录</h2>
+          <h2 className="setup-required-title">{t('login.cannotLogin')}</h2>
           <ul className="setup-required-reasons">
             {reasons.map((r, i) => <li key={i}>{r}</li>)}
           </ul>
           <p className="setup-required-hint">
-            请在命令终端中找到配置管理 UI 地址（服务启动时已打印），在浏览器中打开后完成相关配置。
+            {t('login.setupHint')}
           </p>
           <p className="setup-required-path">
-            形如：<code>http://&lt;host&gt;:&lt;port&gt;/admin-ui?token=...</code>
+            {t('login.setupUrlFormat')}<code>http://&lt;host&gt;:&lt;port&gt;/admin-ui?token=...</code>
           </p>
         </div>
       </div>

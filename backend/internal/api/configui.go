@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -553,6 +553,44 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 }
 
 // handleSaveConfig 接收结构化 JSON 配置，转换为 Config 结构体，保存并热重载
+func oidcConfigEqual(a, b *config.OIDCConfig) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	if a.IssuerURL != b.IssuerURL || a.ClientID != b.ClientID ||
+		a.ClientSecret != b.ClientSecret || a.RedirectURL != b.RedirectURL ||
+		a.UsernameClaim != b.UsernameClaim || a.DisplayName != b.DisplayName {
+		return false
+	}
+	if len(a.Scopes) == 0 && len(b.Scopes) == 0 {
+		return true
+	}
+	return slices.Equal(a.Scopes, b.Scopes)
+}
+
+func ldapConfigEqual(a, b *config.LDAPConfig) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	if a.Host != b.Host || a.Port != b.Port || a.UseTLS != b.UseTLS ||
+		a.BindDN != b.BindDN || a.BindPassword != b.BindPassword ||
+		a.BaseDN != b.BaseDN || a.UserFilter != b.UserFilter ||
+		a.UsernameAttr != b.UsernameAttr || a.DisplayAttr != b.DisplayAttr ||
+		a.EmailAttr != b.EmailAttr {
+		return false
+	}
+	if len(a.GroupRoleMappings) == 0 && len(b.GroupRoleMappings) == 0 {
+		return true
+	}
+	return slices.Equal(a.GroupRoleMappings, b.GroupRoleMappings)
+}
+
 func (s *Server) handleSaveConfig(c *gin.Context) {
 	if s.configPath == "" {
 		// 首次保存时尚无配置文件，在工作目录下创建 config.yaml
@@ -858,8 +896,8 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 	oidcChanged := false
 	ldapChanged := false
 	if oldGlobalCfg != nil {
-		oidcChanged = !reflect.DeepEqual(oldGlobalCfg.Auth.OIDC, cfg.Auth.OIDC)
-		ldapChanged = !reflect.DeepEqual(oldGlobalCfg.Auth.LDAP, cfg.Auth.LDAP)
+		oidcChanged = !oidcConfigEqual(oldGlobalCfg.Auth.OIDC, cfg.Auth.OIDC)
+		ldapChanged = !ldapConfigEqual(oldGlobalCfg.Auth.LDAP, cfg.Auth.LDAP)
 	} else {
 		oidcChanged = cfg.Auth.OIDC != nil
 		ldapChanged = cfg.Auth.LDAP != nil
@@ -923,9 +961,11 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 		AccessKeyId:     cfg.AccessKeyId,
 		AccessKeySecret: cfg.AccessKeySecret,
 		Endpoint:        cfg.Endpoint,
+		Language:        "zh",
 	}
 	if globalCfg != nil {
 		clientCfg.Product = globalCfg.Global.Product
+		clientCfg.Language = globalCfg.GetLanguage()
 	}
 
 	// 与保存/Cron 使用同一 Resolve，保证与页面「对接产品」一致（仅 cms|sls）

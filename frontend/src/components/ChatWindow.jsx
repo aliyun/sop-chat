@@ -19,9 +19,11 @@ import Message from './Message';
 import MessageInput from './MessageInput';
 import { sendChatMessageStream, createThread, getEmployee, listThreads, getThreadMessages } from '../services/api';
 import { copyToClipboard } from '../utils/clipboard';
+import { useTranslation } from 'react-i18next';
 
 
 const ChatWindow = () => {
+  const { t } = useTranslation();
   const { employeeId } = useParams();
   const navigate = useNavigate();
   const [employee, setEmployee] = useState(null);
@@ -246,12 +248,12 @@ const ChatWindow = () => {
                     .filter(c => c.type === 'text')
                     .map(c => c.value || '')
                     .join('');
-                  toolResult.error = errorTexts || '工具调用失败';
+                  toolResult.error = errorTexts || t('chatWindow.unknownError');
                 }
               } else if (!toolSuccess) {
                 toolResult = {
                   success: false,
-                  error: '工具调用失败'
+                  error: t('chatWindow.unknownError')
                 };
               }
               
@@ -320,12 +322,12 @@ const ChatWindow = () => {
                     .filter(c => c.type === 'text')
                     .map(c => c.value || '')
                     .join('');
-                  toolResult.error = errorTexts || '工具调用失败';
+                  toolResult.error = errorTexts || t('chatWindow.unknownError');
                 }
               } else if (!toolSuccess) {
                 toolResult = {
                   success: false,
-                  error: '工具调用失败'
+                  error: t('chatWindow.unknownError')
                 };
               }
               
@@ -412,7 +414,7 @@ const ChatWindow = () => {
         scrollToBottom();
       }, 100);
     } catch (err) {
-      setError('加载会话失败: ' + err.message);
+      setError(t('chatWindow.loadFailed') + ': ' + err.message);
       console.error('Failed to load thread messages:', err);
     } finally {
       setLoading(false);
@@ -463,7 +465,7 @@ const ChatWindow = () => {
         // Reload thread list after creating new thread
         refreshThreadList();
       } catch (err) {
-        setError('创建会话失败: ' + err.message);
+        setError(t('chatWindow.createFailed') + ': ' + err.message);
         setLoading(false);
         setStreamingMessage(null);
         return;
@@ -668,7 +670,7 @@ const ChatWindow = () => {
           type: 'error',
           data: {
             code: errorPayload.code || 'UNKNOWN_ERROR',
-            message: errorPayload.message || '发生未知错误',
+            message: errorPayload.message || t('chatWindow.unknownError'),
             suggestion: errorPayload.suggestion || ''
           },
           timestamp: Date.now()
@@ -699,7 +701,7 @@ const ChatWindow = () => {
       (err) => {
         setError(err.message);
         
-        const isCancelled = err.message.includes('取消');
+        const isCancelled = err.message.includes('cancel') || err.message.includes('取消');
         
         if (isCancelled) {
           // User cancelled - preserve any content received so far
@@ -707,7 +709,7 @@ const ChatWindow = () => {
             // Add a cancellation notice to the events
             streamingMessageRef.current.events.push({
               type: 'content',
-              data: '\n\n_[已停止生成]_',
+              data: `\n\n_[${t('chatWindow.generationCancelled')}]_`,
               timestamp: Date.now()
             });
             
@@ -720,7 +722,7 @@ const ChatWindow = () => {
             // No content received yet, show cancellation message
             const cancelMessage = {
               role: 'assistant',
-              content: '生成已被用户取消。'
+              content: t('chatWindow.generationCancelled')
             };
             setMessages((prev) => [...prev, cancelMessage]);
           }
@@ -728,7 +730,7 @@ const ChatWindow = () => {
           // Other errors - show error message
           const errorMessage = {
             role: 'assistant',
-            content: `❌ **发生错误**\n\n${err.message}`
+            content: `❌ **${t('errors.serverError')}**\n\n${err.message}`
           };
           setMessages((prev) => [...prev, errorMessage]);
         }
@@ -756,12 +758,12 @@ const ChatWindow = () => {
 
   const handleShare = () => {
     if (!threadId) {
-      alert('当前对话还没有保存，无法分享');
+      alert(t('chatWindow.cannotShareUnsaved'));
       return;
     }
 
     if (!employee?.name) {
-      alert('员工信息未加载完成，无法分享');
+      alert(t('chatWindow.employeeNotLoaded'));
       return;
     }
     
@@ -789,7 +791,7 @@ const ChatWindow = () => {
       } catch (err) {
         console.error('Failed to copy share URL:', err);
         // Fallback: show the URL in a prompt
-        prompt('分享链接（请手动复制）：', shareUrl);
+        prompt(t('chatWindow.manualCopyPrompt'), shareUrl);
       }
     })();
   };
@@ -800,7 +802,7 @@ const ChatWindow = () => {
       <div className="chat-window">
         <div className="loading-center">
           <div className="loading-spinner"></div>
-          <p>正在加载员工信息...</p>
+          <p>{t('chatWindow.loadingEmployee')}</p>
         </div>
       </div>
     );
@@ -818,14 +820,14 @@ const ChatWindow = () => {
     }
     if (thread.createTime) {
       const date = new Date(thread.createTime);
-      return date.toLocaleString('zh-CN', { 
+      return date.toLocaleString(undefined, { 
         month: 'short', 
         day: 'numeric', 
         hour: '2-digit', 
         minute: '2-digit' 
       });
     }
-    return '新对话';
+    return t('chatWindow.newChat');
   };
 
   return (
@@ -833,11 +835,11 @@ const ChatWindow = () => {
       {/* Thread List Sidebar */}
       <div className={`thread-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          {sidebarOpen && <h3>会话列表</h3>}
+          {sidebarOpen && <h3>{t('chatWindow.sessionList')}</h3>}
           <button 
             className="sidebar-toggle"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            title={sidebarOpen ? '收起侧边栏' : '展开侧边栏'}
+            title={sidebarOpen ? t('chatWindow.collapseSidebar') : t('chatWindow.expandSidebar')}
           >
             {sidebarOpen ? '◀' : '▶'}
           </button>
@@ -849,12 +851,12 @@ const ChatWindow = () => {
               onClick={handleNewThread}
             >
               <span className="thread-icon">+</span>
-              <span className="thread-title">新对话</span>
+              <span className="thread-title">{t('chatWindow.newChat')}</span>
             </button>
             {threadsLoading ? (
-              <div className="thread-loading">加载中...</div>
+              <div className="thread-loading">{t('chatWindow.loadingSessions')}</div>
             ) : threads.length === 0 ? (
-              <div className="thread-empty">暂无会话</div>
+              <div className="thread-empty">{t('chatWindow.noSessions')}</div>
             ) : (
               <div className="thread-list">
                 {threads.map((thread) => (
@@ -877,8 +879,8 @@ const ChatWindow = () => {
       <div className="chat-main">
         <div className="chat-header">
           <div className="header-left">
-            <button onClick={handleBack} className="back-button" title="返回员工列表">
-              ← 返回
+            <button onClick={handleBack} className="back-button" title={t('chatWindow.backToList')}>
+              ← {t('chatWindow.back')}
             </button>
             <h2>{employee.displayName || employee.name}</h2>
           </div>
@@ -887,9 +889,9 @@ const ChatWindow = () => {
               <button 
                 onClick={handleShare} 
                 className={`share-button ${shareCopied ? 'copied' : ''}`} 
-                title={shareCopied ? '已复制' : '分享此对话'}
+                title={shareCopied ? t('chatWindow.shareCopied') : t('chatWindow.shareChat')}
               >
-                {shareCopied ? '✓ 已复制' : '🔗 分享'}
+                {shareCopied ? `✓ ${t('chatWindow.shareCopied')}` : `🔗 ${t('chatWindow.share')}`}
               </button>
             )}
           </div>
@@ -898,8 +900,8 @@ const ChatWindow = () => {
       <div className="messages-container" ref={messagesContainerRef} onScroll={handleScroll}>
         {messages.length === 0 && (
           <div className="welcome-message">
-            <h3>👋 欢迎使用 {employee.displayName || employee.name}</h3>
-            <p>{employee.description || '您可以询问关于此员工的任何问题'}</p>
+            <h3>👋 {t('chatWindow.welcome')} {employee.displayName || employee.name}</h3>
+            <p>{employee.description || t('chatWindow.defaultDescription')}</p>
           </div>
         )}
 
@@ -930,7 +932,7 @@ const ChatWindow = () => {
               <span></span>
               <span></span>
             </div>
-            <p>AI 正在思考...</p>
+            <p>{t('chatWindow.aiThinking')}</p>
           </div>
         )}
 
@@ -940,7 +942,7 @@ const ChatWindow = () => {
       {/* Scroll to bottom button - show when not at bottom */}
       {!autoScroll && (
         <button className="scroll-to-bottom-button" onClick={scrollToBottom}>
-          ↓ 回到底部
+          ↓ {t('chatWindow.scrollToBottom')}
         </button>
       )}
 

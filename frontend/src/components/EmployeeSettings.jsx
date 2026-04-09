@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getEmployee, updateEmployee, getAccountId } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const EmployeeSettings = () => {
   const { employeeId } = useParams();
@@ -23,6 +24,7 @@ const EmployeeSettings = () => {
   // 注意：后端返回的字段是大写开头的 (Roles)，也要兼容小写 (roles)
   const userRoles = user?.Roles || user?.roles || [];
   const isAdmin = userRoles.includes('admin');
+  const { t } = useTranslation();
 
   // 编辑表单数据
   const [formData, setFormData] = useState({
@@ -182,7 +184,7 @@ const EmployeeSettings = () => {
     switch (sopConfig.type) {
       case 'oss':
         if (!sopConfig.region || !sopConfig.bucket || !sopConfig.basePath) {
-          throw new Error('OSS 类型需要填写 Region、Bucket 和 Base Path');
+          throw new Error(t('employeeSettings.ossValidation'));
         }
         sop.region = sopConfig.region;
         sop.bucket = sopConfig.bucket;
@@ -192,7 +194,7 @@ const EmployeeSettings = () => {
 
       case 'yunxiao':
         if (!sopConfig.organizationId || !sopConfig.repositoryId || !sopConfig.branchName || !sopConfig.token || !sopConfig.basePath) {
-          throw new Error('云效类型需要填写组织ID、仓库ID、分支名称、Base Path 和 Token');
+          throw new Error(t('employeeSettings.yunxiaoValidation'));
         }
         sop.organizationId = sopConfig.organizationId;
         sop.repositoryId = sopConfig.repositoryId;
@@ -204,13 +206,13 @@ const EmployeeSettings = () => {
 
       case 'builtin':
         if (!sopConfig.id) {
-          throw new Error('内置类型需要填写知识库 ID');
+          throw new Error(t('employeeSettings.builtinValidation'));
         }
         sop.id = sopConfig.id;
         break;
 
       default:
-        throw new Error('未知的 SOP 类型');
+        throw new Error(t('employeeSettings.unknownType'));
     }
 
     return sop;
@@ -221,11 +223,11 @@ const EmployeeSettings = () => {
 
     // 验证必填字段
     if (!formData.displayName.trim()) {
-      setError('请输入显示名称');
+      setError(t('employeeSettings.displayNameRequired'));
       return;
     }
     if (!formData.defaultRule.trim()) {
-      setError('请输入角色定义');
+      setError(t('employeeSettings.defaultRuleRequired'));
       return;
     }
 
@@ -237,7 +239,7 @@ const EmployeeSettings = () => {
         try {
           return buildSopKnowledge(config);
         } catch (err) {
-          throw new Error(`知识库 ${index + 1}: ${err.message}`);
+          throw new Error(`${t('employeeSettings.knowledgeError')} ${index + 1}: ${err.message}`);
         }
       });
 
@@ -295,9 +297,9 @@ const EmployeeSettings = () => {
   const renderKnowledgeItem = (knowledge, index) => {
     const type = knowledge.type || 'unknown';
     const typeColors = {
-      oss: { bg: '#f0f5ff', accent: '#2f54eb', icon: '☁️', label: 'OSS 对象存储' },
-      yunxiao: { bg: '#f6ffed', accent: '#52c41a', icon: '🌿', label: '云效代码库' },
-      builtin: { bg: '#fff7e6', accent: '#fa8c16', icon: '📚', label: '内置知识库' }
+      oss: { bg: '#f0f5ff', accent: '#2f54eb', icon: '☁️', label: t('employeeSettings.ossLabel') },
+      yunxiao: { bg: '#f6ffed', accent: '#52c41a', icon: '🌿', label: t('employeeSettings.yunxiaoLabel') },
+      builtin: { bg: '#fff7e6', accent: '#fa8c16', icon: '📚', label: t('employeeSettings.builtinLabel') }
     };
     const style = typeColors[type] || typeColors.builtin;
 
@@ -323,7 +325,7 @@ const EmployeeSettings = () => {
           gap: '10px'
         }}>
           <span style={{ fontSize: '18px' }}>{style.icon}</span>
-          <strong style={{ color: '#333', fontSize: '15px' }}>知识库 {index + 1}</strong>
+          <strong style={{ color: '#333', fontSize: '15px' }}>{t('employeeSettings.knowledge')} {index + 1}</strong>
           <span style={{
             marginLeft: 'auto',
             padding: '2px 10px',
@@ -342,20 +344,20 @@ const EmployeeSettings = () => {
           {type === 'oss' && (
             <>
               <div className="info-row">
-                <label>Region</label>
+                <label>{t('employeeSettings.regionLabel')}</label>
                 <span className="info-value code">{knowledge.region || '-'}</span>
               </div>
               <div className="info-row">
-                <label>Bucket</label>
+                <label>{t('employeeSettings.bucketLabel')}</label>
                 <span className="info-value code">{knowledge.bucket || '-'}</span>
               </div>
               <div className="info-row">
-                <label>Base Path</label>
+                <label>{t('employeeSettings.basePathLabel')}</label>
                 <span className="info-value code">{knowledge.basePath || '-'}</span>
               </div>
               {knowledge.description && (
                 <div className="info-row">
-                  <label>知识库描述</label>
+                  <label>{t('employeeSettings.knowledgeDesc')}</label>
                   <span className="info-value">{knowledge.description}</span>
                 </div>
               )}
@@ -365,24 +367,24 @@ const EmployeeSettings = () => {
           {type === 'yunxiao' && (
             <>
               <div className="info-row">
-                <label>组织 ID</label>
+                <label>{t('employeeSettings.orgId')}</label>
                 <span className="info-value code">{knowledge.organizationId || '-'}</span>
               </div>
               <div className="info-row">
-                <label>仓库 ID</label>
+                <label>{t('employeeSettings.repoId')}</label>
                 <span className="info-value code">{knowledge.repositoryId || '-'}</span>
               </div>
               <div className="info-row">
-                <label>分支名称</label>
+                <label>{t('employeeSettings.branchName')}</label>
                 <span className="info-value code">{knowledge.branchName || '-'}</span>
               </div>
               <div className="info-row">
-                <label>Base Path</label>
+                <label>{t('employeeSettings.basePathLabel')}</label>
                 <span className="info-value code">{knowledge.basePath || '-'}</span>
               </div>
               {knowledge.description && (
                 <div className="info-row">
-                  <label>知识库描述</label>
+                  <label>{t('employeeSettings.knowledgeDesc')}</label>
                   <span className="info-value">{knowledge.description}</span>
                 </div>
               )}
@@ -391,7 +393,7 @@ const EmployeeSettings = () => {
           
           {type === 'builtin' && (
             <div className="info-row">
-              <label>知识库 ID</label>
+              <label>{t('employeeSettings.knowledgeId')}</label>
               <span className="info-value code">{knowledge.id || '-'}</span>
             </div>
           )}
@@ -404,73 +406,75 @@ const EmployeeSettings = () => {
     return (
       <div key={index} className="mcp-server-form" style={{ marginBottom: '20px' }}>
         <div className="mcp-server-header">
-          <span>知识库 {index + 1}</span>
+          <span>{t('employeeSettings.knowledge')} {index + 1}</span>
           {sopConfigs.length > 1 && (
             <button
               type="button"
               className="remove-btn"
               onClick={() => removeSopConfig(index)}
             >
-              删除
+              {t('employeeSettings.deleteKnowledge')}
             </button>
           )}
         </div>
 
         <div className="form-group">
-          <label>知识库类型 <span className="required">*</span></label>
+          <label>{t('employeeSettings.knowledgeType')} <span className="required">*</span></label>
           <select
             name="type"
             value={knowledge.type}
             onChange={(e) => handleSopConfigChange(index, e)}
           >
-            <option value="oss">OSS 对象存储</option>
-            <option value="yunxiao">云效代码库</option>
-            <option value="builtin">内置知识库</option>
+            <option value="oss">{t('employeeSettings.ossLabel')}</option>
+            <option value="yunxiao">{t('employeeSettings.yunxiaoLabel')}</option>
+            <option value="builtin">{t('employeeSettings.builtinLabel')}</option>
           </select>
         </div>
 
         {knowledge.type === 'oss' && (
           <>
             <div className="form-group">
-              <label>Region <span className="required">*</span></label>
+              <label>{t('employeeSettings.regionLabel')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="region"
                 value={knowledge.region}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="例如: cn-hangzhou"
+                placeholder={t('employeeSettings.regionPlaceholder')}
               />
+              <span className="form-hint">{t('employeeSettings.regionHint')}</span>
             </div>
 
             <div className="form-group">
-              <label>Bucket <span className="required">*</span></label>
+              <label>{t('employeeSettings.bucketLabel')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="bucket"
                 value={knowledge.bucket}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="例如: my-sop-bucket"
+                placeholder={t('employeeSettings.bucketPlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Base Path <span className="required">*</span></label>
+              <label>{t('employeeSettings.basePathLabel')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="basePath"
                 value={knowledge.basePath}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="例如: /sop/docs/"
+                placeholder={t('employeeSettings.basePathPlaceholder')}
               />
+              <span className="form-hint">{t('employeeSettings.basePathHintOss')}</span>
             </div>
 
             <div className="form-group">
-              <label>知识库描述</label>
+              <label>{t('employeeSettings.knowledgeDesc')}</label>
               <textarea
                 name="description"
                 value={knowledge.description}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="知识库的简要描述"
+                placeholder={t('employeeSettings.knowledgeDescPlaceholder')}
                 rows={2}
               />
             </div>
@@ -480,67 +484,68 @@ const EmployeeSettings = () => {
         {knowledge.type === 'yunxiao' && (
           <>
             <div className="form-group">
-              <label>组织 ID <span className="required">*</span></label>
+              <label>{t('employeeSettings.orgId')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="organizationId"
                 value={knowledge.organizationId}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="云效组织 ID"
+                placeholder={t('employeeSettings.orgId')}
               />
             </div>
 
             <div className="form-group">
-              <label>仓库 ID <span className="required">*</span></label>
+              <label>{t('employeeSettings.repoId')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="repositoryId"
                 value={knowledge.repositoryId}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="代码仓库 ID"
+                placeholder={t('employeeSettings.repoId')}
               />
             </div>
 
             <div className="form-group">
-              <label>分支名称 <span className="required">*</span></label>
+              <label>{t('employeeSettings.branchName')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="branchName"
                 value={knowledge.branchName}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="例如: main"
+                placeholder={t('employeeSettings.branchPlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Base Path <span className="required">*</span></label>
+              <label>{t('employeeSettings.basePathLabel')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="basePath"
                 value={knowledge.basePath}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="例如: /sop/docs/"
+                placeholder={t('employeeSettings.basePathPlaceholder')}
               />
+              <span className="form-hint">{t('employeeSettings.basePathHintYunxiao')}</span>
             </div>
 
             <div className="form-group">
-              <label>访问 Token <span className="required">*</span></label>
+              <label>{t('employeeSettings.accessToken')} <span className="required">*</span></label>
               <input
                 type="password"
                 name="token"
                 value={knowledge.token}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="云效访问令牌"
+                placeholder={t('employeeSettings.accessToken')}
               />
             </div>
 
             <div className="form-group">
-              <label>知识库描述</label>
+              <label>{t('employeeSettings.knowledgeDesc')}</label>
               <textarea
                 name="description"
                 value={knowledge.description}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="知识库的简要描述"
+                placeholder={t('employeeSettings.knowledgeDescPlaceholder')}
                 rows={2}
               />
             </div>
@@ -549,13 +554,13 @@ const EmployeeSettings = () => {
 
         {knowledge.type === 'builtin' && (
           <div className="form-group">
-            <label>知识库 ID <span className="required">*</span></label>
+            <label>{t('employeeSettings.knowledgeId')} <span className="required">*</span></label>
             <input
               type="text"
               name="id"
               value={knowledge.id}
               onChange={(e) => handleSopConfigChange(index, e)}
-              placeholder="内置知识库的 ID"
+              placeholder={t('employeeSettings.knowledgeId')}
             />
           </div>
         )}
@@ -569,56 +574,56 @@ const EmployeeSettings = () => {
         <div className="settings-page-info">
           <div className="create-form-section">
             <div className="form-group">
-              <label>员工名称</label>
+              <label>{t('employeeSettings.employeeName')}</label>
               <input
                 type="text"
                 value={config.name}
                 disabled
                 style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
               />
-              <span className="form-hint">员工名称不可修改</span>
+              <span className="form-hint">{t('employeeSettings.employeeNameReadonly')}</span>
             </div>
 
             <div className="form-group">
-              <label>显示名称 <span className="required">*</span></label>
+              <label>{t('employeeSettings.displayName')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="displayName"
                 value={formData.displayName}
                 onChange={handleInputChange}
-                placeholder="例如：OSS日志分析助手"
+                placeholder={t('createEmployee.displayNamePlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>描述</label>
+              <label>{t('employeeSettings.description')}</label>
               <input
                 type="text"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="简要描述该员工的功能"
+                placeholder={t('employeeSettings.descPlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Role ARN</label>
+              <label>{t('employeeSettings.roleArn')}</label>
               <input
                 type="text"
                 value={config.roleArn || ''}
                 disabled
                 style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed', fontFamily: 'monospace' }}
               />
-              <span className="form-hint">Role ARN 不可修改</span>
+              <span className="form-hint">{t('employeeSettings.roleArnReadonly')}</span>
             </div>
 
             <div className="form-group">
-              <label>角色定义 <span className="required">*</span></label>
+              <label>{t('employeeSettings.defaultRule')} <span className="required">*</span></label>
               <textarea
                 name="defaultRule"
                 value={formData.defaultRule}
                 onChange={handleInputChange}
-                placeholder="例如：你是一个专业的 OSS 日志分析工程师，擅长排查日志相关问题..."
+                placeholder={t('employeeSettings.defaultRulePlaceholder')}
                 rows={6}
               />
             </div>
@@ -634,50 +639,50 @@ const EmployeeSettings = () => {
           <div className="info-card wide">
             <div className="info-card-header">
               <span className="info-card-icon">📋</span>
-              <h4>基本信息</h4>
+              <h4>{t('employeeSettings.basicInfo')}</h4>
             </div>
             <div className="info-card-content">
               <div className="info-row">
-                <label>员工名称</label>
+                <label>{t('employeeSettings.employeeName')}</label>
                 <span className="info-value code">{config.name}</span>
               </div>
               <div className="info-row">
-                <label>显示名称</label>
+                <label>{t('employeeSettings.displayName')}</label>
                 <span className="info-value">{config.displayName}</span>
               </div>
               {config.description && (
                 <div className="info-row">
-                  <label>描述</label>
+                  <label>{t('employeeSettings.description')}</label>
                   <span className="info-value">{config.description}</span>
                 </div>
               )}
               {config.roleArn && (
                 <div className="info-row">
-                  <label>Role ARN</label>
+                  <label>{t('employeeSettings.roleArn')}</label>
                   <span className="info-value code">{config.roleArn}</span>
                 </div>
               )}
               {config.employeeType && (
                 <div className="info-row">
-                  <label>员工类型</label>
+                  <label>{t('employeeSettings.employeeType')}</label>
                   <span className="info-value">{config.employeeType}</span>
                 </div>
               )}
               {config.regionId && (
                 <div className="info-row">
-                  <label>Region ID</label>
+                  <label>{t('employeeSettings.regionId')}</label>
                   <span className="info-value code">{config.regionId}</span>
                 </div>
               )}
               {config.createTime && (
                 <div className="info-row">
-                  <label>创建时间</label>
+                  <label>{t('employeeSettings.createTime')}</label>
                   <span className="info-value">{formatTime(config.createTime)}</span>
                 </div>
               )}
               {config.updateTime && (
                 <div className="info-row">
-                  <label>更新时间</label>
+                  <label>{t('employeeSettings.updateTime')}</label>
                   <span className="info-value">{formatTime(config.updateTime)}</span>
                 </div>
               )}
@@ -689,7 +694,7 @@ const EmployeeSettings = () => {
             <div className="info-card wide">
               <div className="info-card-header">
                 <span className="info-card-icon">🤖</span>
-                <h4>角色定义</h4>
+                <h4>{t('employeeSettings.roleDefinition')}</h4>
               </div>
               <div className="info-card-content">
                 <div className="role-desc-content">{config.defaultRule}</div>
@@ -711,7 +716,7 @@ const EmployeeSettings = () => {
             )}
             
             <button type="button" className="add-btn" onClick={addSopConfig}>
-              + 添加知识库
+              + {t('employeeSettings.addKnowledge')}
             </button>
           </div>
         </div>
@@ -730,7 +735,7 @@ const EmployeeSettings = () => {
             border: '1px solid #e8e8e8'
           }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
-            <p>暂无配置的 SOP 知识库</p>
+            <p>{t('employeeSettings.noKnowledges')}</p>
           </div>
         </div>
       );
@@ -752,7 +757,7 @@ const EmployeeSettings = () => {
               {config.knowledges.sop.length}
             </div>
             <div style={{fontSize: '13px', color: '#888', marginTop: '4px'}}>
-              已配置的知识库
+              {t('employeeSettings.configuredKnowledges')}
             </div>
           </div>
         </div>
@@ -771,15 +776,15 @@ const EmployeeSettings = () => {
         <div className="settings-page-header">
           <div className="header-left">
             <button onClick={() => navigate('/')} className="back-button">
-              ← 返回
+              ← {t('employeeSettings.backButton')}
             </button>
-            <h2>⚙️ 员工设置</h2>
+            <h2>⚙️ {t('employeeSettings.settingsTitle')}</h2>
           </div>
         </div>
         <div className="settings-page-content">
           <div className="settings-page-loading">
             <div className="loading-spinner"></div>
-            <p>加载配置中...</p>
+            <p>{t('employeeSettings.loadingConfig')}</p>
           </div>
         </div>
       </div>
@@ -792,9 +797,9 @@ const EmployeeSettings = () => {
         <div className="settings-page-header">
           <div className="header-left">
             <button onClick={() => navigate('/')} className="back-button">
-              ← 返回
+              ← {t('employeeSettings.backButton')}
             </button>
-            <h2>⚙️ 员工设置</h2>
+            <h2>⚙️ {t('employeeSettings.settingsTitle')}</h2>
           </div>
         </div>
         <div className="settings-page-content">
@@ -811,15 +816,15 @@ const EmployeeSettings = () => {
       <div className="settings-page-header">
         <div className="header-left">
           <button onClick={() => navigate('/')} className="back-button">
-            ← 返回
+            ← {t('employeeSettings.backButton')}
           </button>
-          <h2>⚙️ {config.displayName || config.name} - 设置</h2>
+          <h2>⚙️ {config.displayName || config.name} - {t('employeeSettings.settings')}</h2>
         </div>
         <div className="header-actions">
           {isAdmin && (
             !editMode ? (
               <button className="btn-primary" onClick={() => setEditMode(true)}>
-                ✏️ 编辑
+                ✏️ {t('employeeSettings.edit')}
               </button>
             ) : (
               <>
@@ -828,14 +833,14 @@ const EmployeeSettings = () => {
                   onClick={handleCancel}
                   disabled={saving}
                 >
-                  取消
+                  {t('employeeSettings.cancel')}
                 </button>
                 <button 
                   className="btn-primary" 
                   onClick={handleSave}
                   disabled={saving}
                 >
-                  {saving ? '保存中...' : '💾 保存'}
+                  {saving ? t('employeeSettings.saving') : `💾 ${t('employeeSettings.save')}`}
                 </button>
               </>
             )
@@ -848,13 +853,13 @@ const EmployeeSettings = () => {
           className={`page-tab ${activeTab === 'info' ? 'active' : ''}`}
           onClick={() => setActiveTab('info')}
         >
-          📋 基本信息
+          📋 {t('employeeSettings.basicInfo')}
         </button>
         <button 
           className={`page-tab ${activeTab === 'knowledges' ? 'active' : ''}`}
           onClick={() => setActiveTab('knowledges')}
         >
-          📚 SOP 知识库配置
+          📚 {t('employeeSettings.knowledgesTab')}
         </button>
       </div>
       
@@ -874,7 +879,7 @@ const formatTime = (timeString) => {
   if (!timeString) return '-';
   try {
     const date = new Date(timeString);
-    return date.toLocaleString('zh-CN', {
+    return date.toLocaleString(undefined, {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',

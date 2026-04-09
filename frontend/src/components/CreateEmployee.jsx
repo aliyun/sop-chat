@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createEmployee, getAccountId } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const CreateEmployee = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const CreateEmployee = () => {
   // 注意：后端返回的字段是大写开头的 (Roles)，也要兼容小写 (roles)
   const userRoles = user?.Roles || user?.roles || [];
   const isAdmin = userRoles.includes('admin');
+  const { t } = useTranslation();
   
   // 如果不是 admin，跳转回首页
   useEffect(() => {
@@ -146,7 +148,7 @@ const CreateEmployee = () => {
     switch (sopConfig.type) {
       case 'oss':
         if (!sopConfig.region || !sopConfig.bucket || !sopConfig.basePath) {
-          throw new Error('OSS 类型需要填写 Region、Bucket 和 Base Path');
+          throw new Error(t('createEmployee.ossValidation'));
         }
         sop.region = sopConfig.region;
         sop.bucket = sopConfig.bucket;
@@ -156,7 +158,7 @@ const CreateEmployee = () => {
 
       case 'yunxiao':
         if (!sopConfig.organizationId || !sopConfig.repositoryId || !sopConfig.branchName || !sopConfig.token || !sopConfig.basePath) {
-          throw new Error('云效类型需要填写组织ID、仓库ID、分支名称、Base Path 和 Token');
+          throw new Error(t('createEmployee.yunxiaoValidation'));
         }
         sop.organizationId = sopConfig.organizationId;
         sop.repositoryId = sopConfig.repositoryId;
@@ -168,13 +170,13 @@ const CreateEmployee = () => {
 
       case 'builtin':
         if (!sopConfig.id) {
-          throw new Error('内置类型需要填写知识库 ID');
+          throw new Error(t('createEmployee.builtinValidation'));
         }
         sop.id = sopConfig.id;
         break;
 
       default:
-        throw new Error('未知的 SOP 类型');
+        throw new Error(t('createEmployee.unknownType'));
     }
 
     return sop;
@@ -185,25 +187,25 @@ const CreateEmployee = () => {
 
     // 验证必填字段
     if (!formData.name.trim()) {
-      setError('请输入员工名称');
+      setError(t('createEmployee.nameRequired'));
       return;
     }
     if (!formData.displayName.trim()) {
-      setError('请输入显示名称');
+      setError(t('createEmployee.displayNameRequired'));
       return;
     }
     if (!formData.roleArn.trim()) {
-      setError('请输入 Role ARN 或角色名');
+      setError(t('createEmployee.roleArnRequired'));
       return;
     }
     if (!formData.defaultRule.trim()) {
-      setError('请输入角色定义');
+      setError(t('createEmployee.defaultRuleRequired'));
       return;
     }
 
     // 验证员工名称格式
     if (!/^[a-zA-Z0-9_-]+$/.test(formData.name)) {
-      setError('员工名称只能包含字母、数字、下划线和横线');
+      setError(t('createEmployee.nameFormat'));
       return;
     }
 
@@ -215,7 +217,7 @@ const CreateEmployee = () => {
         try {
           return buildSopKnowledge(config);
         } catch (err) {
-          throw new Error(`知识库 ${index + 1}: ${err.message}`);
+          throw new Error(`${t('createEmployee.knowledgeError')} ${index + 1}: ${err.message}`);
         }
       });
 
@@ -241,31 +243,31 @@ const CreateEmployee = () => {
   const renderStep1 = () => (
     <div className="create-form-section">
       <div className="form-group">
-        <label>员工名称 <span className="required">*</span></label>
+        <label>{t('createEmployee.employeeName')} <span className="required">*</span></label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          placeholder="例如：sop-test01（只能包含字母、数字、下划线、横线）"
+          placeholder={t('createEmployee.employeeNamePlaceholder')}
         />
-        <span className="form-hint">用于系统内部标识，建议以 sop- 开头</span>
+        <span className="form-hint">{t('createEmployee.employeeNameHint')}</span>
       </div>
 
       <div className="form-group">
-        <label>显示名称 <span className="required">*</span></label>
+        <label>{t('createEmployee.displayName')} <span className="required">*</span></label>
         <input
           type="text"
           name="displayName"
           value={formData.displayName}
           onChange={handleInputChange}
-          placeholder="例如：OSS日志分析助手"
+          placeholder={t('createEmployee.displayNamePlaceholder')}
         />
-        <span className="form-hint">用户界面显示的名称</span>
+        <span className="form-hint">{t('createEmployee.displayNameHint')}</span>
       </div>
 
       <div className="form-group">
-        <label>Role ARN <span className="required">*</span></label>
+        <label>{t('createEmployee.roleArn')} <span className="required">*</span></label>
         <div style={{ display: 'flex', alignItems: 'stretch' }}>
           {/* 前缀部分 */}
           <div style={{
@@ -282,11 +284,11 @@ const CreateEmployee = () => {
             whiteSpace: 'nowrap'
           }}>
             {loadingAccountId ? (
-              <span style={{ fontSize: '12px' }}>获取中...</span>
+              <span style={{ fontSize: '12px' }}>{t('createEmployee.loadingAccountId')}</span>
             ) : accountId ? (
               <span>acs:ram::{accountId}:role/</span>
             ) : (
-              <span>acs:ram::&lt;账号ID&gt;:role/</span>
+              <span>acs:ram::&lt;{t('createEmployee.accountIdPrefix')}&gt;:role/</span>
             )}
           </div>
           {/* 输入框部分 */}
@@ -295,7 +297,7 @@ const CreateEmployee = () => {
             name="roleArn"
             value={formData.roleArn}
             onChange={handleInputChange}
-            placeholder="digital-employee-role"
+            placeholder={t('createEmployee.roleArnInputPlaceholder')}
             style={{
               flex: 1,
               borderRadius: '0 4px 4px 0',
@@ -315,27 +317,27 @@ const CreateEmployee = () => {
             color: '#0066cc',
             lineHeight: '1.4'
           }}>
-            <strong style={{ fontSize: '12px' }}>完整 RoleARN：</strong>
+            <strong style={{ fontSize: '12px' }}>{t('createEmployee.fullRoleArn')}</strong>
             <span style={{ marginLeft: '6px', fontFamily: 'monospace', fontSize: '11px', wordBreak: 'break-all' }}>
               {getFullRoleArn()}
             </span>
           </div>
         )}
         <span className="form-hint">
-          只需填写角色名称（如 digital-employee-role），前缀会自动添加
+          {t('createEmployee.roleArnHint')}
         </span>
       </div>
 
       <div className="form-group">
-        <label>角色定义 <span className="required">*</span></label>
+        <label>{t('createEmployee.defaultRule')} <span className="required">*</span></label>
         <textarea
           name="defaultRule"
           value={formData.defaultRule}
           onChange={handleInputChange}
-          placeholder="例如：你是一个专业的 OSS 日志分析工程师，擅长排查日志相关问题..."
+          placeholder={t('createEmployee.defaultRulePlaceholder')}
           rows={4}
         />
-        <span className="form-hint">定义SOP问答助手的角色、专业领域和行为规则</span>
+        <span className="form-hint">{t('createEmployee.defaultRuleHint')}</span>
       </div>
     </div>
   );
@@ -345,76 +347,76 @@ const CreateEmployee = () => {
       {sopConfigs.map((sopConfig, index) => (
         <div key={index} className="mcp-server-form">
           <div className="mcp-server-header">
-            <span>知识库 {index + 1}</span>
+            <span>{t('createEmployee.knowledge')} {index + 1}</span>
             {sopConfigs.length > 1 && (
               <button
                 type="button"
                 className="remove-btn"
                 onClick={() => removeSopConfig(index)}
               >
-                删除
+                {t('createEmployee.deleteKnowledge')}
               </button>
             )}
           </div>
 
           <div className="form-group">
-            <label>知识库类型 <span className="required">*</span></label>
+            <label>{t('createEmployee.knowledgeType')} <span className="required">*</span></label>
             <select
               name="type"
               value={sopConfig.type}
               onChange={(e) => handleSopConfigChange(index, e)}
             >
-              <option value="oss">OSS 对象存储</option>
-              <option value="yunxiao">云效代码库</option>
-              <option value="builtin">内置知识库</option>
+              <option value="oss">{t('createEmployee.ossType')}</option>
+              <option value="yunxiao">{t('createEmployee.yunxiaoType')}</option>
+              <option value="builtin">{t('createEmployee.builtinType')}</option>
             </select>
           </div>
 
           {sopConfig.type === 'oss' && (
             <>
               <div className="form-group">
-                <label>Region <span className="required">*</span></label>
+                <label>{t('createEmployee.regionLabel')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="region"
                   value={sopConfig.region}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="例如: cn-hangzhou"
+                  placeholder={t('createEmployee.regionPlaceholder')}
                   required
                 />
-                <span className="form-hint">OSS 所在区域</span>
+                <span className="form-hint">{t('createEmployee.regionHint')}</span>
               </div>
 
               <div className="form-group">
-                <label>Bucket <span className="required">*</span></label>
+                <label>{t('createEmployee.bucketLabel')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="bucket"
                   value={sopConfig.bucket}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="例如: my-sop-bucket"
+                  placeholder={t('createEmployee.bucketPlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>Base Path <span className="required">*</span></label>
+                <label>{t('createEmployee.basePathLabel')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="basePath"
                   value={sopConfig.basePath}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="例如: /sop/docs/"
+                  placeholder={t('createEmployee.basePathPlaceholder')}
                 />
-                <span className="form-hint">SOP 文档在 Bucket 中的路径前缀</span>
+                <span className="form-hint">{t('createEmployee.basePathHintOss')}</span>
               </div>
 
               <div className="form-group">
-                <label>知识库描述</label>
+                <label>{t('createEmployee.knowledgeDesc')}</label>
                 <textarea
                   name="description"
                   value={sopConfig.description}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="知识库的简要描述"
+                  placeholder={t('createEmployee.knowledgeDescPlaceholder')}
                   rows={2}
                 />
               </div>
@@ -424,68 +426,68 @@ const CreateEmployee = () => {
           {sopConfig.type === 'yunxiao' && (
             <>
               <div className="form-group">
-                <label>组织 ID <span className="required">*</span></label>
+                <label>{t('createEmployee.orgId')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="organizationId"
                   value={sopConfig.organizationId}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="云效组织 ID"
+                  placeholder={t('createEmployee.orgId')}
                 />
               </div>
 
               <div className="form-group">
-                <label>仓库 ID <span className="required">*</span></label>
+                <label>{t('createEmployee.repoId')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="repositoryId"
                   value={sopConfig.repositoryId}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="代码仓库 ID"
+                  placeholder={t('createEmployee.repoId')}
                 />
               </div>
 
               <div className="form-group">
-                <label>分支名称 <span className="required">*</span></label>
+                <label>{t('createEmployee.branchName')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="branchName"
                   value={sopConfig.branchName}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="例如: main"
+                  placeholder={t('createEmployee.branchPlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>Base Path <span className="required">*</span></label>
+                <label>{t('createEmployee.basePathLabel')} <span className="required">*</span></label>
                 <input
                   type="text"
                   name="basePath"
                   value={sopConfig.basePath}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="例如: /sop/docs/"
+                  placeholder={t('createEmployee.basePathPlaceholder')}
                 />
-                <span className="form-hint">SOP 文档在代码仓库中的路径前缀</span>
+                <span className="form-hint">{t('createEmployee.basePathHintYunxiao')}</span>
               </div>
 
               <div className="form-group">
-                <label>访问 Token <span className="required">*</span></label>
+                <label>{t('createEmployee.accessToken')} <span className="required">*</span></label>
                 <input
                   type="password"
                   name="token"
                   value={sopConfig.token}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="云效访问令牌"
+                  placeholder={t('createEmployee.accessToken')}
                 />
               </div>
 
               <div className="form-group">
-                <label>知识库描述</label>
+                <label>{t('createEmployee.knowledgeDesc')}</label>
                 <textarea
                   name="description"
                   value={sopConfig.description}
                   onChange={(e) => handleSopConfigChange(index, e)}
-                  placeholder="知识库的简要描述"
+                  placeholder={t('createEmployee.knowledgeDescPlaceholder')}
                   rows={2}
                 />
               </div>
@@ -494,13 +496,13 @@ const CreateEmployee = () => {
 
           {sopConfig.type === 'builtin' && (
             <div className="form-group">
-              <label>知识库 ID <span className="required">*</span></label>
+              <label>{t('createEmployee.knowledgeId')} <span className="required">*</span></label>
               <input
                 type="text"
                 name="id"
                 value={sopConfig.id}
                 onChange={(e) => handleSopConfigChange(index, e)}
-                placeholder="内置知识库的 ID"
+                placeholder={t('createEmployee.knowledgeId')}
               />
             </div>
           )}
@@ -508,7 +510,7 @@ const CreateEmployee = () => {
       ))}
 
       <button type="button" className="add-btn" onClick={addSopConfig}>
-        + 添加知识库
+        + {t('createEmployee.addKnowledge')}
       </button>
     </div>
   );
@@ -523,9 +525,9 @@ const CreateEmployee = () => {
       <div className="create-app-header">
         <div className="header-left">
           <button onClick={() => navigate('/')} className="back-button">
-            ← 返回
+            ← {t('createEmployee.backButton')}
           </button>
-          <h2>➕ 创建SOP问答助手</h2>
+          <h2>➕ {t('createEmployee.pageTitle')}</h2>
         </div>
       </div>
 
@@ -533,12 +535,12 @@ const CreateEmployee = () => {
         <div className="create-steps">
           <div className={`step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
             <span className="step-number">1</span>
-            <span className="step-label">基本信息</span>
+            <span className="step-label">{t('createEmployee.step1')}</span>
           </div>
           <div className="step-line"></div>
           <div className={`step ${step >= 2 ? 'active' : ''}`}>
             <span className="step-number">2</span>
-            <span className="step-label">SOP 知识库配置</span>
+            <span className="step-label">{t('createEmployee.step2')}</span>
           </div>
         </div>
 
@@ -556,7 +558,7 @@ const CreateEmployee = () => {
                 onClick={() => setStep(step - 1)}
                 disabled={creating}
               >
-                上一步
+                {t('createEmployee.prevStep')}
               </button>
             )}
 
@@ -566,7 +568,7 @@ const CreateEmployee = () => {
                 className="btn-primary"
                 onClick={() => setStep(step + 1)}
               >
-                下一步
+                {t('createEmployee.nextStep')}
               </button>
             ) : (
               <button
@@ -575,7 +577,7 @@ const CreateEmployee = () => {
                 onClick={handleSubmit}
                 disabled={creating}
               >
-                {creating ? '创建中...' : '创建 SOP问答助手'}
+                {creating ? t('createEmployee.creating') : t('createEmployee.createButton')}
               </button>
             )}
           </div>

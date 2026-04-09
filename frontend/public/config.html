@@ -201,28 +201,28 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <header>
   <div class="logo">&#9881;</div>
   <div>
-    <div class="h-title">智能问答助手 配置管理</div>
-    <div class="h-sub">修改配置后点击保存，大部分配置立即生效无需重启</div>
+    <div class="h-title" data-i18n="headerTitle">智能问答助手 配置管理</div>
+    <div class="h-sub" data-i18n="headerSub">修改配置后点击保存，大部分配置立即生效无需重启</div>
   </div>
   <div class="h-right">
     <a class="btn btn-ghost btn-sm" id="login-link" href="/" target="_blank" style="text-decoration:none">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      前台登录
+      <span data-i18n="frontendLogin">前台登录</span>
     </a>
     <button class="btn btn-ghost btn-sm" onclick="loadConfig()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
-      刷新
+      <span data-i18n="refresh">刷新</span>
     </button>
   </div>
 </header>
 
 <!-- ── Tab bar ── -->
 <nav class="tab-bar" id="tab-bar">
-  <button class="tab-btn active" data-tab="global" onclick="switchTab('global')">&#128279; 基础设置</button>
-  <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')">&#128272; 认证与用户</button>
-  <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')">&#129302; Channels（机器人）</button>
-  <button class="tab-btn" data-tab="scheduler" onclick="switchTab('scheduler')">&#9200; 定时任务</button>
-  <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')">&#129504; OpenAI 兼容接口</button>
+  <button class="tab-btn active" data-tab="global" onclick="switchTab('global')" data-i18n="tabGlobal">&#128279; 基础设置</button>
+  <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')" data-i18n="tabAuth">&#128272; 认证与用户</button>
+  <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')" data-i18n="tabChannels">&#129302; Channels（机器人）</button>
+  <button class="tab-btn" data-tab="scheduler" onclick="switchTab('scheduler')" data-i18n="tabScheduler">&#9200; 定时任务</button>
+  <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')" data-i18n="tabOpenai">&#129504; OpenAI 兼容接口</button>
 </nav>
 
 <!-- ── Save bar ── -->
@@ -231,7 +231,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <div class="spacer"></div>
   <button class="btn btn-primary" id="save-btn" onclick="saveConfig()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-    保存并应用
+    <span data-i18n="saveApply">保存并应用</span>
   </button>
 </div>
 
@@ -241,7 +241,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <!-- ── Tab 1: Global ── -->
 <div class="tab-panel active" id="panel-global">
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128279;</span> 阿里云连接</div>
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> <span data-i18n="cardAliyun">阿里云连接</span></div>
     <div class="field-grid">
       <div class="field">
         <label>AccessKeyId <span style="color:var(--red)">*</span></label>
@@ -257,37 +257,37 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         </div>
       </div>
       <div class="field">
-        <label>Endpoint（服务地址）</label>
+        <label data-i18n="labelEndpoint">Endpoint（服务地址）</label>
         <input type="text" id="g-endpoint" placeholder="cms.cn-hangzhou.aliyuncs.com" oninput="onAKFieldChange()">
-        <span class="hint">不填则使用默认地址</span>
+        <span class="hint" data-i18n="hintEndpoint">不填则使用默认地址</span>
       </div>
       <div class="field">
-        <label>默认数字员工产品 Product</label>
+        <label data-i18n="labelDefProduct">默认数字员工产品 Product</label>
         <select id="g-product" onchange="updateGlobalVariableFields()">
           <option value="sls">SLS</option>
           <option value="cms">CMS</option>
         </select>
-        <span class="hint">Channels 机器人未单独配置时使用此默认值</span>
+        <span class="hint" data-i18n="hintDefProduct">Channels 机器人未单独配置时使用此默认值</span>
       </div>
       <div class="field" id="g-project-field">
         <label>Project</label>
-        <input type="text" id="g-project" placeholder="Project(可选)">
-        <span class="hint">SLS 产品对应的 Project</span>
+        <input type="text" id="g-project" data-i18n-placeholder="phProjectOpt" placeholder="Project(可选)">
+        <span class="hint" data-i18n="hintSlsProject">SLS 产品对应的 Project</span>
       </div>
       <div class="field" id="g-region-field" style="display:none">
         <label>Region</label>
         <input type="text" id="g-region" placeholder="">
-        <span class="hint">CMS 产品对应的 Region</span>
+        <span class="hint" data-i18n="hintCmsRegion">CMS 产品对应的 Region</span>
       </div>
       <div class="field" id="g-workspace-field" style="display:none">
         <label>Workspace</label>
         <input type="text" id="g-workspace" placeholder="">
-        <span class="hint">CMS 产品对应的 Workspace</span>
+        <span class="hint" data-i18n="hintCmsWorkspace">CMS 产品对应的 Workspace</span>
       </div>
       <div class="field" id="g-cms-validate-field" style="display:none;grid-column:1/-1">
         <button class="btn btn-secondary" id="test-cms-btn" onclick="testCMS()" style="flex-shrink:0">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          校验 Region / Workspace
+          <span data-i18n="btnValidateWs">校验 Region / Workspace</span>
         </button>
         <div id="test-cms-result" class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
       </div>
@@ -295,40 +295,40 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
       <button class="btn btn-primary" id="test-ak-btn" onclick="testAK()" style="flex-shrink:0">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        测试连接
+        <span data-i18n="btnTestConn">测试连接</span>
       </button>
       <div id="test-ak-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#9881;</span> 服务器设置</div>
+    <div class="card-title"><span class="card-title-icon">&#9881;</span> <span data-i18n="cardServer">服务器设置</span></div>
     <div class="field-grid">
       <div class="field">
-        <label>监听地址 Host</label>
+        <label data-i18n="labelHost">监听地址 Host</label>
         <input type="text" id="g-host" placeholder="0.0.0.0">
-        <span class="hint">留空默认 0.0.0.0，修改后需重启生效</span>
+        <span class="hint" data-i18n="hintHost">留空默认 0.0.0.0，修改后需重启生效</span>
       </div>
       <div class="field">
-        <label>端口 Port</label>
+        <label data-i18n="labelPort">端口 Port</label>
         <input type="number" id="g-port" min="1" max="65535" placeholder="8080">
-        <span class="hint">修改后需重启生效</span>
+        <span class="hint" data-i18n="hintPortRestart">修改后需重启生效</span>
       </div>
       <div class="field">
-        <label>语言 Language</label>
-        <select id="g-lang">
-          <option value="zh">中文 (zh)</option>
-          <option value="en">English (en)</option>
+        <label data-i18n="labelLang">语言 Language</label>
+        <select id="g-lang" onchange="applyI18n()">
+          <option value="zh" data-i18n="langOptZh">中文 (zh)</option>
+          <option value="en" data-i18n="langOptEn">English (en)</option>
         </select>
       </div>
       <div class="field">
-        <label>时区 TimeZone</label>
+        <label data-i18n="labelTz">时区 TimeZone</label>
         <input type="text" id="g-tz" placeholder="Asia/Shanghai">
       </div>
       <div class="field" style="grid-column:1/-1">
         <div class="toggle-row" style="margin-bottom:0">
           <div style="flex:1">
-            <div class="toggle-row-label">Thread 绑定进程生命周期</div>
-            <div class="toggle-row-desc">默认开启。关闭后 thread 可跨进程重启复用</div>
+            <div class="toggle-row-label" data-i18n="toggleThreadBind">Thread 绑定进程生命周期</div>
+            <div class="toggle-row-desc" data-i18n="toggleThreadBindDesc">默认开启。关闭后 thread 可跨进程重启复用</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="g-bind-thread-to-process">
@@ -340,7 +340,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     </div>
   </div>
   <div class="reload-note">
-    <strong>保存后立即生效：</strong>
+    <strong data-i18n="reloadImmediate">保存后立即生效：</strong>
     <span class="badge-hot">accessKeyId</span>
     <span class="badge-hot">accessKeySecret</span>
     <span class="badge-hot">endpoint</span>
@@ -349,7 +349,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <span class="badge-hot">product</span>
     <span class="badge-hot">bindThreadToProcess</span>
     &nbsp;
-    <strong>需重启：</strong>
+    <strong data-i18n="reloadRestart">需重启：</strong>
     <span class="badge-cold">host</span>
     <span class="badge-cold">port</span>
   </div>
@@ -359,81 +359,81 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <div class="tab-panel" id="panel-auth">
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128101;</span> 内置用户
+      <span class="card-title-icon">&#128101;</span> <span data-i18n="cardUsers">内置用户</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addUser()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加用户
+        <span data-i18n="addUser">添加用户</span>
       </button>
     </div>
     <div id="users-list" style="display:flex;flex-direction:column;gap:8px"></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">密码以 MD5 哈希形式存储。修改密码时输入明文，点击"确认"后自动计算哈希（含盐，与下方密码盐保持一致）。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px" data-i18n="hintUserPwd">密码以 MD5 哈希形式存储。修改密码时输入明文，点击"确认"后自动计算哈希（含盐，与下方密码盐保持一致）。</p>
   </div>
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#127959;</span> 角色与权限
+      <span class="card-title-icon">&#127959;</span> <span data-i18n="cardRoles">角色与权限</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addRole()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加角色
+        <span data-i18n="addRole">添加角色</span>
       </button>
     </div>
     <div id="roles-list" style="display:flex;flex-direction:column;gap:8px"></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">在角色输入框中输入用户名后按回车添加。系统内置 <span class="badge-cold">admin</span> 角色用于管理员权限。可为角色配置可见的数字员工；只要用户命中的任一角色配置了 employees，就会进入限制模式（按所有已配置角色的并集生效）。若用户不属于任何角色，默认可见所有员工。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px"><span data-i18n="hintRoles1">在角色输入框中输入用户名后按回车添加。系统内置 </span><span class="badge-cold">admin</span><span data-i18n="hintRoles2"> 角色用于管理员权限。可为角色配置可见的数字员工；只要用户命中的任一角色配置了 employees，就会进入限制模式（按所有已配置角色的并集生效）。若用户不属于任何角色，默认可见所有员工。</span></p>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128272;</span> 鉴权链</div>
+    <div class="card-title"><span class="card-title-icon">&#128272;</span> <span data-i18n="cardAuthChain">鉴权链</span></div>
     <div class="list-section">
       <div class="methods-add-row">
         <select id="method-select">
-          <option value="">选择认证方式...</option>
-          <option value="builtin">builtin（内置账号）</option>
-          <option value="ldap">ldap（LDAP）</option>
-          <option value="oidc">oidc（OpenID Connect）</option>
+          <option value="" data-i18n="methodSelectPlaceholder">选择认证方式...</option>
+          <option value="builtin" data-i18n="methodOptBuiltin">builtin（内置账号）</option>
+          <option value="ldap" data-i18n="methodOptLdap">ldap（LDAP）</option>
+          <option value="oidc" data-i18n="methodOptOidc">oidc（OpenID Connect）</option>
         </select>
         <button class="btn btn-ghost btn-sm" onclick="addMethod()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          添加
+          <span data-i18n="add">添加</span>
         </button>
       </div>
       <div id="methods-list" style="display:flex;flex-direction:column;gap:6px"></div>
-      <p style="font-size:11px;color:var(--text3);margin-top:4px">列表顺序即尝试顺序。<strong style="color:var(--text2)">列表为空时登录关闭</strong>，所有受保护接口均返回 503。</p>
+      <p style="font-size:11px;color:var(--text3);margin-top:4px"><span data-i18n="hintAuthChainPart1">列表顺序即尝试顺序。</span><strong style="color:var(--text2)" data-i18n="hintAuthChainStrong">列表为空时登录关闭</strong><span data-i18n="hintAuthChainPart2">，所有受保护接口均返回 503。</span></p>
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128273;</span> JWT 认证设置</div>
+    <div class="card-title"><span class="card-title-icon">&#128273;</span> <span data-i18n="cardJwt">JWT 认证设置</span></div>
     <div class="field-grid">
       <div class="field">
-        <label>JWT 密钥 <span style="color:var(--red)">*</span></label>
+        <label><span data-i18n="labelJwtKey">JWT 密钥</span> <span style="color:var(--red)">*</span></label>
         <div class="input-wrap">
-          <input type="password" id="a-jwt-key" autocomplete="new-password" placeholder="请设置一个随机密钥">
+          <input type="password" id="a-jwt-key" autocomplete="new-password" data-i18n-placeholder="phJwtKey" placeholder="请设置一个随机密钥">
           <button class="eye-btn" onclick="toggleEye('a-jwt-key',this)" tabindex="-1">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
       </div>
       <div class="field">
-        <label>Token 有效期</label>
+        <label data-i18n="labelJwtExp">Token 有效期</label>
         <input type="text" id="a-jwt-exp" placeholder="24h">
-        <span class="hint">支持 24h、1h30m、7d 等格式</span>
+        <span class="hint" data-i18n="hintJwtExp">支持 24h、1h30m、7d 等格式</span>
       </div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128274;</span> 内置账号密码盐</div>
+    <div class="card-title"><span class="card-title-icon">&#128274;</span> <span data-i18n="cardSalt">内置账号密码盐</span></div>
     <div class="field">
-      <label>密码盐 PasswordSalt</label>
+      <label data-i18n="labelSalt">密码盐 PasswordSalt</label>
       <div class="input-wrap">
         <input type="password" id="a-salt" autocomplete="new-password" placeholder="sop">
         <button class="eye-btn" onclick="toggleEye('a-salt',this)" tabindex="-1">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-      <span class="hint">设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)</span>
+      <span class="hint" data-i18n="hintSalt">设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)</span>
     </div>
   </div>
   <div class="card" id="ldap-config-card" style="display:none">
-    <div class="card-title"><span class="card-title-icon">&#128272;</span> LDAP 配置</div>
+    <div class="card-title"><span class="card-title-icon">&#128272;</span> <span data-i18n="cardLdap">LDAP 配置</span></div>
     <div class="field-grid">
       <div class="field">
         <label>LDAP Host <span style="color:var(--red)">*</span></label>
@@ -442,12 +442,12 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       <div class="field">
         <label>Port</label>
         <input type="number" id="a-ldap-port" placeholder="389">
-        <span class="hint">不填时默认：LDAP 389，LDAPS 636</span>
+        <span class="hint" data-i18n="hintLdapPort">不填时默认：LDAP 389，LDAPS 636</span>
       </div>
       <div class="field">
         <label>Use TLS (LDAPS)</label>
         <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-weight:500">
-          <input type="checkbox" id="a-ldap-use-tls"> 启用
+          <input type="checkbox" id="a-ldap-use-tls"> <span data-i18n="ldapEnable">启用</span>
         </label>
       </div>
       <div class="field field-full">
@@ -455,11 +455,11 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <input type="text" id="a-ldap-base-dn" placeholder="ou=people,dc=example,dc=com">
       </div>
       <div class="field field-full">
-        <label>Bind DN（可选）</label>
+        <label data-i18n="labelLdapBindDnOpt">Bind DN（可选）</label>
         <input type="text" id="a-ldap-bind-dn" placeholder="cn=readonly,dc=example,dc=com">
       </div>
       <div class="field field-full">
-        <label>Bind Password（可选）</label>
+        <label data-i18n="labelLdapBindPwdOpt">Bind Password（可选）</label>
         <div class="input-wrap">
           <input type="password" id="a-ldap-bind-password" placeholder="bind password" autocomplete="new-password">
           <button class="eye-btn" onclick="toggleEye('a-ldap-bind-password',this)" tabindex="-1">
@@ -470,7 +470,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       <div class="field">
         <label>User Filter</label>
         <input type="text" id="a-ldap-user-filter" placeholder="(uid={username})">
-        <span class="hint">支持占位符 {username}</span>
+        <span class="hint" data-i18n="hintLdapUserFilter">支持占位符 {username}</span>
       </div>
       <div class="field">
         <label>Username Attr</label>
@@ -485,36 +485,36 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         <input type="text" id="a-ldap-email-attr" placeholder="mail">
       </div>
       <div class="field field-full">
-        <label>组角色映射（Group → Role）</label>
+        <label data-i18n="labelLdapGroupMap">组角色映射（Group → Role）</label>
         <div id="ldap-group-role-list"></div>
         <button class="btn btn-ghost btn-sm" onclick="addLDAPGroupRoleRow('','')" style="margin-top:6px">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          添加映射
+          <span data-i18n="addLdapMapping">添加映射</span>
         </button>
-        <span class="hint">按用户的 memberOf 进行匹配，左侧填 LDAP 组 DN，右侧填系统角色名</span>
+        <span class="hint" data-i18n="hintLdapGroupMap">按用户的 memberOf 进行匹配，左侧填 LDAP 组 DN，右侧填系统角色名</span>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">仅在鉴权链包含 ldap 时生效。LDAP 用户角色通过上方「角色与权限」映射。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px" data-i18n="ldapFooter">仅在鉴权链包含 ldap 时生效。LDAP 用户角色通过上方「角色与权限」映射。</p>
     <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <button class="btn btn-ghost" id="test-ldap-btn" onclick="testLDAP()" style="flex-shrink:0">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        测试 LDAP 连接
+        <span data-i18n="testLdapConn">测试 LDAP 连接</span>
       </button>
       <div id="test-ldap-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="card" id="oidc-config-card" style="display:none">
-    <div class="card-title"><span class="card-title-icon">&#128279;</span> OIDC / OpenID Connect 配置</div>
+    <div class="card-title"><span class="card-title-icon">&#128279;</span> <span data-i18n="cardOidc">OIDC / OpenID Connect 配置</span></div>
     <div class="field-grid">
       <div class="field">
-        <label>显示名称 <span style="color:var(--red)">*</span></label>
-        <input type="text" id="a-oidc-display-name" placeholder="如 Keycloak、企业SSO" value="OIDC 登录">
-        <span class="hint">登录页按钮显示的文字，默认 OIDC 登录</span>
+        <label><span data-i18n="labelOidcDisplay">显示名称</span> <span style="color:var(--red)">*</span></label>
+        <input type="text" id="a-oidc-display-name" data-i18n-placeholder="phOidcDisplay" placeholder="如 Keycloak、企业SSO">
+        <span class="hint" data-i18n="hintOidcDisplay">登录页按钮显示的文字，默认 OIDC 登录</span>
       </div>
       <div class="field field-full">
-        <label>Issuer URL <span style="color:var(--red)">*</span></label>
+        <label><span data-i18n="labelOidcIssuer">Issuer URL</span> <span style="color:var(--red)">*</span></label>
         <input type="text" id="a-oidc-issuer" placeholder="https://accounts.example.com">
-        <span class="hint">OIDC Provider 地址，如 Keycloak、Dex、Okta、Azure AD 等</span>
+        <span class="hint" data-i18n="hintOidcIssuer">OIDC Provider 地址，如 Keycloak、Dex、Okta、Azure AD 等</span>
       </div>
       <div class="field">
         <label>Client ID <span style="color:var(--red)">*</span></label>
@@ -530,50 +530,50 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
         </div>
       </div>
       <div class="field field-full">
-        <label>Redirect URL（回调地址）</label>
+        <label data-i18n="labelOidcRedirect">Redirect URL（回调地址）</label>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="text" id="a-oidc-base-url" placeholder="https://your-domain.com" style="flex:1" oninput="updateOIDCRedirectDisplay()">
           <code style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);white-space:nowrap">/api/auth/oidc/callback</code>
-          <button class="btn btn-ghost btn-sm" onclick="copyOIDCRedirect()" title="复制">
+          <button class="btn btn-ghost btn-sm" onclick="copyOIDCRedirect()" data-i18n-title="copy" title="复制">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            复制
+            <span data-i18n="copy">复制</span>
           </button>
         </div>
-        <span class="hint">请填写服务的外部访问域名（含协议），回调路径固定为 /api/auth/oidc/callback，完整地址需填入 OIDC Provider 的回调 URL 配置中</span>
+        <span class="hint" data-i18n="hintOidcRedirect">请填写服务的外部访问域名（含协议），回调路径固定为 /api/auth/oidc/callback，完整地址需填入 OIDC Provider 的回调 URL 配置中</span>
         <input type="hidden" id="a-oidc-redirect">
       </div>
       <div class="field">
-        <label>Scopes</label>
+        <label data-i18n="labelScopes">Scopes</label>
         <input type="text" id="a-oidc-scopes" placeholder="openid profile email">
-        <span class="hint">空格分隔，默认 openid profile email</span>
+        <span class="hint" data-i18n="hintScopes">空格分隔，默认 openid profile email</span>
       </div>
       <div class="field">
-        <label>Username Claim</label>
+        <label data-i18n="labelUsernameClaim">Username Claim</label>
         <input type="text" id="a-oidc-username-claim" placeholder="preferred_username">
-        <span class="hint">从 ID Token 中提取用户名的 claim，默认 preferred_username</span>
+        <span class="hint" data-i18n="hintUsernameClaim">从 ID Token 中提取用户名的 claim，默认 preferred_username</span>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">OIDC 用户的角色通过上方「角色与权限」配置映射，将 OIDC 用户名添加到对应角色即可。</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px" data-i18n="oidcFooter">OIDC 用户的角色通过上方「角色与权限」配置映射，将 OIDC 用户名添加到对应角色即可。</p>
     <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <button class="btn btn-ghost" id="test-oidc-btn" onclick="testOIDC()" style="flex-shrink:0">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        测试 OIDC 连接
+        <span data-i18n="testOidcConn">测试 OIDC 连接</span>
       </button>
       <div id="test-oidc-result" style="display:none;flex:1;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>
     </div>
   </div>
   <div class="reload-note">
-    <strong>保存后立即生效：</strong>
+    <strong data-i18n="authReloadImmediate">保存后立即生效：</strong>
     <span class="badge-hot">methods</span>
     <span class="badge-hot">passwordSalt</span>
-    <span class="badge-hot">用户列表</span>
-    <span class="badge-hot">密码</span>
-    <span class="badge-hot">角色分配</span>
+    <span class="badge-hot" data-i18n="badgeUserList">用户列表</span>
+    <span class="badge-hot" data-i18n="badgePassword">密码</span>
+    <span class="badge-hot" data-i18n="badgeRoleAssign">角色分配</span>
     &nbsp;
-    <strong>需重启：</strong>
+    <strong data-i18n="authReloadRestart">需重启：</strong>
     <span class="badge-cold">jwtSecretKey</span>
     <span class="badge-cold">jwtExpiresIn</span>
-    &nbsp;（修改密钥后，已登录 Token 仍有效至过期）
+    <span data-i18n="authReloadNote">&nbsp;（修改密钥后，已登录 Token 仍有效至过期）</span>
   </div>
 </div>
 
@@ -583,20 +583,20 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── DingTalk ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#129302;</span> 钉钉机器人
+      <span class="card-title-icon">&#129302;</span> <span data-i18n="cardDtBots">钉钉机器人</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addDingTalkBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加钉钉机器人
+        <span data-i18n="addDtBot">添加钉钉机器人</span>
       </button>
     </div>
     <div id="dt-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
     <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
-      <div style="font-weight:600;margin-bottom:4px">如何获取 AppKey / AppSecret？</div>
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="dtHelpTitle">如何获取 AppKey / AppSecret？</div>
       <ol style="padding-left:18px;margin:0;color:#2b6cb0">
-        <li>前往 <a href="https://open-dev.dingtalk.com/" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">钉钉开发者后台</a>，在开发者后台，在一键自动创建OpenClaw机器人处点击立即创建。</li>
-        <li>平台已自动预设OpenClaw机器人信息，可根据业务需要修改配置后，单击确定进行创建。</li>
-        <li>在创建成功后，复制并保存应用的Client ID和Client Secret。</li>
+        <li><span data-i18n="dtHelpLi1a">前往</span> <a href="https://open-dev.dingtalk.com/" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600" data-i18n="dtHelpLink">钉钉开发者后台</a><span data-i18n="dtHelpLi1b">，在开发者后台，在一键自动创建OpenClaw机器人处点击立即创建。</span></li>
+        <li data-i18n="dtHelpLi2">平台已自动预设OpenClaw机器人信息，可根据业务需要修改配置后，单击确定进行创建。</li>
+        <li data-i18n="dtHelpLi3">在创建成功后，复制并保存应用的Client ID和Client Secret。</li>
       </ol>
     </div>
   </div>
@@ -604,20 +604,20 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── Feishu ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128640;</span> 飞书机器人
+      <span class="card-title-icon">&#128640;</span> <span data-i18n="cardFsBots">飞书机器人</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addFeishuBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加飞书机器人
+        <span data-i18n="addFsBot">添加飞书机器人</span>
       </button>
     </div>
     <div id="feishu-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
     <div style="margin-top:10px;padding:12px 14px;background:#f0fff4;border:1px solid rgba(39,103,73,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#276749">
-      <div style="font-weight:600;margin-bottom:4px">如何获取飞书 App ID / App Secret？</div>
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="fsHelpTitle">如何获取飞书 App ID / App Secret？</div>
       <ol style="padding-left:18px;margin:0;color:#2f855a">
-        <li>前往 <a href="https://open.feishu.cn/" target="_blank" rel="noopener" style="color:#2f855a;font-weight:600">飞书开放平台</a>，创建企业自建应用</li>
-        <li>开启「机器人」能力；在「事件订阅」页选择<strong>长连接（WebSocket）</strong>模式，添加 <code>im.message.receive_v1</code> 事件</li>
-        <li>在凭证页复制 <strong>App ID</strong> 和 <strong>App Secret</strong>；WebSocket 模式无需公网 IP</li>
+        <li><span data-i18n="fsHelpLi1a">前往</span> <a href="https://open.feishu.cn/" target="_blank" rel="noopener" style="color:#2f855a;font-weight:600" data-i18n="fsHelpLink">飞书开放平台</a><span data-i18n="fsHelpLi1b">，创建企业自建应用</span></li>
+        <li><span data-i18n="fsHelpLi2a">开启「机器人」能力；在「事件订阅」页选择</span><strong data-i18n="fsHelpLi2Strong">长连接（WebSocket）</strong><span data-i18n="fsHelpLi2b">模式，添加 </span><code>im.message.receive_v1</code><span data-i18n="fsHelpLi2c"> 事件</span></li>
+        <li><span data-i18n="fsHelpLi3a">在凭证页复制 </span><strong data-i18n="fsHelpLi3Strong1">App ID</strong><span data-i18n="fsHelpLi3mid"> 和 </span><strong data-i18n="fsHelpLi3Strong2">App Secret</strong><span data-i18n="fsHelpLi3b">；WebSocket 模式无需公网 IP</span></li>
       </ol>
     </div>
   </div>
@@ -625,21 +625,21 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── WeCom Bot (群聊机器人) ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#129302;</span> 企业微信机器人
+      <span class="card-title-icon">&#129302;</span> <span data-i18n="cardWecomGroup">企业微信机器人</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWeComGroupBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加企业微信机器人
+        <span data-i18n="addWecomGroupBot">添加企业微信机器人</span>
       </button>
     </div>
     <div id="wecom-group-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
     <div style="margin-top:10px;padding:12px 14px;background:#ebf8ff;border:1px solid rgba(43,108,176,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#2c5282">
-      <div style="font-weight:600;margin-bottom:4px">如何获取群聊机器人凭据？</div>
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="wcgHelpTitle">如何获取群聊机器人凭据？</div>
       <ol style="padding-left:18px;margin:0;color:#2b6cb0">
-        <li>前往 <a href="https://work.weixin.qq.com/wework_admin/frame#/smartBot" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">企业微信管理后台 → 管理工具 -> 智能机器人</a> 页面</li>
-        <li>点击 <a href="https://work.weixin.qq.com/wework_admin/frame#/aiHelper/create" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600">创建 智能机器人，选择“API模式”，而非普通模式（默认）</a>，或选择已有的群机器人</li>
-        <li>在机器人详情页复制 <strong>机器人 ID（BotID）</strong> 和 <strong>机器人 Secret（BotSecret）</strong></li>
-        <li>机器人通过 WebSocket 长连接接入，无需公网 IP</li>
+        <li><span data-i18n="wcgHelpLi1a">前往</span> <a href="https://work.weixin.qq.com/wework_admin/frame#/smartBot" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600" data-i18n="wcgHelpLink">企业微信管理后台 → 管理工具 -> 智能机器人</a><span data-i18n="wcgHelpLi1b"> 页面</span></li>
+        <li><span data-i18n="wcgHelpLi2a">点击</span> <a href="https://work.weixin.qq.com/wework_admin/frame#/aiHelper/create" target="_blank" rel="noopener" style="color:#2b6cb0;font-weight:600" data-i18n="wcgHelpLink2">创建 智能机器人，选择“API模式”，而非普通模式（默认）</a><span data-i18n="wcgHelpLi2b">，或选择已有的群机器人</span></li>
+        <li><span data-i18n="wcgHelpLi3a">在机器人详情页复制 </span><strong data-i18n="wcgHelpLi3Strong1">机器人 ID（BotID）</strong><span data-i18n="wcgHelpLi3mid"> 和 </span><strong data-i18n="wcgHelpLi3Strong2">机器人 Secret（BotSecret）</strong></li>
+        <li data-i18n="wcgHelpLi4">机器人通过 WebSocket 长连接接入，无需公网 IP</li>
       </ol>
     </div>
   </div>
@@ -647,27 +647,27 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── WeCom App ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128172;</span> 企业微信应用
+      <span class="card-title-icon">&#128172;</span> <span data-i18n="cardWecomApp">企业微信应用</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWeComBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加企业微信应用
+        <span data-i18n="addWecomApp">添加企业微信应用</span>
       </button>
     </div>
     <div id="wecom-bots-list" style="display:flex;flex-direction:column;gap:12px"></div>
     <div style="margin-top:10px;padding:12px 14px;background:#fff5f5;border:1px solid rgba(197,48,48,.2);border-radius:8px;font-size:12px;line-height:1.8;color:#742a2a">
-      <div style="font-weight:600;margin-bottom:4px">如何配置企业微信回调？</div>
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="wcAppHelpTitle">如何配置企业微信回调？</div>
       <ol style="padding-left:18px;margin:0;color:#9b2c2c">
-        <li>前往 <a href="https://work.weixin.qq.com/wework_admin" target="_blank" rel="noopener" style="color:#9b2c2c;font-weight:600">企业微信管理后台</a>，创建自建应用</li>
-        <li>在应用详情页获取 <strong>企业ID（CorpID）</strong>、<strong>AgentID</strong>、<strong>Secret</strong></li>
-        <li>在「接收消息」中设置回调 URL（需公网 IP），填写自定义 <strong>Token</strong> 和 <strong>EncodingAESKey</strong></li>
-        <li>回调路径默认为 <code>/wecom/callback</code>，与本服务部署在同一端口</li>
+        <li><span data-i18n="wcAppHelpLi1a">前往</span> <a href="https://work.weixin.qq.com/wework_admin" target="_blank" rel="noopener" style="color:#9b2c2c;font-weight:600" data-i18n="wcAppHelpLink">企业微信管理后台</a><span data-i18n="wcAppHelpLi1b">，创建自建应用</span></li>
+        <li><span data-i18n="wcAppHelpLi2a">在应用详情页获取 </span><strong data-i18n="wcAppHelpS1">企业ID（CorpID）</strong><span data-i18n="wcAppHelpMid1">、</span><strong data-i18n="wcAppHelpS2">AgentID</strong><span data-i18n="wcAppHelpMid2">、</span><strong data-i18n="wcAppHelpS3">Secret</strong></li>
+        <li><span data-i18n="wcAppHelpLi3a">在「接收消息」中设置回调 URL（需公网 IP），填写自定义 </span><strong data-i18n="wcAppHelpTok">Token</strong><span data-i18n="wcAppHelpMidTok"> 和 </span><strong data-i18n="wcAppHelpAes">EncodingAESKey</strong></li>
+        <li><span data-i18n="wcAppHelpLi4a">回调路径默认为 </span><code>/wecom/callback</code><span data-i18n="wcAppHelpLi4b">，与本服务部署在同一端口</span></li>
       </ol>
     </div>
   </div>
 
   <div class="reload-note">
-    <strong>保存后立即生效：</strong>
+    <strong data-i18n="channelsReload">保存后立即生效：</strong>
     <span class="badge-hot">channels.*</span>
   </div>
 </div>
@@ -677,8 +677,8 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <div class="card">
     <div class="toggle-row">
       <div>
-        <div class="toggle-row-label">启用 API Key 鉴权</div>
-        <div class="toggle-row-desc">未启用时，/openai/v1/... 接口无需鉴权即可访问</div>
+        <div class="toggle-row-label" data-i18n="openaiEnableAuth">启用 API Key 鉴权</div>
+        <div class="toggle-row-desc" data-i18n="openaiEnableDesc">未启用时，/openai/v1/... 接口无需鉴权即可访问</div>
       </div>
       <label class="toggle">
         <input type="checkbox" id="openai-enabled" onchange="onOpenAIToggle()">
@@ -687,27 +687,27 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
       </label>
     </div>
     <div class="list-header">
-      <span class="list-label">API 密钥列表</span>
+      <span class="list-label" data-i18n="openaiKeyList">API 密钥列表</span>
       <button class="btn btn-ghost btn-sm" id="openai-add-btn" onclick="addApiKey()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加密钥
+        <span data-i18n="addApiKey">添加密钥</span>
       </button>
     </div>
     <div id="apikeys-list" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px">客户端通过 <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">Authorization: Bearer &lt;key&gt;</code> 方式认证</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px"><span data-i18n="openaiAuthHintA">客户端通过 </span><code style="background:var(--surface2);padding:1px 5px;border-radius:4px">Authorization: Bearer &lt;key&gt;</code><span data-i18n="openaiAuthHintB"> 方式认证</span></p>
     <div id="openai-endpoint-box" style="display:none;margin-top:14px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 14px">
-      <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">接口 Base URL（填入兼容客户端）</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px" data-i18n="openaiBaseUrlLabel">接口 Base URL（填入兼容客户端）</div>
       <div style="display:flex;align-items:center;gap:8px">
         <code id="openai-base-url" style="flex:1;font-size:12px;font-family:'SF Mono','Fira Code',monospace;color:var(--accent2);word-break:break-all"></code>
-        <button class="btn btn-ghost btn-sm" onclick="copyBaseUrl()" id="openai-copy-btn" title="复制">
+        <button class="btn btn-ghost btn-sm" onclick="copyBaseUrl()" id="openai-copy-btn" data-i18n-title="copy" title="复制">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          复制
+          <span data-i18n="copy">复制</span>
         </button>
       </div>
     </div>
   </div>
   <div class="reload-note">
-    <strong>保存后立即生效：</strong>
+    <strong data-i18n="openaiReload">保存后立即生效：</strong>
     <span class="badge-hot">openai.apiKeys</span>
   </div>
 </div>
@@ -717,27 +717,27 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <div class="tab-panel" id="panel-scheduler">
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#9200;</span> 定时任务
+      <span class="card-title-icon">&#9200;</span> <span data-i18n="cardScheduler">定时任务</span>
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addScheduledTask()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加定时任务
+        <span data-i18n="addScheduledTask">添加定时任务</span>
       </button>
     </div>
     <div id="tasks-list" style="display:flex;flex-direction:column;gap:12px"></div>
     <div style="margin-top:10px;padding:12px 14px;background:#faf5ff;border:1px solid rgba(128,90,213,.22);border-radius:8px;font-size:12px;line-height:1.9;color:#44337a">
-      <div style="font-weight:600;margin-bottom:4px">定时任务使用说明</div>
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="schedHelpTitle">定时任务使用说明</div>
       <ul style="padding-left:18px;margin:0;color:#553c9a">
-        <li>Cron 格式采用标准 5 字段：<code style="background:rgba(128,90,213,.1);padding:1px 5px;border-radius:3px">分 时 日 月 周</code>，时区取全局配置的 TimeZone</li>
-        <li>每次触发时向数字员工发送 Prompt，完整回复将推送到指定 Webhook</li>
-        <li>Webhook 类型支持 <strong>dingtalk</strong>（钉钉）、<strong>feishu</strong>（飞书）、<strong>wecom</strong>（企业微信群机器人）</li>
-        <li>消息类型：<strong>text</strong> = 纯文本，<strong>markdown</strong> = Markdown 格式（钉钉/企业微信），<strong>post</strong> = 富文本（飞书）</li>
-        <li>修改后保存配置即立即热重载，无需重启服务</li>
+        <li><span data-i18n="schedHelpLi1a">Cron 格式采用标准 5 字段：</span><code style="background:rgba(128,90,213,.1);padding:1px 5px;border-radius:3px" data-i18n="schedCronFields">分 时 日 月 周</code><span data-i18n="schedHelpLi1b">，时区取全局配置的 TimeZone</span></li>
+        <li data-i18n="schedHelpLi2">每次触发时向数字员工发送 Prompt，完整回复将推送到指定 Webhook</li>
+        <li data-i18n="schedHelpLi3">Webhook 类型支持 dingtalk（钉钉）、feishu（飞书）、wecom（企业微信群机器人）</li>
+        <li data-i18n="schedHelpLi4">消息类型：text = 纯文本，markdown = Markdown 格式（钉钉/企业微信），post = 富文本（飞书）</li>
+        <li data-i18n="schedHelpLi5">修改后保存配置即立即热重载，无需重启服务</li>
       </ul>
     </div>
   </div>
   <div class="reload-note">
-    <strong>保存后立即生效：</strong>
+    <strong data-i18n="schedReload">保存后立即生效：</strong>
     <span class="badge-hot">scheduledTasks.*</span>
   </div>
 </div>
@@ -751,6 +751,767 @@ function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,
 // ─────────────────────────────────────────────────────────────────────────────
 
 const token = new URLSearchParams(window.location.search).get('token') || '';
+let currentLang = 'zh';
+
+const I18N = {
+  zh: {
+    pageTitle: '智能问答助手 · 配置管理',
+    headerTitle: '智能问答助手 配置管理',
+    headerSub: '修改配置后点击保存，大部分配置立即生效无需重启',
+    frontendLogin: '前台登录',
+    refresh: '刷新',
+    tabGlobal: '🔗 基础设置',
+    tabAuth: '🔒 认证与用户',
+    tabChannels: '🤖 Channels（机器人）',
+    tabScheduler: '⏰ 定时任务',
+    tabOpenai: '🧠 OpenAI 兼容接口',
+    saveApply: '保存并应用',
+    cardAliyun: '阿里云连接',
+    labelEndpoint: 'Endpoint（服务地址）',
+    hintEndpoint: '不填则使用默认地址',
+    labelDefProduct: '默认数字员工产品 Product',
+    hintDefProduct: 'Channels 机器人未单独配置时使用此默认值',
+    phProjectOpt: 'Project(可选)',
+    hintSlsProject: 'SLS 产品对应的 Project',
+    hintCmsRegion: 'CMS 产品对应的 Region',
+    hintCmsWorkspace: 'CMS 产品对应的 Workspace',
+    btnValidateWs: '校验 Region / Workspace',
+    btnTestConn: '测试连接',
+    cardServer: '服务器设置',
+    labelHost: '监听地址 Host',
+    labelPort: '端口 Port',
+    labelLang: '语言 Language',
+    labelTz: '时区 TimeZone',
+    hintHost: '留空默认 0.0.0.0，修改后需重启生效',
+    hintPortRestart: '修改后需重启生效',
+    toggleThreadBind: 'Thread 绑定进程生命周期',
+    toggleThreadBindDesc: '默认开启。关闭后 thread 可跨进程重启复用',
+    reloadImmediate: '保存后立即生效：',
+    reloadRestart: '需重启：',
+    cardUsers: '内置用户',
+    addUser: '添加用户',
+    hintUserPwd: '密码以 MD5 哈希形式存储。修改密码时输入明文，点击「确认」后自动计算哈希（含盐，与下方密码盐保持一致）。',
+    cardRoles: '角色与权限',
+    addRole: '添加角色',
+    hintRoles1: '在角色输入框中输入用户名后按回车添加。系统内置 ',
+    hintRoles2: ' 角色用于管理员权限。可为角色配置可见的数字员工；只要用户命中的任一角色配置了 employees，就会进入限制模式（按所有已配置角色的并集生效）。若用户不属于任何角色，默认可见所有员工。',
+    cardAuthChain: '鉴权链',
+    methodSelectPlaceholder: '选择认证方式...',
+    methodOptBuiltin: 'builtin（内置账号）',
+    methodOptLdap: 'ldap（LDAP）',
+    methodOptOidc: 'oidc（OpenID Connect）',
+    add: '添加',
+    hintAuthChainPart1: '列表顺序即尝试顺序。',
+    hintAuthChainStrong: '列表为空时登录关闭',
+    hintAuthChainPart2: '，所有受保护接口均返回 503。',
+    cardJwt: 'JWT 认证设置',
+    labelJwtKey: 'JWT 密钥',
+    phJwtKey: '请设置一个随机密钥',
+    labelJwtExp: 'Token 有效期',
+    hintJwtExp: '支持 24h、1h30m、7d 等格式',
+    cardSalt: '内置账号密码盐',
+    labelSalt: '密码盐 PasswordSalt',
+    hintSalt: '设置后，内置账号密码哈希规则为 MD5(salt + 明文密码)；留空则 MD5(明文密码)',
+    cardLdap: 'LDAP 配置',
+    hintLdapPort: '不填时默认：LDAP 389，LDAPS 636',
+    ldapEnable: '启用',
+    labelLdapBindDnOpt: 'Bind DN（可选）',
+    labelLdapBindPwdOpt: 'Bind Password（可选）',
+    hintLdapUserFilter: '支持占位符 {username}',
+    labelLdapGroupMap: '组角色映射（Group → Role）',
+    addLdapMapping: '添加映射',
+    hintLdapGroupMap: '按用户的 memberOf 进行匹配，左侧填 LDAP 组 DN，右侧填系统角色名',
+    ldapFooter: '仅在鉴权链包含 ldap 时生效。LDAP 用户角色通过上方「角色与权限」映射。',
+    testLdapConn: '测试 LDAP 连接',
+    cardOidc: 'OIDC / OpenID Connect 配置',
+    labelOidcDisplay: '显示名称',
+    phOidcDisplay: '如 Keycloak、企业SSO',
+    hintOidcDisplay: '登录页按钮显示的文字，默认 OIDC 登录',
+    labelOidcIssuer: 'Issuer URL',
+    hintOidcIssuer: 'OIDC Provider 地址，如 Keycloak、Dex、Okta、Azure AD 等',
+    labelOidcRedirect: 'Redirect URL（回调地址）',
+    copy: '复制',
+    hintOidcRedirect: '请填写服务的外部访问域名（含协议），回调路径固定为 /api/auth/oidc/callback，完整地址需填入 OIDC Provider 的回调 URL 配置中',
+    labelScopes: 'Scopes',
+    hintScopes: '空格分隔，默认 openid profile email',
+    labelUsernameClaim: 'Username Claim',
+    hintUsernameClaim: '从 ID Token 中提取用户名的 claim，默认 preferred_username',
+    oidcFooter: 'OIDC 用户的角色通过上方「角色与权限」配置映射，将 OIDC 用户名添加到对应角色即可。',
+    testOidcConn: '测试 OIDC 连接',
+    authReloadImmediate: '保存后立即生效：',
+    authReloadRestart: '需重启：',
+    authReloadNote: '（修改密钥后，已登录 Token 仍有效至过期）',
+    badgeUserList: '用户列表',
+    badgePassword: '密码',
+    badgeRoleAssign: '角色分配',
+    cardDtBots: '钉钉机器人',
+    addDtBot: '添加钉钉机器人',
+    dtHelpTitle: '如何获取 AppKey / AppSecret？',
+    dtHelpLi1a: '前往',
+    dtHelpLink: '钉钉开发者后台',
+    dtHelpLi1b: '，在开发者后台，在一键自动创建OpenClaw机器人处点击立即创建。',
+    dtHelpLi2: '平台已自动预设OpenClaw机器人信息，可根据业务需要修改配置后，单击确定进行创建。',
+    dtHelpLi3: '在创建成功后，复制并保存应用的Client ID和Client Secret。',
+    cardFsBots: '飞书机器人',
+    addFsBot: '添加飞书机器人',
+    fsHelpTitle: '如何获取飞书 App ID / App Secret？',
+    fsHelpLi1a: '前往',
+    fsHelpLink: '飞书开放平台',
+    fsHelpLi1b: '，创建企业自建应用',
+    fsHelpLi2a: '开启「机器人」能力；在「事件订阅」页选择',
+    fsHelpLi2Strong: '长连接（WebSocket）',
+    fsHelpLi2b: '模式，添加 ',
+    fsHelpLi2c: ' 事件',
+    fsHelpLi3a: '在凭证页复制 ',
+    fsHelpLi3Strong1: 'App ID',
+    fsHelpLi3mid: ' 和 ',
+    fsHelpLi3Strong2: 'App Secret',
+    fsHelpLi3b: '；WebSocket 模式无需公网 IP',
+    cardWecomGroup: '企业微信机器人',
+    addWecomGroupBot: '添加企业微信机器人',
+    wcgHelpTitle: '如何获取群聊机器人凭据？',
+    wcgHelpLi1a: '前往',
+    wcgHelpLink: '企业微信管理后台 → 管理工具 -> 智能机器人',
+    wcgHelpLi1b: ' 页面',
+    wcgHelpLi2a: '点击',
+    wcgHelpLink2: '创建 智能机器人，选择“API模式”，而非普通模式（默认）',
+    wcgHelpLi2b: '，或选择已有的群机器人',
+    wcgHelpLi3a: '在机器人详情页复制 ',
+    wcgHelpLi3Strong1: '机器人 ID（BotID）',
+    wcgHelpLi3mid: ' 和 ',
+    wcgHelpLi3Strong2: '机器人 Secret（BotSecret）',
+    wcgHelpLi4: '机器人通过 WebSocket 长连接接入，无需公网 IP',
+    cardWecomApp: '企业微信应用',
+    addWecomApp: '添加企业微信应用',
+    wcAppHelpTitle: '如何配置企业微信回调？',
+    wcAppHelpLi1a: '前往',
+    wcAppHelpLink: '企业微信管理后台',
+    wcAppHelpLi1b: '，创建自建应用',
+    wcAppHelpLi2a: '在应用详情页获取 ',
+    wcAppHelpS1: '企业ID（CorpID）',
+    wcAppHelpMid1: '、',
+    wcAppHelpS2: 'AgentID',
+    wcAppHelpMid2: '、',
+    wcAppHelpS3: 'Secret',
+    wcAppHelpLi3a: '在「接收消息」中设置回调 URL（需公网 IP），填写自定义 ',
+    wcAppHelpTok: 'Token',
+    wcAppHelpMidTok: ' 和 ',
+    wcAppHelpAes: 'EncodingAESKey',
+    wcAppHelpLi4a: '回调路径默认为 ',
+    wcAppHelpLi4b: '，与本服务部署在同一端口',
+    channelsReload: '保存后立即生效：',
+    openaiEnableAuth: '启用 API Key 鉴权',
+    openaiEnableDesc: '未启用时，/openai/v1/... 接口无需鉴权即可访问',
+    openaiKeyList: 'API 密钥列表',
+    addApiKey: '添加密钥',
+    openaiAuthHintA: '客户端通过 ',
+    openaiAuthHintB: ' 方式认证',
+    openaiBaseUrlLabel: '接口 Base URL（填入兼容客户端）',
+    openaiReload: '保存后立即生效：',
+    cardScheduler: '定时任务',
+    addScheduledTask: '添加定时任务',
+    schedHelpTitle: '定时任务使用说明',
+    schedHelpLi1a: 'Cron 格式采用标准 5 字段：',
+    schedCronFields: '分 时 日 月 周',
+    schedHelpLi1b: '，时区取全局配置的 TimeZone',
+    schedHelpLi2: '每次触发时向数字员工发送 Prompt，完整回复将推送到指定 Webhook',
+    schedHelpLi3: 'Webhook 类型支持 dingtalk（钉钉）、feishu（飞书）、wecom（企业微信群机器人）',
+    schedHelpLi4: '消息类型：text = 纯文本，markdown = Markdown 格式（钉钉/企业微信），post = 富文本（飞书）',
+    schedHelpLi5: '修改后保存配置即立即热重载，无需重启服务',
+    schedReload: '保存后立即生效：',
+    methodBuiltin: '内置账号（builtinUsers）',
+    methodLdap: 'LDAP 认证',
+    methodOidc: 'OpenID Connect',
+    authMethodDuplicate: '该认证方式已在列表中',
+    noPassword: '(无密码)',
+    username: '用户名',
+    newPwdPlain: '新密码(明文)',
+    confirm: '确认',
+    cancel: '取消',
+    changePwd: '修改密码',
+    deleteUser: '删除用户',
+    currentPwdHash: '当前密码哈希:',
+    roleNamePh: '角色名，如 admin',
+    containsUsers: '包含用户:',
+    deleteRole: '删除角色',
+    visibleEmployees: '可见数字员工（留空则不限制）:',
+    phUsernameEnter: '输入用户名后回车',
+    phEmployeeEnter: '输入数字员工名称后回车',
+    removeTag: '移除',
+    notConfigured: '未配置',
+    delete: '删除',
+    botName: '机器人名称',
+    botNameHint: '仅用于在此页面标识，不影响功能',
+    botNamePhDt: '例如：HR 助手、IT 支持机器人',
+    botNamePhFs: '例如：飞书 HR 助手',
+    botNamePhWc: '例如：企业微信 HR 助手',
+    appKey: 'AppKey（ClientId）',
+    appSecret: 'AppSecret（ClientSecret）',
+    defaultEmployeeId: '默认数字员工 ID（EmployeeId）',
+    productIntegration: '对接产品',
+    projectOptional: 'Project（可选）',
+    validateWsBtn: '校验 Region / Workspace',
+    botRouteHint: '未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace/Region；Project/Workspace/Region 根据产品类型选填',
+    groupNameRoute: '群名称路由',
+    groupNameRouteHint: '（不同群对接不同数字员工时使用）',
+    addRoute: '+ 添加路由',
+    conciseReply: '简洁回复',
+    conciseReplyHint: '开启后回复内容更精简，适合在 IM 中直接阅读',
+    aiStreamCard: 'AI 流式卡片',
+    aiStreamCardHint: '（配置后回复使用流式卡片，留空则使用普通 Markdown）',
+    cardTplId: '卡片模板 ID',
+    cardTplPh: '留空则使用普通 Markdown 回复',
+    cardTplHint: '在钉钉开放平台创建的 AI 卡片模板 ID',
+    streamVarName: '流式更新变量名',
+    streamVarPh: '默认: content',
+    streamVarHint: '卡片模板中用于流式更新的变量名',
+    wlDirectUsers: '单聊用户白名单',
+    wlDirectUsersHint: '（单聊场景生效；留空则允许所有人单聊）',
+    wlGroupUsers: '群用户白名单',
+    wlGroupUsersHint: '（群聊 @ 机器人时生效；留空则允许所有群成员）',
+    wlConvs: '群白名单',
+    wlConvsHint: '（按群名限制可使用的群；留空则所有群均可；单聊不受此限制）',
+    phDingtalkNick: '输入钉钉昵称后回车',
+    phGroupName: '输入群名称后回车',
+    phRouteConvTitle: '群名称（精确匹配）',
+    phRouteEmployee: '数字员工 ID',
+    phWsOptional: 'Workspace（可选）',
+    deleteRoute: '删除路由',
+    fsAppId: 'App ID',
+    fsAppSecret: 'App Secret',
+    fsVerToken: 'Verification Token',
+    fsVerTokenHint: '（WebSocket 模式可留空）',
+    fsEncryptKey: 'Event Encrypt Key',
+    fsEncryptHint: '（WebSocket 模式可留空）',
+    fsWlUsers: '用户白名单（open_id）',
+    fsWlUsersHint: '留空则允许所有用户',
+    fsWlChats: '群聊白名单（chat_id）',
+    fsWlChatsHint: '留空则允许所有群聊',
+    phOpenIdEnter: '输入 open_id 后回车',
+    phChatIdEnter: '输入 chat_id 后回车',
+    wcCorpId: '企业ID（CorpID）',
+    wcAgentId: 'AgentID',
+    wcSecret: 'Secret',
+    wcCallbackToken: '回调 Token',
+    wcCallbackTokenPh: '自定义 Token（用于验证消息来源）',
+    wcAesKey: 'EncodingAESKey',
+    wcAesHint: '（43位）',
+    wcCallbackPath: '回调路径（CallbackPath）',
+    wcCallbackPathHint: '必须以 /wecom/ 开头，与企业微信后台填写的路径一致',
+    wcWlUsers: '用户白名单（userid）',
+    wcWlUsersHint: '留空则允许所有用户',
+    phUseridEnter: '输入 userid 后回车',
+    wcbBotId: '机器人 ID（BotID）',
+    wcbBotSecret: '机器人 Secret（BotSecret）',
+    cronEvery5m: '每5分钟',
+    cronEvery15m: '每15分钟',
+    cronEvery30m: '每30分钟',
+    cronHourly: '每小时整点',
+    cronDaily9: '每天 09:00',
+    cronWeekday9: '工作日 09:00',
+    cronDaily830: '每天 08:30',
+    cronMon9: '每周一 09:00',
+    cronDaily18: '每天 18:00',
+    msgText: 'text（纯文本）',
+    msgMarkdown: 'markdown（Markdown）',
+    msgPost: 'post（富文本）',
+    taskUnnamed: '未命名任务',
+    taskName: '任务名称',
+    taskNameHint: '唯一标识，不含空格',
+    taskCron: 'Cron 表达式',
+    taskEmployee: '数字员工 ID',
+    taskPrompt: 'Prompt（发送给数字员工的问题）',
+    taskPromptPh: '请总结昨日工作进展和今日计划',
+    conciseOutput: '简洁输出',
+    conciseOutputHint: '（追加指令让回复更简短，适合 IM 阅读）',
+    conciseToggleTitle: '开启后在 Prompt 末尾追加「简化最终输出 适合聊天工具上阅读」',
+    webhookTargets: '🔗 Webhook 推送目标',
+    webhookAdd: '+ 添加',
+    webhookDel: '删除',
+    platformType: '平台类型',
+    selectPlease: '请选择...',
+    platDingtalk: '钉钉（DingTalk）',
+    platFeishu: '飞书（Feishu）',
+    platWecom: '企业微信（WeCom）',
+    msgType: '消息类型',
+    webhookUrl: 'Webhook URL',
+    msgTitle: '消息标题',
+    msgTitleHint: '（markdown/post 格式时使用）',
+    msgTitlePh: '每日通知',
+    triggerTest: '立即触发测试',
+    triggerHint: '使用当前表单内容立即执行一次，无需先保存',
+    defaultTaskNotify: '定时任务通知',
+    akModifiedTitle: 'AK 已修改，建议先测试连通性',
+    akNeedBoth: 'AccessKeyId 和 AccessKeySecret 均需填写后才能测试',
+    testing: '测试中…',
+    akTestingDetail: '正在向 apsara-ops 发送测试请求，请稍候（最长 60s）…',
+    requestFailed: '请求失败',
+    akOkReplyPrefix: '连接正常，收到回复：「',
+    akOkReplySuffix: '」',
+    akOkValid: '连接正常，凭据有效',
+    testFailed: '测试失败',
+    networkErr: '网络错误: ',
+    fillAkFirst: '请先在全局配置中填写 AccessKeyId 和 AccessKeySecret',
+    regionWsRequired: 'Region 和 Workspace 均需填写后才能校验',
+    validating: '校验中…',
+    validateWsLoading: '正在校验 Workspace 是否存在，请稍候…',
+    validateOk: '校验通过',
+    validateFailed: '校验失败',
+    copied: '已复制',
+    copyFailed: '复制失败，请手动复制',
+    copiedRedirect: '已复制 Redirect URL',
+    close: '关闭',
+    moveUp: '上移',
+    moveDown: '下移',
+    remove: '移除',
+    ldapHostRequired: 'LDAP Host 不能为空',
+    testingLdap: '正在测试 LDAP 连接，请稍候…',
+    issuerRequired: 'Issuer URL 不能为空',
+    clientIdRequired: 'Client ID 不能为空',
+    testingOidc: '正在执行 OIDC Discovery，请稍候…',
+    oidcLoginDefault: 'OIDC 登录',
+    errFillEmployee: '❌ 请先填写数字员工 ID',
+    errFillPrompt: '❌ 请先填写 Prompt',
+    running: '执行中…',
+    taskSending: '正在向数字员工发送请求，请稍候…',
+    triggerFailed: '触发失败',
+    replyPrefix: '✅ 数字员工回复：\n',
+    emptyParen: '（空）',
+    webhookOk: '\n\n✅ Webhook 推送成功',
+    webhookFail: '\n\n⚠️ Webhook 推送失败：',
+    webhookSkip: '\n\n（未配置 Webhook，跳过推送）',
+    loadingConfig: '正在加载配置...',
+    loadFailed: '加载失败',
+    saving: '保存中...',
+    savingApply: '正在保存并应用配置...',
+    saveFailed: '保存失败',
+    saveSuccess: '保存成功',
+    saveAnyway: '仍要保存',
+    akMissingWarn: '未填写，阿里云 CMS 功能将不可用',
+    akDirtyWarn: 'AK 凭据已修改但尚未验证连通性，建议先点「测试连接」确认配置正确',
+    and: '和',
+    langOptZh: '中文 (zh)',
+    langOptEn: 'English (en)',
+    labelProjectPlain: 'Project',
+    labelRegionPlain: 'Region',
+    labelWorkspacePlain: 'Workspace',
+    errPrefix: '❌ ',
+    okPrefix: '✅ ',
+    warnPrefix: '⚠️ ',
+  },
+  en: {
+    pageTitle: 'AI Chat Assistant · Configuration',
+    headerTitle: 'AI Chat Assistant Configuration',
+    headerSub: 'Save after modification; most settings take effect immediately without restart',
+    frontendLogin: 'Frontend Login',
+    refresh: 'Refresh',
+    tabGlobal: '🔗 Basic Settings',
+    tabAuth: '🔒 Auth & Users',
+    tabChannels: '🤖 Channels (Bots)',
+    tabScheduler: '⏰ Scheduled Tasks',
+    tabOpenai: '🧠 OpenAI Compatible API',
+    saveApply: 'Save & Apply',
+    cardAliyun: 'Alibaba Cloud Connection',
+    labelEndpoint: 'Endpoint (Service URL)',
+    hintEndpoint: 'Leave empty to use default address',
+    labelDefProduct: 'Default Digital Employee Product',
+    hintDefProduct: 'Used as default when Channels bots are not individually configured',
+    phProjectOpt: 'Project (optional)',
+    hintSlsProject: "SLS product's Project",
+    hintCmsRegion: "CMS product's Region",
+    hintCmsWorkspace: "CMS product's Workspace",
+    btnValidateWs: 'Validate Region / Workspace',
+    btnTestConn: 'Test Connection',
+    cardServer: 'Server Settings',
+    labelHost: 'Listen Address Host',
+    labelPort: 'Port',
+    labelLang: 'Language',
+    labelTz: 'Timezone',
+    hintHost: 'Leave empty for 0.0.0.0; requires restart',
+    hintPortRestart: 'Requires restart after modification',
+    toggleThreadBind: 'Thread Bind to Process Lifecycle',
+    toggleThreadBindDesc: 'Enabled by default. When disabled, threads persist across process restarts',
+    reloadImmediate: 'Takes effect immediately after saving:',
+    reloadRestart: 'Requires restart:',
+    cardUsers: 'Built-in Users',
+    addUser: 'Add User',
+    hintUserPwd: 'Passwords are stored as MD5 hashes. Enter plaintext when changing password; click Confirm to hash (with salt, same as password salt below).',
+    cardRoles: 'Roles & Permissions',
+    addRole: 'Add Role',
+    hintRoles1: 'Type a username in the role field and press Enter to add. The built-in ',
+    hintRoles2: ' role grants admin access. Configure visible digital employees per role; if any matched role has employees configured, restriction mode applies (union of all configured roles). Users with no role see all employees by default.',
+    cardAuthChain: 'Auth Chain',
+    methodSelectPlaceholder: 'Select auth method...',
+    methodOptBuiltin: 'builtin (built-in accounts)',
+    methodOptLdap: 'ldap (LDAP)',
+    methodOptOidc: 'oidc (OpenID Connect)',
+    add: 'Add',
+    hintAuthChainPart1: 'List order is the try order. ',
+    hintAuthChainStrong: 'If the list is empty, login is disabled',
+    hintAuthChainPart2: '; all protected APIs return 503.',
+    cardJwt: 'JWT Auth Settings',
+    labelJwtKey: 'JWT Secret',
+    phJwtKey: 'Set a random secret',
+    labelJwtExp: 'Token TTL',
+    hintJwtExp: 'Supports formats like 24h, 1h30m, 7d',
+    cardSalt: 'Built-in Account Password Salt',
+    labelSalt: 'Password Salt',
+    hintSalt: 'If set, built-in password hash is MD5(salt + plaintext); if empty, MD5(plaintext)',
+    cardLdap: 'LDAP Configuration',
+    hintLdapPort: 'Default if empty: LDAP 389, LDAPS 636',
+    ldapEnable: 'Enable',
+    labelLdapBindDnOpt: 'Bind DN (optional)',
+    labelLdapBindPwdOpt: 'Bind Password (optional)',
+    hintLdapUserFilter: 'Supports {username} placeholder',
+    labelLdapGroupMap: 'Group → Role mapping',
+    addLdapMapping: 'Add mapping',
+    hintLdapGroupMap: 'Match user memberOf; left: LDAP group DN, right: system role name',
+    ldapFooter: 'Applies when the auth chain includes ldap. LDAP user roles map via Roles & Permissions above.',
+    testLdapConn: 'Test LDAP Connection',
+    cardOidc: 'OIDC / OpenID Connect',
+    labelOidcDisplay: 'Display name',
+    phOidcDisplay: 'e.g. Keycloak, Corporate SSO',
+    hintOidcDisplay: 'Login button label; default OIDC Login',
+    labelOidcIssuer: 'Issuer URL',
+    hintOidcIssuer: 'OIDC provider URL, e.g. Keycloak, Dex, Okta, Azure AD',
+    labelOidcRedirect: 'Redirect URL (callback)',
+    copy: 'Copy',
+    hintOidcRedirect: 'Enter public base URL (with scheme). Callback path is fixed: /api/auth/oidc/callback — register the full URL with your OIDC provider',
+    labelScopes: 'Scopes',
+    hintScopes: 'Space-separated; default openid profile email',
+    labelUsernameClaim: 'Username claim',
+    hintUsernameClaim: 'Claim for username from ID token; default preferred_username',
+    oidcFooter: 'Map OIDC users to roles above by adding their usernames to the appropriate roles.',
+    testOidcConn: 'Test OIDC Connection',
+    authReloadImmediate: 'Takes effect immediately after saving:',
+    authReloadRestart: 'Requires restart:',
+    authReloadNote: '(After changing the secret, existing tokens remain valid until expiry)',
+    badgeUserList: 'user list',
+    badgePassword: 'password',
+    badgeRoleAssign: 'role assignment',
+    cardDtBots: 'DingTalk Bots',
+    addDtBot: 'Add DingTalk Bot',
+    dtHelpTitle: 'How to get AppKey / AppSecret?',
+    dtHelpLi1a: 'Go to',
+    dtHelpLink: 'DingTalk Open Platform',
+    dtHelpLi1b: ', open the developer console, and click create under one-click OpenClaw bot setup.',
+    dtHelpLi2: 'OpenClaw bot presets are applied; adjust and confirm to create.',
+    dtHelpLi3: 'After creation, copy and save the app Client ID and Client Secret.',
+    cardFsBots: 'Feishu Bots',
+    addFsBot: 'Add Feishu Bot',
+    fsHelpTitle: 'How to get Feishu App ID / App Secret?',
+    fsHelpLi1a: 'Go to',
+    fsHelpLink: 'Feishu Open Platform',
+    fsHelpLi1b: ' and create an enterprise self-built app',
+    fsHelpLi2a: 'Enable Bot; under Event Subscription choose ',
+    fsHelpLi2Strong: 'WebSocket',
+    fsHelpLi2b: ' mode; add ',
+    fsHelpLi2c: ' event',
+    fsHelpLi3a: 'On the credentials page copy ',
+    fsHelpLi3Strong1: 'App ID',
+    fsHelpLi3mid: ' and ',
+    fsHelpLi3Strong2: 'App Secret',
+    fsHelpLi3b: '; WebSocket needs no public IP',
+    cardWecomGroup: 'WeCom Bots',
+    addWecomGroupBot: 'Add WeCom Bot',
+    wcgHelpTitle: 'How to get group bot credentials?',
+    wcgHelpLi1a: 'Open',
+    wcgHelpLink: 'WeCom Admin → Management Tools → Smart Bots',
+    wcgHelpLi1b: ' ',
+    wcgHelpLi2a: 'Click',
+    wcgHelpLink2: 'Create smart bot in API mode (not default simple mode)',
+    wcgHelpLi2b: ', or pick an existing group bot',
+    wcgHelpLi3a: 'On the bot detail page copy ',
+    wcgHelpLi3Strong1: 'Bot ID (BotID)',
+    wcgHelpLi3mid: ' and ',
+    wcgHelpLi3Strong2: 'Bot Secret (BotSecret)',
+    wcgHelpLi4: 'Bots connect via WebSocket; no public IP required',
+    cardWecomApp: 'WeCom App',
+    addWecomApp: 'Add WeCom App',
+    wcAppHelpTitle: 'How to configure WeCom callback?',
+    wcAppHelpLi1a: 'Open',
+    wcAppHelpLink: 'WeCom Admin',
+    wcAppHelpLi1b: ' and create a self-built app',
+    wcAppHelpLi2a: 'On the app page get ',
+    wcAppHelpS1: 'CorpID',
+    wcAppHelpMid1: ', ',
+    wcAppHelpS2: 'AgentID',
+    wcAppHelpMid2: ', and ',
+    wcAppHelpS3: 'Secret',
+    wcAppHelpLi3a: 'Under Receive Messages set callback URL (public IP required), custom ',
+    wcAppHelpTok: 'Token',
+    wcAppHelpMidTok: ' and ',
+    wcAppHelpAes: 'EncodingAESKey',
+    wcAppHelpLi4a: 'Default callback path is ',
+    wcAppHelpLi4b: ' on the same port as this service',
+    channelsReload: 'Takes effect immediately after saving:',
+    openaiEnableAuth: 'Enable API Key Auth',
+    openaiEnableDesc: 'When off, /openai/v1/... is open without auth',
+    openaiKeyList: 'API keys',
+    addApiKey: 'Add Key',
+    openaiAuthHintA: 'Clients authenticate with ',
+    openaiAuthHintB: ' header',
+    openaiBaseUrlLabel: 'Base URL (for compatible clients)',
+    openaiReload: 'Takes effect immediately after saving:',
+    cardScheduler: 'Scheduled Tasks',
+    addScheduledTask: 'Add Scheduled Task',
+    schedHelpTitle: 'Scheduler usage',
+    schedHelpLi1a: 'Cron uses 5 fields: ',
+    schedCronFields: 'min hour day month weekday',
+    schedHelpLi1b: '; timezone from global TimeZone',
+    schedHelpLi2: 'Each run sends Prompt to the digital employee; full reply is pushed to Webhooks',
+    schedHelpLi3: 'Webhook types: dingtalk, feishu, wecom (group bot)',
+    schedHelpLi4: 'Message types: text = plain; markdown = Markdown (DingTalk/WeCom); post = rich (Feishu)',
+    schedHelpLi5: 'Saving config hot-reloads tasks; no service restart',
+    schedReload: 'Takes effect immediately after saving:',
+    methodBuiltin: 'Built-in accounts (builtinUsers)',
+    methodLdap: 'LDAP',
+    methodOidc: 'OpenID Connect',
+    authMethodDuplicate: 'This auth method is already in the list',
+    noPassword: '(no password)',
+    username: 'Username',
+    newPwdPlain: 'New password (plaintext)',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    changePwd: 'Change Password',
+    deleteUser: 'Delete User',
+    currentPwdHash: 'Current password hash:',
+    roleNamePh: 'Role name, e.g. admin',
+    containsUsers: 'Contains users:',
+    deleteRole: 'Delete Role',
+    visibleEmployees: 'Visible employees (leave empty for no restriction):',
+    phUsernameEnter: 'Press Enter after typing username',
+    phEmployeeEnter: 'Press Enter after typing employee name',
+    removeTag: 'Remove',
+    notConfigured: 'Not configured',
+    delete: 'Delete',
+    botName: 'Bot Name',
+    botNameHint: 'For identification on this page only',
+    botNamePhDt: 'e.g. HR Assistant, IT Support Bot',
+    botNamePhFs: 'e.g. Feishu HR Assistant',
+    botNamePhWc: 'e.g. WeCom HR Assistant',
+    appKey: 'AppKey (ClientId)',
+    appSecret: 'AppSecret (ClientSecret)',
+    defaultEmployeeId: 'Default Employee ID',
+    productIntegration: 'Product Integration',
+    projectOptional: 'Project (optional)',
+    validateWsBtn: 'Validate Region / Workspace',
+    botRouteHint: 'Default employee when no route matches; product chooses Project vs Region/Workspace; fill fields per product',
+    groupNameRoute: 'Group Name Routing',
+    groupNameRouteHint: '(When different groups use different employees)',
+    addRoute: '+ Add Route',
+    conciseReply: 'Concise Reply',
+    conciseReplyHint: 'Shorter replies, better for IM',
+    aiStreamCard: 'AI Streaming Card',
+    aiStreamCardHint: '(Stream card if set; otherwise plain Markdown)',
+    cardTplId: 'Card Template ID',
+    cardTplPh: 'Empty = plain Markdown reply',
+    cardTplHint: 'AI card template ID from DingTalk open platform',
+    streamVarName: 'Stream update variable name',
+    streamVarPh: 'Default: content',
+    streamVarHint: 'Variable name in the card template for streaming',
+    wlDirectUsers: 'Direct chat user allowlist',
+    wlDirectUsersHint: '(Direct chats; empty = allow all)',
+    wlGroupUsers: 'Group user allowlist',
+    wlGroupUsersHint: '(@ bot in groups; empty = allow all members)',
+    wlConvs: 'Group allowlist',
+    wlConvsHint: '(By group name; empty = all groups; direct chat unaffected)',
+    phDingtalkNick: 'Enter DingTalk nickname, press Enter',
+    phGroupName: 'Enter group name, press Enter',
+    phRouteConvTitle: 'Group name (exact match)',
+    phRouteEmployee: 'Employee ID',
+    phWsOptional: 'Workspace (optional)',
+    deleteRoute: 'Delete route',
+    fsAppId: 'App ID',
+    fsAppSecret: 'App Secret',
+    fsVerToken: 'Verification Token',
+    fsVerTokenHint: '(Optional for WebSocket)',
+    fsEncryptKey: 'Event Encrypt Key',
+    fsEncryptHint: '(Optional for WebSocket)',
+    fsWlUsers: 'User allowlist (open_id)',
+    fsWlUsersHint: 'Empty = allow all users',
+    fsWlChats: 'Chat allowlist (chat_id)',
+    fsWlChatsHint: 'Empty = allow all chats',
+    phOpenIdEnter: 'Enter open_id, press Enter',
+    phChatIdEnter: 'Enter chat_id, press Enter',
+    wcCorpId: 'CorpID',
+    wcAgentId: 'AgentID',
+    wcSecret: 'Secret',
+    wcCallbackToken: 'Callback Token',
+    wcCallbackTokenPh: 'Custom token to verify source',
+    wcAesKey: 'EncodingAESKey',
+    wcAesHint: '(43 chars)',
+    wcCallbackPath: 'Callback Path',
+    wcCallbackPathHint: 'Must start with /wecom/; match WeCom admin',
+    wcWlUsers: 'User allowlist (userid)',
+    wcWlUsersHint: 'Empty = allow all users',
+    phUseridEnter: 'Enter userid, press Enter',
+    wcbBotId: 'Bot ID (BotID)',
+    wcbBotSecret: 'Bot Secret (BotSecret)',
+    cronEvery5m: 'Every 5 minutes',
+    cronEvery15m: 'Every 15 minutes',
+    cronEvery30m: 'Every 30 minutes',
+    cronHourly: 'Every hour at :00',
+    cronDaily9: 'Daily at 09:00',
+    cronWeekday9: 'Weekdays at 09:00',
+    cronDaily830: 'Daily at 08:30',
+    cronMon9: 'Mondays at 09:00',
+    cronDaily18: 'Daily at 18:00',
+    msgText: 'text (plain)',
+    msgMarkdown: 'markdown (Markdown)',
+    msgPost: 'post (rich text)',
+    taskUnnamed: 'Unnamed Task',
+    taskName: 'Task name',
+    taskNameHint: 'Unique id, no spaces',
+    taskCron: 'Cron expression',
+    taskEmployee: 'Employee ID',
+    taskPrompt: 'Prompt (question to employee)',
+    taskPromptPh: 'Summarize yesterday and today’s plan',
+    conciseOutput: 'Concise output',
+    conciseOutputHint: '(Append instruction for shorter IM-friendly reply)',
+    conciseToggleTitle: 'Append instruction to simplify final output for chat tools',
+    webhookTargets: '🔗 Webhook targets',
+    webhookAdd: '+ Add',
+    webhookDel: 'Delete',
+    platformType: 'Platform',
+    selectPlease: 'Select...',
+    platDingtalk: 'DingTalk',
+    platFeishu: 'Feishu',
+    platWecom: 'WeCom',
+    msgType: 'Message type',
+    webhookUrl: 'Webhook URL',
+    msgTitle: 'Message title',
+    msgTitleHint: '(for markdown/post)',
+    msgTitlePh: 'Daily notice',
+    triggerTest: 'Trigger Test Now',
+    triggerHint: 'Runs once with current form values; save not required',
+    defaultTaskNotify: 'Scheduled task notice',
+    akModifiedTitle: 'AK changed; test connectivity first',
+    akNeedBoth: 'Enter both AccessKeyId and AccessKeySecret to test',
+    testing: 'Testing…',
+    akTestingDetail: 'Sending test to apsara-ops (up to 60s)…',
+    requestFailed: 'Request failed',
+    akOkReplyPrefix: 'OK, reply: "',
+    akOkReplySuffix: '"',
+    akOkValid: 'OK, credentials valid',
+    testFailed: 'Test failed',
+    networkErr: 'Network error: ',
+    fillAkFirst: 'Fill AccessKeyId and AccessKeySecret in global settings first',
+    regionWsRequired: 'Region and Workspace are required to validate',
+    validating: 'Validating…',
+    validateWsLoading: 'Checking workspace…',
+    validateOk: 'Validation passed',
+    validateFailed: 'Validation failed',
+    copied: 'Copied',
+    copyFailed: 'Copy failed; copy manually',
+    copiedRedirect: 'Redirect URL copied',
+    close: 'Close',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    remove: 'Remove',
+    ldapHostRequired: 'LDAP Host is required',
+    testingLdap: 'Testing LDAP…',
+    issuerRequired: 'Issuer URL is required',
+    clientIdRequired: 'Client ID is required',
+    testingOidc: 'Running OIDC discovery…',
+    oidcLoginDefault: 'OIDC Login',
+    errFillEmployee: '❌ Enter employee ID first',
+    errFillPrompt: '❌ Enter Prompt first',
+    running: 'Running…',
+    taskSending: 'Sending to digital employee…',
+    triggerFailed: 'Trigger failed',
+    replyPrefix: '✅ Employee reply:\n',
+    emptyParen: '(empty)',
+    webhookOk: '\n\n✅ Webhook sent',
+    webhookFail: '\n\n⚠️ Webhook failed: ',
+    webhookSkip: '\n\n(No webhook configured; skip push)',
+    loadingConfig: 'Loading configuration...',
+    loadFailed: 'Load failed',
+    saving: 'Saving...',
+    savingApply: 'Saving and applying...',
+    saveFailed: 'Save failed',
+    saveSuccess: 'Saved successfully',
+    saveAnyway: 'Save anyway',
+    akMissingWarn: 'not set; Alibaba Cloud CMS features will be unavailable',
+    akDirtyWarn: 'AK changed but not verified; click Test Connection first',
+    and: ' and ',
+    langOptZh: '中文 (zh)',
+    langOptEn: 'English (en)',
+    labelProjectPlain: 'Project',
+    labelRegionPlain: 'Region',
+    labelWorkspacePlain: 'Workspace',
+    errPrefix: '❌ ',
+    okPrefix: '✅ ',
+    warnPrefix: '⚠️ ',
+  },
+};
+
+function t(key) {
+  const dict = I18N[currentLang] || I18N.zh;
+  if (dict[key] !== undefined) return dict[key];
+  if (I18N.zh[key] !== undefined) return I18N.zh[key];
+  return key;
+}
+
+let lastRenderedLang = null;
+
+function applyI18n() {
+  const sel = document.getElementById('g-lang');
+  currentLang = (sel && sel.value === 'en') ? 'en' : 'zh';
+  document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+  document.title = t('pageTitle');
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n');
+    if (k) el.textContent = t(k);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n-placeholder');
+    if (k) el.placeholder = t(k);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n-title');
+    if (k) el.title = t(k);
+  });
+  if (lastRenderedLang !== null && lastRenderedLang !== currentLang) {
+    reRenderDynamicContent();
+  }
+  lastRenderedLang = currentLang;
+}
+
+function reRenderDynamicContent() {
+  if (!currentData) return;
+
+  // Auth: methods, users, roles, LDAP group mappings
+  renderMethods(collectMethods());
+  renderUsers(collectUsers());
+  renderRoles(collectRoles());
+  renderLDAPGroupRoleMappings(collectLDAPGroupRoleMappings());
+
+  // Channels
+  renderDingTalkBots(collectDingTalkBots());
+  renderFeishuBots(collectFeishuBots());
+  renderWeComBots(collectWeComBots());
+  renderWeComGroupBots(collectWeComGroupBots());
+
+  // OpenAI API keys
+  renderApiKeys(collectApiKeys());
+
+  // Tasks — preserve expanded state
+  var oldCards = document.querySelectorAll('#tasks-list .task-card');
+  var expandedIdxs = [];
+  oldCards.forEach(function(card, i) {
+    if (card.classList.contains('expanded')) expandedIdxs.push(i);
+  });
+  renderScheduledTasks(collectScheduledTasks());
+  var newCards = document.querySelectorAll('#tasks-list .task-card');
+  expandedIdxs.forEach(function(i) {
+    if (newCards[i]) newCards[i].classList.add('expanded');
+  });
+
+  updateLDAPCardVisibility();
+  updateOIDCCardVisibility();
+}
+
 let currentData = null;
 
 // AK 连通性状态跟踪
@@ -794,7 +1555,7 @@ function onAKFieldChange() {
   if (isAKDirty()) {
     // 高亮提示：橙色边框 + 脉冲动画
     btn.style.cssText = 'background:linear-gradient(135deg,#ed8936,#dd6b20);box-shadow:0 0 0 3px rgba(237,137,54,0.35);animation:pulse-orange .9s ease-in-out infinite alternate;flex-shrink:0';
-    btn.title = 'AK 已修改，建议先测试连通性';
+    btn.title = t('akModifiedTitle');
   } else {
     btn.style.cssText = 'flex-shrink:0';
     btn.title = '';
@@ -806,15 +1567,15 @@ async function testAK() {
   const akid = val('g-akid');
   const aks  = val('g-aks');
   if (!akid || !aks) {
-    showTestAKResult(false, 'AccessKeyId 和 AccessKeySecret 均需填写后才能测试');
+    showTestAKResult(false, t('akNeedBoth'));
     return;
   }
 
   const btn = document.getElementById('test-ak-btn');
   const origHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 测试中…';
-  showTestAKResult('loading', '正在向 apsara-ops 发送测试请求，请稍候（最长 60s）…');
+  btn.innerHTML = '<div class="spinner"></div> ' + esc(t('testing'));
+  showTestAKResult('loading', t('akTestingDetail'));
 
   try {
     const res = await fetch('/admin-ui/api/test-ak?token=' + encodeURIComponent(token), {
@@ -824,15 +1585,15 @@ async function testAK() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showTestAKResult(false, data.error || '请求失败');
+      showTestAKResult(false, data.error || t('requestFailed'));
     } else if (data.ok) {
       markAKTested();
-      showTestAKResult(true, data.preview ? '连接正常，收到回复：「' + data.preview + '」' : '连接正常，凭据有效');
+      showTestAKResult(true, data.preview ? t('akOkReplyPrefix') + data.preview + t('akOkReplySuffix') : t('akOkValid'));
     } else {
-      showTestAKResult(false, data.error || '测试失败');
+      showTestAKResult(false, data.error || t('testFailed'));
     }
   } catch(e) {
-    showTestAKResult(false, '网络错误: ' + e.message);
+    showTestAKResult(false, t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -878,18 +1639,18 @@ async function validateWorkspace(btn) {
   const aks  = val('g-aks');
 
   if (!akid || !aks) {
-    showValidateResult(resultEl, false, '请先在全局配置中填写 AccessKeyId 和 AccessKeySecret');
+    showValidateResult(resultEl, false, t('fillAkFirst'));
     return;
   }
   if (!region || !workspace) {
-    showValidateResult(resultEl, false, 'Region 和 Workspace 均需填写后才能校验');
+    showValidateResult(resultEl, false, t('regionWsRequired'));
     return;
   }
 
   const origHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 校验中…';
-  showValidateResult(resultEl, 'loading', '正在校验 Workspace 是否存在，请稍候…');
+  btn.innerHTML = '<div class="spinner"></div> ' + esc(t('validating'));
+  showValidateResult(resultEl, 'loading', t('validateWsLoading'));
 
   try {
     const res = await fetch('/admin-ui/api/test-cms?token=' + encodeURIComponent(token), {
@@ -905,14 +1666,14 @@ async function validateWorkspace(btn) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showValidateResult(resultEl, false, data.error || '请求失败');
+      showValidateResult(resultEl, false, data.error || t('requestFailed'));
     } else if (data.ok) {
-      showValidateResult(resultEl, true, data.message || '校验通过');
+      showValidateResult(resultEl, true, data.message || t('validateOk'));
     } else {
-      showValidateResult(resultEl, false, data.error || '校验失败');
+      showValidateResult(resultEl, false, data.error || t('validateFailed'));
     }
   } catch(e) {
-    showValidateResult(resultEl, false, '网络错误: ' + e.message);
+    showValidateResult(resultEl, false, t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -962,9 +1723,9 @@ function copyBaseUrl() {
   navigator.clipboard.writeText(url).then(() => {
     const btn = document.getElementById('openai-copy-btn');
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 已复制';
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ' + esc(t('copied'));
     setTimeout(() => { btn.innerHTML = orig; }, 1800);
-  }).catch(() => showStatus('error', '复制失败，请手动复制'));
+  }).catch(() => showStatus('error', t('copyFailed')));
 }
 
 // ── Status messages ───────────────────────────────────────────────────────
@@ -979,7 +1740,7 @@ function showStatus(type, msg, action) {
   } else if (action) {
     el.innerHTML = esc(msg) +
       '<button class="btn btn-sm" style="margin-left:8px;height:24px;padding:0 10px;font-size:12px;background:var(--yellow);color:#fff;border:none;border-radius:5px;cursor:pointer" onclick="(' + action.fn + ')()">' + esc(action.label) + '</button>' +
-      '<button style="margin-left:4px;background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:15px;line-height:1;padding:0 2px" onclick="document.getElementById(\'status-msg\').style.display=\'none\'" title="关闭">&#215;</button>';
+      '<button style="margin-left:4px;background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:15px;line-height:1;padding:0 2px" onclick="document.getElementById(\'status-msg\').style.display=\'none\'" title="' + esc(t('close')) + '">&#215;</button>';
   } else {
     el.textContent = msg;
     _statusTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
@@ -987,11 +1748,12 @@ function showStatus(type, msg, action) {
 }
 
 // ── Auth methods list ─────────────────────────────────────────────────────
-const METHOD_LABELS = {
-  builtin: '内置账号（builtinUsers）',
-  ldap:    'LDAP 认证',
-  oidc:    'OpenID Connect',
-};
+function methodLabel(method) {
+  if (method === 'builtin') return t('methodBuiltin');
+  if (method === 'ldap') return t('methodLdap');
+  if (method === 'oidc') return t('methodOidc');
+  return method;
+}
 
 function renderMethods(methods) {
   const container = document.getElementById('methods-list');
@@ -1006,12 +1768,12 @@ function makeMethodRow(method, idx) {
   div.innerHTML =
     '<span class="method-idx">' + (idx + 1) + '</span>' +
     '<span class="method-chip">' + esc(method) + '</span>' +
-    '<span class="method-desc">' + esc(METHOD_LABELS[method] || method) + '</span>' +
+    '<span class="method-desc">' + esc(methodLabel(method)) + '</span>' +
     '<div class="method-move">' +
-      '<button onclick="moveMethod(this,-1)" title="上移">&#9650;</button>' +
-      '<button onclick="moveMethod(this,1)" title="下移">&#9660;</button>' +
+      '<button onclick="moveMethod(this,-1)" title="' + esc(t('moveUp')) + '">&#9650;</button>' +
+      '<button onclick="moveMethod(this,1)" title="' + esc(t('moveDown')) + '">&#9660;</button>' +
     '</div>' +
-    '<button class="btn btn-danger btn-icon btn-sm" onclick="removeMethod(this)" title="移除">' +
+    '<button class="btn btn-danger btn-icon btn-sm" onclick="removeMethod(this)" title="' + esc(t('remove')) + '">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
     '</button>';
   return div;
@@ -1022,7 +1784,7 @@ function addMethod() {
   const method = sel.value;
   if (!method) return;
   const existing = Array.from(document.querySelectorAll('#methods-list [data-method]')).map(el => el.dataset.method);
-  if (existing.includes(method)) { showStatus('error', '该认证方式已在列表中'); return; }
+  if (existing.includes(method)) { showStatus('error', t('authMethodDuplicate')); return; }
   const container = document.getElementById('methods-list');
   container.appendChild(makeMethodRow(method, container.children.length));
   sel.value = '';
@@ -1099,7 +1861,7 @@ function addLDAPGroupRoleRow(groupDN, role) {
     '<input type="text" data-field="groupDN" value="' + esc(groupDN || '') + '" placeholder="cn=sre,ou=groups,dc=example,dc=com" style="flex:2;min-width:0">' +
     '<span style="color:var(--text3);font-size:13px;flex-shrink:0">→</span>' +
     '<input type="text" data-field="role" value="' + esc(role || '') + '" placeholder="admin" style="flex:0 0 140px">' +
-    '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.ldap-grm-row\').remove()" title="删除">' +
+    '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.ldap-grm-row\').remove()" title="' + esc(t('delete')) + '">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
     '</button>';
   container.appendChild(div);
@@ -1119,13 +1881,13 @@ function renderLDAPGroupRoleMappings(mappings) {
 
 async function testLDAP() {
   const host = val('a-ldap-host');
-  if (!host) { showTestLDAPResult(false, 'LDAP Host 不能为空'); return; }
+  if (!host) { showTestLDAPResult(false, t('ldapHostRequired')); return; }
 
   const btn = document.getElementById('test-ldap-btn');
   const origHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 测试中…';
-  showTestLDAPResult('loading', '正在测试 LDAP 连接，请稍候…');
+  btn.innerHTML = '<div class="spinner"></div> ' + esc(t('testing'));
+  showTestLDAPResult('loading', t('testingLdap'));
 
   try {
     const res = await fetch('/admin-ui/api/test-ldap?token=' + encodeURIComponent(token), {
@@ -1142,14 +1904,14 @@ async function testLDAP() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showTestLDAPResult(false, data.error || '请求失败');
+      showTestLDAPResult(false, data.error || t('requestFailed'));
     } else if (data.ok) {
       showTestLDAPResult(true, data.message);
     } else {
-      showTestLDAPResult(false, data.error || '测试失败');
+      showTestLDAPResult(false, data.error || t('testFailed'));
     }
   } catch(e) {
-    showTestLDAPResult(false, '网络错误: ' + e.message);
+    showTestLDAPResult(false, t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -1184,7 +1946,7 @@ function updateOIDCCardVisibility() {
     card.style.display = methods.includes('oidc') ? '' : 'none';
     if (methods.includes('oidc')) {
       updateOIDCRedirectDisplay();
-      if (!val('a-oidc-display-name')) setVal('a-oidc-display-name', 'OIDC 登录');
+      
     }
   }
 }
@@ -1204,13 +1966,13 @@ function copyOIDCRedirect() {
   const url = document.getElementById('a-oidc-redirect').value;
   if (!url) return;
   navigator.clipboard.writeText(url).then(function() {
-    showStatus('success', '已复制 Redirect URL');
+    showStatus('success', t('copiedRedirect'));
   }).catch(function() {
     // fallback
     const ta = document.createElement('textarea');
     ta.value = url; document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
-    showStatus('success', '已复制 Redirect URL');
+    showStatus('success', t('copiedRedirect'));
   });
 }
 
@@ -1221,7 +1983,6 @@ function collectOIDC() {
   updateOIDCRedirectDisplay();
   const scopesStr = val('a-oidc-scopes').trim();
   const scopes = scopesStr ? scopesStr.split(/\s+/) : [];
-  const displayName = val('a-oidc-display-name') || 'OIDC 登录';
   return {
     issuerURL:     issuer,
     clientId:      clientId,
@@ -1229,21 +1990,21 @@ function collectOIDC() {
     redirectURL:   val('a-oidc-redirect'),
     scopes:        scopes,
     usernameClaim: val('a-oidc-username-claim'),
-    displayName:   displayName,
+    displayName:   val('a-oidc-display-name'),
   };
 }
 
 async function testOIDC() {
   const issuer = val('a-oidc-issuer');
   const clientId = val('a-oidc-client-id');
-  if (!issuer) { showTestOIDCResult(false, 'Issuer URL 不能为空'); return; }
-  if (!clientId) { showTestOIDCResult(false, 'Client ID 不能为空'); return; }
+  if (!issuer) { showTestOIDCResult(false, t('issuerRequired')); return; }
+  if (!clientId) { showTestOIDCResult(false, t('clientIdRequired')); return; }
 
   const btn = document.getElementById('test-oidc-btn');
   const origHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 测试中…';
-  showTestOIDCResult('loading', '正在执行 OIDC Discovery，请稍候…');
+  btn.innerHTML = '<div class="spinner"></div> ' + esc(t('testing'));
+  showTestOIDCResult('loading', t('testingOidc'));
 
   try {
     const res = await fetch('/admin-ui/api/test-oidc?token=' + encodeURIComponent(token), {
@@ -1258,15 +2019,15 @@ async function testOIDC() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showTestOIDCResult(false, data.error || '请求失败');
+      showTestOIDCResult(false, data.error || t('requestFailed'));
     } else if (data.ok) {
       const msg = data.message + (data.details ? '\n' + data.details : '');
       showTestOIDCResult(true, msg);
     } else {
-      showTestOIDCResult(false, data.error || '测试失败');
+      showTestOIDCResult(false, data.error || t('testFailed'));
     }
   } catch(e) {
-    showTestOIDCResult(false, '网络错误: ' + e.message);
+    showTestOIDCResult(false, t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -1308,22 +2069,22 @@ function makeUserRow(name, hash, idx) {
   const div = document.createElement('div');
   div.className = 'list-row user-row';
   div.dataset.idx = idx;
-  const shortHash = hash ? hash.substring(0, 16) + '...' : '(无密码)';
+  const shortHash = hash ? hash.substring(0, 16) + '...' : t('noPassword');
   div.innerHTML =
     '<div class="name-field">' +
-      '<input type="text" placeholder="用户名" value="' + esc(name) + '" data-field="username" style="width:100%">' +
+      '<input type="text" placeholder="' + esc(t('username')) + '" value="' + esc(name) + '" data-field="username" style="width:100%">' +
     '</div>' +
-    '<div class="hash-display" title="当前密码哈希: ' + esc(hash) + '">' + shortHash + '</div>' +
+    '<div class="hash-display" title="' + esc(t('currentPwdHash')) + ' ' + esc(hash) + '">' + shortHash + '</div>' +
     '<input type="hidden" data-field="hash" value="' + esc(hash) + '">' +
     '<div class="pwd-change">' +
       '<div class="new-pwd-wrap" style="display:none">' +
-        '<input type="text" placeholder="新密码(明文)" data-field="newpwd" autocomplete="new-password" style="width:100%">' +
-        '<button class="btn btn-ghost btn-sm" onclick="confirmPwd(this)">确认</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="cancelPwd(this)">取消</button>' +
+        '<input type="text" placeholder="' + esc(t('newPwdPlain')) + '" data-field="newpwd" autocomplete="new-password" style="width:100%">' +
+        '<button class="btn btn-ghost btn-sm" onclick="confirmPwd(this)">' + esc(t('confirm')) + '</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="cancelPwd(this)">' + esc(t('cancel')) + '</button>' +
       '</div>' +
-      '<button class="btn btn-ghost btn-sm change-btn" onclick="showPwdInput(this)">修改密码</button>' +
+      '<button class="btn btn-ghost btn-sm change-btn" onclick="showPwdInput(this)">' + esc(t('changePwd')) + '</button>' +
     '</div>' +
-    '<button class="btn btn-danger btn-icon" onclick="removeUser(this)" title="删除用户">' +
+    '<button class="btn btn-danger btn-icon" onclick="removeUser(this)" title="' + esc(t('deleteUser')) + '">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>' +
     '</button>';
   return div;
@@ -1353,7 +2114,7 @@ function confirmPwd(btn) {
     const hashed = md5(salt + newPwd);
     row.querySelector('[data-field=hash]').value = hashed;
     row.querySelector('.hash-display').textContent = hashed.substring(0, 16) + '…';
-    row.querySelector('.hash-display').title = '当前密码哈希: ' + hashed;
+    row.querySelector('.hash-display').title = t('currentPwdHash') + ' ' + hashed;
   }
   cancelPwd(btn);
 }
@@ -1388,29 +2149,29 @@ function makeRoleRow(name, users, employees) {
   const empTagsHtml = (employees || []).map(e => makeUserTag(e)).join('');
   div.innerHTML =
     '<div class="role-name-row">' +
-      '<input type="text" placeholder="角色名，如 admin" value="' + esc(name) + '" data-field="rolename" style="width:160px;flex-shrink:0">' +
-      '<span style="font-size:12px;color:var(--text3);margin-left:4px">包含用户:</span>' +
+      '<input type="text" placeholder="' + esc(t('roleNamePh')) + '" value="' + esc(name) + '" data-field="rolename" style="width:160px;flex-shrink:0">' +
+      '<span style="font-size:12px;color:var(--text3);margin-left:4px">' + esc(t('containsUsers')) + '</span>' +
       '<div class="spacer"></div>' +
-      '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.role-row\').remove()" title="删除角色">' +
+      '<button class="btn btn-danger btn-icon" onclick="this.closest(\'.role-row\').remove()" title="' + esc(t('deleteRole')) + '">' +
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
       '</button>' +
     '</div>' +
     '<div class="tag-input-wrap" data-role-users>' +
       tagsHtml +
-      '<input class="tag-input" type="text" placeholder="输入用户名后回车" onkeydown="roleTagKey(event,this)">' +
+      '<input class="tag-input" type="text" placeholder="' + esc(t('phUsernameEnter')) + '" onkeydown="roleTagKey(event,this)">' +
     '</div>' +
     '<div style="margin-top:4px">' +
-      '<span style="font-size:12px;color:var(--text3)">可见数字员工（留空则不限制）:</span>' +
+      '<span style="font-size:12px;color:var(--text3)">' + esc(t('visibleEmployees')) + '</span>' +
     '</div>' +
     '<div class="tag-input-wrap" data-role-employees>' +
       empTagsHtml +
-      '<input class="tag-input" type="text" placeholder="输入数字员工名称后回车" onkeydown="roleTagKey(event,this)">' +
+      '<input class="tag-input" type="text" placeholder="' + esc(t('phEmployeeEnter')) + '" onkeydown="roleTagKey(event,this)">' +
     '</div>';
   return div;
 }
 
 function makeUserTag(username) {
-  return '<span class="tag"><span>' + esc(username) + '</span><button type="button" onclick="this.parentElement.remove()" title="移除"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
+  return '<span class="tag"><span>' + esc(username) + '</span><button type="button" onclick="this.parentElement.remove()" title="' + esc(t('removeTag')) + '"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
 }
 
 function roleTagKey(e, inp) {
@@ -1453,26 +2214,26 @@ function makeDingTalkBotCard(bot, idx) {
     '<div class="dt-bot-header">' +
       '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
       '<span class="dt-bot-type">DingTalk</span>' +
-      '<div class="dt-bot-title">' + esc(bot.name || bot.clientId || '未配置') + '</div>' +
+      '<div class="dt-bot-title">' + esc(bot.name || bot.clientId || t('notConfigured')) + '</div>' +
       '<label class="toggle" style="margin-left:auto">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
         '<span class="toggle-thumb"></span>' +
       '</label>' +
-      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeDingTalkBot(this)">删除</button>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeDingTalkBot(this)">' + esc(t('delete')) + '</button>' +
     '</div>' +
     '<div class="dt-bot-fields">' +
       '<div class="field field-full">' +
-        '<label>机器人名称</label>' +
-        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="例如：HR 助手、IT 支持机器人" autocomplete="off" oninput="onDtBotNameInput(this)">' +
-        '<span class="hint">仅用于在此页面标识，不影响功能</span>' +
+        '<label>' + esc(t('botName')) + '</label>' +
+        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="' + esc(t('botNamePhDt')) + '" autocomplete="off" oninput="onDtBotNameInput(this)">' +
+        '<span class="hint">' + esc(t('botNameHint')) + '</span>' +
       '</div>' +
       '<div class="field">' +
-        '<label>AppKey（ClientId）</label>' +
+        '<label>' + esc(t('appKey')) + '</label>' +
         '<input type="text" data-field="clientId" value="' + esc(bot.clientId || '') + '" placeholder="dingxxxxxxxxxxxx" autocomplete="off" oninput="onDtBotClientIdInput(this)">' +
       '</div>' +
       '<div class="field">' +
-        '<label>AppSecret（ClientSecret）</label>' +
+        '<label>' + esc(t('appSecret')) + '</label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="clientSecret" value="' + esc(bot.clientSecret || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -1481,49 +2242,49 @@ function makeDingTalkBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>默认数字员工 ID（EmployeeId）</label>' +
+        '<label>' + esc(t('defaultEmployeeId')) + '</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
-        '<label>对接产品</label>' +
+        '<label>' + esc(t('productIntegration')) + '</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.dt-bot-card\'))">' +
           '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
           '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
         '</select>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Project</label>' +
-        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+        '<label>' + esc(t('labelProjectPlain')) + '</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="' + esc(t('projectOptional')) + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Region</label>' +
+        '<label>' + esc(t('labelRegionPlain')) + '</label>' +
         '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Workspace</label>' +
+        '<label>' + esc(t('labelWorkspacePlain')) + '</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full" data-validate-field>' +
         '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-          ' 校验 Region / Workspace' +
+          ' ' + esc(t('validateWsBtn')) +
         '</button>' +
         '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<span class="hint">未命中路由规则时使用默认数字员工；对接产品决定使用 Project 还是 Workspace/Region；Project/Workspace/Region 根据产品类型选填</span>' +
+        '<span class="hint">' + esc(t('botRouteHint')) + '</span>' +
       '</div>' +
       '<details class="field field-full" style="padding:0;border:none;background:none"' + ((bot.conversationRoutes || []).length > 0 ? ' open' : '') + '>' +
         '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
           '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
-          '群名称路由' +
-          '<span class="hint" style="font-weight:400;font-size:12px">（不同群对接不同数字员工时使用）</span>' +
+          esc(t('groupNameRoute')) +
+          '<span class="hint" style="font-weight:400;font-size:12px">' + esc(t('groupNameRouteHint')) + '</span>' +
         '</summary>' +
         '<div style="padding:8px 0 4px">' +
           '<div data-dt-routes style="display:flex;flex-direction:column;gap:6px">' +
             (bot.conversationRoutes || []).map(r => makeDtRouteRow(r)).join('') +
           '</div>' +
-          '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addDtRoute(this)">+ 添加路由</button>' +
+          '<button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="addDtRoute(this)">' + esc(t('addRoute')) + '</button>' +
         '</div>' +
       '</details>' +
       '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
@@ -1533,50 +2294,50 @@ function makeDingTalkBotCard(bot, idx) {
           '<span class="toggle-thumb"></span>' +
         '</label>' +
         '<div style="display:flex;flex-direction:column;gap:2px">' +
-          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
-          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">' + esc(t('conciseReply')) + '</span>' +
+          '<span class="hint" style="margin:0">' + esc(t('conciseReplyHint')) + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="field field-full" style="margin-top:4px">' +
         '<details class="field" style="width:100%;padding:0;border:none;background:none"' + ((bot.cardTemplateId) ? ' open' : '') + '>' +
           '<summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">' +
             '<svg class="dt-route-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>' +
-            'AI 流式卡片' +
-            '<span class="hint" style="font-weight:400;font-size:12px">（配置后回复使用流式卡片，留空则使用普通 Markdown）</span>' +
+            esc(t('aiStreamCard')) +
+            '<span class="hint" style="font-weight:400;font-size:12px">' + esc(t('aiStreamCardHint')) + '</span>' +
           '</summary>' +
           '<div class="field-grid" style="padding:8px 0 4px">' +
             '<div class="field">' +
-              '<label>卡片模板 ID</label>' +
-              '<input type="text" data-field="cardTemplateId" value="' + esc(bot.cardTemplateId || '') + '" placeholder="留空则使用普通 Markdown 回复">' +
-              '<span class="hint">在钉钉开放平台创建的 AI 卡片模板 ID</span>' +
+              '<label>' + esc(t('cardTplId')) + '</label>' +
+              '<input type="text" data-field="cardTemplateId" value="' + esc(bot.cardTemplateId || '') + '" placeholder="' + esc(t('cardTplPh')) + '">' +
+              '<span class="hint">' + esc(t('cardTplHint')) + '</span>' +
             '</div>' +
             '<div class="field">' +
-              '<label>流式更新变量名</label>' +
-              '<input type="text" data-field="cardContentKey" value="' + esc(bot.cardContentKey || '') + '" placeholder="默认: content">' +
-              '<span class="hint">卡片模板中用于流式更新的变量名</span>' +
+              '<label>' + esc(t('streamVarName')) + '</label>' +
+              '<input type="text" data-field="cardContentKey" value="' + esc(bot.cardContentKey || '') + '" placeholder="' + esc(t('streamVarPh')) + '">' +
+              '<span class="hint">' + esc(t('streamVarHint')) + '</span>' +
             '</div>' +
           '</div>' +
         '</details>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>单聊用户白名单 <span class="hint" style="font-weight:400">（单聊场景生效；留空则允许所有人单聊）</span></label>' +
+        '<label>' + esc(t('wlDirectUsers')) + ' <span class="hint" style="font-weight:400">' + esc(t('wlDirectUsersHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-dt-allowed-direct-users>' +
           (bot.allowedDirectUsers || []).map(u => makeDtTag(u)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入钉钉昵称后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phDingtalkNick')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>群用户白名单 <span class="hint" style="font-weight:400">（群聊 @ 机器人时生效；留空则允许所有群成员）</span></label>' +
+        '<label>' + esc(t('wlGroupUsers')) + ' <span class="hint" style="font-weight:400">' + esc(t('wlGroupUsersHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-dt-allowed-group-users>' +
           (bot.allowedGroupUsers || []).map(u => makeDtTag(u)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入钉钉昵称后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phDingtalkNick')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>群白名单 <span class="hint" style="font-weight:400">（按群名限制可使用的群；留空则所有群均可；单聊不受此限制）</span></label>' +
+        '<label>' + esc(t('wlConvs')) + ' <span class="hint" style="font-weight:400">' + esc(t('wlConvsHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-dt-allowed-convs>' +
           (bot.allowedConversations || []).map(c => makeDtTag(c)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入群名称后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phGroupName')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -1600,13 +2361,13 @@ function onDtBotNameInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const clientId = card.querySelector('[data-field=clientId]').value.trim();
-  titleEl.textContent = inp.value.trim() || clientId || '未配置';
+  titleEl.textContent = inp.value.trim() || clientId || t('notConfigured');
 }
 function onDtBotClientIdInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const name = card.querySelector('[data-field=name]').value.trim();
-  titleEl.textContent = name || inp.value.trim() || '未配置';
+  titleEl.textContent = name || inp.value.trim() || t('notConfigured');
 }
 
 function renumberDtBots() {
@@ -1617,7 +2378,7 @@ function renumberDtBots() {
 
 // 通用 tag 渲染与输入处理（群用户白名单、单聊用户白名单、群白名单共用）
 function makeDtTag(name) {
-  return '<span class="tag"><span>' + esc(name) + '</span><button type="button" onclick="this.parentElement.remove()" title="移除"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
+  return '<span class="tag"><span>' + esc(name) + '</span><button type="button" onclick="this.parentElement.remove()" title="' + esc(t('removeTag')) + '"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
 }
 function dtTagKey(e, inp) {
   if (e.key !== 'Enter' && e.key !== ',') return;
@@ -1633,20 +2394,20 @@ function makeDtRouteRow(route) {
   const product = r.product || 'sls';
   return '<div class="list-row" style="gap:6px;align-items:flex-start;flex-wrap:wrap">' +
     '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:200px">' +
-      '<input type="text" class="flex1" placeholder="群名称（精确匹配）" value="' + esc(r.conversationTitle || '') + '" data-dt-route-title>' +
+      '<input type="text" class="flex1" placeholder="' + esc(t('phRouteConvTitle')) + '" value="' + esc(r.conversationTitle || '') + '" data-dt-route-title>' +
       '<span style="color:var(--text3);font-size:12px;flex-shrink:0">→</span>' +
-      '<input type="text" class="flex1" placeholder="数字员工 ID" value="' + esc(r.employeeName || '') + '" data-dt-route-employee>' +
+      '<input type="text" class="flex1" placeholder="' + esc(t('phRouteEmployee')) + '" value="' + esc(r.employeeName || '') + '" data-dt-route-employee>' +
     '</div>' +
     '<div style="display:flex;gap:6px;align-items:center;flex:1;min-width:300px">' +
       '<select data-dt-route-product style="width:80px" onchange="updateRouteVariableFields(this)">' +
         '<option value="sls"' + (product === 'sls' ? ' selected' : '') + '>SLS</option>' +
         '<option value="cms"' + (product === 'cms' ? ' selected' : '') + '>CMS</option>' +
       '</select>' +
-      '<input type="text" placeholder="Project（可选）" value="' + esc(r.project || '') + '" data-dt-route-project style="flex:1;display:' + (product === 'sls' ? 'block' : 'none') + '">' +
-      '<input type="text" placeholder="Region" value="' + esc(r.region || '') + '" data-dt-route-region style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
-      '<input type="text" placeholder="Workspace（可选）" value="' + esc(r.workspace || '') + '" data-dt-route-workspace style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="' + esc(t('projectOptional')) + '" value="' + esc(r.project || '') + '" data-dt-route-project style="flex:1;display:' + (product === 'sls' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="' + esc(t('labelRegionPlain')) + '" value="' + esc(r.region || '') + '" data-dt-route-region style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
+      '<input type="text" placeholder="' + esc(t('phWsOptional')) + '" value="' + esc(r.workspace || '') + '" data-dt-route-workspace style="flex:1;display:' + (product === 'cms' ? 'block' : 'none') + '">' +
     '</div>' +
-    '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="删除路由">' +
+    '<button type="button" class="btn btn-danger btn-icon" onclick="this.closest(\'.list-row\').remove()" title="' + esc(t('deleteRoute')) + '">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
     '</button>' +
   '</div>';
@@ -1712,26 +2473,26 @@ function makeFeishuBotCard(bot, idx) {
     '<div class="dt-bot-header">' +
       '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
       '<span class="dt-bot-type" style="background:rgba(39,103,73,.1);color:#276749">Feishu</span>' +
-      '<div class="dt-bot-title">' + esc(bot.name || bot.appId || '未配置') + '</div>' +
+      '<div class="dt-bot-title">' + esc(bot.name || bot.appId || t('notConfigured')) + '</div>' +
       '<label class="toggle" style="margin-left:auto">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
         '<span class="toggle-thumb"></span>' +
       '</label>' +
-      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeFeishuBot(this)">删除</button>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeFeishuBot(this)">' + esc(t('delete')) + '</button>' +
     '</div>' +
     '<div class="dt-bot-fields">' +
       '<div class="field field-full">' +
-        '<label>机器人名称</label>' +
-        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="例如：飞书 HR 助手" autocomplete="off" oninput="onFeishuBotNameInput(this)">' +
-        '<span class="hint">仅用于在此页面标识，不影响功能</span>' +
+        '<label>' + esc(t('botName')) + '</label>' +
+        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="' + esc(t('botNamePhFs')) + '" autocomplete="off" oninput="onFeishuBotNameInput(this)">' +
+        '<span class="hint">' + esc(t('botNameHint')) + '</span>' +
       '</div>' +
       '<div class="field">' +
-        '<label>App ID <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('fsAppId')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="appId" value="' + esc(bot.appId || '') + '" placeholder="cli_xxxxxxxxxxxxxxxx" autocomplete="off" oninput="onFeishuBotAppIdInput(this)">' +
       '</div>' +
       '<div class="field">' +
-        '<label>App Secret <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('fsAppSecret')) + ' <span style="color:var(--red)">*</span></label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="appSecret" value="' + esc(bot.appSecret || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -1740,41 +2501,41 @@ function makeFeishuBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>默认数字员工 ID（EmployeeId）</label>' +
+        '<label>' + esc(t('defaultEmployeeId')) + '</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
-        '<label>对接产品</label>' +
+        '<label>' + esc(t('productIntegration')) + '</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.fs-bot-card\'))">' +
           '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
           '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
         '</select>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Project</label>' +
-        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+        '<label>' + esc(t('labelProjectPlain')) + '</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="' + esc(t('projectOptional')) + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Region</label>' +
+        '<label>' + esc(t('labelRegionPlain')) + '</label>' +
         '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Workspace</label>' +
+        '<label>' + esc(t('labelWorkspacePlain')) + '</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full" data-validate-field>' +
         '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-          ' 校验 Region / Workspace' +
+          ' ' + esc(t('validateWsBtn')) +
         '</button>' +
         '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Verification Token <span class="hint">（WebSocket 模式可留空）</span></label>' +
+        '<label>' + esc(t('fsVerToken')) + ' <span class="hint">' + esc(t('fsVerTokenHint')) + '</span></label>' +
         '<input type="text" data-field="verificationToken" value="' + esc(bot.verificationToken || '') + '" placeholder="" autocomplete="off">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Event Encrypt Key <span class="hint">（WebSocket 模式可留空）</span></label>' +
+        '<label>' + esc(t('fsEncryptKey')) + ' <span class="hint">' + esc(t('fsEncryptHint')) + '</span></label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="eventEncryptKey" value="' + esc(bot.eventEncryptKey || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -1789,22 +2550,22 @@ function makeFeishuBotCard(bot, idx) {
           '<span class="toggle-thumb"></span>' +
         '</label>' +
         '<div style="display:flex;flex-direction:column;gap:2px">' +
-          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
-          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">' + esc(t('conciseReply')) + '</span>' +
+          '<span class="hint" style="margin:0">' + esc(t('conciseReplyHint')) + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>用户白名单（open_id）<span class="hint"> 留空则允许所有用户</span></label>' +
+        '<label>' + esc(t('fsWlUsers')) + '<span class="hint"> ' + esc(t('fsWlUsersHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-feishu-allowed-users>' +
           (bot.allowedUsers || []).map(u => makeDtTag(u)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入 open_id 后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phOpenIdEnter')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>群聊白名单（chat_id）<span class="hint"> 留空则允许所有群聊</span></label>' +
+        '<label>' + esc(t('fsWlChats')) + '<span class="hint"> ' + esc(t('fsWlChatsHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-feishu-allowed-chats>' +
           (bot.allowedChats || []).map(c => makeDtTag(c)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入 chat_id 后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phChatIdEnter')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -1827,13 +2588,13 @@ function onFeishuBotNameInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const appId = card.querySelector('[data-field=appId]').value.trim();
-  titleEl.textContent = inp.value.trim() || appId || '未配置';
+  titleEl.textContent = inp.value.trim() || appId || t('notConfigured');
 }
 function onFeishuBotAppIdInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const name = card.querySelector('[data-field=name]').value.trim();
-  titleEl.textContent = name || inp.value.trim() || '未配置';
+  titleEl.textContent = name || inp.value.trim() || t('notConfigured');
 }
 
 function renumberFeishuBots() {
@@ -1877,30 +2638,30 @@ function makeWeComBotCard(bot, idx) {
     '<div class="dt-bot-header">' +
       '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
       '<span class="dt-bot-type" style="background:rgba(197,48,48,.1);color:#c53030">WeCom</span>' +
-      '<div class="dt-bot-title">' + esc(bot.name || bot.corpId || '未配置') + '</div>' +
+      '<div class="dt-bot-title">' + esc(bot.name || bot.corpId || t('notConfigured')) + '</div>' +
       '<label class="toggle" style="margin-left:auto">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
         '<span class="toggle-thumb"></span>' +
       '</label>' +
-      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComBot(this)">删除</button>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComBot(this)">' + esc(t('delete')) + '</button>' +
     '</div>' +
     '<div class="dt-bot-fields">' +
       '<div class="field field-full">' +
-        '<label>机器人名称</label>' +
-        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="例如：企业微信 HR 助手" autocomplete="off" oninput="onWeComBotNameInput(this)">' +
-        '<span class="hint">仅用于在此页面标识，不影响功能</span>' +
+        '<label>' + esc(t('botName')) + '</label>' +
+        '<input type="text" data-field="name" value="' + esc(bot.name || '') + '" placeholder="' + esc(t('botNamePhWc')) + '" autocomplete="off" oninput="onWeComBotNameInput(this)">' +
+        '<span class="hint">' + esc(t('botNameHint')) + '</span>' +
       '</div>' +
       '<div class="field">' +
-        '<label>企业ID（CorpID）<span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('wcCorpId')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="corpId" value="' + esc(bot.corpId || '') + '" placeholder="ww..." autocomplete="off" oninput="onWeComBotCorpIdInput(this)">' +
       '</div>' +
       '<div class="field">' +
-        '<label>AgentID <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('wcAgentId')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="number" data-field="agentId" value="' + esc(bot.agentId || '') + '" placeholder="1000002">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Secret <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('wcSecret')) + ' <span style="color:var(--red)">*</span></label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="secret" value="' + esc(bot.secret || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -1909,41 +2670,41 @@ function makeWeComBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>默认数字员工 ID（EmployeeId）</label>' +
+        '<label>' + esc(t('defaultEmployeeId')) + '</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
-        '<label>对接产品</label>' +
+        '<label>' + esc(t('productIntegration')) + '</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.wc-bot-card\'))">' +
           '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
           '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
         '</select>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Project</label>' +
-        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+        '<label>' + esc(t('labelProjectPlain')) + '</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="' + esc(t('projectOptional')) + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Region</label>' +
+        '<label>' + esc(t('labelRegionPlain')) + '</label>' +
         '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Workspace</label>' +
+        '<label>' + esc(t('labelWorkspacePlain')) + '</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full" data-validate-field>' +
         '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-          ' 校验 Region / Workspace' +
+          ' ' + esc(t('validateWsBtn')) +
         '</button>' +
         '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>回调 Token <span style="color:var(--red)">*</span></label>' +
-        '<input type="text" data-field="token" value="' + esc(bot.token || '') + '" placeholder="自定义 Token（用于验证消息来源）" autocomplete="off">' +
+        '<label>' + esc(t('wcCallbackToken')) + ' <span style="color:var(--red)">*</span></label>' +
+        '<input type="text" data-field="token" value="' + esc(bot.token || '') + '" placeholder="' + esc(t('wcCallbackTokenPh')) + '" autocomplete="off">' +
       '</div>' +
       '<div class="field">' +
-        '<label>EncodingAESKey <span style="color:var(--red)">*</span> <span class="hint">（43位）</span></label>' +
+        '<label>' + esc(t('wcAesKey')) + ' <span style="color:var(--red)">*</span> <span class="hint">' + esc(t('wcAesHint')) + '</span></label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="encodingAESKey" value="' + esc(bot.encodingAESKey || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -1952,9 +2713,9 @@ function makeWeComBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>回调路径（CallbackPath）</label>' +
+        '<label>' + esc(t('wcCallbackPath')) + '</label>' +
         '<input type="text" data-field="callbackPath" value="' + esc(bot.callbackPath || '/wecom/callback') + '" placeholder="/wecom/callback">' +
-        '<span class="hint">必须以 /wecom/ 开头，与企业微信后台填写的路径一致</span>' +
+        '<span class="hint">' + esc(t('wcCallbackPathHint')) + '</span>' +
       '</div>' +
       '<div class="field field-full" style="flex-direction:row;align-items:center;gap:10px;padding-top:2px">' +
         '<label class="toggle">' +
@@ -1963,15 +2724,15 @@ function makeWeComBotCard(bot, idx) {
           '<span class="toggle-thumb"></span>' +
         '</label>' +
         '<div style="display:flex;flex-direction:column;gap:2px">' +
-          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
-          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">' + esc(t('conciseReply')) + '</span>' +
+          '<span class="hint" style="margin:0">' + esc(t('conciseReplyHint')) + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>用户白名单（userid）<span class="hint"> 留空则允许所有用户</span></label>' +
+        '<label>' + esc(t('wcWlUsers')) + '<span class="hint"> ' + esc(t('wcWlUsersHint')) + '</span></label>' +
         '<div class="tag-input-wrap" data-wecom-allowed-users>' +
           (bot.allowedUsers || []).map(u => makeDtTag(u)).join('') +
-          '<input class="tag-input" type="text" placeholder="输入 userid 后回车" onkeydown="dtTagKey(event,this)">' +
+          '<input class="tag-input" type="text" placeholder="' + esc(t('phUseridEnter')) + '" onkeydown="dtTagKey(event,this)">' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -1994,13 +2755,13 @@ function onWeComBotNameInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const corpId = card.querySelector('[data-field=corpId]').value.trim();
-  titleEl.textContent = inp.value.trim() || corpId || '未配置';
+  titleEl.textContent = inp.value.trim() || corpId || t('notConfigured');
 }
 function onWeComBotCorpIdInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
   const name = card.querySelector('[data-field=name]').value.trim();
-  titleEl.textContent = name || inp.value.trim() || '未配置';
+  titleEl.textContent = name || inp.value.trim() || t('notConfigured');
 }
 
 function renumberWeComBots() {
@@ -2045,21 +2806,21 @@ function makeWeComGroupBotCard(bot, idx) {
     '<div class="dt-bot-header">' +
       '<div class="dt-bot-num">' + (idx + 1) + '</div>' +
       '<span class="dt-bot-type" style="background:rgba(43,108,176,.1);color:#2b6cb0">WeComBot</span>' +
-      '<div class="dt-bot-title">' + esc(bot.botId || '未配置') + '</div>' +
+      '<div class="dt-bot-title">' + esc(bot.botId || t('notConfigured')) + '</div>' +
       '<label class="toggle" style="margin-left:auto">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
         '<span class="toggle-thumb"></span>' +
       '</label>' +
-      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComGroupBot(this)">删除</button>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWeComGroupBot(this)">' + esc(t('delete')) + '</button>' +
     '</div>' +
     '<div class="dt-bot-fields">' +
       '<div class="field">' +
-        '<label>机器人 ID（BotID）<span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('wcbBotId')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="botId" value="' + esc(bot.botId || '') + '" placeholder="aibXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" oninput="onWeComGroupBotIdInput(this)">' +
       '</div>' +
       '<div class="field">' +
-        '<label>机器人 Secret（BotSecret）<span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('wcbBotSecret')) + ' <span style="color:var(--red)">*</span></label>' +
         '<div class="input-wrap">' +
           '<input type="password" data-field="botSecret" value="' + esc(bot.botSecret || '') + '" autocomplete="new-password">' +
           '<button class="eye-btn" onclick="toggleEyeEl(this.previousElementSibling,this)" tabindex="-1">' +
@@ -2068,32 +2829,32 @@ function makeWeComGroupBotCard(bot, idx) {
         '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>默认数字员工 ID（EmployeeId）</label>' +
+        '<label>' + esc(t('defaultEmployeeId')) + '</label>' +
         '<input type="text" data-field="employeeName" value="' + esc(bot.employeeName || '') + '" placeholder="apsara-ops">' +
       '</div>' +
       '<div class="field">' +
-        '<label>对接产品</label>' +
+        '<label>' + esc(t('productIntegration')) + '</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleBotVariableFields(this.closest(\'.wcb-bot-card\'))">' +
           '<option value="sls"' + (bot.product === 'sls' || !bot.product ? ' selected' : '') + '>SLS</option>' +
           '<option value="cms"' + (bot.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
         '</select>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Project</label>' +
-        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="Project（可选）">' +
+        '<label>' + esc(t('labelProjectPlain')) + '</label>' +
+        '<input type="text" data-field="project" value="' + esc(bot.project || '') + '" placeholder="' + esc(t('projectOptional')) + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Region</label>' +
+        '<label>' + esc(t('labelRegionPlain')) + '</label>' +
         '<input type="text" data-field="region" value="' + esc(bot.region || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Workspace</label>' +
+        '<label>' + esc(t('labelWorkspacePlain')) + '</label>' +
         '<input type="text" data-field="workspace" value="' + esc(bot.workspace || '') + '" placeholder="">' +
       '</div>' +
       '<div class="field field-full" data-validate-field>' +
         '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-          ' 校验 Region / Workspace' +
+          ' ' + esc(t('validateWsBtn')) +
         '</button>' +
         '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
@@ -2104,8 +2865,8 @@ function makeWeComGroupBotCard(bot, idx) {
           '<span class="toggle-thumb"></span>' +
         '</label>' +
         '<div style="display:flex;flex-direction:column;gap:2px">' +
-          '<span style="font-size:13px;font-weight:500;color:var(--text)">简洁回复</span>' +
-          '<span class="hint" style="margin:0">开启后回复内容更精简，适合在 IM 中直接阅读</span>' +
+          '<span style="font-size:13px;font-weight:500;color:var(--text)">' + esc(t('conciseReply')) + '</span>' +
+          '<span class="hint" style="margin:0">' + esc(t('conciseReplyHint')) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -2127,7 +2888,7 @@ function removeWeComGroupBot(btn) {
 function onWeComGroupBotIdInput(inp) {
   const card = inp.closest('.dt-bot-card');
   const titleEl = card.querySelector('.dt-bot-title');
-  titleEl.textContent = inp.value.trim() || '未配置';
+  titleEl.textContent = inp.value.trim() || t('notConfigured');
 }
 
 function renumberWeComGroupBots() {
@@ -2168,7 +2929,7 @@ function addApiKeyRow(value) {
   div.className = 'list-row';
   div.innerHTML =
     '<input type="text" class="flex1" placeholder="sk-your-api-key" value="' + esc(value) + '" ' + dis + '>' +
-    '<button class="btn btn-danger btn-icon" onclick="this.parentElement.remove()" ' + dis + ' title="删除">' +
+    '<button class="btn btn-danger btn-icon" onclick="this.parentElement.remove()" ' + dis + ' title="' + esc(t('delete')) + '">' +
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
     '</button>';
   document.getElementById('apikeys-list').appendChild(div);
@@ -2189,6 +2950,11 @@ function populate(data) {
   setVal('g-port', g.port || 8080);
   setVal('g-tz', g.timeZone || 'Asia/Shanghai');
   setVal('g-lang', g.language || 'zh');
+  (function syncLangFromSelect() {
+    const gl = document.getElementById('g-lang');
+    currentLang = (gl && gl.value === 'en') ? 'en' : 'zh';
+    document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+  })();
   document.getElementById('g-bind-thread-to-process').checked =
     g.bindThreadToProcess !== false;
   setVal('g-product', g.product || 'sls');
@@ -2233,7 +2999,7 @@ function populate(data) {
   setVal('a-oidc-redirect', oidc.redirectURL);
   setVal('a-oidc-scopes', (oidc.scopes || []).join(' '));
   setVal('a-oidc-username-claim', oidc.usernameClaim);
-  setVal('a-oidc-display-name', oidc.displayName || 'OIDC 登录');
+  setVal('a-oidc-display-name', oidc.displayName || '');
   updateLDAPCardVisibility();
   updateOIDCCardVisibility();
   updateOIDCRedirectDisplay();
@@ -2250,6 +3016,8 @@ function populate(data) {
   renderScheduledTasks(data.scheduledTasks || []);
   updateAllTaskVariableFields();
 
+  applyI18n();
+  onAKFieldChange();
   // 记录当前 AK 快照（加载完成 = 已知状态，不需要重新测试）
   markAKTested();
 }
@@ -2399,22 +3167,24 @@ function updateAllTaskVariableFields() {
 }
 
 // ── Scheduled tasks ───────────────────────────────────────────────────────
-const CRON_EXAMPLES = [
-  { label: '每5分钟',           value: '*/5 * * * *'  },
-  { label: '每15分钟',          value: '*/15 * * * *' },
-  { label: '每30分钟',          value: '*/30 * * * *' },
-  { label: '每小时整点',        value: '0 * * * *'    },
-  { label: '每天 09:00',        value: '0 9 * * *'    },
-  { label: '工作日 09:00',      value: '0 9 * * 1-5'  },
-  { label: '每天 08:30',        value: '30 8 * * *'   },
-  { label: '每周一 09:00',      value: '0 9 * * 1'    },
-  { label: '每天 18:00',        value: '0 18 * * *'   },
-];
+function getCronExamples() {
+  return [
+    { label: t('cronEvery5m'),    value: '*/5 * * * *'  },
+    { label: t('cronEvery15m'),   value: '*/15 * * * *' },
+    { label: t('cronEvery30m'),   value: '*/30 * * * *' },
+    { label: t('cronHourly'),     value: '0 * * * *'    },
+    { label: t('cronDaily9'),     value: '0 9 * * *'    },
+    { label: t('cronWeekday9'),   value: '0 9 * * 1-5'  },
+    { label: t('cronDaily830'),   value: '30 8 * * *'   },
+    { label: t('cronMon9'),       value: '0 9 * * 1'    },
+    { label: t('cronDaily18'),   value: '0 18 * * *'   },
+  ];
+}
 
 function renderScheduledTasks(tasks) {
   const container = document.getElementById('tasks-list');
   container.innerHTML = '';
-  (tasks || []).forEach((t, i) => container.appendChild(makeTaskCard(t, i)));
+  (tasks || []).forEach((task, i) => container.appendChild(makeTaskCard(task, i)));
   updateAllTaskVariableFields();
 }
 
@@ -2425,29 +3195,29 @@ function makeWebhookItem(wh) {
   var whTitle = wh.title || '';
   var titleField = whMsg === 'text' ? 'style="display:none"' : '';
   return '<div class="webhook-item" style="position:relative;border:1px solid var(--border2);border-radius:var(--radius);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<button class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px;padding:2px 8px;font-size:11px" onclick="removeWebhookItem(this)">删除</button>' +
+    '<button class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px;padding:2px 8px;font-size:11px" onclick="removeWebhookItem(this)">' + esc(t('webhookDel')) + '</button>' +
     '<div class="field">' +
-      '<label>平台类型 <span style="color:var(--red)">*</span></label>' +
+      '<label>' + esc(t('platformType')) + ' <span style="color:var(--red)">*</span></label>' +
       '<select data-field="webhookType" onchange="onWebhookTypeChange(this)">' +
-        '<option value=""' + (!whType ? ' selected' : '') + '>请选择...</option>' +
-        '<option value="dingtalk"' + (whType === 'dingtalk' ? ' selected' : '') + '>钉钉（DingTalk）</option>' +
-        '<option value="feishu"'   + (whType === 'feishu'   ? ' selected' : '') + '>飞书（Feishu）</option>' +
-        '<option value="wecom"'    + (whType === 'wecom'    ? ' selected' : '') + '>企业微信（WeCom）</option>' +
+        '<option value=""' + (!whType ? ' selected' : '') + '>' + esc(t('selectPlease')) + '</option>' +
+        '<option value="dingtalk"' + (whType === 'dingtalk' ? ' selected' : '') + '>' + esc(t('platDingtalk')) + '</option>' +
+        '<option value="feishu"'   + (whType === 'feishu'   ? ' selected' : '') + '>' + esc(t('platFeishu')) + '</option>' +
+        '<option value="wecom"'    + (whType === 'wecom'    ? ' selected' : '') + '>' + esc(t('platWecom')) + '</option>' +
       '</select>' +
     '</div>' +
     '<div class="field">' +
-      '<label>消息类型</label>' +
+      '<label>' + esc(t('msgType')) + '</label>' +
       '<select data-field="webhookMsgType" onchange="onMsgTypeChange(this)">' +
         buildMsgTypeOptions(whType, whMsg) +
       '</select>' +
     '</div>' +
     '<div class="field field-full">' +
-      '<label>Webhook URL <span style="color:var(--red)">*</span></label>' +
+      '<label>' + esc(t('webhookUrl')) + ' <span style="color:var(--red)">*</span></label>' +
       '<input type="text" data-field="webhookUrl" value="' + esc(whUrl) + '" placeholder="https://oapi.dingtalk.com/robot/send?access_token=..." autocomplete="off">' +
     '</div>' +
     '<div class="field field-full" data-title-field ' + titleField + '>' +
-      '<label>消息标题 <span class="hint">（markdown/post 格式时使用）</span></label>' +
-      '<input type="text" data-field="webhookTitle" value="' + esc(whTitle) + '" placeholder="每日通知">' +
+      '<label>' + esc(t('msgTitle')) + ' <span class="hint">' + esc(t('msgTitleHint')) + '</span></label>' +
+      '<input type="text" data-field="webhookTitle" value="' + esc(whTitle) + '" placeholder="' + esc(t('msgTitlePh')) + '">' +
     '</div>' +
   '</div>';
 }
@@ -2455,7 +3225,7 @@ function makeWebhookItem(wh) {
 function addWebhookItem(btn) {
   var container = btn.closest('.webhook-section').querySelector('.webhooks-container');
   var tmp = document.createElement('div');
-  tmp.innerHTML = makeWebhookItem({ type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' });
+  tmp.innerHTML = makeWebhookItem({ type: 'dingtalk', msgType: 'markdown', title: t('defaultTaskNotify') });
   container.appendChild(tmp.firstElementChild);
 }
 
@@ -2467,7 +3237,7 @@ function makeTaskCard(task, idx, expanded) {
   const div = document.createElement('div');
   div.className = 'task-card' + (expanded ? ' expanded' : '');
   const checkedAttr = task.enabled ? 'checked' : '';
-  const cronChips = CRON_EXAMPLES.map(e =>
+  const cronChips = getCronExamples().map(e =>
     '<span class="cron-chip" onclick="fillCron(this,\'' + esc(e.value) + '\')" title="' + esc(e.value) + '">' + esc(e.label) + '</span>'
   ).join('');
   // 兼容旧数据：优先用 webhooks 数组，fallback 到单个 webhook
@@ -2480,73 +3250,73 @@ function makeTaskCard(task, idx, expanded) {
       '<svg class="task-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
       '<div class="task-card-num">' + (idx + 1) + '</div>' +
       '<span class="task-card-type">Scheduler</span>' +
-      '<div class="task-card-title">' + esc(task.name || '未命名任务') + '</div>' +
+      '<div class="task-card-title">' + esc(task.name || t('taskUnnamed')) + '</div>' +
       '<span class="task-card-meta">' + esc(task.cron || '') + '</span>' +
       '<label class="toggle" style="margin-left:8px" onclick="event.stopPropagation()">' +
         '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
         '<span class="toggle-track"></span>' +
         '<span class="toggle-thumb"></span>' +
       '</label>' +
-      '<button class="btn btn-danger btn-sm" style="margin-left:6px" onclick="event.stopPropagation();removeScheduledTask(this)">删除</button>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:6px" onclick="event.stopPropagation();removeScheduledTask(this)">' + esc(t('delete')) + '</button>' +
     '</div>' +
     '<div class="task-card-body">' +
     '<div class="task-card-fields">' +
       '<div class="field">' +
-        '<label>任务名称 <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('taskName')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="name" value="' + esc(task.name || '') + '" placeholder="daily-standup" autocomplete="off" oninput="onTaskNameInput(this)">' +
-        '<span class="hint">唯一标识，不含空格</span>' +
+        '<span class="hint">' + esc(t('taskNameHint')) + '</span>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Cron 表达式 <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('taskCron')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="cron" value="' + esc(task.cron || '') + '" placeholder="0 9 * * 1-5" autocomplete="off" oninput="onCronInput(this)">' +
         '<div class="cron-hint">' + cronChips + '</div>' +
       '</div>' +
       '<div class="field">' +
-        '<label>数字员工 ID <span style="color:var(--red)">*</span></label>' +
+        '<label>' + esc(t('taskEmployee')) + ' <span style="color:var(--red)">*</span></label>' +
         '<input type="text" data-field="employeeName" value="' + esc(task.employeeName || '') + '" placeholder="apsara-ops" autocomplete="off">' +
       '</div>' +
       '<div class="field">' +
-        '<label>对接产品</label>' +
+        '<label>' + esc(t('productIntegration')) + '</label>' +
         '<select data-field="product" style="width:100%" onchange="updateSingleTaskVariableFields(this.closest(\'.task-card\'))">' +
           '<option value="sls"' + (task.product === 'sls' || !task.product ? ' selected' : '') + '>SLS</option>' +
           '<option value="cms"' + (task.product === 'cms' ? ' selected' : '') + '>CMS</option>' +
         '</select>' +
       '</div>' +
       '<div class="field" data-task-project-field>' +
-        '<label>Project</label>' +
-        '<input type="text" data-field="project" value="' + esc(task.project || '') + '" placeholder="Project（可选）">' +
+        '<label>' + esc(t('labelProjectPlain')) + '</label>' +
+        '<input type="text" data-field="project" value="' + esc(task.project || '') + '" placeholder="' + esc(t('projectOptional')) + '">' +
       '</div>' +
       '<div class="field" data-task-region-field style="display:none">' +
-        '<label>Region</label>' +
+        '<label>' + esc(t('labelRegionPlain')) + '</label>' +
         '<input type="text" data-field="region" value="' + esc(task.region || '') + '">' +
       '</div>' +
       '<div class="field" data-task-workspace-field style="display:none">' +
-        '<label>Workspace</label>' +
+        '<label>' + esc(t('labelWorkspacePlain')) + '</label>' +
         '<input type="text" data-field="workspace" value="' + esc(task.workspace || '') + '">' +
       '</div>' +
       '<div class="field field-full" data-task-validate-field style="display:none">' +
         '<button class="btn btn-secondary" onclick="validateWorkspace(this)" style="flex-shrink:0">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-          ' 校验 Region / Workspace' +
+          ' ' + esc(t('validateWsBtn')) +
         '</button>' +
         '<div class="validate-ws-result" style="display:none;margin-top:8px;padding:7px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5"></div>' +
       '</div>' +
       '<div class="field field-full">' +
-        '<label>Prompt（发送给数字员工的问题）<span style="color:var(--red)"> *</span></label>' +
-        '<textarea class="prompt-input" data-field="prompt" placeholder="请总结昨日工作进展和今日计划">' + esc(task.prompt || '') + '</textarea>' +
+        '<label>' + esc(t('taskPrompt')) + '<span style="color:var(--red)"> *</span></label>' +
+        '<textarea class="prompt-input" data-field="prompt" placeholder="' + esc(t('taskPromptPh')) + '">' + esc(task.prompt || '') + '</textarea>' +
         '<div style="margin-top:8px;display:flex;align-items:center;gap:8px">' +
-          '<label class="toggle" title="开启后在 Prompt 末尾追加「简化最终输出 适合聊天工具上阅读」">' +
+          '<label class="toggle" title="' + esc(t('conciseToggleTitle')) + '">' +
             '<input type="checkbox" data-field="conciseReply"' + (task.conciseReply ? ' checked' : '') + '>' +
             '<span class="toggle-track"></span>' +
             '<span class="toggle-thumb"></span>' +
           '</label>' +
-          '<span style="font-size:12px;color:var(--text2)">简洁输出 <span class="hint">（追加指令让回复更简短，适合 IM 阅读）</span></span>' +
+          '<span style="font-size:12px;color:var(--text2)">' + esc(t('conciseOutput')) + ' <span class="hint">' + esc(t('conciseOutputHint')) + '</span></span>' +
         '</div>' +
       '</div>' +
       '<div class="field field-full" style="margin-bottom:0">' +
         '<div class="webhook-section">' +
-          '<div class="webhook-section-title">&#128279; Webhook 推送目标' +
-            '<button class="btn btn-secondary btn-sm" style="margin-left:10px;padding:2px 10px;font-size:11px" onclick="addWebhookItem(this)">+ 添加</button>' +
+          '<div class="webhook-section-title">' + esc(t('webhookTargets')) +
+            '<button class="btn btn-secondary btn-sm" style="margin-left:10px;padding:2px 10px;font-size:11px" onclick="addWebhookItem(this)">' + esc(t('webhookAdd')) + '</button>' +
           '</div>' +
           '<div class="webhooks-container" style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' +
             webhookItemsHTML +
@@ -2557,9 +3327,9 @@ function makeTaskCard(task, idx, expanded) {
         '<div class="task-trigger-bar">' +
           '<button class="btn btn-trigger" onclick="triggerTask(this)">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
-            '立即触发测试' +
+            esc(t('triggerTest')) +
           '</button>' +
-          '<span class="trigger-hint">使用当前表单内容立即执行一次，无需先保存</span>' +
+          '<span class="trigger-hint">' + esc(t('triggerHint')) + '</span>' +
         '</div>' +
         '<div class="task-trigger-result" style="display:none;margin-top:8px;padding:10px 14px;border-radius:var(--radius);font-size:12px;line-height:1.7;word-break:break-all;white-space:pre-wrap"></div>' +
       '</div>' +
@@ -2577,8 +3347,8 @@ function addScheduledTask() {
     employeeName: 'apsara-ops',
     conciseReply: true,
     product: defaultProduct,
-    webhook: { type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' },
-    webhooks: [{ type: 'dingtalk', msgType: 'markdown', title: '定时任务通知' }],
+    webhook: { type: 'dingtalk', msgType: 'markdown', title: t('defaultTaskNotify') },
+    webhooks: [{ type: 'dingtalk', msgType: 'markdown', title: t('defaultTaskNotify') }],
   }, container.children.length, true);
   container.appendChild(card);
   updateSingleTaskVariableFields(card);
@@ -2601,7 +3371,7 @@ function toggleTaskCard(headerEl) {
 
 function onTaskNameInput(inp) {
   const card = inp.closest('.task-card');
-  card.querySelector('.task-card-title').textContent = inp.value.trim() || '未命名任务';
+  card.querySelector('.task-card-title').textContent = inp.value.trim() || t('taskUnnamed');
 }
 
 function onCronInput(inp) {
@@ -2620,29 +3390,31 @@ function fillCron(chip, value) {
 }
 
 // 各平台支持的消息类型
-const WEBHOOK_MSG_TYPES = {
-  dingtalk: [
-    { value: 'text',     label: 'text（纯文本）' },
-    { value: 'markdown', label: 'markdown（Markdown）' },
-  ],
-  wecom: [
-    { value: 'text',     label: 'text（纯文本）' },
-    { value: 'markdown', label: 'markdown（Markdown）' },
-  ],
-  feishu: [
-    { value: 'text',     label: 'text（纯文本）' },
-    { value: 'post',     label: 'post（富文本）' },
-  ],
-};
+function getWebhookMsgTypes() {
+  return {
+    dingtalk: [
+      { value: 'text',     label: t('msgText') },
+      { value: 'markdown', label: t('msgMarkdown') },
+    ],
+    wecom: [
+      { value: 'text',     label: t('msgText') },
+      { value: 'markdown', label: t('msgMarkdown') },
+    ],
+    feishu: [
+      { value: 'text',     label: t('msgText') },
+      { value: 'post',     label: t('msgPost') },
+    ],
+  };
+}
 
 function buildMsgTypeOptions(platform, selected) {
-  const types = WEBHOOK_MSG_TYPES[platform] || WEBHOOK_MSG_TYPES.dingtalk;
-  // 如果当前选中值在新列表中不存在，回退到第一个
-  const validValues = types.map(t => t.value);
+  const map = getWebhookMsgTypes();
+  const types = map[platform] || map.dingtalk;
+  const validValues = types.map(function (row) { return row.value; });
   const current = validValues.includes(selected) ? selected : types[0].value;
-  return types.map(t =>
-    '<option value="' + t.value + '"' + (t.value === current ? ' selected' : '') + '>' + t.label + '</option>'
-  ).join('');
+  return types.map(function (row) {
+    return '<option value="' + row.value + '"' + (row.value === current ? ' selected' : '') + '>' + esc(row.label) + '</option>';
+  }).join('');
 }
 
 function onWebhookTypeChange(sel) {
@@ -2654,7 +3426,7 @@ function onWebhookTypeChange(sel) {
   if (sel.value === 'dingtalk') {
     var titleInput = item.querySelector('[data-field=webhookTitle]');
     if (titleInput && !titleInput.value.trim()) {
-      titleInput.value = '定时任务通知';
+      titleInput.value = t('defaultTaskNotify');
     }
   }
   onMsgTypeChange(msgSel);
@@ -2726,13 +3498,13 @@ async function triggerTask(btn) {
     webhooks:     collectWebhooksFromCard(card),
   };
 
-  if (!task.employeeName) { showTaskResult(resultEl, 'error', '❌ 请先填写数字员工 ID'); return; }
-  if (!task.prompt)        { showTaskResult(resultEl, 'error', '❌ 请先填写 Prompt'); return; }
+  if (!task.employeeName) { showTaskResult(resultEl, 'error', t('errFillEmployee')); return; }
+  if (!task.prompt)        { showTaskResult(resultEl, 'error', t('errFillPrompt')); return; }
 
   const origHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div>&nbsp;执行中…';
-  showTaskResult(resultEl, 'loading', '正在向数字员工发送请求，请稍候…');
+  btn.innerHTML = '<div class="spinner"></div>&nbsp;' + esc(t('running'));
+  showTaskResult(resultEl, 'loading', t('taskSending'));
 
   try {
     const res = await fetch('/admin-ui/api/trigger-task?token=' + encodeURIComponent(token), {
@@ -2742,23 +3514,23 @@ async function triggerTask(btn) {
     });
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      showTaskResult(resultEl, 'error', '❌ ' + (data.error || '触发失败'));
+      showTaskResult(resultEl, 'error', t('errPrefix') + (data.error || t('triggerFailed')));
     } else {
-      let msg = '✅ 数字员工回复：\n' + (data.reply || '（空）');
+      let msg = t('replyPrefix') + (data.reply || t('emptyParen'));
       if (task.webhooks && task.webhooks.length) {
         if (data.webhookSent) {
-          msg += '\n\n✅ Webhook 推送成功';
+          msg += t('webhookOk');
         }
         if (data.webhookErr) {
-          msg += '\n\n⚠️ Webhook 推送失败：' + data.webhookErr;
+          msg += t('webhookFail') + data.webhookErr;
         }
       } else {
-        msg += '\n\n（未配置 Webhook，跳过推送）';
+        msg += t('webhookSkip');
       }
       showTaskResult(resultEl, data.webhookSent || !(task.webhooks && task.webhooks.length) ? 'success' : 'error', msg);
     }
   } catch(e) {
-    showTaskResult(resultEl, 'error', '❌ 网络错误: ' + e.message);
+    showTaskResult(resultEl, 'error', t('errPrefix') + t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -2786,15 +3558,15 @@ function showTaskResult(el, type, msg) {
 
 // ── Load config from server ───────────────────────────────────────────────
 async function loadConfig() {
-  showStatus('loading', '正在加载配置...');
+  showStatus('loading', t('loadingConfig'));
   try {
     const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token));
     const data = await res.json();
-    if (!res.ok) { showStatus('error', '❌ ' + (data.error || '加载失败')); return; }
+    if (!res.ok) { showStatus('error', t('errPrefix') + (data.error || t('loadFailed'))); return; }
     populate(data);
     document.getElementById('status-msg').style.display = 'none';
   } catch(e) {
-    showStatus('error', '❌ 网络错误: ' + e.message);
+    showStatus('error', t('errPrefix') + t('networkErr') + e.message);
   }
 }
 
@@ -2802,8 +3574,8 @@ async function loadConfig() {
 async function doSave() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> 保存中...';
-  showStatus('loading', '正在保存并应用配置...');
+  btn.innerHTML = '<div class="spinner"></div> ' + esc(t('saving'));
+  showStatus('loading', t('savingApply'));
   try {
     const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token), {
       method: 'POST',
@@ -2812,17 +3584,17 @@ async function doSave() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showStatus('error', '❌ ' + (data.error || '保存失败'));
+      showStatus('error', t('errPrefix') + (data.error || t('saveFailed')));
     } else if (data.warning) {
-      showStatus('warning', '⚠️ ' + data.message);
+      showStatus('warning', t('warnPrefix') + data.message);
     } else {
-      showStatus('success', '✅ ' + (data.message || '保存成功'));
+      showStatus('success', t('okPrefix') + (data.message || t('saveSuccess')));
     }
   } catch(e) {
-    showStatus('error', '❌ 网络错误: ' + e.message);
+    showStatus('error', t('errPrefix') + t('networkErr') + e.message);
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 保存并应用';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>' + esc(t('saveApply')) + '</span>';
   }
 }
 
@@ -2833,11 +3605,11 @@ async function saveConfig() {
     const missing = [];
     if (!akid) missing.push('AccessKeyId');
     if (!aks)  missing.push('AccessKeySecret');
-    showStatus('warning', '⚠️ ' + missing.join(' 和 ') + ' 未填写，阿里云 CMS 功能将不可用', { label: '仍要保存', fn: 'doSave' });
+    showStatus('warning', t('warnPrefix') + missing.join(t('and')) + ' ' + t('akMissingWarn'), { label: t('saveAnyway'), fn: 'doSave' });
     return;
   }
   if (isAKDirty()) {
-    showStatus('warning', '⚠️ AK 凭据已修改但尚未验证连通性，建议先点「测试连接」确认配置正确', { label: '仍要保存', fn: 'doSave' });
+    showStatus('warning', t('warnPrefix') + t('akDirtyWarn'), { label: t('saveAnyway'), fn: 'doSave' });
     // 滚动到基础设置并高亮测试按钮
     switchTab('global');
     const btn = document.getElementById('test-ak-btn');

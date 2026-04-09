@@ -503,7 +503,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  "zh",
+		"language":  b.cmsConfig.Language,
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
