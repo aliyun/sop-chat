@@ -279,13 +279,13 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
 
-		// 立即发送"思考中"提示，让用户知道消息已收到
-		b.sendText(workCtx, chatID, "💭 思考中...")
+		// 立即发送处理中提示，让用户知道消息已收到
+		b.sendText(workCtx, chatID, "收到，正在处理中...")
 
 		threadId, err := b.getOrCreateThreadId(chatID, senderOpenID, target)
 		if err != nil {
 			log.Printf("[Feishu] 创建线程失败: %v", err)
-			b.sendText(workCtx, chatID, "❌ 创建会话失败，请稍后重试")
+			b.sendText(workCtx, chatID, "创建会话失败，请稍后重试")
 			return
 		}
 
@@ -293,7 +293,7 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 		replyText, newThreadId, err := b.queryEmployee(workCtx, userMessage, threadId, target)
 		if err != nil {
 			log.Printf("[Feishu] 调用数字员工失败: %v", err)
-			b.sendText(workCtx, chatID, "❌ "+err.Error())
+			b.sendText(workCtx, chatID, "处理失败："+err.Error())
 			return
 		}
 
@@ -309,7 +309,7 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[Feishu] 队列已满，拒绝消息 chatId=%s sender=%s", chatID, senderOpenID)
-		b.sendText(ctx, chatID, "⚠️ 消息处理中，请稍后再发。")
+		b.sendText(ctx, chatID, "当前有消息正在处理中，请稍后再发。")
 	}
 
 	return nil

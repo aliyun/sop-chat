@@ -39,9 +39,9 @@ func (s *Server) handleConfigUIPage(c *gin.Context) {
 <html lang="zh-CN"><head><meta charset="UTF-8"><title>访问被拒绝</title>
 <style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
 .box{text-align:center;padding:2.5rem 3rem;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(102,126,234,0.25);max-width:380px;}
-.icon{font-size:2.5rem;margin-bottom:1rem;}
+.icon{width:52px;height:52px;margin:0 auto 1rem;border-radius:16px;background:linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%);color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;}
 h1{color:#2d3748;font-size:1.2rem;margin-bottom:0.5rem;}p{color:#718096;font-size:0.875rem;line-height:1.6;}</style></head>
-<body><div class="box"><div class="icon">🔒</div><h1>访问被拒绝</h1><p>需要有效的访问令牌，请使用服务器启动时输出的链接。</p></div></body></html>`))
+<body><div class="box"><div class="icon">403</div><h1>访问被拒绝</h1><p>需要有效的访问令牌，请使用服务器启动时输出的链接。</p></div></body></html>`))
 		return
 	}
 	htmlBytes := embed.GetConfigHTML()

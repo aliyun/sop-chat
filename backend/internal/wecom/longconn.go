@@ -490,13 +490,13 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
 
-		// 立即发送"思考中"提示，让用户知道消息已收到
-		b.sendStreamReply(reqID, streamID, "💭 思考中...", false)
+		// 立即发送处理中提示，让用户知道消息已收到
+		b.sendStreamReply(reqID, streamID, "收到，正在处理中...", false)
 
 		threadID, err := b.getOrCreateThreadID(fromUser, target, body.ChatID)
 		if err != nil {
 			log.Printf("[WeCom-LongConn] 创建线程失败: %v", err)
-			b.sendStreamReply(reqID, streamID, "❌ 创建会话失败，请稍后重试", true)
+			b.sendStreamReply(reqID, streamID, "创建会话失败，请稍后重试", true)
 			return
 		}
 
@@ -506,7 +506,7 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		replyText, newThreadID, err := b.queryEmployee(workCtx, userMessage, threadID, target)
 		if err != nil {
 			log.Printf("[WeCom-LongConn] 调用数字员工失败: %v", err)
-			b.sendStreamReply(reqID, streamID, "❌ "+err.Error(), true)
+			b.sendStreamReply(reqID, streamID, "处理失败："+err.Error(), true)
 			return
 		}
 
@@ -522,7 +522,7 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom-LongConn] 队列已满，拒绝消息 from=%s", fromUser)
-		b.sendStreamReply(reqID, streamID, "⚠️ 消息处理中，请稍后再发。", true)
+		b.sendStreamReply(reqID, streamID, "当前有消息正在处理中，请稍后再发。", true)
 	}
 }
 

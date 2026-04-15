@@ -241,10 +241,10 @@ func replyAtMarkdown(ctx context.Context, webhook, senderId, title, content stri
 	return chatbot.NewChatbotReplier().ReplyMessage(ctx, webhook, body)
 }
 
-// replyError 向钉钉回复一条错误提示，前缀固定为 "❌ " 以便用户识别。
+// replyError 向钉钉回复一条统一格式的错误提示，避免把内部错误直接暴露成杂乱前缀。
 func replyError(ctx context.Context, webhook string, err error) {
 	replier := chatbot.NewChatbotReplier()
-	_ = replier.SimpleReplyText(ctx, webhook, []byte("❌ "+errorMessage(err)))
+	_ = replier.SimpleReplyText(ctx, webhook, []byte("处理失败："+errorMessage(err)))
 }
 
 // onMessage 处理钉钉消息回调
@@ -326,7 +326,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		}
 
 		// 走 Markdown 路径：先告知用户已收到
-		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte("⏳ 收到，正在处理中..."))
+		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte("收到，正在处理中..."))
 
 		replyText, newThreadId, err := b.queryEmployeeWithRoute(asyncCtx, userText, threadId, route)
 		if err != nil {
@@ -369,7 +369,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	// 尝试入队：同一 key 的消息串行执行，不同 key 并发处理
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[DingTalk] 队列已满，拒绝消息 conversationId=%s sender=%s", conversationId, senderNick)
-		_ = replier.SimpleReplyText(ctx, webhook, []byte("⚠️ 消息处理中，请稍后再发。"))
+		_ = replier.SimpleReplyText(ctx, webhook, []byte("当前有消息正在处理中，请稍后再发。"))
 		return nil, nil
 	}
 

@@ -930,7 +930,7 @@ const ChatWindow = () => {
                 className={`share-button ${shareCopied ? 'copied' : ''}`} 
                 title={shareCopied ? '已复制' : '分享此对话'}
               >
-                {shareCopied ? '✓ 已复制' : '🔗 分享'}
+                {shareCopied ? '已复制' : '分享'}
               </button>
             )}
           </div>
@@ -939,7 +939,7 @@ const ChatWindow = () => {
       <div className="messages-container" ref={messagesContainerRef} onScroll={handleScroll}>
         {messages.length === 0 && (
           <div className="welcome-message">
-            <h3>👋 欢迎使用 {employee.displayName || employee.name}</h3>
+            <h3>欢迎使用 {employee.displayName || employee.name}</h3>
             <p>{employee.description || '您可以询问关于此员工的任何问题'}</p>
           </div>
         )}

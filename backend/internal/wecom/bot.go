@@ -181,13 +181,13 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		workCtx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
 
-		// 立即发送"思考中"提示，让用户知道消息已收到
-		_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "💭 思考中...")
+		// 立即发送处理中提示，让用户知道消息已收到
+		_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "收到，正在处理中...")
 
 		threadId, err := b.getOrCreateThreadId(msg.FromUserName, target)
 		if err != nil {
 			log.Printf("[WeCom] 创建线程失败: %v", err)
-			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "❌ 创建会话失败，请稍后重试")
+			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "创建会话失败，请稍后重试")
 			return
 		}
 
@@ -195,7 +195,7 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		replyText, newThreadId, err := b.queryEmployee(workCtx, userMessage, threadId, target)
 		if err != nil {
 			log.Printf("[WeCom] 调用数字员工失败: %v", err)
-			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "❌ "+err.Error())
+			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "处理失败："+err.Error())
 			return
 		}
 
@@ -228,7 +228,7 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom] 队列已满，拒绝消息 from=%s", msg.FromUserName)
-		_, _ = b.msgManager.SendTextToUser(context.Background(), msg.FromUserName, "⚠️ 消息处理中，请稍后再发。")
+		_, _ = b.msgManager.SendTextToUser(context.Background(), msg.FromUserName, "当前有消息正在处理中，请稍后再发。")
 	}
 }
 
