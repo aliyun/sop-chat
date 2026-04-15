@@ -1,4 +1,4 @@
-.PHONY: build build-frontend build-backend build-cli build-all clean clean-dist
+.PHONY: build build-frontend build-backend build-cli build-linux build-all clean clean-dist
 
 # 颜色定义
 GREEN := \033[0;32m
@@ -41,6 +41,21 @@ build-cli:
 	@echo "$(BLUE)构建 CLI 工具...$(NC)"
 	cd backend && go build -o sop-chat-cli ./cmd/sop-chat-cli
 	@echo "$(GREEN)✓ CLI 构建完成$(NC)"
+
+# 构建 Linux 版本（amd64）
+build-linux: build-frontend
+	@echo "$(GREEN)=========================================="
+	@echo "构建 Linux 版本 (amd64)"
+	@echo "==========================================$(NC)"
+	@mkdir -p $(DIST_DIR)/linux
+	@echo "$(BLUE)构建 Linux 服务端...$(NC)"
+	cd backend && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o "../$(DIST_DIR)/linux/sop-chat-server" ./cmd/sop-chat-server
+	@echo "$(GREEN)✓ Linux 服务端构建完成: $(DIST_DIR)/linux/sop-chat-server$(NC)"
+	@ls -lh "$(DIST_DIR)/linux/sop-chat-server" | awk '{print "  文件大小: " $$5}'
+	@echo "$(BLUE)构建 Linux CLI...$(NC)"
+	cd backend && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o "../$(DIST_DIR)/linux/sop-chat-cli" ./cmd/sop-chat-cli
+	@echo "$(GREEN)✓ Linux CLI 构建完成: $(DIST_DIR)/linux/sop-chat-cli$(NC)"
+	@ls -lh "$(DIST_DIR)/linux/sop-chat-cli" | awk '{print "  文件大小: " $$5}'
 
 # 多平台构建（Linux + macOS）
 build-all: build-frontend

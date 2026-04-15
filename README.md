@@ -2,6 +2,18 @@
 
 阿里云SLS和CMS智能问答助手的客户端应用，提供独立的 Web UI 界面，并支持钉钉、飞书、企业微信机器人接入，让你无需开发即可快速使用 SOP 智能对话能力。
 
+## 分支说明
+
+当前分支为**独立维护分支**，用于承载本地定制功能、界面改造和与上游主分支不同的业务需求。
+
+这意味着：
+
+- 本分支的功能范围、默认配置和界面表现可能与上游主分支不同
+- 本分支会自行维护所需功能，不要求上游主分支合并这些改动
+- 上游主分支中的通用修复、问题修复和部分优化，后续会按需选择性同步到本分支
+
+如果你在阅读上游文档、历史截图或其它分支说明时发现行为不一致，请优先以**当前分支的 README 和代码**为准。
+
 ## 主要功能
 - **独立 Web UI** — 开箱即用的聊天界面，支持 Markdown 渲染、多会话管理
 - **多平台机器人对接** — 支持钉钉、飞书、企业微信三大 IM 平台接入 SOP Agent，同一服务可同时运行多个机器人实例
@@ -109,7 +121,7 @@ chmod +x sop-chat-server
 
 ### 环境要求
 
-- Go 1.23+
+- Go 1.23+（建议直接安装 Go 1.24.x，避免 toolchain 自动下载差异）
 - Node.js 18+
 
 ### 一键构建（推荐）
@@ -118,12 +130,16 @@ chmod +x sop-chat-server
 # 构建当前平台的二进制（前端已嵌入）
 make build
 
+# 仅构建 Linux amd64 版本
+make build-linux
+
 # 多平台构建（Linux + macOS）
 make build-all
 ```
 
 **产物：**
 - 单平台：`backend/sop-chat-server`、`backend/sop-chat-cli`
+- Linux：`dist/linux/sop-chat-server`、`dist/linux/sop-chat-cli`
 - 多平台：`dist/linux/sop-chat-server`、`dist/darwin/sop-chat-server`、`dist/darwin/sop-chat-server-arm64`
 
 ### 其他构建命令
@@ -132,6 +148,7 @@ make build-all
 make build-frontend  # 仅构建前端
 make build-backend   # 仅构建后端（需先构建前端）
 make build-cli       # 仅构建 CLI 工具
+make build-linux     # 构建 Linux amd64 服务端和 CLI
 make clean           # 清理所有构建产物
 make clean-dist      # 仅清理多平台构建产物
 ```
@@ -139,15 +156,127 @@ make clean-dist      # 仅清理多平台构建产物
 ### 分开构建
 
 ```bash
-# 后端
-cd backend
-go build -o sop-chat-server cmd/sop-chat-server/main.go
-
 # 前端
 cd frontend
 npm install
 npm run build
+
+# 复制前端静态资源到后端 embed 目录
+cd ..
+mkdir -p backend/internal/embed/frontend
+rm -rf backend/internal/embed/frontend/*
+cp -r frontend/dist/* backend/internal/embed/frontend/
+
+# 后端
+cd backend
+go mod download
+go build -o sop-chat-server ./cmd/sop-chat-server
+go build -o sop-chat-cli ./cmd/sop-chat-cli
 ```
+
+### Linux 服务器从源码构建
+
+如果你的测试服务器上只有源码，没有 Go 环境，那么**不能直接在服务器上执行 `go build`**。可选两种方式：
+
+#### 方式一：在服务器安装构建环境后直接构建
+
+```bash
+# 1. 安装 Go 和 Node.js（版本要求见上文）
+# 2. 在项目根目录执行
+make build
+```
+
+构建完成后产物位于：
+
+- `backend/sop-chat-server`
+- `backend/sop-chat-cli`
+
+#### 方式二：在本地构建 Linux 二进制后上传到服务器
+
+这是更推荐的方式，尤其适合测试机、生产机或不希望在服务器安装完整开发环境的场景。
+
+在本地开发机执行：
+
+```bash
+# 构建 Linux amd64 版本
+make build-linux
+
+# 构建产物
+ls -lh dist/linux/sop-chat-server
+```
+
+将二进制上传到服务器后执行：
+
+```bash
+chmod +x sop-chat-server
+./sop-chat-server
+```
+
+推荐上传这些文件：
+
+- `dist/linux/sop-chat-server`
+- `backend/config.yaml.example`
+
+例如在本地执行：
+
+```bash
+scp dist/linux/sop-chat-server root@<server>:/opt/sop-chat/
+scp backend/config.yaml.example root@<server>:/opt/sop-chat/
+```
+
+在服务器执行：
+
+```bash
+cd /opt/sop-chat
+cp config.yaml.example config.yaml
+chmod +x sop-chat-server
+./sop-chat-server
+```
+
+### 服务器手动构建命令示例
+
+以下命令适用于**服务器已经安装好 Go 和 Node.js**，并且你希望在源码目录直接构建：
+
+```bash
+# 项目根目录
+cd /path/to/sop-chat
+
+# 构建前端
+cd frontend
+npm install
+npm run build
+
+# 复制前端资源到后端 embed 目录
+cd ..
+mkdir -p backend/internal/embed/frontend
+rm -rf backend/internal/embed/frontend/*
+cp -r frontend/dist/* backend/internal/embed/frontend/
+
+# 构建后端和 CLI
+cd backend
+go mod download
+go build -o sop-chat-server ./cmd/sop-chat-server
+go build -o sop-chat-cli ./cmd/sop-chat-cli
+```
+
+如果只是为了在 Linux 服务器上运行，实际上更直接的做法是在本地执行：
+
+```bash
+make build-linux
+```
+
+然后把 `dist/linux/sop-chat-server` 上传到服务器运行，不需要在服务器安装 Go。
+
+如果你的服务器上执行 `go` 报：
+
+```bash
+bash: go: command not found
+```
+
+说明当前机器尚未安装 Go，不能直接源码构建。此时应选择：
+
+1. 先安装 Go 和 Node.js，再执行上面的构建命令
+2. 在本地执行 `make build-linux`，然后上传 `dist/linux/sop-chat-server` 到服务器运行
 
 ### 开发模式
 
