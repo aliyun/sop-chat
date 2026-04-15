@@ -315,7 +315,7 @@ const ShareChat = () => {
     return (
       <div className="chat-window chat-window-shared">
         <div className="error-center">
-          <h3>❌ 加载失败</h3>
+          <h3>加载失败</h3>
           <p>{error}</p>
         </div>
       </div>
@@ -330,7 +330,7 @@ const ShareChat = () => {
     <div className="chat-window chat-window-shared">
       <div className="chat-header chat-header-shared">
         <div className="header-left">
-          <h2>🔗 分享的对话</h2>
+          <h2>分享的对话</h2>
           <span className="read-only-badge">只读</span>
         </div>
         <div className="header-center">
@@ -353,7 +353,7 @@ const ShareChat = () => {
               }
             }}
           >
-            ✨ 创建新会话
+            创建新会话
           </button>
         </div>
       </div>
@@ -361,7 +361,7 @@ const ShareChat = () => {
       <div className="messages-container">
         {messages.length === 0 ? (
           <div className="welcome-message">
-            <h3>📭 此对话暂无消息</h3>
+            <h3>此对话暂无消息</h3>
           </div>
         ) : (
           messages.map((message, index) => (

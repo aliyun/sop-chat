@@ -3,25 +3,28 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: transparent;
   padding: 20px;
 }
 
 .login-box {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 24px;
+  box-shadow: 0 28px 72px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(20px);
+  padding: 44px;
   width: 100%;
   max-width: 400px;
 }
 
 .login-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
+  font-size: 30px;
+  font-weight: 700;
+  color: #18212f;
   text-align: center;
   margin-bottom: 30px;
+  letter-spacing: -0.02em;
 }
 
 .login-form {
@@ -38,21 +41,24 @@
 
 .form-group label {
   font-size: 14px;
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: #4b5a71;
 }
 
 .form-group input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  padding: 13px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
   font-size: 14px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  background: rgba(248, 250, 252, 0.92);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: rgba(37, 99, 235, 0.36);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  transform: translateY(-1px);
 }
 
 .form-group input:disabled {
@@ -70,20 +76,23 @@
 }
 
 .login-button {
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 14px;
+  background: linear-gradient(135deg, #1d4ed8 0%, #0f766e 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 14px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   margin-top: 10px;
+  box-shadow: 0 16px 32px rgba(29, 78, 216, 0.2);
 }
 
 .login-button:hover:not(:disabled) {
-  opacity: 0.9;
+  opacity: 0.96;
+  transform: translateY(-1px);
+  box-shadow: 0 20px 36px rgba(29, 78, 216, 0.26);
 }
 
 .login-button:disabled {
@@ -110,9 +119,11 @@
 
 /* ── Setup required (full-page card) ── */
 .setup-required-box {
-  background: white;
-  border-radius: 14px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 24px;
+  box-shadow: 0 28px 72px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(20px);
   padding: 40px 44px;
   width: 100%;
   max-width: 460px;
@@ -120,8 +131,20 @@
 }
 
 .setup-required-icon {
-  font-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  height: 34px;
   margin-bottom: 16px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(234, 88, 12, 0.12);
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .setup-required-title {

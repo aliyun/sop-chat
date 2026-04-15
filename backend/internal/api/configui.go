@@ -53,7 +53,7 @@ h1{color:#2d3748;font-size:1.2rem;margin-bottom:0.5rem;}p{color:#718096;font-siz
 h1{color:#2d3748;font-size:1.1rem;margin-bottom:.75rem}
 p{color:#718096;font-size:.875rem;line-height:1.7}
 code{background:#eef0ff;padding:2px 6px;border-radius:4px;font-size:.8rem}</style></head>
-<body><div class="box"><h1>⚙️ 配置 UI 尚未构建</h1>
+<body><div class="box"><h1>配置 UI 尚未构建</h1>
 <p>请先执行 <code>make build-frontend</code> 构建前端，<br>或将 <code>frontend/public/config.html</code> 复制到<br><code>backend/internal/embed/frontend/config.html</code> 后重新编译。</p></div></body></html>`))
 		return
 	}

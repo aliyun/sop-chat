@@ -525,7 +525,7 @@ const CreateEmployee = () => {
           <button onClick={() => navigate('/')} className="back-button">
             ← 返回
           </button>
-          <h2>➕ 创建SOP问答助手</h2>
+          <h2>创建 SOP 问答助手</h2>
         </div>
       </div>
 
@@ -575,7 +575,7 @@ const CreateEmployee = () => {
                 onClick={handleSubmit}
                 disabled={creating}
               >
-                {creating ? '创建中...' : '创建 SOP问答助手'}
+                {creating ? '创建中...' : '创建 SOP 问答助手'}
               </button>
             )}
           </div>

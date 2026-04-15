@@ -8,6 +8,18 @@ import { useTranslation } from 'react-i18next';
 import { listEmployees } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M10.56 2.86a1.5 1.5 0 0 1 2.88 0l.32 1.6a7.59 7.59 0 0 1 1.76.73l1.43-.8a1.5 1.5 0 0 1 2.05.55l1.44 2.5a1.5 1.5 0 0 1-.38 1.97l-1.2.95c.08.53.08 1.08 0 1.62l1.2.95a1.5 1.5 0 0 1 .38 1.97l-1.44 2.5a1.5 1.5 0 0 1-2.05.55l-1.43-.8a7.59 7.59 0 0 1-1.76.73l-.32 1.6a1.5 1.5 0 0 1-2.88 0l-.32-1.6a7.59 7.59 0 0 1-1.76-.73l-1.43.8a1.5 1.5 0 0 1-2.05-.55l-1.44-2.5a1.5 1.5 0 0 1 .38-1.97l1.2-.95a6.8 6.8 0 0 1 0-1.62l-1.2-.95a1.5 1.5 0 0 1-.38-1.97l1.44-2.5a1.5 1.5 0 0 1 2.05-.55l1.43.8c.55-.31 1.14-.55 1.76-.73l.32-1.6Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="12" r="3.25" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
+
 const EmployeeSelector = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -208,7 +220,7 @@ const EmployeeSelector = () => {
     return (
       <div className="app-list-container">
         <div className="app-list-error">
-          <div className="error-icon">⚠️</div>
+          <div className="state-pill state-pill-error">加载失败</div>
           <p>{error}</p>
           <button className="retry-button" onClick={() => window.location.reload()}>
             {t('common.retry', { defaultValue: 'Retry' })}
@@ -222,7 +234,7 @@ const EmployeeSelector = () => {
     return (
       <div className="app-list-container">
         <div className="app-list-empty">
-          <div className="empty-icon">📭</div>
+          <div className="state-pill state-pill-neutral">暂无数据</div>
           <h3>{t('employeeSelector.noEmployees')}</h3>
           <p>{t('employeeSelector.noEmployeesHint', { defaultValue: '请先在已配置的云账号中确认存在可用数字员工。' })}</p>
         </div>
@@ -257,8 +269,9 @@ const EmployeeSelector = () => {
                     className="app-settings-btn"
                     onClick={(e) => handleSettingsClick(e, employee)}
                     title={t('nav.settings')}
+                    aria-label={t('nav.settings')}
                   >
-                    ⚙️
+                    <SettingsIcon />
                   </button>
                 )}
               </div>

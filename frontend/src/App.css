@@ -6,9 +6,10 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: var(--font-sans);
+  background: inherit;
   min-height: 100vh;
+  color: var(--color-text);
 }
 
 .app {
@@ -21,7 +22,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 32px 24px;
 }
 
 /* ==================== Authentication Styles ==================== */
@@ -29,31 +30,33 @@ body {
 /* User Info Component - positioned at top right */
 .user-info {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 8px 16px;
-  border-radius: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
   z-index: 1000;
   animation: slideInRight 0.3s ease;
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.24);
 }
 
 .user-details {
@@ -64,8 +67,8 @@ body {
 
 .user-name {
   font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #18212f;
 }
 
 .user-dept {
@@ -74,19 +77,19 @@ body {
 }
 
 .logout-btn {
-  padding: 6px 14px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border: none;
-  border-radius: 16px;
+  padding: 8px 14px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
+  background: rgba(37, 99, 235, 0.16);
   transform: translateY(-1px);
 }
 
@@ -234,9 +237,11 @@ body {
   width: 100%;
   max-width: 1400px;
   height: 80vh;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 32px 120px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(20px);
   display: flex;
   flex-direction: row;
   overflow: hidden;
@@ -526,7 +531,7 @@ body {
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #0f766e 100%);
   color: white;
   padding: 20px 24px;
   display: flex;
@@ -563,7 +568,7 @@ body {
 
 /* Share Chat Header Styles */
 .chat-header-shared {
-  background: #2d2d2d !important;
+  background: linear-gradient(135deg, #16213a 0%, #22324f 100%) !important;
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
@@ -585,7 +590,7 @@ body {
 }
 
 .chat-header-shared .read-only-badge {
-  background: #4a4a4a;
+  background: rgba(255, 255, 255, 0.12);
   color: white;
   padding: 4px 10px;
   border-radius: 6px;
@@ -602,7 +607,7 @@ body {
 }
 
 .chat-header-shared .thread-id {
-  background: #4a4a4a;
+  background: rgba(255, 255, 255, 0.12);
   color: white;
   padding: 6px 14px;
   border-radius: 6px;
@@ -623,23 +628,22 @@ body {
 }
 
 .chat-header-shared .new-session-button-shared {
-  background: white;
-  color: #2d2d2d;
-  padding: 8px 16px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #152238;
+  padding: 10px 16px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 .chat-header-shared .new-session-button-shared:hover {
-  background: #f0f0f0;
+  background: #ffffff;
   transform: translateY(-1px);
 }
 
@@ -829,13 +833,14 @@ body {
 }
 
 .message-header {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #666;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #51627a;
   display: flex;
   align-items: center;
   gap: 8px;
+  letter-spacing: 0.02em;
 }
 
 /* Message Body - Container for tool calls and content */
@@ -926,7 +931,12 @@ body {
 }
 
 .error-icon {
-  font-size: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14);
+  flex-shrink: 0;
 }
 
 .error-title {
@@ -970,8 +980,13 @@ body {
 }
 
 .suggestion-icon {
-  font-size: 14px;
+  font-size: 11px;
   flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(234, 88, 12, 0.12);
+  color: #c2410c;
+  font-weight: 700;
 }
 
 .suggestion-text {
@@ -1002,9 +1017,47 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
-.tool-status-icon {
-  font-size: 14px;
-  min-width: 20px;
+.tool-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.tool-status-badge.tone-info {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
+.tool-status-badge.tone-warning {
+  background: rgba(234, 88, 12, 0.12);
+  color: #c2410c;
+  border-color: rgba(234, 88, 12, 0.16);
+}
+
+.tool-status-badge.tone-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border-color: rgba(22, 163, 74, 0.16);
+}
+
+.tool-status-badge.tone-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.16);
+}
+
+.tool-status-badge.tone-neutral {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+  border-color: rgba(100, 116, 139, 0.16);
 }
 
 .tool-item-name {
@@ -1340,7 +1393,17 @@ body {
 }
 
 .thinking-icon {
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(234, 88, 12, 0.12);
+  color: #c2410c;
+  font-size: 11px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -2180,9 +2243,10 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid;
@@ -2417,31 +2481,31 @@ body {
 }
 
 .app-list-header h1 {
-  font-size: 42px;
-  font-weight: 700;
+  font-size: 46px;
+  font-weight: 800;
   color: white;
-  margin-bottom: 12px;
-  letter-spacing: -1px;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 14px;
+  letter-spacing: -1.4px;
+  text-shadow: 0 18px 40px rgba(15, 23, 42, 0.32);
 }
 
 .app-list-header .subtitle {
   font-size: 18px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.76);
   margin: 0;
 }
 
 .create-app-btn {
   padding: 14px 28px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #667eea;
-  border: none;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #16315f;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
 }
 
 .create-app-btn:hover {
@@ -2456,10 +2520,10 @@ body {
 }
 
 .app-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: none;
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 24px;
   padding: 28px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -2468,7 +2532,7 @@ body {
   gap: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
 }
 
 .app-card::before {
@@ -2478,7 +2542,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
@@ -2486,7 +2550,7 @@ body {
 
 .app-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.16);
 }
 
 .app-card:hover::before {
@@ -2501,15 +2565,15 @@ body {
   font-size: 36px;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
+  background: linear-gradient(135deg, #1d4ed8 0%, #0f766e 100%);
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+  box-shadow: 0 16px 28px rgba(29, 78, 216, 0.28);
 }
 
 .app-card-icon svg {
@@ -2543,24 +2607,28 @@ body {
 }
 
 .app-settings-btn {
-  background: rgba(102, 126, 234, 0.12);
-  border: none;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.12);
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  font-size: 24px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  color: #667eea;
+  color: #1d4ed8;
+}
+
+.app-settings-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .app-settings-btn:hover {
-  background: rgba(102, 126, 234, 0.25);
-  transform: scale(1.1);
+  background: rgba(37, 99, 235, 0.14);
+  transform: translateY(-1px);
 }
 
 .app-card-description {
@@ -2733,9 +2801,30 @@ body {
   text-align: center;
 }
 
-.error-icon {
-  font-size: 56px;
-  margin-bottom: 20px;
+.state-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.state-pill-error {
+  background: rgba(239, 68, 68, 0.14);
+  color: #fee2e2;
+  border: 1px solid rgba(254, 226, 226, 0.22);
+}
+
+.state-pill-neutral {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .app-list-error p {
@@ -3135,9 +3224,11 @@ body {
   width: 100%;
   max-width: 1200px;
   min-height: 80vh;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 28px;
+  box-shadow: 0 32px 120px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(22px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -3145,7 +3236,7 @@ body {
 }
 
 .settings-page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #0f766e 100%);
   color: white;
   padding: 20px 24px;
   display: flex;
@@ -3161,32 +3252,32 @@ body {
 
 .settings-page-tabs {
   display: flex;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e8e8e8;
+  background: rgba(248, 250, 252, 0.88);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
   padding: 0 24px;
+  gap: 8px;
 }
 
 .page-tab {
-  padding: 16px 24px;
+  padding: 16px 18px;
   background: none;
   border: none;
   font-size: 15px;
-  color: #666;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
 }
 
 .page-tab:hover {
-  color: #333;
-  background: rgba(102, 126, 234, 0.05);
+  color: #1e293b;
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .page-tab.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
-  background: white;
+  color: #1d4ed8;
+  border-bottom-color: #1d4ed8;
+  background: rgba(255, 255, 255, 0.88);
   font-weight: 600;
 }
 
@@ -3228,8 +3319,9 @@ body {
 
 .info-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   overflow: hidden;
 }
 
@@ -3242,12 +3334,34 @@ body {
   align-items: center;
   gap: 10px;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-  border-bottom: 1px solid #eee;
+  background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 
-.info-card-icon {
-  font-size: 20px;
+.info-card-marker,
+.empty-state-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.empty-state-marker {
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  margin: 0 auto 16px;
+  border-radius: 20px;
+  font-size: 18px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(14, 165, 233, 0.14) 100%);
 }
 
 .info-card-header h4 {

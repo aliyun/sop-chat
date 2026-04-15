@@ -49,7 +49,7 @@ const MessageInput = ({ onSend, onStop, disabled, isGenerating, placeholder = '�
             onClick={handleStop}
             className="stop-button"
           >
-            ⬛ 停止
+            停止生成
           </button>
         ) : (
           <button 

@@ -757,7 +757,7 @@ const ChatWindow = () => {
           // Other errors - show error message
           const errorMessage = {
             role: 'assistant',
-            content: `❌ **发生错误**\n\n${err.message}`
+            content: `**发生错误**\n\n${err.message}`
           };
           setMessages((prev) => [...prev, errorMessage]);
         }

@@ -17,6 +17,18 @@ const LinkRenderer = ({ href, children }) => {
   );
 };
 
+const getToolStatusMeta = (call) => {
+  if (call.phase === 'start') return { label: '开始调用', tone: 'info' };
+  if (call.phase === 'fail' || call.status === 'failed' || call.success === false) {
+    return { label: '调用失败', tone: 'danger' };
+  }
+  if (call.status === 'calling') return { label: '执行中', tone: 'warning' };
+  if (call.phase === 'success' || call.status === 'ready' || call.success) {
+    return { label: '执行完成', tone: 'success' };
+  }
+  return { label: '处理中', tone: 'neutral' };
+};
+
 const Message = ({ 
   role, 
   content, 
@@ -574,7 +586,7 @@ const Message = ({
   return (
     <div className={`message ${isUser ? 'user-message' : 'assistant-message'} ${isStreaming ? 'streaming' : ''}`}>
       <div className="message-header">
-        {isUser ? '👤 您' : `🤖 ${assistantDisplayName}`}
+        {isUser ? '您' : assistantDisplayName}
         {isStreaming && <span className="streaming-indicator">▊</span>}
       </div>
       
@@ -584,9 +596,9 @@ const Message = ({
           {/* Stage indicator (shown when loading, no events yet) */}
           {isStreaming && stage && processedEvents.length === 0 && (
             <div className="stage-indicator">
-              {stage === 'thinking' && '🤔 正在思考...'}
-              {stage === 'tool_calling' && '🔧 正在调用工具...'}
-              {stage === 'answering' && '✍️ 正在生成回答...'}
+              {stage === 'thinking' && '正在思考...'}
+              {stage === 'tool_calling' && '正在调用工具...'}
+              {stage === 'answering' && '正在生成回答...'}
             </div>
           )}
           
@@ -598,7 +610,7 @@ const Message = ({
               return (
                 <div key={event.id} className="error-event">
                   <div className="error-event-header">
-                    <span className="error-icon">⚠️</span>
+                    <span className="error-icon" aria-hidden="true"></span>
                     <span className="error-title">错误</span>
                     {errorData.code && (
                       <span className="error-code">{errorData.code}</span>
@@ -610,7 +622,7 @@ const Message = ({
                     )}
                     {errorData.suggestion && (
                       <div className="error-suggestion">
-                        <span className="suggestion-icon">💡</span>
+                        <span className="suggestion-icon">建议</span>
                         <span className="suggestion-text">{errorData.suggestion}</span>
                       </div>
                     )}
@@ -621,6 +633,7 @@ const Message = ({
               const call = event.data;
               const toolId = event.id;
               const isExpanded = expandedTools[toolId];
+              const statusMeta = getToolStatusMeta(call);
               // 只有结果需要展开查看
               const hasDetails = call.result && (typeof call.result === 'string' ? call.result.length > 100 : true);
               
@@ -631,23 +644,8 @@ const Message = ({
                     onClick={() => hasDetails && toggleTool(toolId)}
                     style={{ cursor: hasDetails ? 'pointer' : 'default' }}
                   >
-                    <span className="tool-status-icon">
-                      {call.phase === 'start' ? '🚀' : 
-                       call.phase === 'fail' ? '❌' :
-                       call.status === 'calling' ? '⏳' : 
-                       call.status === 'ready' ? '🔧' :
-                       call.status === 'failed' ? '❌' :
-                       call.success ? '✅' : '❌'}
-                    </span>
+                    <span className={`tool-status-badge tone-${statusMeta.tone}`}>{statusMeta.label}</span>
                     <span className="tool-item-name">{call.tool}</span>
-                    {/* 显示阶段标签 */}
-                    {call.phase && (
-                      <span className="tool-phase-badge">
-                        {call.phase === 'start' ? '开始调用' : 
-                         call.phase === 'fail' ? '调用失败' :
-                         '执行完成'}
-                      </span>
-                    )}
                     {/* 显示工具参数 */}
                     {renderSimpleArgs(call.args)}
                     {hasDetails && (
@@ -748,9 +746,7 @@ const Message = ({
                             className="thinking-header"
                             onClick={() => toggleThinking(thinkId)}
                           >
-                            <span className="thinking-icon">
-                              {isExpanded ? '🧠' : '💭'}
-                            </span>
+                            <span className="thinking-icon">{isExpanded ? '收起' : '展开'}</span>
                             <span className="thinking-title">
                               {isExpanded ? 'AI 思考过程' : '查看 AI 思考过程'}
                             </span>
@@ -782,8 +778,8 @@ const Message = ({
           {/* Stage indicator during streaming */}
           {isStreaming && stage && processedEvents.length > 0 && (
             <div className="stage-indicator-inline">
-              {stage === 'tool_calling' && '🔧 调用中...'}
-              {stage === 'answering' && '✍️ 生成中...'}
+              {stage === 'tool_calling' && '调用中...'}
+              {stage === 'answering' && '生成中...'}
             </div>
           )}
           
@@ -800,7 +796,7 @@ const Message = ({
                       disabled={!!feedbackStatus || isSubmittingFeedback}
                       title="这个回答有帮助"
                     >
-                      👍 {feedbackStatus === 'like' ? '已点赞' : '有帮助'}
+                      {feedbackStatus === 'like' ? '已确认' : '有帮助'}
                     </button>
                     <button 
                       className={`feedback-btn dislike-btn ${feedbackStatus === 'dislike' ? 'active' : ''} ${feedbackStatus ? 'disabled' : ''}`}
@@ -808,7 +804,7 @@ const Message = ({
                       disabled={!!feedbackStatus || isSubmittingFeedback}
                       title="这个回答需要改进"
                     >
-                      👎 {feedbackStatus === 'dislike' ? '已反馈' : '需改进'}
+                      {feedbackStatus === 'dislike' ? '已反馈' : '需改进'}
                     </button>
                   </>
                 )}
@@ -818,7 +814,7 @@ const Message = ({
                   onClick={handleCopy}
                   title="复制回答内容"
                 >
-                  {copySuccess ? '✓ 已复制' : '📋 复制'}
+                  {copySuccess ? '已复制' : '复制'}
                 </button>
               </div>
               {/* Thank you message after feedback */}
@@ -837,7 +833,7 @@ const Message = ({
         <div className="feedback-modal-overlay" onClick={handleCloseModal}>
           <div className="feedback-modal" onClick={e => e.stopPropagation()}>
             <div className="feedback-modal-header">
-              <h3>👎 请告诉我们哪里需要改进</h3>
+              <h3>请告诉我们哪里需要改进</h3>
               <button className="feedback-modal-close" onClick={handleCloseModal}>×</button>
             </div>
             <div className="feedback-modal-body">
@@ -877,7 +873,7 @@ const Message = ({
               {images.map((img, index) => (
                 <div key={index} className="user-image-preview" onClick={() => handleImageClick(index)}>
                   <img src={img} alt={`用户上传的图片 ${index + 1}`} />
-                  <div className="image-zoom-hint">🔍 点击查看大图</div>
+                  <div className="image-zoom-hint">点击查看大图</div>
                   {images.length > 1 && (
                     <div className="image-number-badge">{index + 1}/{images.length}</div>
                   )}
@@ -912,4 +908,3 @@ const Message = ({
 };
 
 export default Message;
-

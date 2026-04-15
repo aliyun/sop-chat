@@ -55,7 +55,7 @@ function Login() {
     return (
       <div className="login-container">
         <div className="setup-required-box">
-          <div className="setup-required-icon">⚙️</div>
+          <div className="setup-required-icon">配置未完成</div>
           <h2 className="setup-required-title">暂时无法登录</h2>
           <ul className="setup-required-reasons">
             {reasons.map((r, i) => <li key={i}>{r}</li>)}

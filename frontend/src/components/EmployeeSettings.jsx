@@ -7,6 +7,8 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getEmployee, updateEmployee } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
+const cardMarker = (label) => <span className="info-card-marker">{label}</span>;
+
 const EmployeeSettings = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
@@ -274,9 +276,9 @@ const EmployeeSettings = () => {
   const renderKnowledgeItem = (knowledge, index) => {
     const type = knowledge.type || 'unknown';
     const typeColors = {
-      oss: { bg: '#f0f5ff', accent: '#2f54eb', icon: '☁️', label: 'OSS 对象存储' },
-      yunxiao: { bg: '#f6ffed', accent: '#52c41a', icon: '🌿', label: '云效代码库' },
-      builtin: { bg: '#fff7e6', accent: '#fa8c16', icon: '📚', label: '内置知识库' }
+      oss: { bg: '#eef4ff', accent: '#1d4ed8', marker: 'OSS', label: 'OSS 对象存储' },
+      yunxiao: { bg: '#eefbf4', accent: '#15803d', marker: '云效', label: '云效代码库' },
+      builtin: { bg: '#fff5e8', accent: '#c2410c', marker: '内置', label: '内置知识库' }
     };
     const style = typeColors[type] || typeColors.builtin;
 
@@ -301,7 +303,7 @@ const EmployeeSettings = () => {
           alignItems: 'center',
           gap: '10px'
         }}>
-          <span style={{ fontSize: '18px' }}>{style.icon}</span>
+          {cardMarker(style.marker)}
           <strong style={{ color: '#333', fontSize: '15px' }}>知识库 {index + 1}</strong>
           <span style={{
             marginLeft: 'auto',
@@ -608,11 +610,11 @@ const EmployeeSettings = () => {
 
     return (
       <div className="settings-page-info">
-        <div className="info-cards">
+          <div className="info-cards">
           {/* Basic Info */}
           <div className="info-card wide">
             <div className="info-card-header">
-              <span className="info-card-icon">📋</span>
+              {cardMarker('概览')}
               <h4>基本信息</h4>
             </div>
             <div className="info-card-content">
@@ -667,7 +669,7 @@ const EmployeeSettings = () => {
           {config.defaultRule && (
             <div className="info-card wide">
               <div className="info-card-header">
-                <span className="info-card-icon">🤖</span>
+                {cardMarker('角色')}
                 <h4>角色定义</h4>
               </div>
               <div className="info-card-content">
@@ -708,7 +710,7 @@ const EmployeeSettings = () => {
             borderRadius: '12px',
             border: '1px solid #e8e8e8'
           }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
+            <div className="empty-state-marker">SOP</div>
             <p>暂无配置的 SOP 知识库</p>
           </div>
         </div>
@@ -752,7 +754,7 @@ const EmployeeSettings = () => {
             <button onClick={() => navigate('/')} className="back-button">
               ← 返回
             </button>
-            <h2>⚙️ 员工设置</h2>
+            <h2>员工设置</h2>
           </div>
         </div>
         <div className="settings-page-content">
@@ -773,7 +775,7 @@ const EmployeeSettings = () => {
             <button onClick={() => navigate('/')} className="back-button">
               ← 返回
             </button>
-            <h2>⚙️ 员工设置</h2>
+            <h2>员工设置</h2>
           </div>
         </div>
         <div className="settings-page-content">
@@ -792,13 +794,13 @@ const EmployeeSettings = () => {
           <button onClick={() => navigate('/')} className="back-button">
             ← 返回
           </button>
-          <h2>⚙️ {config.displayName || config.name} - 设置</h2>
+          <h2>{config.displayName || config.name} - 设置</h2>
         </div>
         <div className="header-actions">
           {isAdmin && (
             !editMode ? (
               <button className="btn-primary" onClick={() => setEditMode(true)}>
-                ✏️ 编辑
+                编辑
               </button>
             ) : (
               <>
@@ -814,7 +816,7 @@ const EmployeeSettings = () => {
                   onClick={handleSave}
                   disabled={saving}
                 >
-                  {saving ? '保存中...' : '💾 保存'}
+                  {saving ? '保存中...' : '保存'}
                 </button>
               </>
             )
@@ -827,13 +829,13 @@ const EmployeeSettings = () => {
           className={`page-tab ${activeTab === 'info' ? 'active' : ''}`}
           onClick={() => setActiveTab('info')}
         >
-          📋 基本信息
+          基本信息
         </button>
         <button 
           className={`page-tab ${activeTab === 'knowledges' ? 'active' : ''}`}
           onClick={() => setActiveTab('knowledges')}
         >
-          📚 SOP 知识库配置
+          SOP 知识库配置
         </button>
       </div>
       

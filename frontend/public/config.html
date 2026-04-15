@@ -801,12 +801,12 @@ function showCloudAccountTestResult(el, status, msg) {
     el.style.background = 'var(--green-bg)';
     el.style.border = '1px solid var(--green-bd)';
     el.style.color = 'var(--green)';
-    el.textContent = '✅ ' + msg;
+    el.textContent = '成功：' + msg;
   } else {
     el.style.background = 'var(--red-bg)';
     el.style.border = '1px solid var(--red-bd)';
     el.style.color = 'var(--red)';
-    el.textContent = '❌ ' + msg;
+    el.textContent = '失败：' + msg;
   }
 }
 
@@ -2583,8 +2583,8 @@ async function triggerTask(btn) {
     webhooks:     collectWebhooksFromCard(card),
   };
 
-  if (!task.employeeName) { showTaskResult(resultEl, 'error', '❌ 请先填写数字员工 ID'); return; }
-  if (!task.prompt)        { showTaskResult(resultEl, 'error', '❌ 请先填写 Prompt'); return; }
+  if (!task.employeeName) { showTaskResult(resultEl, 'error', '请先填写数字员工 ID'); return; }
+  if (!task.prompt)        { showTaskResult(resultEl, 'error', '请先填写 Prompt'); return; }
 
   const origHTML = btn.innerHTML;
   btn.disabled = true;
@@ -2599,15 +2599,15 @@ async function triggerTask(btn) {
     });
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      showTaskResult(resultEl, 'error', '❌ ' + (data.error || '触发失败'));
+      showTaskResult(resultEl, 'error', '触发失败：' + (data.error || '请求未通过'));
     } else {
-      let msg = '✅ 数字员工回复：\n' + (data.reply || '（空）');
+      let msg = '数字员工回复：\n' + (data.reply || '（空）');
       if (task.webhooks && task.webhooks.length) {
         if (data.webhookSent) {
-          msg += '\n\n✅ Webhook 推送成功';
+          msg += '\n\nWebhook 推送成功';
         }
         if (data.webhookErr) {
-          msg += '\n\n⚠️ Webhook 推送失败：' + data.webhookErr;
+          msg += '\n\nWebhook 推送失败：' + data.webhookErr;
         }
       } else {
         msg += '\n\n（未配置 Webhook，跳过推送）';
@@ -2615,7 +2615,7 @@ async function triggerTask(btn) {
       showTaskResult(resultEl, data.webhookSent || !(task.webhooks && task.webhooks.length) ? 'success' : 'error', msg);
     }
   } catch(e) {
-    showTaskResult(resultEl, 'error', '❌ 网络错误: ' + e.message);
+    showTaskResult(resultEl, 'error', '网络错误：' + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -2647,11 +2647,11 @@ async function loadConfig() {
   try {
     const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token));
     const data = await res.json();
-    if (!res.ok) { showStatus('error', '❌ ' + (data.error || '加载失败')); return; }
+    if (!res.ok) { showStatus('error', '加载失败：' + (data.error || '请求未通过')); return; }
     populate(data);
     document.getElementById('status-msg').style.display = 'none';
   } catch(e) {
-    showStatus('error', '❌ 网络错误: ' + e.message);
+    showStatus('error', '网络错误：' + e.message);
   }
 }
 
@@ -2669,14 +2669,14 @@ async function doSave() {
     });
     const data = await res.json();
     if (!res.ok) {
-      showStatus('error', '❌ ' + (data.error || '保存失败'));
+      showStatus('error', '保存失败：' + (data.error || '请求未通过'));
     } else if (data.warning) {
-      showStatus('warning', '⚠️ ' + data.message);
+      showStatus('warning', '警告：' + data.message);
     } else {
-      showStatus('success', '✅ ' + (data.message || '保存成功'));
+      showStatus('success', '成功：' + (data.message || '保存成功'));
     }
   } catch(e) {
-    showStatus('error', '❌ 网络错误: ' + e.message);
+    showStatus('error', '网络错误：' + e.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 保存并应用';
@@ -2686,7 +2686,7 @@ async function doSave() {
 async function saveConfig() {
   const accounts = collectCloudAccounts().filter(isMeaningfulCloudAccount);
   if (!accounts.length) {
-    showStatus('warning', '⚠️ 尚未配置任何云账号，阿里云 CMS 功能将不可用', { label: '仍要保存', fn: 'doSave' });
+    showStatus('warning', '警告：尚未配置任何云账号，阿里云 CMS 功能将不可用', { label: '仍要保存', fn: 'doSave' });
     return;
   }
 
@@ -2701,7 +2701,7 @@ async function saveConfig() {
     seenIDs.add(normalizedID);
   });
   if (duplicateIDs.size > 0) {
-    showStatus('warning', '⚠️ 存在重复的 cloudAccountId：' + Array.from(duplicateIDs).join(', ') + '，请先调整后再保存');
+    showStatus('warning', '警告：存在重复的 cloudAccountId：' + Array.from(duplicateIDs).join(', ') + '，请先调整后再保存');
     switchTab('global');
     const list = document.getElementById('cloud-accounts-list');
     if (list) { list.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
@@ -2710,7 +2710,7 @@ async function saveConfig() {
 
   const incomplete = accounts.find(account => !account.accessKeyId || !account.accessKeySecret);
   if (incomplete) {
-    showStatus('warning', '⚠️ 云账号 ' + normalizeCloudAccountId(incomplete.id) + ' 的 AccessKeyId / AccessKeySecret 未填写完整，相关功能将不可用', { label: '仍要保存', fn: 'doSave' });
+    showStatus('warning', '警告：云账号 ' + normalizeCloudAccountId(incomplete.id) + ' 的 AccessKeyId / AccessKeySecret 未填写完整，相关功能将不可用', { label: '仍要保存', fn: 'doSave' });
     switchTab('global');
     const list = document.getElementById('cloud-accounts-list');
     if (list) { list.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
@@ -2733,14 +2733,14 @@ async function saveConfig() {
     seenUsers.add(normalizedName);
   });
   if (duplicateUsers.size > 0) {
-    showStatus('warning', '⚠️ 存在重复用户名：' + Array.from(duplicateUsers).join(', ') + '，请先调整后再保存');
+    showStatus('warning', '警告：存在重复用户名：' + Array.from(duplicateUsers).join(', ') + '，请先调整后再保存');
     switchTab('auth');
     return;
   }
 
   const userWithoutPassword = userRows.find(user => !user.hash && !user.newpwd);
   if (userWithoutPassword) {
-    showStatus('warning', '⚠️ 用户 ' + userWithoutPassword.name + ' 还没有设置密码，请先填写明文密码后再保存');
+    showStatus('warning', '警告：用户 ' + userWithoutPassword.name + ' 还没有设置密码，请先填写明文密码后再保存');
     switchTab('auth');
     return;
   }
