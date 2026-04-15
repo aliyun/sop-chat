@@ -87,7 +87,7 @@ func newThreadCreateCmd(client *sopchat.Client) *cobra.Command {
 				return fmt.Errorf("received nil response body")
 			}
 
-			fmt.Println("✅ Thread created successfully!")
+			fmt.Println("Thread created successfully!")
 			fmt.Printf("Thread ID: %s\n", tea.StringValue(result.Body.ThreadId))
 			if result.Body.RequestId != nil {
 				fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
@@ -289,13 +289,13 @@ func displayThreadMessage(msg interface{}) {
 	var prefix string
 	switch role {
 	case "user":
-		prefix = "👤 User"
+		prefix = "User"
 	case "assistant":
-		prefix = "🤖 Assistant"
+		prefix = "Assistant"
 	case "tool":
-		prefix = "🔧 Tool"
+		prefix = "Tool"
 	default:
-		prefix = fmt.Sprintf("📋 %s", role)
+		prefix = fmt.Sprintf("Message %s", role)
 	}
 
 	fmt.Printf("\n[%s]\n", prefix)
@@ -313,7 +313,7 @@ func displayThreadMessage(msg interface{}) {
 
 	// 显示工具调用
 	if sdkMsg.Tools != nil && len(sdkMsg.Tools) > 0 {
-		fmt.Printf("\n  🔧 Tool calls:\n")
+		fmt.Printf("\n  Tool calls:\n")
 		for i, tool := range sdkMsg.Tools {
 			// 工具名称
 			name, _ := tool["name"].(string)
@@ -367,13 +367,13 @@ func displayThreadMessageFromMap(msgMap map[string]interface{}) {
 	var prefix string
 	switch role {
 	case "user":
-		prefix = "👤 User"
+		prefix = "User"
 	case "assistant":
-		prefix = "🤖 Assistant"
+		prefix = "Assistant"
 	case "tool":
-		prefix = "🔧 Tool"
+		prefix = "Tool"
 	default:
-		prefix = fmt.Sprintf("📋 %s", role)
+		prefix = fmt.Sprintf("Message %s", role)
 	}
 
 	fmt.Printf("\n[%s]\n", prefix)
@@ -393,7 +393,7 @@ func displayThreadMessageFromMap(msgMap map[string]interface{}) {
 
 	// 显示工具调用
 	if tools, ok := msgMap["tools"].([]interface{}); ok && len(tools) > 0 {
-		fmt.Printf("\n  🔧 Tool calls:\n")
+		fmt.Printf("\n  Tool calls:\n")
 		for i, tool := range tools {
 			if toolMap, ok := tool.(map[string]interface{}); ok {
 				// 工具名称
@@ -474,7 +474,7 @@ func newThreadCreateCmdLazy(getClient func() (*sopchat.Client, error)) *cobra.Co
 				return fmt.Errorf("received nil response body")
 			}
 
-			fmt.Println("✅ Thread created successfully!")
+			fmt.Println("Thread created successfully!")
 			fmt.Printf("Thread ID: %s\n", tea.StringValue(result.Body.ThreadId))
 			if result.Body.RequestId != nil {
 				fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))

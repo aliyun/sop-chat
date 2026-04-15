@@ -108,7 +108,7 @@ func chatInteractiveMode(client *sopchat.Client, employeeName, threadId string, 
 	for {
 		// 显示提示符
 		fmt.Println()
-		rl.SetPrompt("👤 You: ")
+		rl.SetPrompt("You: ")
 
 		// 读取用户输入
 		message, err := rl.Readline()
@@ -140,7 +140,7 @@ func chatInteractiveMode(client *sopchat.Client, employeeName, threadId string, 
 		}
 
 		if err := sendAndDisplayMessage(client, opts, showToolResult); err != nil {
-			fmt.Printf("\n❌ Error: %v\n", err)
+			fmt.Printf("\nError: %v\n", err)
 		}
 	}
 }
@@ -247,22 +247,22 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 		// 根据角色显示不同的前缀
 		var prefix string
 		if isError {
-			prefix = "❌ Error"
+			prefix = "Error"
 		} else {
 			switch msgRole {
 			case "user":
-				prefix = "👤 User"
+				prefix = "User"
 			case "assistant":
-				prefix = "🤖 Assistant"
+				prefix = "Assistant"
 			case "tool":
-				prefix = "🔧 Tool"
+				prefix = "Tool"
 			case "system":
-				prefix = "⚙️ System"
+				prefix = "System"
 			default:
 				if msgRole == "" {
-					prefix = "📋 Message"
+					prefix = "Message"
 				} else {
-					prefix = fmt.Sprintf("📋 %s", msgRole)
+					prefix = fmt.Sprintf("Message %s", msgRole)
 				}
 			}
 		}
@@ -304,9 +304,9 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 					if contentType == "error" || isError {
 						// 错误消息特殊处理
 						if contentValue != "" {
-							fmt.Printf("  ❌ %s\n", contentValue)
+							fmt.Printf("  Error: %s\n", contentValue)
 						} else {
-							fmt.Printf("  ❌ [%s]\n", contentType)
+							fmt.Printf("  Error [%s]\n", contentType)
 						}
 						hasContent = true
 					} else if contentValue != "" {
@@ -335,7 +335,7 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 			if hasContent {
 				fmt.Println()
 			}
-			fmt.Printf("  ❌ Error:\n")
+			fmt.Printf("  Error:\n")
 			if errorCode != "" {
 				fmt.Printf("    Error code: %s\n", errorCode)
 			}
@@ -353,9 +353,9 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 					fmt.Println()
 				}
 				if isError {
-					fmt.Printf("  ❌ Error Detail: %s\n", detail)
+					fmt.Printf("  Error Detail: %s\n", detail)
 				} else {
-					fmt.Printf("  📄 Detail: %s\n", detail)
+					fmt.Printf("  Detail: %s\n", detail)
 				}
 				hasContent = true
 			}
@@ -367,7 +367,7 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 				if hasContent {
 					fmt.Println()
 				}
-				fmt.Printf("\n  🔧 Tool calls:\n")
+				fmt.Printf("\n  Tool calls:\n")
 				for i, tool := range msg.Tools {
 					// 工具名称
 					if name, ok := tool["name"].(string); ok {
@@ -397,7 +397,7 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 					if status == "fail" {
 						errorFound := false
 						if contents, ok := tool["contents"].([]interface{}); ok && len(contents) > 0 {
-							fmt.Printf("        ❌ Error:\n")
+							fmt.Printf("        Error:\n")
 							for _, content := range contents {
 								if contentMap, ok := content.(map[string]interface{}); ok {
 									contentType, _ := contentMap["type"].(string)
@@ -417,7 +417,7 @@ func sendAndDisplayMessage(client *sopchat.Client, opts *sopchat.ChatOptions, sh
 							}
 						}
 						if !errorFound {
-							fmt.Printf("        ❌ Tool call failed\n")
+							fmt.Printf("        Tool call failed\n")
 						}
 					} else if showToolResult {
 						// 根据 flag 决定是否显示工具返回结果（成功的情况）

@@ -130,7 +130,7 @@ func main() {
 				if proc, err := os.FindProcess(pid); err == nil {
 				if proc.Signal(syscall.Signal(0)) == nil {
 					fmt.Fprintf(os.Stderr, "sop-chat-server 已在运行（PID=%d），\n如需重启请先执行: ./sop-chat-server stop\n如需查看管理地址: ./sop-chat-server adminurl\n", pid)
-					fmt.Fprintln(os.Stderr, "❌ 启动失败")
+					fmt.Fprintln(os.Stderr, "启动失败")
 					os.Exit(1)
 				}
 				}
@@ -242,7 +242,7 @@ func main() {
 
 		if !started {
 			// 子进程已退出，从日志文件尾部取最后几行作为错误提示
-			fmt.Printf("❌ 启动失败（PID=%d 已退出），错误详情:\n", cmd.Process.Pid)
+			fmt.Printf("启动失败（PID=%d 已退出），错误详情:\n", cmd.Process.Pid)
 			if tail := tailFile(logPath, 10); tail != "" {
 				fmt.Print(tail)
 			} else {
@@ -252,7 +252,7 @@ func main() {
 		}
 		fmt.Printf("停止服务: ./sop-chat-server stop\n")
 		fmt.Printf("查看管理地址: ./sop-chat-server adminurl\n")
-		fmt.Printf("✅ 启动成功 PID=%d\n", cmd.Process.Pid)
+		fmt.Printf("启动成功 PID=%d\n", cmd.Process.Pid)
 
 		return
 	}
@@ -272,7 +272,7 @@ func main() {
 	printConfigUI := func() {
 		urls := buildAdminURLs(unifiedConfig.GetHost(), finalPort, token)
 		log.Printf("╔══════════════════════════════════════════════════════════════╗")
-		log.Printf("║  ⚙  配置管理 UI（仅本次启动有效，请勿分享此链接）            ║")
+		log.Printf("║  配置管理 UI（仅本次启动有效，请勿分享此链接）               ║")
 		for _, u := range urls {
 			log.Printf("║  %s", u)
 		}
@@ -383,7 +383,7 @@ func buildAdminURLs(host string, port int, token string) []string {
 // printURLBox 将 URL 列表以方框形式打印到标准输出。
 func printURLBox(urls []string) {
 	fmt.Println("╔══════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  ⚙  配置管理 UI（仅本次启动有效，请勿分享此链接）            ║")
+	fmt.Println("║  配置管理 UI（仅本次启动有效，请勿分享此链接）               ║")
 	for _, u := range urls {
 		fmt.Printf("║  %s\n", u)
 	}
@@ -403,7 +403,7 @@ func queryAdminURL() {
 		os.Exit(1)
 	}
 	fmt.Println("╔══════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  ⚙  配置管理 UI                                              ║")
+	fmt.Println("║  配置管理 UI                                                 ║")
 	for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
 		if line != "" {
 			fmt.Printf("║  %s\n", line)

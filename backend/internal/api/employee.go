@@ -428,7 +428,7 @@ func (s *Server) handleCreateEmployee(c *gin.Context) {
 		result["requestId"] = *response.Body.RequestId
 	}
 
-	log.Printf("✅ Employee created successfully: %s", req.Name)
+	log.Printf("Employee created successfully: %s", req.Name)
 	c.JSON(http.StatusCreated, result)
 }
 
@@ -494,6 +494,6 @@ func (s *Server) handleUpdateEmployee(c *gin.Context) {
 		result["requestId"] = *response.Body.RequestId
 	}
 
-	log.Printf("✅ Employee updated successfully: %s", name)
+	log.Printf("Employee updated successfully: %s", name)
 	c.JSON(http.StatusOK, result)
 }

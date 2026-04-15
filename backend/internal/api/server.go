@@ -165,7 +165,7 @@ func (s *Server) initAuth() error {
 	if len(s.authModes) == 0 {
 		// 登录功能关闭：不注册任何 Provider，JWT 中间件仍要求 token，
 		// 但没有人能通过 /login 拿到 token，所以所有受保护接口均不可访问。
-		log.Println("⚠️  auth.methods 为空，登录功能已关闭，所有受保护接口不可访问")
+		log.Println("警告: auth.methods 为空，登录功能已关闭，所有受保护接口不可访问")
 		s.authMiddleware = auth.NewAuthMiddleware(nil)
 		return nil
 	}
@@ -177,23 +177,23 @@ func (s *Server) initAuth() error {
 		case auth.AuthModeBuiltin:
 			var userStore auth.UserStore
 			if authConfig.YAMLConfig != nil && authConfig.YAMLConfig.Local != nil {
-				log.Printf("🔍 加载内置用户（统一配置）")
+				log.Printf("加载内置用户（统一配置）")
 				yamlStore, err := auth.NewYAMLUserStoreFromConfig(authConfig.YAMLConfig)
 				if err != nil {
 					return fmt.Errorf("加载内置用户失败: %w，请确保 config.yaml 中已配置 auth.builtinUsers 和 auth.roles", err)
 				}
 				userStore = yamlStore
 				s.userStore = userStore
-				log.Printf("✅ builtin 认证就绪（统一配置）")
+				log.Printf("builtin 认证就绪（统一配置）")
 			} else if authConfig.YAMLConfigPath != "" {
-				log.Printf("🔍 加载内置用户（YAML 文件: %s）", authConfig.YAMLConfigPath)
+				log.Printf("加载内置用户（YAML 文件: %s）", authConfig.YAMLConfigPath)
 				yamlStore, err := auth.NewYAMLUserStore(authConfig.YAMLConfigPath)
 				if err != nil {
 					return fmt.Errorf("加载 YAML 配置失败 %s: %w", authConfig.YAMLConfigPath, err)
 				}
 				userStore = yamlStore
 				s.userStore = userStore
-				log.Printf("✅ builtin 认证就绪（YAML 文件）")
+				log.Printf("builtin 认证就绪（YAML 文件）")
 			} else {
 				return fmt.Errorf("未找到内置用户配置，请在 config.yaml 中配置 auth.builtinUsers")
 			}
@@ -926,7 +926,7 @@ func (s *Server) reloadConfig() error {
 	}
 	s.mu.Unlock()
 
-	log.Printf("✅ 配置热重载完成")
+	log.Printf("配置热重载完成")
 	return nil
 }
 

@@ -170,7 +170,7 @@ func newEmployeeGetCmd(client *sopchat.Client) *cobra.Command {
 			}
 
 			fmt.Println("==========================================")
-			fmt.Printf("\n✓ Request ID: %s\n", tea.StringValue(result.Body.RequestId))
+			fmt.Printf("\nRequest ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 			return nil
 		},
@@ -228,7 +228,7 @@ func newEmployeeCreateCmd(client *sopchat.Client) *cobra.Command {
 				return err
 			}
 
-			fmt.Println("✅ Digital employee created successfully!")
+			fmt.Println("Digital employee created successfully!")
 			fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 			return nil
@@ -292,7 +292,7 @@ func createEmployeeInteractive(client *sopchat.Client) error {
 		return err
 	}
 
-	fmt.Println("\n✅ Digital employee created successfully!")
+	fmt.Println("\nDigital employee created successfully!")
 	fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 	return nil
@@ -347,7 +347,7 @@ func newEmployeeUpdateCmd(client *sopchat.Client) *cobra.Command {
 				return err
 			}
 
-			fmt.Println("\n✅ Digital employee updated successfully!")
+			fmt.Println("\nDigital employee updated successfully!")
 			fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 			return nil
@@ -373,7 +373,7 @@ func newEmployeeDeleteCmd(client *sopchat.Client) *cobra.Command {
 			// 确认删除
 			confirmation := readInput(fmt.Sprintf("Are you sure you want to delete '%s'? (yes/no)", employeeName), "no")
 			if strings.ToLower(confirmation) != "yes" {
-				fmt.Println("❌ Deletion cancelled.")
+				fmt.Println("Deletion cancelled.")
 				return nil
 			}
 
@@ -382,7 +382,7 @@ func newEmployeeDeleteCmd(client *sopchat.Client) *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("✅ Digital employee '%s' deleted successfully!\n", employeeName)
+			fmt.Printf("Digital employee '%s' deleted successfully!\n", employeeName)
 			return nil
 		},
 	}
@@ -591,7 +591,7 @@ func executeEmployeeGet(client *sopchat.Client, cmd *cobra.Command, args []strin
 	}
 
 	fmt.Println("==========================================")
-	fmt.Printf("\n✓ Request ID: %s\n", tea.StringValue(result.Body.RequestId))
+	fmt.Printf("\nRequest ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 	return nil
 }
@@ -637,7 +637,7 @@ func executeEmployeeCreate(client *sopchat.Client, cmd *cobra.Command, args []st
 		return err
 	}
 
-	fmt.Println("✅ Digital employee created successfully!")
+	fmt.Println("Digital employee created successfully!")
 	fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 	return nil
@@ -685,7 +685,7 @@ func executeEmployeeUpdate(client *sopchat.Client, cmd *cobra.Command, args []st
 		return err
 	}
 
-	fmt.Println("\n✅ Digital employee updated successfully!")
+	fmt.Println("\nDigital employee updated successfully!")
 	fmt.Printf("Request ID: %s\n", tea.StringValue(result.Body.RequestId))
 
 	return nil
@@ -699,7 +699,7 @@ func executeEmployeeDelete(client *sopchat.Client, cmd *cobra.Command, args []st
 	// 确认删除
 	confirmation := readInput(fmt.Sprintf("Are you sure you want to delete '%s'? (yes/no)", employeeName), "no")
 	if strings.ToLower(confirmation) != "yes" {
-		fmt.Println("❌ Deletion cancelled.")
+		fmt.Println("Deletion cancelled.")
 		return nil
 	}
 
@@ -708,6 +708,6 @@ func executeEmployeeDelete(client *sopchat.Client, cmd *cobra.Command, args []st
 		return err
 	}
 
-	fmt.Printf("✅ Digital employee '%s' deleted successfully!\n", employeeName)
+	fmt.Printf("Digital employee '%s' deleted successfully!\n", employeeName)
 	return nil
 }

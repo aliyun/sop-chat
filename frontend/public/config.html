@@ -29,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto','PingFang 
 
 /* ── Header ── */
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(102,126,234,0.15)}
-.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px var(--accent-glow)}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;flex-shrink:0;box-shadow:0 2px 8px var(--accent-glow)}
 .h-title{font-size:15px;font-weight:600;color:var(--text)}
 .h-sub{font-size:11px;color:var(--text3);margin-top:1px}
 .h-right{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -74,8 +74,8 @@ main{padding:1.5rem;max-width:860px;width:100%;margin:0 auto}
 
 /* ── Card ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 4px 20px rgba(102,126,234,0.1)}
-.card-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:7px}
-.card-title-icon{font-size:15px}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card-title-icon{width:10px;height:10px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 4px rgba(102,126,234,0.12);display:inline-block;flex-shrink:0}
 
 /* ── Toggle switch ── */
 .toggle{position:relative;width:40px;height:22px;flex-shrink:0}
@@ -199,7 +199,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <body>
 
 <header>
-  <div class="logo">&#9881;</div>
+  <div class="logo">SC</div>
   <div>
     <div class="h-title">智能问答助手 配置管理</div>
     <div class="h-sub">修改配置后点击保存，大部分配置立即生效无需重启</div>
@@ -218,11 +218,11 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 
 <!-- ── Tab bar ── -->
 <nav class="tab-bar" id="tab-bar">
-  <button class="tab-btn active" data-tab="global" onclick="switchTab('global')">&#128279; 基础设置</button>
-  <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')">&#128272; 认证与用户</button>
-  <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')">&#129302; Channels（机器人）</button>
-  <button class="tab-btn" data-tab="scheduler" onclick="switchTab('scheduler')">&#9200; 定时任务</button>
-  <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')">&#129504; OpenAI 兼容接口</button>
+  <button class="tab-btn active" data-tab="global" onclick="switchTab('global')">基础设置</button>
+  <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')">认证与用户</button>
+  <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')">渠道接入</button>
+  <button class="tab-btn" data-tab="scheduler" onclick="switchTab('scheduler')">定时任务</button>
+  <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')">OpenAI 兼容</button>
 </nav>
 
 <!-- ── Save bar ── -->
@@ -241,7 +241,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <!-- ── Tab 1: Global ── -->
 <div class="tab-panel active" id="panel-global">
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128279;</span> 云账号配置</div>
+    <div class="card-title"><span class="card-title-icon" aria-hidden="true"></span> 云账号配置</div>
     <div class="field-grid">
       <div class="field field-full">
         <div class="list-header">
@@ -261,7 +261,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#9881;</span> 服务器设置</div>
+    <div class="card-title"><span class="card-title-icon" aria-hidden="true"></span> 服务器设置</div>
     <div class="field-grid">
       <div class="field">
         <label>监听地址 Host</label>
@@ -316,7 +316,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <div class="tab-panel" id="panel-auth">
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128101;</span> 内置用户
+      <span class="card-title-icon" aria-hidden="true"></span> 内置用户
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addUser()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -328,7 +328,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   </div>
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#127959;</span> 角色与权限
+      <span class="card-title-icon" aria-hidden="true"></span> 角色与权限
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addRole()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -339,7 +339,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     <p style="font-size:12px;color:var(--text3);margin-top:10px">在角色输入框中输入用户名后按回车添加。系统内置 <span class="badge-cold">admin</span> 角色用于管理员权限。角色为全局概念，未来 LDAP/OIDC 用户也将映射至此。</p>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128272;</span> 鉴权链</div>
+    <div class="card-title"><span class="card-title-icon" aria-hidden="true"></span> 鉴权链</div>
     <div class="list-section">
       <div class="methods-add-row">
         <select id="method-select">
@@ -358,7 +358,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128273;</span> JWT 认证设置</div>
+    <div class="card-title"><span class="card-title-icon" aria-hidden="true"></span> JWT 认证设置</div>
     <div class="field-grid">
       <div class="field">
         <label>JWT 密钥 <span style="color:var(--red)">*</span></label>
@@ -377,7 +377,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">&#128274;</span> 内置账号密码盐</div>
+    <div class="card-title"><span class="card-title-icon" aria-hidden="true"></span> 内置账号密码盐</div>
     <div class="field">
       <label>密码盐 PasswordSalt</label>
       <div class="input-wrap">
@@ -410,7 +410,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── DingTalk ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#129302;</span> 钉钉机器人
+      <span class="card-title-icon" aria-hidden="true"></span> 钉钉机器人
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addDingTalkBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -431,7 +431,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── Feishu ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128640;</span> 飞书机器人
+      <span class="card-title-icon" aria-hidden="true"></span> 飞书机器人
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addFeishuBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -452,7 +452,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── WeCom Bot (群聊机器人) ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#129302;</span> 企业微信机器人
+      <span class="card-title-icon" aria-hidden="true"></span> 企业微信机器人
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWeComGroupBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -474,7 +474,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <!-- ── WeCom App ── -->
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#128172;</span> 企业微信应用
+      <span class="card-title-icon" aria-hidden="true"></span> 企业微信应用
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWeComBot()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -544,7 +544,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
 <div class="tab-panel" id="panel-scheduler">
   <div class="card">
     <div class="card-title">
-      <span class="card-title-icon">&#9200;</span> 定时任务
+      <span class="card-title-icon" aria-hidden="true"></span> 定时任务
       <div class="spacer"></div>
       <button class="btn btn-ghost btn-sm" onclick="addScheduledTask()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -965,7 +965,9 @@ function showStatus(type, msg, action) {
   } else if (action) {
     el.innerHTML = esc(msg) +
       '<button class="btn btn-sm" style="margin-left:8px;height:24px;padding:0 10px;font-size:12px;background:var(--yellow);color:#fff;border:none;border-radius:5px;cursor:pointer" onclick="(' + action.fn + ')()">' + esc(action.label) + '</button>' +
-      '<button style="margin-left:4px;background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:15px;line-height:1;padding:0 2px" onclick="document.getElementById(\'status-msg\').style.display=\'none\'" title="关闭">&#215;</button>';
+      '<button style="margin-left:4px;background:none;border:none;cursor:pointer;color:inherit;opacity:.6;padding:0 2px;display:inline-flex;align-items:center;justify-content:center" onclick="document.getElementById(\'status-msg\').style.display=\'none\'" title="关闭">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+      '</button>';
   } else {
     el.textContent = msg;
     _statusTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
@@ -994,8 +996,12 @@ function makeMethodRow(method, idx) {
     '<span class="method-chip">' + esc(method) + '</span>' +
     '<span class="method-desc">' + esc(METHOD_LABELS[method] || method) + '</span>' +
     '<div class="method-move">' +
-      '<button onclick="moveMethod(this,-1)" title="上移">&#9650;</button>' +
-      '<button onclick="moveMethod(this,1)" title="下移">&#9660;</button>' +
+      '<button onclick="moveMethod(this,-1)" title="上移">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>' +
+      '</button>' +
+      '<button onclick="moveMethod(this,1)" title="下移">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+      '</button>' +
     '</div>' +
     '<button class="btn btn-danger btn-icon btn-sm" onclick="removeMethod(this)" title="移除">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
@@ -2402,7 +2408,7 @@ function makeTaskCard(task, idx, expanded) {
       '</div>' +
       '<div class="field field-full" style="margin-bottom:0">' +
         '<div class="webhook-section">' +
-          '<div class="webhook-section-title">&#128279; Webhook 推送目标' +
+          '<div class="webhook-section-title">Webhook 推送目标' +
             '<button class="btn btn-secondary btn-sm" style="margin-left:10px;padding:2px 10px;font-size:11px" onclick="addWebhookItem(this)">+ 添加</button>' +
           '</div>' +
           '<div class="webhooks-container" style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' +

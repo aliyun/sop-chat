@@ -260,7 +260,7 @@ func addSopKnowledge(sopList []map[string]interface{}, reader *bufio.Reader) []m
 	}
 
 	sopList = append(sopList, sop)
-	fmt.Println("✅ SOP Knowledge added successfully!")
+	fmt.Println("SOP Knowledge added successfully!")
 	return sopList
 }
 
