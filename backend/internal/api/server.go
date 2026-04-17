@@ -31,19 +31,21 @@ import (
 )
 
 type Server struct {
-	mu             sync.RWMutex
-	config         *client.Config
-	globalConfig   *config.Config
-	configPath     string // 配置文件实际路径，用于配置 UI 读写
-	configUIToken  string // 配置 UI 访问令牌（启动时随机生成）
-	router         *gin.Engine
-	authProvider   auth.Provider
-	authModes      []auth.AuthMode
-	jwtManager     *auth.JWTManager
-	userStore      auth.UserStore
-	authMiddleware *auth.AuthMiddleware
-	oidcProvider   *auth.OIDCProvider // OIDC 认证提供者（仅当 methods 包含 oidc 时非 nil）
-
+	mu              sync.RWMutex
+	shutdownOnce    sync.Once
+	config          *client.Config
+	globalConfig    *config.Config
+	configPath      string // 配置文件实际路径，用于配置 UI 读写
+	configUIToken   string // 配置 UI 访问令牌（启动时随机生成）
+	router          *gin.Engine
+	lifecycleCtx    context.Context
+	lifecycleCancel context.CancelFunc
+	authProvider    auth.Provider
+	authModes       []auth.AuthMode
+	jwtManager      *auth.JWTManager
+	userStore       auth.UserStore
+	authMiddleware  *auth.AuthMiddleware
+	oidcProvider    *auth.OIDCProvider // OIDC 认证提供者（仅当 methods 包含 oidc 时非 nil）
 
 	// 钉钉机器人生命周期管理（支持多实例热启停，keyed by clientId）
 	dingtalkMu   sync.Mutex
@@ -111,6 +113,7 @@ func NewServer(cfg *client.Config, globalConfig *config.Config, configPath strin
 		configUIToken: token,
 		router:        router,
 	}
+	server.lifecycleCtx, server.lifecycleCancel = context.WithCancel(context.Background())
 
 	// 初始化认证系统
 	if err := server.initAuth(); err != nil {
@@ -258,6 +261,10 @@ func (s *Server) initAuth() error {
 }
 
 func (s *Server) setupRoutes() {
+	// 入站 Webhook 自动化入口（无需登录，使用每条配置独立 Bearer Token 认证）
+	// 注册在根路由上，固定地址：POST /webhook/{规则ID}
+	s.router.POST("/webhook/:id", s.handleIncomingWebhook)
+
 	// API 路由组
 	api := s.router.Group("/api")
 	{
@@ -426,6 +433,23 @@ func (s *Server) GetConfigUIToken() string {
 	return s.configUIToken
 }
 
+// Shutdown 停止后台任务与机器人并取消服务级上下文。
+func (s *Server) Shutdown() {
+	s.shutdownOnce.Do(func() {
+		log.Printf("Server shutting down: cancel background jobs")
+		if s.lifecycleCancel != nil {
+			s.lifecycleCancel()
+		}
+		if s.taskScheduler != nil {
+			s.taskScheduler.Stop()
+		}
+		s.stopAllDingTalkBots()
+		s.stopAllFeishuBots()
+		s.stopAllWeComBots()
+		s.stopAllWeComLongConnBots()
+	})
+}
+
 // syncDingTalkBots 将运行中的机器人与新配置列表对齐：
 // 新增或凭据变更的实例会被（重）启动，旧配置中已移除的实例会被停止。
 func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, cmsConfig *config.ClientConfig) {
@@ -465,6 +489,7 @@ func (s *Server) syncDingTalkBots(newConfigs []config.DingTalkConfig, cmsConfig 
 			} else {
 				// 凭据未变，但其他字段（如 allowedUsers、conciseReply）可能已更新，热更新配置
 				existing.UpdateConfig(&dtCopy)
+				existing.UpdateCMSConfig(cmsConfig)
 				continue
 			}
 		}
@@ -522,6 +547,7 @@ func (s *Server) syncFeishuBots(newConfigs []config.FeishuConfig, cmsConfig *con
 				delete(s.feishuBots, appID)
 			} else {
 				existing.UpdateConfig(&ftCopy)
+				existing.UpdateCMSConfig(cmsConfig)
 				// 注册/更新 WeCom 回调路由
 				s.registerFeishuRoutes(appID, existing)
 				continue
@@ -586,6 +612,7 @@ func (s *Server) syncWeComBots(newConfigs []config.WeComConfig, cmsConfig *confi
 				delete(s.wecomBots, key)
 			} else {
 				existing.UpdateConfig(&wcCopy)
+				existing.UpdateCMSConfig(cmsConfig)
 				s.registerWeComRoutes(key, existing)
 				continue
 			}
@@ -678,6 +705,7 @@ func (s *Server) syncWeComLongConnBots(newConfigs []config.WeComBotConfig, cmsCo
 			existingCfg := existing.Config()
 			if existingCfg.CredsEqual(&wbCopy) {
 				existing.UpdateConfig(&wbCopy)
+				existing.UpdateCMSConfig(cmsConfig)
 				continue
 			}
 			log.Printf("重启企业微信长连接机器人（配置变更）: botId=%s", botID)

@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/i18n"
 	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
@@ -113,6 +114,21 @@ func (b *LongConnBot) Config() *config.WeComBotConfig {
 	return b.cfg
 }
 
+// cmsClientConfig 返回当前 CMS 客户端配置（并发安全）
+func (b *LongConnBot) cmsClientConfig() *config.ClientConfig {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.cmsConfig
+}
+
+func (b *LongConnBot) uiLanguage() string {
+	cmsCfg := b.cmsClientConfig()
+	if cmsCfg == nil || strings.TrimSpace(cmsCfg.Language) == "" {
+		return "zh"
+	}
+	return cmsCfg.Language
+}
+
 // UpdateConfig 热更新配置
 func (b *LongConnBot) UpdateConfig(newCfg *config.WeComBotConfig) {
 	b.mu.Lock()
@@ -120,6 +136,16 @@ func (b *LongConnBot) UpdateConfig(newCfg *config.WeComBotConfig) {
 	b.cfg = newCfg
 	log.Printf("[WeCom-LongConn] 配置已热更新: botId=%s employee=%s",
 		newCfg.BotID, newCfg.EmployeeName)
+}
+
+// UpdateCMSConfig 热更新 CMS 全局配置（language/product 等）
+func (b *LongConnBot) UpdateCMSConfig(newCfg *config.ClientConfig) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.cmsConfig = newCfg
+	if newCfg != nil {
+		log.Printf("[WeCom-LongConn] CMS 配置已热更新: product=%s language=%s", newCfg.Product, newCfg.Language)
+	}
 }
 
 // Start 启动长连接
@@ -476,12 +502,12 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 		defer cancel()
 
 		// 立即发送"思考中"提示，让用户知道消息已收到
-		b.sendStreamReply(reqID, streamID, "💭 思考中...", false)
+		b.sendStreamReply(reqID, streamID, i18n.ThinkingHint(b.uiLanguage()), false)
 
 		threadID, err := b.getOrCreateThreadID(fromUser, cfg.EmployeeName, body.ChatID)
 		if err != nil {
 			log.Printf("[WeCom-LongConn] 创建线程失败: %v", err)
-			b.sendStreamReply(reqID, streamID, "❌ 创建会话失败，请稍后重试", true)
+			b.sendStreamReply(reqID, streamID, i18n.SessionCreateFailedHint(b.uiLanguage()), true)
 			return
 		}
 
@@ -507,7 +533,7 @@ func (b *LongConnBot) handleCallback(frame *longConnFrame) {
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom-LongConn] 队列已满，拒绝消息 from=%s", fromUser)
-		b.sendStreamReply(reqID, streamID, "⚠️ 消息处理中，请稍后再发。", true)
+		b.sendStreamReply(reqID, streamID, i18n.BusyHint(b.uiLanguage()), true)
 	}
 }
 
@@ -569,7 +595,13 @@ func longConnThreadKey(userID, employeeName, chatID string) string {
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *LongConnBot) threadVariable() (project, workspace, region string) {
-	return session.ThreadVariable(b.cfg.Product, b.cmsConfig.Product, b.cfg.Project, b.cfg.Workspace, b.cfg.Region)
+	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
+	globalProduct := ""
+	if cmsCfg != nil {
+		globalProduct = cmsCfg.Product
+	}
+	return session.ThreadVariable(cfg.Product, globalProduct, cfg.Project, cfg.Workspace, cfg.Region)
 }
 
 // getOrCreateThreadID 查找或新建 CMS 线程 ID
@@ -607,7 +639,7 @@ func (b *LongConnBot) getOrCreateThreadID(userID, employeeName, chatID string) (
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *LongConnBot) newSopClient() (*sopchat.Client, error) {
-	return session.NewSopClient(b.cmsConfig)
+	return session.NewSopClient(b.cmsClientConfig())
 }
 
 // queryEmployee 向 CMS 数字员工发送消息，返回回复文本和线程 ID
@@ -619,6 +651,7 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 	cms := sopClient.CmsClient
 
 	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
@@ -628,15 +661,18 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
+	if productType == "" && cmsCfg != nil {
+		productType = cmsCfg.Product
 	}
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  b.cmsConfig.Language,
+		"language":  "zh",
+	}
+	if cmsCfg != nil {
+		variables["language"] = cmsCfg.Language
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
@@ -673,54 +709,13 @@ func (b *LongConnBot) queryEmployee(ctx context.Context, message, threadID, empl
 		Variables: variables,
 	}
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	returnedThreadID := threadID
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadID, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadID, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadID, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadID, err
-			}
-			return strings.Join(textParts, ""), returnedThreadID, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }

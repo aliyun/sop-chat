@@ -19,6 +19,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/i18n"
 	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
@@ -31,7 +32,7 @@ const workerQueueSize = 8
 
 // Bot 封装钉钉机器人及其与 CMS 的对接逻辑
 type Bot struct {
-	// dtConfig 受 cfgMu 保护，所有读取须调用 config() 方法
+	// dtConfig/cmsConfig 受 cfgMu 保护，读取须调用 config()/cmsClientConfig() 方法
 	cfgMu     sync.RWMutex
 	dtConfig  *config.DingTalkConfig
 	cmsConfig *config.ClientConfig
@@ -90,6 +91,21 @@ func (b *Bot) config() *config.DingTalkConfig {
 	return b.dtConfig
 }
 
+// cmsClientConfig 返回当前 CMS 客户端配置（并发安全）
+func (b *Bot) cmsClientConfig() *config.ClientConfig {
+	b.cfgMu.RLock()
+	defer b.cfgMu.RUnlock()
+	return b.cmsConfig
+}
+
+func (b *Bot) uiLanguage() string {
+	cmsCfg := b.cmsClientConfig()
+	if cmsCfg == nil || strings.TrimSpace(cmsCfg.Language) == "" {
+		return "zh"
+	}
+	return cmsCfg.Language
+}
+
 // Config 返回当前机器人的配置快照（供外部调用）
 func (b *Bot) Config() *config.DingTalkConfig {
 	return b.config()
@@ -102,6 +118,16 @@ func (b *Bot) UpdateConfig(newCfg *config.DingTalkConfig) {
 	b.dtConfig = newCfg
 	log.Printf("[DingTalk] 配置已热更新: clientId=%s allowedGroupUsers=%v allowedDirectUsers=%v conciseReply=%v",
 		newCfg.ClientId, newCfg.AllowedGroupUsers, newCfg.AllowedDirectUsers, newCfg.ConciseReply)
+}
+
+// UpdateCMSConfig 热更新 CMS 全局配置（language/product 等）
+func (b *Bot) UpdateCMSConfig(newCfg *config.ClientConfig) {
+	b.cfgMu.Lock()
+	defer b.cfgMu.Unlock()
+	b.cmsConfig = newCfg
+	if newCfg != nil {
+		log.Printf("[DingTalk] CMS 配置已热更新: product=%s language=%s", newCfg.Product, newCfg.Language)
+	}
 }
 
 // Start 启动钉钉 Stream 连接（非阻塞：SDK 内部以 goroutine 运行消息循环）
@@ -309,7 +335,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		}
 
 		// 走 Markdown 路径：先告知用户已收到
-		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte("⏳ 收到，正在处理中..."))
+		_ = replier.SimpleReplyText(asyncCtx, webhook, []byte(i18n.ProcessingHint(b.uiLanguage())))
 
 		replyText, newThreadId, err := b.queryEmployeeWithRoute(asyncCtx, userText, threadId, route)
 		if err != nil {
@@ -351,7 +377,7 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	// 尝试入队：同一 key 的消息串行执行，不同 key 并发处理
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[DingTalk] 队列已满，拒绝消息 conversationId=%s sender=%s", conversationId, senderNick)
-		_ = replier.SimpleReplyText(ctx, webhook, []byte("⚠️ 消息处理中，请稍后再发。"))
+		_ = replier.SimpleReplyText(ctx, webhook, []byte(i18n.BusyHint(b.uiLanguage())))
 		return nil, nil
 	}
 
@@ -465,7 +491,10 @@ func (b *Bot) resolveRoute(conversationType, conversationTitle string) resolvedR
 	}
 	// 如果 product 为空，使用全局配置
 	if result.product == "" {
-		result.product = b.cmsConfig.Product
+		cmsCfg := b.cmsClientConfig()
+		if cmsCfg != nil {
+			result.product = cmsCfg.Product
+		}
 	}
 	return result
 }
@@ -520,14 +549,20 @@ func (b *Bot) isConversationAllowed(conversationType, conversationTitle string) 
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
-	return session.NewSopClient(b.cmsConfig)
+	return session.NewSopClient(b.cmsClientConfig())
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值：
 // SLS 产品返回 project，CMS 产品返回 workspace 和 region。
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *Bot) threadVariable() (project, workspace, region string) {
-	return session.ThreadVariable(b.dtConfig.Product, b.cmsConfig.Product, b.dtConfig.Project, b.dtConfig.Workspace, b.dtConfig.Region)
+	cfg := b.config()
+	cmsCfg := b.cmsClientConfig()
+	globalProduct := ""
+	if cmsCfg != nil {
+		globalProduct = cmsCfg.Product
+	}
+	return session.ThreadVariable(cfg.Product, globalProduct, cfg.Project, cfg.Workspace, cfg.Region)
 }
 
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID。
@@ -588,6 +623,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	cms := sopClient.CmsClient
 
 	cfg := b.config()
+	cmsCfg := b.cmsClientConfig()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
@@ -597,15 +633,18 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
+	if productType == "" && cmsCfg != nil {
+		productType = cmsCfg.Product
 	}
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  b.cmsConfig.Language,
+		"language":  "zh",
+	}
+	if cmsCfg != nil {
+		variables["language"] = cmsCfg.Language
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
@@ -642,76 +681,38 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		Variables: variables,
 	}
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	returnedThreadId := threadId
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				// 从 Contents 中提取 text 类型的内容
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadId, err
-			}
-			return strings.Join(textParts, ""), returnedThreadId, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }
 
 // buildCMSChatRequest 构建 CMS CreateChat 请求（queryEmployeeWithRoute 和 queryEmployeeStreaming 共用）
 func (b *Bot) buildCMSChatRequest(message, threadId string, route resolvedRoute) *cmsclient.CreateChatRequest {
 	cfg := b.config()
+	cmsCfg := b.cmsClientConfig()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
 
 	productType := route.product
-	if productType == "" {
-		productType = b.cmsConfig.Product
+	if productType == "" && cmsCfg != nil {
+		productType = cmsCfg.Product
 	}
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  b.cmsConfig.Language,
+		"language":  "zh",
+	}
+	if cmsCfg != nil {
+		variables["language"] = cmsCfg.Language
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
@@ -759,57 +760,15 @@ func (b *Bot) queryEmployeeWithRoute(ctx context.Context, message, threadId stri
 
 	request := b.buildCMSChatRequest(message, threadId, route)
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	returnedThreadId := threadId
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				// 从 Contents 中提取 text 类型的内容
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadId, err
-			}
-			return strings.Join(textParts, ""), returnedThreadId, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }
 
 // queryEmployeeStreaming 向 CMS 数字员工发送消息，通过 onChunk 回调流式返回文本片段。
@@ -827,55 +786,17 @@ func (b *Bot) queryEmployeeStreaming(
 	cms := sopClient.CmsClient
 
 	request := b.buildCMSChatRequest(message, threadId, route)
-	runtime := sopchat.NewSSERuntimeOptions()
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
 
-	var textParts []string
-	returnedThreadId := threadId
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-								onChunk(strings.Join(textParts, ""))
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadId, err
-			}
-			return strings.Join(textParts, ""), returnedThreadId, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
+		OnChunk:   onChunk,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }
 
 // errCardCreate 是卡片创建失败的 sentinel error，用于区分降级场景
@@ -918,7 +839,7 @@ func (b *Bot) replyWithStreamingCard(
 			OutTrackId:     outTrackId,
 			CallbackType:   "STREAM",
 			OpenSpaceId:    "dtv1.card//IM_GROUP." + conversationId,
-			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: i18n.CardThinkingHint(b.uiLanguage())}},
 			ImGroupOpenSpaceModel: &openapi.ImGroupOpenSpaceModel{
 				SupportForward: true,
 				Notification: &openapi.ImGroupOpenSpaceModelNotification{
@@ -937,7 +858,7 @@ func (b *Bot) replyWithStreamingCard(
 			OutTrackId:     outTrackId,
 			CallbackType:   "STREAM",
 			OpenSpaceId:    "dtv1.card//IM_ROBOT." + senderStaffId,
-			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: "正在思考中..."}},
+			CardData:       &openapi.CardData{CardParamMap: map[string]string{contentKey: i18n.CardThinkingHint(b.uiLanguage())}},
 			ImRobotOpenSpaceModel: &openapi.ImRobotOpenSpaceModel{
 				SupportForward: true,
 				Notification: &openapi.ImRobotOpenSpaceModelNotification{

@@ -66,15 +66,16 @@ code{background:#eef0ff;padding:2px 6px;border-radius:4px;font-size:.8rem}</styl
 
 // configUIResponse 是返回给前端的结构化配置数据（不暴露文件路径）
 type configUIResponse struct {
-	Global         configUIGlobal          `json:"global"`
-	Auth           configUIAuth            `json:"auth"`
-	DingTalk       []configUIDingTalk      `json:"dingtalk"`
-	Feishu         []configUIFeishu        `json:"feishu"`
-	WeCom          []configUIWeCom         `json:"wecom"`
-	WeComBot       []configUIWeComBot      `json:"wecomBot"`
-	OpenAIEnabled  bool                    `json:"openaiEnabled"`
-	OpenAI         configUIOpenAI          `json:"openai"`
-	ScheduledTasks []configUIScheduledTask `json:"scheduledTasks"`
+	Global           configUIGlobal            `json:"global"`
+	Auth             configUIAuth              `json:"auth"`
+	DingTalk         []configUIDingTalk        `json:"dingtalk"`
+	Feishu           []configUIFeishu          `json:"feishu"`
+	WeCom            []configUIWeCom           `json:"wecom"`
+	WeComBot         []configUIWeComBot        `json:"wecomBot"`
+	OpenAIEnabled    bool                      `json:"openaiEnabled"`
+	OpenAI           configUIOpenAI            `json:"openai"`
+	ScheduledTasks   []configUIScheduledTask   `json:"scheduledTasks"`
+	IncomingWebhooks []configUIIncomingWebhook `json:"incomingWebhooks"`
 }
 
 // configUIScheduledTask 定时任务配置（UI 层）
@@ -274,6 +275,36 @@ type configUIOpenAI struct {
 	APIKeys []string `json:"apiKeys"`
 }
 
+// configUIIncomingWebhook 入站 Webhook 自动化配置（UI 层）
+type configUIIncomingWebhook struct {
+	Name                string            `json:"name"`
+	DisplayName         string            `json:"displayName"`
+	Enabled             bool              `json:"enabled"`
+	BearerToken         string            `json:"bearerToken"`
+	Prompt              string            `json:"prompt"`
+	EmployeeName        string            `json:"employeeName"`
+	ConciseReply        bool              `json:"conciseReply"`
+	Product             string            `json:"product"`
+	Project             string            `json:"project"`
+	Workspace           string            `json:"workspace"`
+	Region              string            `json:"region"`
+	Webhook             *configUIWebhook  `json:"webhook,omitempty"` // 向后兼容：旧前端可能只传单个
+	Webhooks            []configUIWebhook `json:"webhooks"`
+	CallbackURL         string            `json:"callbackUrl"`
+	CallbackBearerToken string            `json:"callbackBearerToken"`
+}
+
+// effectiveWebhooks 返回有效的 webhook 列表，兼容旧前端只传 webhook 单个字段的情况。
+func (w *configUIIncomingWebhook) effectiveWebhooks() []configUIWebhook {
+	if len(w.Webhooks) > 0 {
+		return w.Webhooks
+	}
+	if w.Webhook != nil && w.Webhook.URL != "" {
+		return []configUIWebhook{*w.Webhook}
+	}
+	return nil
+}
+
 // handleGetConfig 返回结构化的配置 JSON（不包含文件路径）
 func (s *Server) handleGetConfig(c *gin.Context) {
 	s.mu.RLock()
@@ -283,12 +314,13 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 	if cfg == nil {
 		// 配置文件不存在时返回空配置，让前端呈现空表单供用户填写
 		c.JSON(http.StatusOK, configUIResponse{
-			DingTalk:       []configUIDingTalk{},
-			Feishu:         []configUIFeishu{},
-			WeCom:          []configUIWeCom{},
-			WeComBot:       []configUIWeComBot{},
-			OpenAI:         configUIOpenAI{APIKeys: []string{}},
-			ScheduledTasks: []configUIScheduledTask{},
+			DingTalk:         []configUIDingTalk{},
+			Feishu:           []configUIFeishu{},
+			WeCom:            []configUIWeCom{},
+			WeComBot:         []configUIWeComBot{},
+			OpenAI:           configUIOpenAI{APIKeys: []string{}},
+			ScheduledTasks:   []configUIScheduledTask{},
+			IncomingWebhooks: []configUIIncomingWebhook{},
 		})
 		return
 	}
@@ -547,6 +579,44 @@ func (s *Server) handleGetConfig(c *gin.Context) {
 		}
 	} else {
 		resp.ScheduledTasks = []configUIScheduledTask{}
+	}
+	if len(cfg.IncomingWebhooks) > 0 {
+		resp.IncomingWebhooks = make([]configUIIncomingWebhook, len(cfg.IncomingWebhooks))
+		for i, wh := range cfg.IncomingWebhooks {
+			effectiveProduct := config.ResolveScheduledTaskProduct(wh.Product, wh.Project, wh.Workspace, cfg.Global.Product)
+			webhooks := wh.EffectiveWebhooks()
+			uiWebhooks := make([]configUIWebhook, len(webhooks))
+			for j, target := range webhooks {
+				uiWebhooks[j] = configUIWebhook{
+					Type:    target.Type,
+					URL:     target.URL,
+					MsgType: target.MsgType,
+					Title:   target.Title,
+					To:      target.To,
+				}
+			}
+			if len(uiWebhooks) == 0 {
+				uiWebhooks = []configUIWebhook{}
+			}
+			resp.IncomingWebhooks[i] = configUIIncomingWebhook{
+				Name:                wh.Name,
+				DisplayName:         wh.DisplayName,
+				Enabled:             wh.Enabled,
+				BearerToken:         wh.BearerToken,
+				Prompt:              wh.Prompt,
+				EmployeeName:        wh.EmployeeName,
+				ConciseReply:        wh.ConciseReply,
+				Product:             effectiveProduct,
+				Project:             wh.Project,
+				Workspace:           wh.Workspace,
+				Region:              wh.Region,
+				Webhooks:            uiWebhooks,
+				CallbackURL:         wh.CallbackURL,
+				CallbackBearerToken: wh.CallbackBearerToken,
+			}
+		}
+	} else {
+		resp.IncomingWebhooks = []configUIIncomingWebhook{}
 	}
 
 	c.JSON(http.StatusOK, resp)
@@ -883,6 +953,40 @@ func (s *Server) handleSaveConfig(c *gin.Context) {
 				Webhooks:     cfgWebhooks,
 			})
 		}
+	}
+	for _, wh := range req.IncomingWebhooks {
+		webhooks := wh.effectiveWebhooks()
+		hasContent := wh.Name != "" || wh.EmployeeName != "" || len(webhooks) > 0 || wh.CallbackURL != ""
+		if !hasContent {
+			continue
+		}
+		whProduct := config.ResolveScheduledTaskProduct(wh.Product, wh.Project, wh.Workspace, strings.TrimSpace(req.Global.Product))
+		cfgWebhooks := make([]config.WebhookConfig, len(webhooks))
+		for i, target := range webhooks {
+			cfgWebhooks[i] = config.WebhookConfig{
+				Type:    target.Type,
+				URL:     target.URL,
+				MsgType: target.MsgType,
+				Title:   target.Title,
+				To:      target.To,
+			}
+		}
+		cfg.IncomingWebhooks = append(cfg.IncomingWebhooks, config.IncomingWebhookConfig{
+			Name:                wh.Name,
+			DisplayName:         wh.DisplayName,
+			Enabled:             wh.Enabled,
+			BearerToken:         wh.BearerToken,
+			Prompt:              wh.Prompt,
+			EmployeeName:        wh.EmployeeName,
+			ConciseReply:        wh.ConciseReply,
+			Product:             whProduct,
+			Project:             wh.Project,
+			Workspace:           wh.Workspace,
+			Region:              wh.Region,
+			Webhooks:            cfgWebhooks,
+			CallbackURL:         wh.CallbackURL,
+			CallbackBearerToken: wh.CallbackBearerToken,
+		})
 	}
 
 	// 保存到文件

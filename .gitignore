@@ -32,3 +32,4 @@ backend/__debug_bin*
 
 # Logs
 backend/logs/
+.gocache/

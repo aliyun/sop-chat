@@ -128,11 +128,11 @@ func main() {
 		if data, err := os.ReadFile(pidPath); err == nil {
 			if pid, err := strconv.Atoi(strings.TrimSpace(string(data))); err == nil {
 				if proc, err := os.FindProcess(pid); err == nil {
-				if proc.Signal(syscall.Signal(0)) == nil {
-					fmt.Fprintf(os.Stderr, "sop-chat-server 已在运行（PID=%d），\n如需重启请先执行: ./sop-chat-server stop\n如需查看管理地址: ./sop-chat-server adminurl\n", pid)
-					fmt.Fprintln(os.Stderr, "❌ 启动失败")
-					os.Exit(1)
-				}
+					if proc.Signal(syscall.Signal(0)) == nil {
+						fmt.Fprintf(os.Stderr, "sop-chat-server 已在运行（PID=%d），\n如需重启请先执行: ./sop-chat-server stop\n如需查看管理地址: ./sop-chat-server adminurl\n", pid)
+						fmt.Fprintln(os.Stderr, "❌ 启动失败")
+						os.Exit(1)
+					}
 				}
 			}
 			// PID 文件存在但进程已不在，清理残留文件
@@ -298,6 +298,7 @@ func main() {
 			if isDaemon || sig == syscall.SIGTERM {
 				cleanupOnExit()
 				log.Printf("收到退出信号，正在关闭服务...")
+				server.Shutdown()
 				os.Exit(0)
 			}
 			// 前台 SIGINT 双击确认
@@ -305,6 +306,7 @@ func main() {
 			if !lastInt.IsZero() && now.Sub(lastInt) <= 10*time.Second {
 				cleanupOnExit()
 				log.Printf("确认退出")
+				server.Shutdown()
 				os.Exit(0)
 			}
 			lastInt = now

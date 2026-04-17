@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	cmsclient "github.com/alibabacloud-go/cms-20240330/v6/client"
@@ -31,6 +32,146 @@ type ChatResult struct {
 	ThreadId  string
 	RequestId string
 	TraceId   string
+}
+
+// QueryEmployeeOptions 查询数字员工的选项
+// 用于统一封装 SSE 查询逻辑，支持重试
+// 使用方法：
+//
+//	opts := &sopchat.QueryEmployeeOptions{
+//	    CMSClient: cmsClient,
+//	    Request:   request,
+//	}
+//	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+//	text := result.Text
+//
+// 流式回调：
+//
+//	opts := &sopchat.QueryEmployeeOptions{
+//	    CMSClient: cmsClient,
+//	    Request:   request,
+//	    OnChunk: func(accumulated string) {
+//	        // 更新 UI
+//	    },
+//	}
+//	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+type QueryEmployeeOptions struct {
+	CMSClient *cmsclient.Client
+	Request   *cmsclient.CreateChatRequest
+	// OnChunk 可选的流式回调，每次收到文本片段时调用，参数为累积的完整文本
+	OnChunk func(accumulated string)
+}
+
+// QueryEmployeeResult 查询数字员工的结果
+type QueryEmployeeResult struct {
+	Text      string // 收集到的文本内容
+	ThreadId  string // 线程 ID（从请求中获取）
+	RequestId string // 请求 ID
+	TraceId   string // 追踪 ID
+}
+
+// QueryEmployee 执行单次 CMS SSE 查询，收集文本内容
+func QueryEmployee(ctx context.Context, opts *QueryEmployeeOptions) (*QueryEmployeeResult, error) {
+	responseChan := make(chan *cmsclient.CreateChatResponse)
+	errorChan := make(chan error)
+
+	runtime := NewSSERuntimeOptions()
+	go opts.CMSClient.CreateChatWithSSECtx(ctx, opts.Request, make(map[string]*string), runtime, responseChan, errorChan)
+
+	result := &QueryEmployeeResult{
+		ThreadId: tea.StringValue(opts.Request.ThreadId),
+	}
+	var textParts []string
+
+	for {
+		select {
+		case <-ctx.Done():
+			result.Text = strings.Join(textParts, "")
+			return result, ctx.Err()
+
+		case response, ok := <-responseChan:
+			if !ok {
+				result.Text = strings.Join(textParts, "")
+				return result, nil
+			}
+			if response.StatusCode != nil && *response.StatusCode != 200 {
+				statusCode := *response.StatusCode
+				errorMsg := fmt.Sprintf("API returned status code %d", statusCode)
+				if response.Body != nil && response.Body.Messages != nil {
+					for _, msg := range response.Body.Messages {
+						if msg != nil && msg.Detail != nil {
+							errorMsg += ": " + *msg.Detail
+							break
+						}
+					}
+				}
+				result.Text = strings.Join(textParts, "")
+				return result, errors.New(errorMsg)
+			}
+			if response.Body == nil {
+				continue
+			}
+			// 保存元数据
+			if result.RequestId == "" && response.Body.RequestId != nil {
+				result.RequestId = *response.Body.RequestId
+			}
+			if result.TraceId == "" && response.Body.TraceId != nil {
+				result.TraceId = *response.Body.TraceId
+			}
+			// 检测 done 消息
+			if IsDoneMessage(response.Body) {
+				result.Text = strings.Join(textParts, "")
+				return result, nil
+			}
+			// 提取文本内容
+			for _, msg := range response.Body.Messages {
+				if msg == nil {
+					continue
+				}
+				for _, content := range msg.Contents {
+					if content == nil {
+						continue
+					}
+					if t, ok := content["type"]; ok && t == "text" {
+						if v, ok := content["value"]; ok {
+							if s, ok := v.(string); ok {
+								textParts = append(textParts, s)
+								if opts.OnChunk != nil {
+									opts.OnChunk(strings.Join(textParts, ""))
+								}
+							}
+						}
+					}
+				}
+			}
+
+		case err, ok := <-errorChan:
+			result.Text = strings.Join(textParts, "")
+			if ok && err != nil {
+				return result, fmt.Errorf("SSE error: %w", err)
+			}
+			return result, nil
+		}
+	}
+}
+
+// QueryEmployeeWithRetry 执行 CMS 查询，空响应时自动重试一次
+// 当数字员工返回空响应（可能是服务端工具调用达到上限）时，等待 3 秒后重试
+func QueryEmployeeWithRetry(ctx context.Context, opts *QueryEmployeeOptions) (*QueryEmployeeResult, error) {
+	result, err := QueryEmployee(ctx, opts)
+	if err != nil {
+		return result, err
+	}
+	if result.Text == "" {
+		log.Printf("[SOPCHAT] 数字员工返回空响应（可能是服务端工具调用达到上限），3 秒后自动重试一次")
+		select {
+		case <-time.After(3 * time.Second):
+		case <-ctx.Done():
+			return result, ctx.Err()
+		}
+		return QueryEmployee(ctx, opts)
+	}
+	return result, nil
 }
 
 // SendMessage 发送聊天消息并通过回调处理流式响应

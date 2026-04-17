@@ -222,6 +222,7 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   <button class="tab-btn" data-tab="auth" onclick="switchTab('auth')" data-i18n="tabAuth">&#128272; 认证与用户</button>
   <button class="tab-btn" data-tab="dingtalk" onclick="switchTab('dingtalk')" data-i18n="tabChannels">&#129302; Channels（机器人）</button>
   <button class="tab-btn" data-tab="scheduler" onclick="switchTab('scheduler')" data-i18n="tabScheduler">&#9200; 定时任务</button>
+  <button class="tab-btn" data-tab="webhook" onclick="switchTab('webhook')" data-i18n="tabWebhook">&#128279; Webhook 接口</button>
   <button class="tab-btn" data-tab="openai" onclick="switchTab('openai')" data-i18n="tabOpenai">&#129504; OpenAI 兼容接口</button>
 </nav>
 
@@ -742,6 +743,34 @@ textarea.prompt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(
   </div>
 </div>
 
+<!-- ── Tab 6: Webhook Automation ── -->
+<div class="tab-panel" id="panel-webhook">
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">
+      <span class="card-title-icon">&#128279;</span> <span data-i18n="cardWebhookAutomation">Webhook 接口</span>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addIncomingWebhook()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span data-i18n="addWebhookRule">添加 Webhook 规则</span>
+      </button>
+    </div>
+    <div id="incoming-webhooks-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div style="margin-top:10px;padding:12px 14px;background:#edf2f7;border:1px solid #cbd5e0;border-radius:8px;font-size:12px;line-height:1.8;color:#2d3748">
+      <div style="font-weight:600;margin-bottom:4px" data-i18n="incomingHelpTitle">使用说明</div>
+      <ul style="padding-left:18px;margin:0">
+        <li data-i18n="incomingHelpLi1">服务会暴露 /webhook/{规则ID} 入站接口，根据规则ID命中对应规则。</li>
+        <li data-i18n="incomingHelpLi2">入站请求要求 Authorization: Bearer &lt;token&gt;（token 为规则中的 Bearer Token）。</li>
+        <li data-i18n="incomingHelpLi3">最终发送给大模型的内容 = 预设 Prompt + 本次 webhook POST 的请求内容。</li>
+        <li data-i18n="incomingHelpLi4">在预设 Prompt 中无需写变量占位符；可直接写“请基于下方 webhook 请求内容进行分析…”。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="reload-note">
+    <strong data-i18n="webhookReload">保存后立即生效：</strong>
+    <span class="badge-hot">incomingWebhooks.*</span>
+  </div>
+</div>
+
 </main>
 </div>
 
@@ -764,6 +793,7 @@ const I18N = {
     tabAuth: '🔒 认证与用户',
     tabChannels: '🤖 Channels（机器人）',
     tabScheduler: '⏰ 定时任务',
+    tabWebhook: '🔗 Webhook 接口',
     tabOpenai: '🧠 OpenAI 兼容接口',
     saveApply: '保存并应用',
     cardAliyun: '阿里云连接',
@@ -919,6 +949,19 @@ const I18N = {
     schedHelpLi4: '消息类型：text = 纯文本，markdown = Markdown 格式（钉钉/企业微信），post = 富文本（飞书）',
     schedHelpLi5: '修改后保存配置即立即热重载，无需重启服务',
     schedReload: '保存后立即生效：',
+    cardWebhookAutomation: 'Webhook 接口',
+    addWebhookRule: '添加 Webhook 规则',
+    incomingHelpTitle: '使用说明',
+    incomingHelpLi1: '服务会暴露 /webhook/{规则ID} 入站接口，根据规则ID命中对应规则。',
+    incomingHelpLi2: '入站请求要求 Authorization: Bearer <token>（token 为规则中的 Bearer Token）。',
+    incomingHelpLi3: '最终发送给大模型的内容 = 预设 Prompt + 本次 webhook POST 的请求内容。',
+    incomingHelpLi4: '在预设 Prompt 中无需写变量占位符；可直接写“请基于下方 webhook 请求内容进行分析…”。',
+    incomingPromptAssembleHint: '无需写 {{body}} 之类占位符。直接在预设 Prompt 里写“请基于下方 webhook 请求内容…”，系统会自动拼接本次 POST 内容。',
+    incomingCallHelpTitle: '调用说明',
+    incomingCallPathLabel: '完整调用路径',
+    incomingCallCurlLabel: 'curl 示例',
+    incomingCallSaveHint: '测试前请先点击右上角「保存并应用」，确保当前配置已生效。',
+    webhookReload: '保存后立即生效：',
     methodBuiltin: '内置账号（builtinUsers）',
     methodLdap: 'LDAP 认证',
     methodOidc: 'OpenID Connect',
@@ -1016,6 +1059,20 @@ const I18N = {
     msgMarkdown: 'markdown（Markdown）',
     msgPost: 'post（富文本）',
     taskUnnamed: '未命名任务',
+    incomingUnnamed: '未命名 Webhook',
+    incomingConfigName: 'Webhook 配置名称',
+    incomingConfigNameHint: '用于页面展示与区分，不参与接口匹配',
+    incomingRuleId: 'Webhook 规则ID',
+    incomingRuleIdHint: '入站地址固定为 /webhook/{规则ID}，用于接口匹配',
+    incomingBearerToken: 'Bearer Token',
+    incomingEmployee: '数字员工',
+    incomingPrompt: '预设 Prompt',
+    incomingProduct: '对接产品',
+    incomingConciseReply: '启用简洁输出（适合 IM 消息）',
+    incomingConciseTitle: '简洁输出',
+    incomingDuplicateRuleId: '规则ID重复：',
+    incomingSaveMissingFor: 'Webhook 规则',
+    incomingSaveMissingFields: '缺少必填项：',
     taskName: '任务名称',
     taskNameHint: '唯一标识，不含空格',
     taskCron: 'Cron 表达式',
@@ -1035,12 +1092,15 @@ const I18N = {
     platWecom: '企业微信（WeCom）',
     msgType: '消息类型',
     webhookUrl: 'Webhook URL',
+    callbackBearerTokenOpt: '回调 Bearer Token（可选）',
     msgTitle: '消息标题',
     msgTitleHint: '（markdown/post 格式时使用）',
     msgTitlePh: '每日通知',
     triggerTest: '立即触发测试',
     triggerHint: '使用当前表单内容立即执行一次，无需先保存',
     defaultTaskNotify: '定时任务通知',
+    defaultWebhookNotify: 'Webhook推送',
+    incomingDefaultPrompt: '请基于下方 webhook 请求内容进行分析',
     akModifiedTitle: 'AK 已修改，建议先测试连通性',
     akNeedBoth: 'AccessKeyId 和 AccessKeySecret 均需填写后才能测试',
     testing: '测试中…',
@@ -1109,6 +1169,7 @@ const I18N = {
     tabAuth: '🔒 Auth & Users',
     tabChannels: '🤖 Channels (Bots)',
     tabScheduler: '⏰ Scheduled Tasks',
+    tabWebhook: '🔗 Webhook Automation',
     tabOpenai: '🧠 OpenAI Compatible API',
     saveApply: 'Save & Apply',
     cardAliyun: 'Alibaba Cloud Connection',
@@ -1264,6 +1325,19 @@ const I18N = {
     schedHelpLi4: 'Message types: text = plain; markdown = Markdown (DingTalk/WeCom); post = rich (Feishu)',
     schedHelpLi5: 'Saving config hot-reloads tasks; no service restart',
     schedReload: 'Takes effect immediately after saving:',
+    cardWebhookAutomation: 'Webhook Automation',
+    addWebhookRule: 'Add Webhook Rule',
+    incomingHelpTitle: 'Usage',
+    incomingHelpLi1: 'The service exposes /webhook/{ruleId} and matches rules by rule id.',
+    incomingHelpLi2: 'Inbound requests must include Authorization: Bearer <token> (configured Bearer Token).',
+    incomingHelpLi3: 'Final content sent to the model = preset Prompt + this webhook POST request payload.',
+    incomingHelpLi4: 'No placeholder is required in preset Prompt; write instructions like "Analyze the webhook payload below..." directly.',
+    incomingPromptAssembleHint: 'No placeholder like {{body}} is needed. Write your instruction (e.g. "Analyze the webhook payload below..."), and the POST payload is appended automatically.',
+    incomingCallHelpTitle: 'Call guide',
+    incomingCallPathLabel: 'Full endpoint URL',
+    incomingCallCurlLabel: 'curl example',
+    incomingCallSaveHint: 'Before testing, click "Save & Apply" at the top-right so current settings take effect.',
+    webhookReload: 'Takes effect immediately after saving:',
     methodBuiltin: 'Built-in accounts (builtinUsers)',
     methodLdap: 'LDAP',
     methodOidc: 'OpenID Connect',
@@ -1361,6 +1435,20 @@ const I18N = {
     msgMarkdown: 'markdown (Markdown)',
     msgPost: 'post (rich text)',
     taskUnnamed: 'Unnamed Task',
+    incomingUnnamed: 'Unnamed Webhook',
+    incomingConfigName: 'Webhook config name',
+    incomingConfigNameHint: 'Display name only; not used for route matching',
+    incomingRuleId: 'Webhook rule ID',
+    incomingRuleIdHint: 'Endpoint is fixed at /webhook/{ruleId}; used for matching',
+    incomingBearerToken: 'Bearer Token',
+    incomingEmployee: 'Employee',
+    incomingPrompt: 'Preset Prompt',
+    incomingProduct: 'Product',
+    incomingConciseReply: 'Enable concise output (for IM messages)',
+    incomingConciseTitle: 'Concise output',
+    incomingDuplicateRuleId: 'Duplicate rule ID: ',
+    incomingSaveMissingFor: 'Webhook rule',
+    incomingSaveMissingFields: 'Missing required fields:',
     taskName: 'Task name',
     taskNameHint: 'Unique id, no spaces',
     taskCron: 'Cron expression',
@@ -1380,12 +1468,15 @@ const I18N = {
     platWecom: 'WeCom',
     msgType: 'Message type',
     webhookUrl: 'Webhook URL',
+    callbackBearerTokenOpt: 'Callback Bearer Token (optional)',
     msgTitle: 'Message title',
     msgTitleHint: '(for markdown/post)',
     msgTitlePh: 'Daily notice',
     triggerTest: 'Trigger Test Now',
     triggerHint: 'Runs once with current form values; save not required',
     defaultTaskNotify: 'Scheduled task notice',
+    defaultWebhookNotify: 'Webhook Push',
+    incomingDefaultPrompt: 'Please analyze the webhook payload below.',
     akModifiedTitle: 'AK changed; test connectivity first',
     akNeedBoth: 'Enter both AccessKeyId and AccessKeySecret to test',
     testing: 'Testing…',
@@ -1508,11 +1599,40 @@ function reRenderDynamicContent() {
     if (newCards[i]) newCards[i].classList.add('expanded');
   });
 
+  // Incoming webhooks — preserve expanded state
+  var oldIncomingCards = document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card');
+  var incomingExpandedIdxs = [];
+  oldIncomingCards.forEach(function(card, i) {
+    if (card.classList.contains('expanded')) incomingExpandedIdxs.push(i);
+  });
+  renderIncomingWebhooks(collectIncomingWebhooks(), incomingExpandedIdxs);
+  var newIncomingCards = document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card');
+  incomingExpandedIdxs.forEach(function(i) {
+    if (newIncomingCards[i]) newIncomingCards[i].classList.add('expanded');
+  });
+
   updateLDAPCardVisibility();
   updateOIDCCardVisibility();
 }
 
 let currentData = null;
+let savedConfigSnapshot = '';
+
+function currentConfigSnapshot() {
+  try {
+    return JSON.stringify(collect());
+  } catch (e) {
+    return '';
+  }
+}
+
+function markConfigSaved() {
+  savedConfigSnapshot = currentConfigSnapshot();
+}
+
+function hasUnsavedConfigChanges() {
+  return savedConfigSnapshot !== '' && savedConfigSnapshot !== currentConfigSnapshot();
+}
 
 // AK 连通性状态跟踪
 // akSnapshot 保存"上次成功测试"或"配置加载"时的 AK 快照，null 表示从未确认
@@ -3014,12 +3134,16 @@ function populate(data) {
   onOpenAIToggle();
 
   renderScheduledTasks(data.scheduledTasks || []);
+  renderIncomingWebhooks(data.incomingWebhooks || []);
   updateAllTaskVariableFields();
+  updateAllIncomingWebhookVariableFields();
 
   applyI18n();
   onAKFieldChange();
   // 记录当前 AK 快照（加载完成 = 已知状态，不需要重新测试）
   markAKTested();
+  // 记录当前配置快照（加载完成 = 已保存状态）
+  markConfigSaved();
 }
 
 function setVal(id, v) {
@@ -3064,6 +3188,7 @@ function collect() {
     openaiEnabled:  oaiOn,
     openai:         { apiKeys: collectApiKeys() },
     scheduledTasks: collectScheduledTasks(),
+    incomingWebhooks: collectIncomingWebhooks(),
   };
 }
 
@@ -3426,7 +3551,8 @@ function onWebhookTypeChange(sel) {
   if (sel.value === 'dingtalk') {
     var titleInput = item.querySelector('[data-field=webhookTitle]');
     if (titleInput && !titleInput.value.trim()) {
-      titleInput.value = t('defaultTaskNotify');
+      var isIncomingWebhookCard = !!sel.closest('.incoming-webhook-card');
+      titleInput.value = isIncomingWebhookCard ? t('defaultWebhookNotify') : t('defaultTaskNotify');
     }
   }
   onMsgTypeChange(msgSel);
@@ -3478,6 +3604,359 @@ function collectScheduledTasks() {
     region:       card.querySelector('[data-field=region]')?.value.trim() || '',
     webhooks:     collectWebhooksFromCard(card),
   }));
+}
+
+// ── Incoming webhooks ─────────────────────────────────────────────────────
+function renderIncomingWebhooks(items, expandedIdxs) {
+  const container = document.getElementById('incoming-webhooks-list');
+  if (!container) return;
+  container.innerHTML = '';
+  (items || []).forEach((item, i) => {
+    const expanded = !Array.isArray(expandedIdxs) || expandedIdxs.includes(i);
+    container.appendChild(makeIncomingWebhookCard(item, i, expanded));
+  });
+  updateAllIncomingWebhookVariableFields();
+}
+
+function incomingWebhookCardTitle(item) {
+  var displayName = (item.displayName || '').trim();
+  if (displayName) return displayName;
+  var ruleID = (item.name || '').trim();
+  if (ruleID) return ruleID;
+  return t('incomingUnnamed');
+}
+
+function makeIncomingWebhookCard(item, idx, expanded) {
+  const div = document.createElement('div');
+  div.className = 'task-card incoming-webhook-card' + (expanded ? ' expanded' : '');
+  if (item.callbackUrl) div.dataset.callbackUrl = item.callbackUrl;
+  if (item.callbackBearerToken) div.dataset.callbackBearerToken = item.callbackBearerToken;
+  const checkedAttr = item.enabled ? 'checked' : '';
+  const product = item.product === 'cms' ? 'cms' : 'sls';
+  var webhooks = item.webhooks && item.webhooks.length ? item.webhooks : (item.webhook && item.webhook.url ? [item.webhook] : []);
+  var webhookItemsHTML = webhooks.map(function(wh) { return makeWebhookItem(wh); }).join('');
+  div.innerHTML =
+    '<div class="task-card-header" onclick="toggleIncomingWebhookCard(this)">' +
+      '<svg class="task-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '<div class="task-card-num">' + (idx + 1) + '</div>' +
+      '<span class="task-card-type">Webhook</span>' +
+      '<div class="task-card-title">' + esc(incomingWebhookCardTitle(item)) + '</div>' +
+      '<span class="task-card-meta">' + esc(incomingWebhookEndpointPreview(item.name || '')) + '</span>' +
+      '<label class="toggle" style="margin-left:8px" onclick="event.stopPropagation()">' +
+        '<input type="checkbox" data-field="enabled" ' + checkedAttr + '>' +
+        '<span class="toggle-track"></span>' +
+        '<span class="toggle-thumb"></span>' +
+      '</label>' +
+      '<button class="btn btn-danger btn-sm" style="margin-left:6px" onclick="event.stopPropagation();removeIncomingWebhook(this)">' + esc(t('delete')) + '</button>' +
+    '</div>' +
+    '<div class="task-card-body">' +
+      '<div class="task-card-fields">' +
+        '<div class="field">' +
+          '<label>' + esc(t('incomingConfigName')) + '</label>' +
+          '<input type="text" data-field="displayName" value="' + esc(item.displayName || '') + '" placeholder="生产告警分析" autocomplete="off" oninput="onIncomingWebhookMetaChange(this)">' +
+          '<span class="hint">' + esc(t('incomingConfigNameHint')) + '</span>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>' + esc(t('incomingRuleId')) + ' <span style="color:var(--red)">*</span></label>' +
+          '<input type="text" data-field="name" value="' + esc(item.name || '') + '" placeholder="ops-alert" autocomplete="off" oninput="onIncomingWebhookMetaChange(this)">' +
+          '<span class="hint">' + esc(t('incomingRuleIdHint')) + '</span>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>Bearer Token <span style="color:var(--red)">*</span></label>' +
+          '<input type="text" data-field="bearerToken" value="' + esc(item.bearerToken || '') + '" placeholder="inbound-secret-token" autocomplete="off" oninput="onIncomingWebhookMetaChange(this)">' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>' + esc(t('incomingEmployee')) + ' <span style="color:var(--red)">*</span></label>' +
+          '<input type="text" data-field="employeeName" value="' + esc(item.employeeName || '') + '" placeholder="apsara-ops" autocomplete="off">' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>' + esc(t('incomingProduct')) + '</label>' +
+          '<select data-field="product" onchange="updateSingleIncomingWebhookVariableFields(this.closest(\'.incoming-webhook-card\'))">' +
+            '<option value="sls"' + (product === 'sls' ? ' selected' : '') + '>SLS</option>' +
+            '<option value="cms"' + (product === 'cms' ? ' selected' : '') + '>CMS</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="field" data-incoming-project-field>' +
+          '<label>Project (SLS)</label>' +
+          '<input type="text" data-field="project" value="' + esc(item.project || '') + '" placeholder="可选">' +
+        '</div>' +
+        '<div class="field" data-incoming-region-field style="display:none">' +
+          '<label>Region (CMS)</label>' +
+          '<input type="text" data-field="region" value="' + esc(item.region || '') + '" placeholder="可选">' +
+        '</div>' +
+        '<div class="field" data-incoming-workspace-field style="display:none">' +
+          '<label>Workspace (CMS)</label>' +
+          '<input type="text" data-field="workspace" value="' + esc(item.workspace || '') + '" placeholder="可选">' +
+        '</div>' +
+        '<div class="field field-full">' +
+          '<label>' + esc(t('incomingPrompt')) + ' <span style="color:var(--red)">*</span></label>' +
+          '<textarea class="prompt-input" data-field="prompt" placeholder="' + esc(t('incomingDefaultPrompt')) + '">' + esc(item.prompt || '') + '</textarea>' +
+          '<span class="hint">' + esc(t('incomingPromptAssembleHint')) + '</span>' +
+        '</div>' +
+        '<div class="field field-full">' +
+          '<div style="display:flex;align-items:center;gap:8px">' +
+            '<label class="toggle" title="' + esc(t('incomingConciseTitle')) + '">' +
+              '<input type="checkbox" data-field="conciseReply"' + (item.conciseReply ? ' checked' : '') + '>' +
+              '<span class="toggle-track"></span>' +
+              '<span class="toggle-thumb"></span>' +
+            '</label>' +
+            '<span style="font-size:12px;color:var(--text2)">' + esc(t('incomingConciseReply')) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="field field-full" style="margin-bottom:0">' +
+          '<div class="webhook-section">' +
+            '<div class="webhook-section-title">' + esc(t('webhookTargets')) +
+              '<button class="btn btn-secondary btn-sm" style="margin-left:10px;padding:2px 10px;font-size:11px" onclick="addWebhookItem(this)">' + esc(t('webhookAdd')) + '</button>' +
+            '</div>' +
+            '<div class="webhooks-container" style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' +
+              webhookItemsHTML +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="field field-full">' +
+          '<label>' + esc(t('incomingCallHelpTitle')) + '</label>' +
+          '<div class="hint" style="margin-bottom:6px">' + esc(t('incomingCallPathLabel')) + '：<code data-field="incomingWebhookFullPath"></code></div>' +
+          '<div class="hint" style="margin-bottom:6px;color:var(--orange)">' + esc(t('incomingCallSaveHint')) + '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">' +
+            '<div class="hint">' + esc(t('incomingCallCurlLabel')) + '：</div>' +
+            '<button type="button" class="btn btn-ghost btn-sm" onclick="copyIncomingWebhookCurl(this)" data-i18n-title="copy" title="' + esc(t('copy')) + '">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>' +
+              '<span>' + esc(t('copy')) + '</span>' +
+            '</button>' +
+          '</div>' +
+          '<pre data-field="incomingWebhookCurl" style="margin:0;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:SFMono-Regular,Consolas,Menlo,monospace"></pre>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  return div;
+}
+
+function onIncomingWebhookMetaChange(inp) {
+  const card = inp.closest('.incoming-webhook-card');
+  if (!card) return;
+  const ruleID = card.querySelector('[data-field=name]').value.trim();
+  const displayName = (card.querySelector('[data-field=displayName]')?.value || '').trim();
+  card.querySelector('.task-card-title').textContent = displayName || ruleID || t('incomingUnnamed');
+  card.querySelector('.task-card-meta').textContent = incomingWebhookEndpointPreview(ruleID);
+  updateIncomingWebhookCallHelp(card);
+}
+
+function incomingWebhookEndpointPreview(ruleID) {
+  if (!ruleID) return '/webhook/{ruleId}';
+  return '/webhook/' + String(ruleID).replace(/^\/+|\/+$/g, '');
+}
+
+function incomingWebhookFullURL(ruleID) {
+  var origin = (window.location.origin || '').replace(/\/+$/g, '');
+  return origin + incomingWebhookEndpointPreview(ruleID);
+}
+
+function incomingWebhookCurlExample(ruleID, token) {
+  var safeRuleID = (ruleID || 'your-rule-id').replace(/^\/+|\/+$/g, '');
+  var safeToken = token || 'your-bearer-token';
+  var url = incomingWebhookFullURL(safeRuleID || 'your-rule-id');
+  return [
+    'curl -X POST "' + url + '" \\',
+    '  -H "Authorization: Bearer ' + safeToken + '" \\',
+    '  -H "Content-Type: application/json" \\',
+    '  -d \'{"event":"test","message":"hello webhook"}\'',
+  ].join('\n');
+}
+
+function copyIncomingWebhookCurl(btn) {
+  const card = btn ? btn.closest('.incoming-webhook-card') : null;
+  const curlEl = card ? card.querySelector('[data-field=incomingWebhookCurl]') : null;
+  const text = (curlEl && curlEl.textContent) ? curlEl.textContent.trim() : '';
+  if (!text) return;
+  if (hasUnsavedConfigChanges()) {
+    showStatus('warning', t('warnPrefix') + t('incomingCallSaveHint'));
+  }
+
+  function onSuccess() {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span>' + esc(t('copied')) + '</span>';
+    setTimeout(function() { btn.innerHTML = orig; }, 1800);
+  }
+
+  function fallbackCopy() {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) onSuccess();
+      else showStatus('error', t('copyFailed'));
+    } catch (e) {
+      showStatus('error', t('copyFailed'));
+    }
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+
+function updateIncomingWebhookCallHelp(card) {
+  if (!card) return;
+  var ruleID = (card.querySelector('[data-field=name]')?.value || '').trim();
+  var token = (card.querySelector('[data-field=bearerToken]')?.value || '').trim();
+  var fullPathEl = card.querySelector('[data-field=incomingWebhookFullPath]');
+  var curlEl = card.querySelector('[data-field=incomingWebhookCurl]');
+  if (fullPathEl) {
+    fullPathEl.textContent = incomingWebhookFullURL(ruleID || '{ruleId}');
+  }
+  if (curlEl) {
+    curlEl.textContent = incomingWebhookCurlExample(ruleID || 'your-rule-id', token || 'your-bearer-token');
+  }
+}
+
+function generateIncomingWebhookRuleID() {
+  var existing = new Set(Array.from(document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card [data-field=name]'))
+    .map(function(el) { return (el.value || '').trim(); })
+    .filter(Boolean));
+  var base = 'webhook-' + Date.now().toString(36);
+  if (!existing.has(base)) return base;
+  var i = 1;
+  while (existing.has(base + '-' + i)) i++;
+  return base + '-' + i;
+}
+
+function generateIncomingWebhookToken() {
+  var bytes = new Uint8Array(24);
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(bytes);
+  } else {
+    for (var i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  return Array.from(bytes).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+function addIncomingWebhook() {
+  const container = document.getElementById('incoming-webhooks-list');
+  if (!container) return;
+  const ruleID = generateIncomingWebhookRuleID();
+  const card = makeIncomingWebhookCard({
+    displayName: ruleID,
+    name: ruleID,
+    enabled: true,
+    bearerToken: generateIncomingWebhookToken(),
+    employeeName: 'apsara-ops',
+    prompt: t('incomingDefaultPrompt'),
+    product: val('g-product') || 'sls',
+    conciseReply: true,
+    webhooks: [{ type: 'dingtalk', msgType: 'markdown', title: t('defaultWebhookNotify') }],
+  }, container.children.length, true);
+  container.appendChild(card);
+  updateSingleIncomingWebhookVariableFields(card);
+  updateIncomingWebhookCallHelp(card);
+}
+
+function removeIncomingWebhook(btn) {
+  const card = btn.closest('.incoming-webhook-card');
+  if (!card) return;
+  card.remove();
+  document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card').forEach((node, i) => {
+    const num = node.querySelector('.task-card-num');
+    if (num) num.textContent = i + 1;
+  });
+}
+
+function toggleIncomingWebhookCard(headerEl) {
+  headerEl.closest('.incoming-webhook-card').classList.toggle('expanded');
+}
+
+function collectIncomingWebhooks() {
+  return Array.from(document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card')).map(card => ({
+    displayName: card.querySelector('[data-field=displayName]').value.trim(),
+    name: card.querySelector('[data-field=name]').value.trim(),
+    enabled: card.querySelector('[data-field=enabled]').checked,
+    bearerToken: card.querySelector('[data-field=bearerToken]').value.trim(),
+    prompt: card.querySelector('[data-field=prompt]').value.trim(),
+    employeeName: card.querySelector('[data-field=employeeName]').value.trim(),
+    conciseReply: card.querySelector('[data-field=conciseReply]').checked,
+    product: card.querySelector('[data-field=product]').value,
+    project: card.querySelector('[data-field=project]').value.trim(),
+    workspace: card.querySelector('[data-field=workspace]').value.trim(),
+    region: card.querySelector('[data-field=region]').value.trim(),
+    webhooks: collectWebhooksFromCard(card),
+    callbackUrl: card.dataset.callbackUrl || '',
+    callbackBearerToken: card.dataset.callbackBearerToken || '',
+  })).filter(item => item.displayName || item.name || item.employeeName || (item.webhooks && item.webhooks.length));
+}
+
+function validateIncomingWebhooksBeforeSave() {
+  const cards = Array.from(document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card'));
+  const seenIds = new Map();
+  for (let i = 0; i < cards.length; i++) {
+    const id = (cards[i].querySelector('[data-field=name]')?.value || '').trim().toLowerCase();
+    if (!id) continue;
+    if (seenIds.has(id)) {
+      switchTab('webhook');
+      cards[i].classList.add('expanded');
+      cards[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showStatus('error', t('errPrefix') + t('incomingDuplicateRuleId') + id);
+      return false;
+    }
+    seenIds.set(id, true);
+  }
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const enabled = !!card.querySelector('[data-field=enabled]')?.checked;
+    if (!enabled) continue;
+
+    const ruleID = (card.querySelector('[data-field=name]')?.value || '').trim();
+    const bearerToken = (card.querySelector('[data-field=bearerToken]')?.value || '').trim();
+    const employeeName = (card.querySelector('[data-field=employeeName]')?.value || '').trim();
+    const prompt = (card.querySelector('[data-field=prompt]')?.value || '').trim();
+    const webhookItems = Array.from(card.querySelectorAll('.webhook-item'));
+    const webhookURLs = webhookItems.map(function(item) {
+      return (item.querySelector('[data-field=webhookUrl]')?.value || '').trim();
+    });
+
+    const missing = [];
+    if (!ruleID) missing.push(t('incomingRuleId'));
+    if (!bearerToken) missing.push(t('incomingBearerToken'));
+    if (!employeeName) missing.push(t('incomingEmployee'));
+    if (!prompt) missing.push(t('incomingPrompt'));
+    if (webhookURLs.length === 0 || webhookURLs.some(function(url) { return !url; })) {
+      missing.push(t('webhookUrl'));
+    }
+    if (missing.length === 0) continue;
+
+    const displayName = (card.querySelector('[data-field=displayName]')?.value || '').trim();
+    const ruleLabel = displayName || ruleID || String(i + 1);
+    switchTab('webhook');
+    card.classList.add('expanded');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showStatus('error', t('errPrefix') + t('incomingSaveMissingFor') + ' [' + ruleLabel + '] ' + t('incomingSaveMissingFields') + missing.join('、'));
+    return false;
+  }
+  return true;
+}
+
+function updateSingleIncomingWebhookVariableFields(card) {
+  if (!card) return;
+  const productSelect = card.querySelector('[data-field=product]');
+  if (!productSelect) return;
+  const product = (productSelect.value || 'sls').trim();
+  const isSls = product === 'sls';
+  const projectField = card.querySelector('[data-incoming-project-field]');
+  const regionField = card.querySelector('[data-incoming-region-field]');
+  const workspaceField = card.querySelector('[data-incoming-workspace-field]');
+  if (projectField) projectField.style.display = isSls ? '' : 'none';
+  if (regionField) regionField.style.display = isSls ? 'none' : '';
+  if (workspaceField) workspaceField.style.display = isSls ? 'none' : '';
+}
+
+function updateAllIncomingWebhookVariableFields() {
+  document.querySelectorAll('#incoming-webhooks-list .incoming-webhook-card').forEach(card => {
+    updateSingleIncomingWebhookVariableFields(card);
+    updateIncomingWebhookCallHelp(card);
+  });
 }
 
 // ── Trigger task ─────────────────────────────────────────────────────────
@@ -3573,6 +4052,7 @@ async function loadConfig() {
 // ── Save config ───────────────────────────────────────────────────────────
 async function doSave() {
   const btn = document.getElementById('save-btn');
+  const payload = collect();
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> ' + esc(t('saving'));
   showStatus('loading', t('savingApply'));
@@ -3580,14 +4060,16 @@ async function doSave() {
     const res = await fetch('/admin-ui/api/config?token=' + encodeURIComponent(token), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(collect()),
+      body: JSON.stringify(payload),
     });
     const data = await res.json();
     if (!res.ok) {
       showStatus('error', t('errPrefix') + (data.error || t('saveFailed')));
     } else if (data.warning) {
+      markConfigSaved();
       showStatus('warning', t('warnPrefix') + data.message);
     } else {
+      markConfigSaved();
       showStatus('success', t('okPrefix') + (data.message || t('saveSuccess')));
     }
   } catch(e) {
@@ -3599,6 +4081,9 @@ async function doSave() {
 }
 
 async function saveConfig() {
+  if (!validateIncomingWebhooksBeforeSave()) {
+    return;
+  }
   const akid = val('g-akid');
   const aks  = val('g-aks');
   if (!akid || !aks) {

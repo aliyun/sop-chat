@@ -15,6 +15,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/i18n"
 	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
@@ -75,12 +76,37 @@ func (b *Bot) Config() *config.WeComConfig {
 	return b.wcConfig
 }
 
+// cmsClientConfig 返回当前 CMS 客户端配置（并发安全）
+func (b *Bot) cmsClientConfig() *config.ClientConfig {
+	b.cfgMu.RLock()
+	defer b.cfgMu.RUnlock()
+	return b.cmsConfig
+}
+
+func (b *Bot) uiLanguage() string {
+	cmsCfg := b.cmsClientConfig()
+	if cmsCfg == nil || strings.TrimSpace(cmsCfg.Language) == "" {
+		return "zh"
+	}
+	return cmsCfg.Language
+}
+
 // UpdateConfig 热更新运行时配置（不更新加解密实例，凭据变化需重建）
 func (b *Bot) UpdateConfig(newCfg *config.WeComConfig) {
 	b.cfgMu.Lock()
 	defer b.cfgMu.Unlock()
 	b.wcConfig = newCfg
 	log.Printf("[WeCom] 配置已热更新: corpId=%s employee=%s", newCfg.CorpID, newCfg.EmployeeName)
+}
+
+// UpdateCMSConfig 热更新 CMS 全局配置（language/product 等）
+func (b *Bot) UpdateCMSConfig(newCfg *config.ClientConfig) {
+	b.cfgMu.Lock()
+	defer b.cfgMu.Unlock()
+	b.cmsConfig = newCfg
+	if newCfg != nil {
+		log.Printf("[WeCom] CMS 配置已热更新: product=%s language=%s", newCfg.Product, newCfg.Language)
+	}
 }
 
 // HandleCallback 处理企业微信回调请求（可直接挂载到 Gin 或 net/http）
@@ -166,12 +192,12 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		defer cancel()
 
 		// 立即发送"思考中"提示，让用户知道消息已收到
-		_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "💭 思考中...")
+		_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, i18n.ThinkingHint(b.uiLanguage()))
 
 		threadId, err := b.getOrCreateThreadId(msg.FromUserName, cfg.EmployeeName)
 		if err != nil {
 			log.Printf("[WeCom] 创建线程失败: %v", err)
-			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, "❌ 创建会话失败，请稍后重试")
+			_, _ = b.msgManager.SendTextToUser(workCtx, msg.FromUserName, i18n.SessionCreateFailedHint(b.uiLanguage()))
 			return
 		}
 
@@ -212,7 +238,7 @@ func (b *Bot) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[WeCom] 队列已满，拒绝消息 from=%s", msg.FromUserName)
-		_, _ = b.msgManager.SendTextToUser(context.Background(), msg.FromUserName, "⚠️ 消息处理中，请稍后再发。")
+		_, _ = b.msgManager.SendTextToUser(context.Background(), msg.FromUserName, i18n.BusyHint(b.uiLanguage()))
 	}
 }
 
@@ -257,13 +283,19 @@ func threadKey(userID, employeeName string) string {
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
-	return session.NewSopClient(b.cmsConfig)
+	return session.NewSopClient(b.cmsClientConfig())
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *Bot) threadVariable() (project, workspace, region string) {
-	return session.ThreadVariable(b.wcConfig.Product, b.cmsConfig.Product, b.wcConfig.Project, b.wcConfig.Workspace, b.wcConfig.Region)
+	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
+	globalProduct := ""
+	if cmsCfg != nil {
+		globalProduct = cmsCfg.Product
+	}
+	return session.ThreadVariable(cfg.Product, globalProduct, cfg.Project, cfg.Workspace, cfg.Region)
 }
 
 // getOrCreateThreadId 查找或新建该用户对应的 CMS 线程 ID
@@ -300,6 +332,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	cms := sopClient.CmsClient
 
 	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
@@ -309,15 +342,18 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
+	if productType == "" && cmsCfg != nil {
+		productType = cmsCfg.Product
 	}
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  b.cmsConfig.Language,
+		"language":  "zh",
+	}
+	if cmsCfg != nil {
+		variables["language"] = cmsCfg.Language
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
@@ -354,54 +390,13 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		Variables: variables,
 	}
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	returnedThreadId := threadId
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadId, err
-			}
-			return strings.Join(textParts, ""), returnedThreadId, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }

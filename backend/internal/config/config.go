@@ -29,6 +29,55 @@ type Config struct {
 
 	// 定时任务配置（可选）
 	ScheduledTasks []ScheduledTaskConfig `yaml:"scheduledTasks,omitempty"`
+	// 入站 Webhook 自动化配置（可选）
+	IncomingWebhooks []IncomingWebhookConfig `yaml:"incomingWebhooks,omitempty"`
+}
+
+// IncomingWebhookConfig 入站 Webhook 自动化配置
+// 接收外部请求后，将请求体与预配置 Prompt 组装后发给数字员工，再把结果推送到回调 Webhook。
+type IncomingWebhookConfig struct {
+	// 配置名称（唯一标识）
+	Name string `yaml:"name"`
+	// 配置显示名称（用于管理界面展示，可选）
+	DisplayName string `yaml:"displayName,omitempty"`
+	// 是否启用
+	Enabled bool `yaml:"enabled"`
+	// 入站 Bearer Token（Authorization: Bearer <token>）
+	BearerToken string `yaml:"bearerToken,omitempty"`
+	// 发送给数字员工的预设 Prompt
+	Prompt string `yaml:"prompt"`
+	// 目标数字员工名称
+	EmployeeName string `yaml:"employeeName"`
+	// 启用简洁输出：向 Prompt 末尾追加简化输出指令
+	ConciseReply bool `yaml:"conciseReply,omitempty"`
+	// Product 指定该任务对接的数字员工所属产品：sls（默认）或 cms。
+	Product string `yaml:"product"`
+	// Project 与 Workspace 根据产品类型二选一
+	Project   string `yaml:"project,omitempty"`   // SLS 产品对应的 Project
+	Workspace string `yaml:"workspace,omitempty"` // CMS 产品对应的 Workspace
+	Region    string `yaml:"region,omitempty"`    // CMS 产品对应的 Region
+	// Webhook 配置：结果发送目标（已废弃，保留用于向后兼容旧配置）
+	Webhook WebhookConfig `yaml:"webhook,omitempty"`
+	// Webhooks 配置：结果发送目标（支持多个）
+	Webhooks []WebhookConfig `yaml:"webhooks,omitempty"`
+	// 回调 Webhook 地址（用于推送数字员工结果）
+	// 已废弃：保留用于向后兼容旧配置，建议改用 webhooks
+	CallbackURL string `yaml:"callbackUrl"`
+	// 回调 Bearer Token（可选）
+	// 已废弃：保留用于向后兼容旧配置，建议改用 webhooks
+	CallbackBearerToken string `yaml:"callbackBearerToken,omitempty"`
+}
+
+// EffectiveWebhooks 返回该入站 webhook 规则的有效 webhook 列表。
+// 兼容旧配置：如果 Webhooks 为空但 Webhook 有值，则返回 [Webhook]。
+func (w *IncomingWebhookConfig) EffectiveWebhooks() []WebhookConfig {
+	if len(w.Webhooks) > 0 {
+		return w.Webhooks
+	}
+	if w.Webhook.URL != "" {
+		return []WebhookConfig{w.Webhook}
+	}
+	return nil
 }
 
 // ScheduledTaskConfig 定时任务配置
@@ -615,6 +664,17 @@ func (c *Config) expandEnvVars() {
 	for i := range c.ScheduledTasks {
 		c.ScheduledTasks[i].Webhook.URL = expandEnvVar(c.ScheduledTasks[i].Webhook.URL)
 		c.ScheduledTasks[i].EmployeeName = expandEnvVar(c.ScheduledTasks[i].EmployeeName)
+	}
+	// 展开入站 Webhook 自动化配置中的环境变量
+	for i := range c.IncomingWebhooks {
+		c.IncomingWebhooks[i].BearerToken = expandEnvVar(c.IncomingWebhooks[i].BearerToken)
+		c.IncomingWebhooks[i].EmployeeName = expandEnvVar(c.IncomingWebhooks[i].EmployeeName)
+		c.IncomingWebhooks[i].Webhook.URL = expandEnvVar(c.IncomingWebhooks[i].Webhook.URL)
+		for j := range c.IncomingWebhooks[i].Webhooks {
+			c.IncomingWebhooks[i].Webhooks[j].URL = expandEnvVar(c.IncomingWebhooks[i].Webhooks[j].URL)
+		}
+		c.IncomingWebhooks[i].CallbackURL = expandEnvVar(c.IncomingWebhooks[i].CallbackURL)
+		c.IncomingWebhooks[i].CallbackBearerToken = expandEnvVar(c.IncomingWebhooks[i].CallbackBearerToken)
 	}
 }
 

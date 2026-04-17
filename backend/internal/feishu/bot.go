@@ -21,6 +21,7 @@ import (
 	lark "github.com/larksuite/oapi-sdk-go/v3"
 
 	"sop-chat/internal/config"
+	"sop-chat/internal/i18n"
 	"sop-chat/internal/session"
 	"sop-chat/pkg/sopchat"
 )
@@ -71,12 +72,37 @@ func (b *Bot) Config() *config.FeishuConfig {
 	return b.ftConfig
 }
 
+// cmsClientConfig 返回当前 CMS 客户端配置（并发安全）
+func (b *Bot) cmsClientConfig() *config.ClientConfig {
+	b.cfgMu.RLock()
+	defer b.cfgMu.RUnlock()
+	return b.cmsConfig
+}
+
+func (b *Bot) uiLanguage() string {
+	cmsCfg := b.cmsClientConfig()
+	if cmsCfg == nil || strings.TrimSpace(cmsCfg.Language) == "" {
+		return "zh"
+	}
+	return cmsCfg.Language
+}
+
 // UpdateConfig 热更新运行时配置
 func (b *Bot) UpdateConfig(newCfg *config.FeishuConfig) {
 	b.cfgMu.Lock()
 	defer b.cfgMu.Unlock()
 	b.ftConfig = newCfg
 	log.Printf("[Feishu] 配置已热更新: appId=%s employee=%s", newCfg.AppID, newCfg.EmployeeName)
+}
+
+// UpdateCMSConfig 热更新 CMS 全局配置（language/product 等）
+func (b *Bot) UpdateCMSConfig(newCfg *config.ClientConfig) {
+	b.cfgMu.Lock()
+	defer b.cfgMu.Unlock()
+	b.cmsConfig = newCfg
+	if newCfg != nil {
+		log.Printf("[Feishu] CMS 配置已热更新: product=%s language=%s", newCfg.Product, newCfg.Language)
+	}
 }
 
 // Start 启动飞书 WebSocket 连接（非阻塞）
@@ -236,7 +262,7 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 	}
 
 	log.Printf("[Feishu] 收到消息 chatId=%s chatType=%s sender=%s: %s", chatID, chatType, senderOpenID, userMessage)
-	fmt.Println("botid:",b.botOpenID)
+	fmt.Println("botid:", b.botOpenID)
 	// 群聊中只响应 @机器人 的消息，未被 @则忽略
 	if chatType == "group" && !b.isBotMentioned(msg.Mentions) {
 		log.Printf("[Feishu] 群聊消息未@机器人，忽略 chatId=%s sender=%s", chatID, senderOpenID)
@@ -265,12 +291,12 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 		defer cancel()
 
 		// 立即发送"思考中"提示，让用户知道消息已收到
-		b.sendText(workCtx, chatID, "💭 思考中...")
+		b.sendText(workCtx, chatID, i18n.ThinkingHint(b.uiLanguage()))
 
 		threadId, err := b.getOrCreateThreadId(chatID, senderOpenID, cfg.EmployeeName)
 		if err != nil {
 			log.Printf("[Feishu] 创建线程失败: %v", err)
-			b.sendText(workCtx, chatID, "❌ 创建会话失败，请稍后重试")
+			b.sendText(workCtx, chatID, i18n.SessionCreateFailedHint(b.uiLanguage()))
 			return
 		}
 
@@ -294,7 +320,7 @@ func (b *Bot) onMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) e
 
 	if !b.enqueueWork(queueKey, work) {
 		log.Printf("[Feishu] 队列已满，拒绝消息 chatId=%s sender=%s", chatID, senderOpenID)
-		b.sendText(ctx, chatID, "⚠️ 消息处理中，请稍后再发。")
+		b.sendText(ctx, chatID, i18n.BusyHint(b.uiLanguage()))
 	}
 
 	return nil
@@ -443,13 +469,19 @@ func threadKey(chatID, senderOpenID, employeeName string) string {
 
 // newSopClient 构造与 CMS 通信的 sopchat.Client
 func (b *Bot) newSopClient() (*sopchat.Client, error) {
-	return session.NewSopClient(b.cmsConfig)
+	return session.NewSopClient(b.cmsClientConfig())
 }
 
 // threadVariable 根据 product 返回需要写入 Thread Variables 的值
 // 优先使用渠道配置的 product，为空则使用全局配置。
 func (b *Bot) threadVariable() (project, workspace, region string) {
-	return session.ThreadVariable(b.ftConfig.Product, b.cmsConfig.Product, b.ftConfig.Project, b.ftConfig.Workspace, b.ftConfig.Region)
+	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
+	globalProduct := ""
+	if cmsCfg != nil {
+		globalProduct = cmsCfg.Product
+	}
+	return session.ThreadVariable(cfg.Product, globalProduct, cfg.Project, cfg.Workspace, cfg.Region)
 }
 
 // getOrCreateThreadId 查找或新建该会话对应的 CMS 线程 ID
@@ -486,6 +518,7 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 	cms := sopClient.CmsClient
 
 	cfg := b.Config()
+	cmsCfg := b.cmsClientConfig()
 	if cfg.ConciseReply {
 		message += conciseInstruction
 	}
@@ -495,15 +528,18 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 
 	// 获取渠道配置的 product，为空则使用全局配置
 	productType := cfg.Product
-	if productType == "" {
-		productType = b.cmsConfig.Product
+	if productType == "" && cmsCfg != nil {
+		productType = cmsCfg.Product
 	}
 
 	nowTS := time.Now().Unix()
 	variables := map[string]interface{}{
 		"timeStamp": fmt.Sprintf("%d", nowTS),
 		"timeZone":  "Asia/Shanghai",
-		"language":  b.cmsConfig.Language,
+		"language":  "zh",
+	}
+	if cmsCfg != nil {
+		variables["language"] = cmsCfg.Language
 	}
 	if config.IsSlsProduct(productType) {
 		variables["skill"] = "sop"
@@ -540,54 +576,13 @@ func (b *Bot) queryEmployee(ctx context.Context, message, threadId, employeeName
 		Variables: variables,
 	}
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	returnedThreadId := threadId
-
-	for {
-		select {
-		case <-ctx.Done():
-			return strings.Join(textParts, ""), returnedThreadId, ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			if response.Body == nil {
-				continue
-			}
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				return strings.Join(textParts, ""), returnedThreadId, nil
-			}
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if ok && err != nil {
-				return strings.Join(textParts, ""), returnedThreadId, err
-			}
-			return strings.Join(textParts, ""), returnedThreadId, nil
-		}
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		return "", "", err
+	}
+	return result.Text, result.ThreadId, nil
 }

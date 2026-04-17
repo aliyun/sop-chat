@@ -292,95 +292,37 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	}
 
 	startSSE := time.Now()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
 	log.Printf("[Scheduler] queryEmployee 开始 SSE 流式请求: employee=%q threadId=%s product=%q 问题=%s timeout=30m", employeeName, threadId, product, msgLog)
 
-	responseChan := make(chan *cmsclient.CreateChatResponse)
-	errorChan := make(chan error)
-
-	runtime := sopchat.NewSSERuntimeOptions()
-	go cms.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
-
-	var textParts []string
-	responseCount, msgCount := 0, 0
-	lastProgressLog := time.Now()
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Printf("[Scheduler] queryEmployee product=%q 问题=%s 超时，已收 %d 响应 %d 消息", product, msgShort, responseCount, msgCount)
-			return strings.Join(textParts, ""), ctx.Err()
-
-		case response, ok := <-responseChan:
-			if !ok {
-				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s product=%q 问题=%s 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, product, msgShort, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
-				return result, nil
-			}
+	// 使用统一的 QueryEmployeeWithRetry，空响应时自动重试
+	responseCount := 0
+	lastProgressAt := time.Now()
+	opts := &sopchat.QueryEmployeeOptions{
+		CMSClient: cms,
+		Request:   request,
+		OnChunk: func(accumulated string) {
 			responseCount++
-
-			// 每 30 秒打印一次进度
-			if time.Since(lastProgressLog) > 30*time.Second {
-				log.Printf("[Scheduler] queryEmployee 进行中: employee=%q product=%q 问题=%s 已收 %d 帧 %d 消息 耗时 %s",
-					employeeName, product, msgShort, responseCount, msgCount, time.Since(startSSE).Round(time.Second))
-				lastProgressLog = time.Now()
+			msgCount := len([]rune(accumulated))
+			now := time.Now()
+			// 首包、每 20 包，或距离上次日志超过 5 秒时打印一次进度，避免日志过于密集。
+			if responseCount == 1 || responseCount%20 == 0 || now.Sub(lastProgressAt) >= 5*time.Second {
+				log.Printf("[Scheduler] queryEmployee 进度: task=%q employee=%q product=%q responseCount=%d msgCount=%d",
+					taskName, employeeName, product, responseCount, msgCount)
+				lastProgressAt = now
 			}
-
-			if response.StatusCode != nil && *response.StatusCode != 200 {
-				log.Printf("[Scheduler] queryEmployee product=%q 问题=%s 响应状态码异常: %d", product, msgShort, *response.StatusCode)
-			}
-			if response.Body == nil {
-				continue
-			}
-
-			// 检测 done 消息
-			if sopchat.IsDoneMessage(response.Body) {
-				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s product=%q 问题=%s 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, product, msgShort, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
-				return result, nil
-			}
-
-			for _, msg := range response.Body.Messages {
-				if msg == nil {
-					continue
-				}
-				msgCount++
-				for _, content := range msg.Contents {
-					if content == nil {
-						continue
-					}
-					if t, ok := content["type"]; ok && t == "text" {
-						if v, ok := content["value"]; ok {
-							if s, ok := v.(string); ok {
-								textParts = append(textParts, s)
-							}
-						}
-					}
-				}
-			}
-
-		case err, ok := <-errorChan:
-			if !ok {
-				result := strings.Join(textParts, "")
-				log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s product=%q 问题=%s 耗时 %s 共 %d 帧 文本 %d 字",
-					employeeName, threadId, product, msgShort, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
-				return result, nil
-			}
-			if err != nil {
-				log.Printf("[Scheduler] queryEmployee product=%q 问题=%s SSE 错误: %v", product, msgShort, err)
-				return strings.Join(textParts, ""), err
-			}
-			result := strings.Join(textParts, "")
-			log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s product=%q 问题=%s 耗时 %s 共 %d 帧 文本 %d 字",
-				employeeName, threadId, product, msgShort, time.Since(startSSE).Round(time.Millisecond), responseCount, len([]rune(result)))
-			return result, nil
-		}
+		},
 	}
+	result, err := sopchat.QueryEmployeeWithRetry(ctx, opts)
+	if err != nil {
+		log.Printf("[Scheduler] queryEmployee product=%q 问题=%s SSE 错误: %v", product, msgShort, err)
+		return "", err
+	}
+	log.Printf("[Scheduler] queryEmployee 完成: employee=%q threadId=%s product=%q 问题=%s 耗时 %s 文本 %d 字 responseCount=%d msgCount=%d",
+		employeeName, threadId, product, msgShort, time.Since(startSSE).Round(time.Millisecond), len([]rune(result.Text)), responseCount, len([]rune(result.Text)))
+	return result.Text, nil
 }
 
 // maskURL 遮蔽 URL 中的敏感信息，只显示域名和路径的前后部分
