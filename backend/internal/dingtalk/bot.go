@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -26,6 +28,10 @@ import (
 
 // atMentionPattern 匹配 @xxx 格式（用于从 text 消息中去掉 @机器人 前缀）
 var atMentionPattern = regexp.MustCompile(`@\S+\s*`)
+
+// dingTalkDebug 控制 audio/image 原始内容的调试日志，生产环境默认关闭。
+// 设置环境变量 DINGTALK_DEBUG=1 启用。
+var dingTalkDebug = os.Getenv("DINGTALK_DEBUG") == "1"
 
 // workerQueueSize 是每个串行队列允许积压的最大消息数
 const workerQueueSize = 8
@@ -261,16 +267,8 @@ func replyError(ctx context.Context, webhook string, err error) {
 // onMessage 处理钉钉消息回调
 // 签名符合 chatbot.IChatBotMessageHandler
 func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel) ([]byte, error) {
-	userText := extractText(data)
-	if userText == "" {
-		log.Printf("[DingTalk] 忽略空消息 conversationId=%s msgtype=%s", data.ConversationId, data.Msgtype)
-		return nil, nil
-	}
-
-	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s senderId=%s senderStaffId=%s chatbotUserId=%s conversationType=%s msgtype=%s: %s",
-		data.ConversationId, data.SenderNick, data.SenderId, data.SenderStaffId, data.ChatbotUserId, data.ConversationType, data.Msgtype, userText)
-
-	// 白名单校验（均在取 cfg 快照之前，直接调用 b.config() 保证读取最新配置）
+	// 白名单校验必须最先执行，避免向未授权会话暴露机器人存在。
+	// （均在取 cfg 快照之前，直接调用 b.config() 保证读取最新配置）
 	if !b.isConversationAllowed(data.ConversationType, data.ConversationTitle) {
 		log.Printf("[DingTalk] 群 %q 不在群白名单中，已拒绝", data.ConversationTitle)
 		replier := chatbot.NewChatbotReplier()
@@ -283,6 +281,31 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 		_ = replier.SimpleReplyText(ctx, data.SessionWebhook, []byte("抱歉，您暂时没有使用该机器人的权限。"))
 		return nil, nil
 	}
+
+	// 白名单通过后再做消息类型调试日志和不支持类型的提示回复。
+	if dingTalkDebug {
+		if strings.EqualFold(data.Msgtype, "audio") {
+			logDingTalkAudioDebug(data)
+		}
+		if isDingTalkPictureMsgType(data.Msgtype) {
+			logDingTalkImageDebug(data)
+		}
+	}
+	if isUnsupportedDingTalkMsgType(data.Msgtype) {
+		replier := chatbot.NewChatbotReplier()
+		_ = replier.SimpleReplyText(ctx, data.SessionWebhook, []byte(i18n.UnsupportedMsgTypeHint(b.uiLanguage(), data.Msgtype)))
+		log.Printf("[DingTalk] 已快速回复不支持的消息类型 conversationId=%s msgtype=%s", data.ConversationId, data.Msgtype)
+		return nil, nil
+	}
+
+	userText := extractText(data)
+	if userText == "" {
+		log.Printf("[DingTalk] 忽略空消息 conversationId=%s msgtype=%s", data.ConversationId, data.Msgtype)
+		return nil, nil
+	}
+
+	log.Printf("[DingTalk] 收到消息 conversationId=%s sender=%s senderId=%s senderStaffId=%s chatbotUserId=%s conversationType=%s msgtype=%s: %s",
+		data.ConversationId, data.SenderNick, data.SenderId, data.SenderStaffId, data.ChatbotUserId, data.ConversationType, data.Msgtype, userText)
 
 	// 提前捕获所有需要的值，避免 goroutine 中访问 data 指针
 	// config() 在此处取一次快照，保证本次请求全程使用同一份配置
@@ -387,9 +410,9 @@ func (b *Bot) onMessage(ctx context.Context, data *chatbot.BotCallbackDataModel)
 	return nil, nil
 }
 
-// extractText 从钉钉消息中提取纯文本，支持 text 和 richText 两种消息类型
+// extractText 从钉钉消息中提取纯文本，支持 text、richText 和 audio（语音识别）消息类型
 func extractText(data *chatbot.BotCallbackDataModel) string {
-	switch data.Msgtype {
+	switch strings.ToLower(strings.TrimSpace(data.Msgtype)) {
 	case "text":
 		// text 消息：直接取 text.content，去掉开头的 @机器人 前缀
 		raw := strings.TrimSpace(data.Text.Content)
@@ -401,7 +424,7 @@ func extractText(data *chatbot.BotCallbackDataModel) string {
 		// 如果去掉 @xxx 后为空（说明消息就只有 @），返回原始内容
 		return raw
 
-	case "richText":
+	case "richtext":
 		// richText 消息：从 content.richText 数组中拼接 text 片段，跳过 at 片段
 		content, ok := data.Content.(map[string]interface{})
 		if !ok {
@@ -433,10 +456,146 @@ func extractText(data *chatbot.BotCallbackDataModel) string {
 		}
 		return strings.TrimSpace(sb.String())
 
+	case "audio":
+		return extractAudioText(data)
+
 	default:
 		// 其他类型（图片、语音等）暂不处理
 		log.Printf("[DingTalk] 不支持的消息类型: %s，已忽略", data.Msgtype)
 		return ""
+	}
+}
+
+func extractAudioText(data *chatbot.BotCallbackDataModel) string {
+	if txt := strings.TrimSpace(data.Text.Content); txt != "" {
+		return txt
+	}
+
+	candidates := make(map[string]string)
+	collectAudioTextCandidates(data.Content, "content", candidates)
+
+	// 优先使用常见语音识别字段（recognition/transcript/asr 等）。
+	preferredOrder := []string{
+		"content.recognition",
+		"content.transcript",
+		"content.asr",
+		"content.speechText",
+		"content.voiceText",
+		"content.text",
+	}
+	for _, key := range preferredOrder {
+		if val := strings.TrimSpace(candidates[key]); val != "" {
+			return val
+		}
+	}
+
+	// 兜底：返回按 key 排序后的第一个候选文本，保证行为稳定可预测。
+	if len(candidates) == 0 {
+		return ""
+	}
+	keys := make([]string, 0, len(candidates))
+	for k := range candidates {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		if val := strings.TrimSpace(candidates[k]); val != "" {
+			return val
+		}
+	}
+	return ""
+}
+
+func logDingTalkAudioDebug(data *chatbot.BotCallbackDataModel) {
+	hasTextContent := strings.TrimSpace(data.Text.Content) != ""
+
+	candidates := make(map[string]string)
+	collectAudioTextCandidates(data.Content, "content", candidates)
+
+	keys := make([]string, 0, len(candidates))
+	for k := range candidates {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	log.Printf("[DingTalk] audio 消息结构 msgId=%s conversationId=%s hasTextContent=%v candidateFields=%v",
+		data.MsgId, data.ConversationId, hasTextContent, keys)
+}
+
+const audioTextMaxDepth = 5
+
+func collectAudioTextCandidates(value interface{}, path string, candidates map[string]string) {
+	collectAudioTextCandidatesDepth(value, path, candidates, 0)
+}
+
+func collectAudioTextCandidatesDepth(value interface{}, path string, candidates map[string]string, depth int) {
+	if depth >= audioTextMaxDepth {
+		return
+	}
+	switch v := value.(type) {
+	case map[string]interface{}:
+		for key, item := range v {
+			nextPath := path + "." + key
+			switch val := item.(type) {
+			case string:
+				text := strings.TrimSpace(val)
+				if text == "" {
+					continue
+				}
+				if isLikelyAudioTextField(key) {
+					candidates[nextPath] = text
+				}
+			default:
+				collectAudioTextCandidatesDepth(item, nextPath, candidates, depth+1)
+			}
+		}
+	case []interface{}:
+		for idx, item := range v {
+			collectAudioTextCandidatesDepth(item, fmt.Sprintf("%s[%d]", path, idx), candidates, depth+1)
+		}
+	}
+}
+
+func isLikelyAudioTextField(key string) bool {
+	k := strings.ToLower(strings.TrimSpace(key))
+	if k == "" {
+		return false
+	}
+	return strings.Contains(k, "text") ||
+		strings.Contains(k, "recogn") ||
+		strings.Contains(k, "speech") ||
+		strings.Contains(k, "trans") ||
+		strings.Contains(k, "asr") ||
+		strings.Contains(k, "caption")
+}
+
+func logDingTalkImageDebug(data *chatbot.BotCallbackDataModel) {
+	var contentKeys []string
+	if m, ok := data.Content.(map[string]interface{}); ok {
+		for k := range m {
+			contentKeys = append(contentKeys, k)
+		}
+		sort.Strings(contentKeys)
+	}
+	log.Printf("[DingTalk] image 消息结构 msgId=%s conversationId=%s contentKeys=%v",
+		data.MsgId, data.ConversationId, contentKeys)
+}
+
+func isDingTalkPictureMsgType(msgType string) bool {
+	switch strings.ToLower(strings.TrimSpace(msgType)) {
+	case "picture", "image":
+		return true
+	default:
+		return false
+	}
+}
+
+func isUnsupportedDingTalkMsgType(msgType string) bool {
+	switch strings.ToLower(strings.TrimSpace(msgType)) {
+	case "text", "richtext", "audio":
+		return false
+	default:
+		return true
 	}
 }
 

@@ -1,6 +1,9 @@
 package i18n
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func isEnglish(language string) bool {
 	lang := strings.TrimSpace(strings.ToLower(language))
@@ -45,4 +48,12 @@ func BusyHint(language string) string {
 		return "⚠️ Message is being processed, please try again later."
 	}
 	return "⚠️ 消息处理中，请稍后再发。"
+}
+
+// UnsupportedMsgTypeHint 不支持的消息类型提示。
+func UnsupportedMsgTypeHint(language, msgType string) string {
+	if isEnglish(language) {
+		return fmt.Sprintf("This message type (%s) is not supported yet. Please send text or voice.", msgType)
+	}
+	return fmt.Sprintf("暂不支持该消息类型（%s），请发送文字或语音。", msgType)
 }
