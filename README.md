@@ -11,6 +11,7 @@
   - **飞书** — 基于飞书 WebSocket 长连接，无需公网 IP，支持群聊与单聊
   - **企业微信** — 基于回调模式，支持应用消息接收
 - **定时任务（Cron）** — 支持配置多个定时任务，定期向指定数字员工发起提问，并将回答自动推送至钉钉、飞书或企业微信 Webhook
+- **接收 Webhook 自动化** — 支持通过 `POST /webhook/:id` 接收外部系统请求，将请求体作为上下文交给数字员工处理，并把结果回调到配置的 Webhook
 - **OpenAI 兼容接口** — 暴露 `/openai/v1/chat/completions` 接口，方便使用 Cherry Studio、ChatBox 等兼容 OpenAI 协议的聊天客户端直接接入
 - **可视化配置管理** — 内置 `/config` 页面，启动后直接在浏览器中完成所有配置，无需手动编辑文件
 - **用户认证** — 基于 JWT 的本地用户管理，支持角色权限
@@ -27,6 +28,7 @@
 | Linux x86_64 | `sop-chat-server-linux-amd64` |
 | macOS Intel | `sop-chat-server-darwin-amd64` |
 | macOS Apple Silicon | `sop-chat-server-darwin-arm64` |
+| Windows x86_64 | `sop-chat-windows-amd64.zip`（内含 `sop-chat-server.exe`） |
 
 ### 2. 启动服务
 
@@ -127,6 +129,8 @@ make build-all
 **产物：**
 - 单平台：`backend/sop-chat-server`、`backend/sop-chat-cli`
 - 多平台：`dist/linux/sop-chat-server`、`dist/darwin/sop-chat-server`、`dist/darwin/sop-chat-server-arm64`
+
+> **Windows 说明：** Release 构建会额外提供 Windows x86_64 压缩包（内含 `sop-chat-server.exe` / `sop-chat-cli.exe`）。如需本地构建 Windows 二进制，可在 `backend` 目录执行：`GOOS=windows GOARCH=amd64 go build -o sop-chat-server.exe ./cmd/sop-chat-server`。
 
 ### 其他构建命令
 
@@ -290,6 +294,29 @@ scheduledTasks:
 | `wecom` | 企业微信群机器人，支持 `text` / `markdown` 消息类型 |
 
 > 在配置管理 UI 中可对任务进行**立即触发测试**，无需等待定时到来即可验证配置是否正确。
+
+---
+
+## 入站 Webhook 自动化
+
+除了定时任务，还可以让外部系统主动调用 SOP Chat。服务提供固定入口：`POST /webhook/:id`（例如 `POST /webhook/order-alert`）。
+
+你可以在配置管理 UI 的 **「Incoming Webhook」** 标签页管理规则，或在 `config.yaml` 中配置：
+
+```yaml
+incomingWebhooks:
+  - name: order-alert               # 对应路由中的 :id
+    enabled: true
+    bearerToken: "your-token"       # 请求头：Authorization: Bearer your-token
+    prompt: "请根据传入事件给出处理建议"
+    employeeName: "apsara-ops"
+    webhooks:
+      - type: dingtalk
+        url: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+        msgType: markdown
+```
+
+调用成功后接口会立即返回 `success`，随后系统异步向数字员工提问，并将结果推送到你配置的回调 Webhook。
 
 ---
 

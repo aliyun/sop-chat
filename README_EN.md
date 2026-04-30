@@ -12,6 +12,7 @@ A client application for Alibaba Cloud SLS and CMS AI Chat Assistants. It provid
   - **Feishu (Lark)** — Based on Feishu WebSocket long connection, no public IP required; supports group and direct messages
   - **WeCom** — Callback-based, supports application message receiving
 - **Scheduled Tasks (Cron)** — Configure multiple cron jobs to periodically query digital employees and push responses to DingTalk, Feishu, or WeCom Webhooks
+- **Incoming Webhook Automation** — Accept external requests via `POST /webhook/:id`, pass request payloads to digital employees as context, and deliver results to configured outbound Webhooks
 - **OpenAI-Compatible API** — Exposes `/openai/v1/chat/completions` endpoint for integration with Cherry Studio, ChatBox, and other OpenAI-compatible clients
 - **Visual Configuration** — Built-in `/config` page for browser-based configuration, no manual file editing required
 - **User Authentication** — JWT-based local user management with role-based permissions
@@ -28,6 +29,7 @@ Download the binary for your platform from the [Releases](../../releases) page:
 | Linux x86_64 | `sop-chat-server-linux-amd64` |
 | macOS Intel | `sop-chat-server-darwin-amd64` |
 | macOS Apple Silicon | `sop-chat-server-darwin-arm64` |
+| Windows x86_64 | `sop-chat-windows-amd64.zip` (includes `sop-chat-server.exe`) |
 
 ### 2. Start the Server
 
@@ -127,6 +129,8 @@ make build-all
 **Output:**
 - Single platform: `backend/sop-chat-server`, `backend/sop-chat-cli`
 - Cross-platform: `dist/linux/sop-chat-server`, `dist/darwin/sop-chat-server`, `dist/darwin/sop-chat-server-arm64`
+
+> **Windows note:** Release builds also provide a Windows x86_64 archive (including `sop-chat-server.exe` / `sop-chat-cli.exe`). For local cross-compilation, run in `backend`: `GOOS=windows GOARCH=amd64 go build -o sop-chat-server.exe ./cmd/sop-chat-server`.
 
 ### Other Build Commands
 
@@ -290,6 +294,29 @@ scheduledTasks:
 | `wecom` | WeCom group bot, supports `text` / `markdown` |
 
 > You can **trigger a test run immediately** in the config UI to verify your setup without waiting for the schedule.
+
+---
+
+## Incoming Webhook Automation
+
+In addition to scheduled tasks, SOP Chat can be triggered by external systems. The service exposes a fixed entrypoint: `POST /webhook/:id` (for example, `POST /webhook/order-alert`).
+
+You can manage rules in the **"Incoming Webhook"** tab in the config UI, or configure them in `config.yaml`:
+
+```yaml
+incomingWebhooks:
+  - name: order-alert               # Matches :id in the route
+    enabled: true
+    bearerToken: "your-token"       # Header: Authorization: Bearer your-token
+    prompt: "Please analyze the incoming event and suggest actions"
+    employeeName: "apsara-ops"
+    webhooks:
+      - type: dingtalk
+        url: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+        msgType: markdown
+```
+
+On success, the endpoint returns `success` immediately. The system then asynchronously queries the digital employee and pushes the result to your configured outbound Webhook(s).
 
 ---
 
