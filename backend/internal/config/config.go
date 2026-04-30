@@ -507,7 +507,7 @@ func DefaultConfig() *Config {
 		Global: GlobalConfig{
 			Host:                "0.0.0.0",
 			Port:                8080,
-			Endpoint:            "cms.cn-hangzhou.aliyuncs.com",
+			Endpoint:            "cms.cn-beijing.aliyuncs.com",
 			TimeZone:            "Asia/Shanghai",
 			Language:            "zh",
 			BindThreadToProcess: &bindThread,

@@ -1167,7 +1167,7 @@ func (s *Server) handleTestAK(c *gin.Context) {
 
 	endpoint := req.Endpoint
 	if endpoint == "" {
-		endpoint = "cms.cn-hangzhou.aliyuncs.com"
+		endpoint = "cms.cn-beijing.aliyuncs.com"
 	}
 
 	sopClient, err := client.NewCMSClient(&client.Config{
@@ -1266,7 +1266,7 @@ func (s *Server) handleTestCMS(c *gin.Context) {
 
 	endpoint := req.Endpoint
 	if endpoint == "" {
-		endpoint = "cms.cn-hangzhou.aliyuncs.com"
+		endpoint = "cms.cn-beijing.aliyuncs.com"
 	}
 
 	// 校验 workspace 时使用 region 对应的 endpoint
