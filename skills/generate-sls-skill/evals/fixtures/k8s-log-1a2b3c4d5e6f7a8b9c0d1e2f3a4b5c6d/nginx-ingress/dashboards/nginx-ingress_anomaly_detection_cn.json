@@ -1,0 +1,484 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "displayName": "PV检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 0.01086956499999999,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 0.64772725,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, count(1) as value from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, count(1) as value from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539066000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "请求成功率（code < 400）检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 0.01086956499999999,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 4.1477275,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, sum(case when status < 400 then 1 else 0 end) * 100.0 / count(1) as value from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, sum(case when status < 400 then 1 else 0 end) * 100.0 / count(1) as value from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539139000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "请求成功率（code < 500）检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 5.0108695,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 4.1477275,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, sum(case when status < 500 then 1 else 0 end) * 100.0 / count(1) as value from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, sum(case when status < 500 then 1 else 0 end) * 100.0 / count(1) as value from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539155000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "平均延迟检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 0.01086956499999999,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 7.647727500000001,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, avg(request_time) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, avg(request_time) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539226000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "UV检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 5.0108695,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 0.64772725,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time,  approx_distinct(x_forward_for) as value  from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time,  approx_distinct(x_forward_for) as value  from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539266000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "P99延迟检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 5.0108695,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 11.147727,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.99) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.99) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539813000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "P95延迟检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 0.01086956499999999,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 11.147727,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.95) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.95) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539833000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "P9999延迟检测",
+        "height": 3.5,
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 5,
+        "xAxis": [
+          "unixtime"
+        ],
+        "xPos": 5.0108695,
+        "yAxis": [
+          "src"
+        ],
+        "yPos": 7.647727500000001,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.9999) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "start": "-240m",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select ts_predicate_arma(time, value, 5, 1, 1, 1, 'avg') from (select __time__ - __time__ % 60 as time, approx_percentile(request_time, 0.9999) * 1000 as value  from log   group by time order by time  limit 14400)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31545539846000",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Service",
+            "filterMode": true,
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1220589,
+        "xPos": 2.0852811,
+        "yPos": 0.022727273,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441558783262721",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "URL",
+            "key": "url",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.0558825,
+        "xPos": 4.090345,
+        "yPos": 0.022727273,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT url from ( select  (url_extract_path(url))  as url, count(1) as total from log  group by url  order by total desc   limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441558783262722",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Method",
+            "key": "method",
+            "list": [
+              "GET",
+              "POST",
+              "DELETE",
+              "PUT"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.092647,
+        "xPos": 6.0452943,
+        "yPos": 0.022727273,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441558783262723",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Status",
+            "key": "status",
+            "list": [
+              "200",
+              "404",
+              "500",
+              "502",
+              "401"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 1.975,
+        "xPos": 8.038158,
+        "yPos": 0.022727273,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441558783262724",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1815217,
+        "xPos": 0.009015503999999995,
+        "yPos": 0.022727273,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT host from ( select  host  as host, count(1) as total from log  group by host  order by total desc   limit 100 ) having host is not null ",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441558783262725",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "nginx-ingress_anomaly_detection_cn",
+  "description": "",
+  "displayName": "Ingress异常检测中心"
+}

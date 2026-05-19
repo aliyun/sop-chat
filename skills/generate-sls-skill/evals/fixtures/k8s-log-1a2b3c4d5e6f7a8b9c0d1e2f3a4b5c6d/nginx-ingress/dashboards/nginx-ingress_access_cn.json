@@ -1,0 +1,1175 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "今日PV/环比昨日",
+        "descriptionSize": 12,
+        "displayName": " 今日PV",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3295455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 2.4982195,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": -0.001091320299999996,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5340909,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare( pv , 86400) as diff from (select count(1) as pv from log))",
+        "start": "-86400s",
+        "tokenQuery": "* | select diff[1] as total, round((diff[2] - diff[1]) / diff[2] * 100, 2) as inc from(select compare( pv , 86400) as diff from (select count(1) as pv from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949939",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "今日PV/同比上周",
+        "descriptionSize": 12,
+        "displayName": " 今日PV",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3295455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 2.4982195,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 2.497054,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5340909,
+        "zIndex": 1
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare( pv , 604800) as diff from (select count(1) as pv from log))",
+        "start": "-86400s",
+        "tokenQuery": "* | select diff[1] as total, round((diff[2] - diff[1]) / diff[2] * 100, 2) as inc from(select compare( pv , 604800) as diff from (select count(1) as pv from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949940",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "今日UV/同比上周",
+        "descriptionSize": 12,
+        "displayName": "今日UV ",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3295455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 2.4982195,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 4.9951997,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5340909,
+        "zIndex": 2
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare( pv , 604800) as diff from (select approx_distinct(x_forward_for) as pv from log))",
+        "start": "-86400s",
+        "tokenQuery": "* | select diff[1] as total, round((diff[2] - diff[1]) / diff[2] * 100, 2) as inc from(select compare( pv , 604800) as diff from (select approx_distinct(x_forward_for) as pv from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949941",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": "1",
+          "b": "255",
+          "g": "255",
+          "r": "255"
+        },
+        "colorAreaNum": 3,
+        "colors": [
+          "rgba(35,143,255,1)",
+          "rgba(255,191,0,1)",
+          "rgba(245,34,45,1)"
+        ],
+        "colorval": [
+          33,
+          66,
+          100
+        ],
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,1)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "今日UV/环比昨日",
+        "descriptionSize": 12,
+        "displayName": " 今日UV",
+        "fontColor": {
+          "a": "1",
+          "b": "85",
+          "g": "85",
+          "r": "85"
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.3295455,
+        "maxval": 100,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 14,
+        "width": 2.4982195,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 7.4933453,
+        "yAxis": [
+          "inc"
+        ],
+        "yPos": 0.5340909,
+        "zIndex": 3
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select diff[1] as total, round((diff[1] - diff[2]) / diff[2] * 100, 2) as inc from(select compare( pv , 86400) as diff from (select approx_distinct(x_forward_for) as pv from log))",
+        "start": "-86400s",
+        "tokenQuery": "* | select diff[1] as total, round((diff[2] - diff[1]) / diff[2] * 100, 2) as inc from(select compare( pv , 86400) as diff from (select approx_distinct(x_forward_for) as pv from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949942",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "PV分布",
+        "height": 3.196604,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.4946587,
+        "xAxis": [
+          "province"
+        ],
+        "xPos": 0.003605834400000001,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 1.7840909,
+        "zIndex": 4
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_province(x_forward_for) as province, count(1) as total group by province limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_province(x_forward_for) as province, count(1) as total group by province limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949943",
+      "type": "map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "UV分布",
+        "height": 3.196604,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.4946587,
+        "xAxis": [
+          "province"
+        ],
+        "xPos": 4.992478,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 1.7840909,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_province(x_forward_for) as province, approx_distinct(x_forward_for) as total group by province limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_province(x_forward_for) as province, approx_distinct(x_forward_for) as total group by province limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949944",
+      "type": "map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "UV分布",
+        "height": 3.196604,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.4946587,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 7.486914,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 1.7840909,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_country(x_forward_for) as country, approx_distinct(x_forward_for) as total group by country limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_country(x_forward_for) as country, approx_distinct(x_forward_for) as total group by country limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949945",
+      "type": "world-map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "PV分布",
+        "height": 3.196604,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.4946587,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 2.498042,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 1.7840909,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_country(x_forward_for) as country, count(1) as total group by country limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_country(x_forward_for) as country, count(1) as total group by country limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949946",
+      "type": "world-map"
+    },
+    {
+      "action": {
+        "pv": {},
+        "url": {},
+        "uv": {},
+        "访问成功率(%)": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP URL",
+        "height": 4.215909,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 5.0117645,
+        "xPos": 4.992442,
+        "yPos": 16.613636,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  url_extract_path(url) as url , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\" group by url ORDER by pv desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "* | select  url_extract_path(url) as url , count(1) as pv,  approx_distinct(x_forward_for) as uv, round(sum( \ncase when status < 400 then 1 else 0 end  \n )  * 100.0 / count(1), 2) as \"访问成功率(%)\" group by url ORDER by pv desc limit 100",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949947",
+      "type": "table"
+    },
+    {
+      "action": {
+        "URL采样": {},
+        "UsearAgent采样": {},
+        "pv": {},
+        "x_forward_for": {},
+        "国家": {},
+        "城市": {},
+        "是否高危IP": {},
+        "来源IP": {},
+        "省": {},
+        "运营商": {}
+      },
+      "display": {
+        "displayName": "TOP访问IP",
+        "height": 5.3295455,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 9.98,
+        "xPos": 0.034501277,
+        "yPos": 20.761364,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  x_forward_for as \"来源IP\", ip_to_country(x_forward_for) as \"国家\", ip_to_province(x_forward_for) as \"省\", ip_to_city(x_forward_for) as \"城市\", ip_to_provider(x_forward_for) as \"运营商\", security_check_ip(x_forward_for) as \"是否高危IP\", count(1) as pv, arbitrary(http_user_agent) as \"UsearAgent采样\", arbitrary(url) as \"URL采样\" group by x_forward_for  ORDER by pv desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "* | select  x_forward_for, ip_to_country(x_forward_for) as \"国家\", ip_to_province(x_forward_for) as \"省\", ip_to_city(x_forward_for) as \"城市\", ip_to_provider(x_forward_for) as \"运营商\", security_check_ip(x_forward_for) as \"是否高危IP\", count(1) as pv, arbitrary(http_user_agent) as \"UsearAgent采样\", arbitrary(url) as \"URL采样\" group by x_forward_for  ORDER by pv desc limit 100",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949948",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "PV预测（周）",
+        "height": 2.8811374,
+        "intervalArray": [],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.9890947,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": 4.992478,
+        "yAxis": [
+          "真实值",
+          "预测值"
+        ],
+        "yAxisRight": [],
+        "yPos": 4.9387555,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select date_trunc('minute', cast(key[1] as bigint)) as \"时间\", key[2] as \"真实值\", key[3] as \"预测值\" from  ( select ts_regression_predict(time, value, 144, 'origin', 1, 'avg') as res from (select __time__ - __time__ % 600 as time, count(1) as value from log   group by time order by time  limit 14400) ), unnest(res) as t(key)",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select date_trunc('minute', cast(key[1] as bigint)) as \"时间\", key[2] as \"真实值\", key[3] as \"预测值\" from  ( select ts_regression_predict(time, value, 144, 'origin', 1, 'avg') as res from (select __time__ - __time__ % 600 as time, count(1) as value from log   group by time order by time  limit 14400) ), unnest(res) as t(key)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949949",
+      "type": "line"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "UV预测（周）",
+        "height": 2.8811374,
+        "intervalArray": [],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.9890947,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": 0.0145368315,
+        "yAxis": [
+          "真实值",
+          "预测值"
+        ],
+        "yAxisRight": [],
+        "yPos": 4.9370437,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* | select date_trunc('minute', cast(key[1] as bigint)) as \"时间\", key[2] as \"真实值\", key[3] as \"预测值\" from  (select ts_regression_predict(time, value, 144, 'origin', 1, 'avg')  as res from (select __time__ - __time__ % 600 as time, approx_distinct(x_forward_for)  as value  from log   group by time order by time  limit 14400)), unnest(res) as t(key)",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "tokenQuery": "* | select date_trunc('minute', cast(key[1] as bigint)) as \"时间\", key[2] as \"真实值\", key[3] as \"预测值\" from  (select ts_regression_predict(time, value, 144, 'origin', 1, 'avg')  as res from (select __time__ - __time__ % 600 as time, approx_distinct(x_forward_for)  as value  from log   group by time order by time  limit 14400)), unnest(res) as t(key)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949950",
+      "type": "line"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "TOP10访问省份",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.55,
+        "xAxis": [
+          "province"
+        ],
+        "xPos": 0.03303069000000001,
+        "yAxis": [
+          "访问次数"
+        ],
+        "yPos": 13.375,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_province(x_forward_for) as province, count(1) as \"访问次数\" group by province HAVING province <> '-1' order by \"访问次数\" desc  limit 10",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_province(x_forward_for) as province, count(1) as \"访问次数\" group by province HAVING province <> '-1' order by \"访问次数\" desc  limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949951",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "TOP10访问城市",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.54,
+        "xAxis": [
+          "city"
+        ],
+        "xPos": 2.4830306,
+        "yAxis": [
+          "请求数"
+        ],
+        "yPos": 13.375,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_city(x_forward_for) as city, count(1) as \"请求数\" group by city HAVING  city <> '-1' order by \"请求数\" desc  limit 10",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_city(x_forward_for) as city, count(1) as \"请求数\" group by city HAVING  city <> '-1' order by \"请求数\" desc  limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949952",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "移动端占比",
+        "height": 3.284091,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.5,
+        "xAxis": [
+          "type"
+        ],
+        "xPos": 4.998913,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 13.363637,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select case when regexp_like(lower(http_user_agent), 'iphone|ipod|android|ios') then 'Mobile' else 'PC' end as type , count(1) as total group by  type",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949953",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "Android/IOS占比",
+        "height": 3.2727273,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 2.5705884,
+        "xAxis": [
+          "type"
+        ],
+        "xPos": 7.405384000000001,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 13.363636,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select case when regexp_like(lower(http_user_agent), 'iphone|ipod|ios') then 'IOS' when http_user_agent like '%Android%' then 'Android' else 'other' end as type , count(1) as total group by  type HAVING type != 'other'",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949954",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Service",
+            "filterMode": true,
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1220589,
+        "xPos": 2.1224294,
+        "yPos": -0.05681818,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949955",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "URL",
+            "key": "url",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.0558825,
+        "xPos": 4.127493,
+        "yPos": -0.05681818,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT url from ( select  (url_extract_path(url))  as url, count(1) as total from log  group by url  order by total desc   limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949956",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "今日访问PV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.875,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.98,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.03891304500000001,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 7.784091,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 300) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-1440m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949957",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10访问UserAgent",
+        "formatType": "number",
+        "height": 4.2613635,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 2.5558825,
+        "xAxis": [
+          "UserAgent"
+        ],
+        "xPos": 0.026560029,
+        "yAxis": [
+          "PV"
+        ],
+        "yPos": 16.602274,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  http_user_agent as UserAgent, count(1) as PV group by UserAgent order by PV desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949958",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "7天访问PV",
+        "height": 2.875,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.98,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 4.996266,
+        "yAxis": [
+          "近7天",
+          "前7天"
+        ],
+        "yAxisRight": [],
+        "yPos": 7.784091,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"近7天\", d[2] as \"前7天\"  from( select t, ts_compare(pv, 604800 ) as d from(select from_unixtime(__time__ - __time__ % 600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949959",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10访问Host",
+        "formatType": "number",
+        "height": 4.2386365,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "width": 2.5338235,
+        "xAxis": [
+          "Host"
+        ],
+        "xPos": 2.4933248,
+        "yAxis": [
+          "PV"
+        ],
+        "yPos": 16.602272,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  host as Host, count(1) as PV group by Host order by PV desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949960",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Status",
+            "key": "status",
+            "list": [
+              "200",
+              "404",
+              "500",
+              "502",
+              "401"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 1.975,
+        "xPos": 6.067953,
+        "yPos": -0.056818184,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949961",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "今日访问UV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.875,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.98,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.0397954,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 10.590909,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(uv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 300) as t, approx_distinct(x_forward_for) as uv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-1440m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949962",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.1815217,
+        "xPos": 0.04616384199999999,
+        "yPos": -0.05681818,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT host from ( select  host  as host, count(1) as total from log  group by host  order by total desc   limit 100 ) having host is not null ",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949963",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "7天访问UV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.875,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 4.98,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 4.995678,
+        "yAxis": [
+          "近7天",
+          "前7天"
+        ],
+        "yAxisRight": [],
+        "yPos": 10.602273,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"近7天\", d[2] as \"前7天\"  from( select t, ts_compare(uv, 604800 ) as d from(select from_unixtime(__time__ - __time__ % 600) as t, approx_distinct(x_forward_for) as uv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-cc141ce4820bc4cccbc70a4af5f1e1d441561036949964",
+      "type": "line"
+    }
+  ],
+  "dashboardName": "nginx-ingress_access_cn",
+  "description": "",
+  "displayName": "Ingress访问中心"
+}

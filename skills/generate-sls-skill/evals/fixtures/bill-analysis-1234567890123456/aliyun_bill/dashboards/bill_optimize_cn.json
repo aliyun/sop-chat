@@ -1,0 +1,228 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 0.6818182,
+        "markdownStr": "本月ECS按量付费账单为${m}元，转换成包年包月最多可节省${saved}元。",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.1,
+        "xPos": 0.08,
+        "yPos": 0.5568182,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:ecs and Item: PayAsYouGoBill  |select round(m,3) as m ,round(m*0.7,3) as saved from( select coalesce(sum(PretaxAmount),0) as m from log )",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "dashboard-demo1573019790227",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 0.6136364,
+        "markdownStr": "本月RDS按量付费账单为<font color=\"red\">${m}</font>元，转换成包年包月最多可节省${saved}元。",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.1,
+        "xPos": 0.08,
+        "yPos": 1.2954545,
+        "zIndex": 1
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:RDS and Item: PayAsYouGoBill  |select round(m,3) as m,round(m*0.36,3) as saved from( select coalesce(sum(PretaxAmount),0) as m from log )",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "dashboard-demo1573020506601",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 0.625,
+        "markdownStr": "本月SLS按量付费账单为${m}元，购买资源包最多可节省${saved}元，资源包[购买地址](https://common-buy.aliyun.com/?spm=5176.8064714.323065.pricedetail1111.5976X22GX22GM0&commodityCode=slsbag&request=%7B%22region%22%3A%22china-common%22%7D#/buy)。",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.1,
+        "xPos": 0.08,
+        "yPos": 2.0568182,
+        "zIndex": 2
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:SLS and Item: PayAsYouGoBill  |select round(m,3) as m ,round(m*0.15,3) as saved from( select coalesce(sum(PretaxAmount),0) as m from log )",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "dashboard-demo1573021997582",
+      "type": "markdown"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "areaLower": "",
+        "areaUpper": "",
+        "displayName": "OSS资源包/节省费用量",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 3.659090909090909,
+        "inputVal": "",
+        "inputValRight": "",
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "lineShape": "rect",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pAxis": "",
+        "pointSize": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "timing": {
+          "autoFillPoint": "avg",
+          "useAutoFillPoint": true,
+          "useMachine": true
+        },
+        "width": 6.1,
+        "xAxis": [
+          "资源包规格"
+        ],
+        "xPos": 0.08199513500400366,
+        "yAxis": [
+          "1月包节省费用",
+          "6月包节省费用",
+          "一年包节省费用"
+        ],
+        "yAxisRight": [],
+        "yPos": 5.090909784490412,
+        "zIndex": 4
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储(本地冗余)容量\"  | select \"资源包规格\" , case when \"1月包节省费用\"< 0 then 0 else \"1月包节省费用\" end  as \"1月包节省费用\", case when \"6月包节省费用\"< 0 then 0 else \"6月包节省费用\" end  as \"6月包节省费用\", case when \"一年包节省费用\"< 0 then 0 else \"一年包节省费用\" end  as \"一年包节省费用\"  from( select size as \"资源包规格\", PretaxAmount - (ondemand+m1) as \"1月包节省费用\", PretaxAmount - (ondemand+m6/6) as \"6月包节省费用\", PretaxAmount - (ondemand+m12/12) as \"一年包节省费用\"  from (select size,  PretaxAmount ,ondemand,m1 ,m6,m12, usage/24 as Usage  from( select size, sum(ondemand) as ondemand, sum(PretaxAmount) as PretaxAmount ,avg(usage) as usage, arbitrary(m1) as m1, arbitrary(list_price),arbitrary(m6) as m6, arbitrary(m12) as m12 from(   select t, case when usage > size*24 then (usage-size*24)*0.000167 else 0  end  as ondemand,PretaxAmount,size,m1,m6,m12 ,list_price,usage  from (select date_trunc('day',__time__) as t, sum(Usage) as usage ,sum(PretaxAmount) as PretaxAmount from log  group by t order by t ) join (select * from (values(0,0,0,0,0),(40,4.8,1,5,9), (100,12,11,55,99), (500,60,54,270,486), (1024,122.88,111,555,999), (2048,245.76,221,1105,1989), (5120,614.4,553,2765,4977), (10240,1228.8,1106,5530,9954), (20480,2457.6,2212,11060,19908), (30720,3686.4,3318,16524,29862), (51200,6144,5530,27650,49770), (71680,8601.6,7742,38556,69678), (102400,12288,11059,55295,99531), (153600,18432,16590,82618,149310), (204800,24576,22118,110590,199062), (307200,36864,33178,165890,298602), (512000,61440,55296,276480,497664)) as t(size,list_price, m1,m6,m12)) on 1=1) group by size) order by size) )",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储(本地冗余)容量\"  | select \"资源包规格\" , case when \"1月包节省费用\"< 0 then 0 else \"1月包节省费用\" end  as \"1月包节省费用\", case when \"6月包节省费用\"< 0 then 0 else \"6月包节省费用\" end  as \"6月包节省费用\", case when \"一年包节省费用\"< 0 then 0 else \"一年包节省费用\" end  as \"一年包节省费用\"  from( select size as \"资源包规格\", PretaxAmount - (ondemand+m1) as \"1月包节省费用\", PretaxAmount - (ondemand+m6/6) as \"6月包节省费用\", PretaxAmount - (ondemand+m12/12) as \"一年包节省费用\"  from (select size,  PretaxAmount ,ondemand,m1 ,m6,m12, usage/24 as Usage  from( select size, sum(ondemand) as ondemand, sum(PretaxAmount) as PretaxAmount ,avg(usage) as usage, arbitrary(m1) as m1, arbitrary(list_price),arbitrary(m6) as m6, arbitrary(m12) as m12 from(   select t, case when usage > size*24 then (usage-size*24)*0.000167 else 0  end  as ondemand,PretaxAmount,size,m1,m6,m12 ,list_price,usage  from (select date_trunc('day',__time__) as t, sum(Usage) as usage ,sum(PretaxAmount) as PretaxAmount from log  group by t order by t ) join (select * from (values(0,0,0,0,0),(40,4.8,1,5,9), (100,12,11,55,99), (500,60,54,270,486), (1024,122.88,111,555,999), (2048,245.76,221,1105,1989), (5120,614.4,553,2765,4977), (10240,1228.8,1106,5530,9954), (20480,2457.6,2212,11060,19908), (30720,3686.4,3318,16524,29862), (51200,6144,5530,27650,49770), (71680,8601.6,7742,38556,69678), (102400,12288,11059,55295,99531), (153600,18432,16590,82618,149310), (204800,24576,22118,110590,199062), (307200,36864,33178,165890,298602), (512000,61440,55296,276480,497664)) as t(size,list_price, m1,m6,m12)) on 1=1) group by size) order by size) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "yunlei-bill1584001502587",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 2.261363636363636,
+        "markdownStr": "本月OSS标准存储(本地冗余)存储空间为${usage}GB ,按量付费账单为${pretaxamount}元\n若购买资源包，可节省的费用如下(若节省费用出现负值，代表您已享受最佳折扣，无需购买资源包):\n\n1月包建议购买${size_m1}GB规格， 每月可节省${max_m1}元，\n\n半年包建议购买${size_m6}GB规格，每月可节省${max_m6}元\n\n整年包建议购买${size_m12}GB规格，每月可节省${max_m12}元。\n\n资源包[购买地址](https://common-buy.aliyun.com/?spm=5176.8064714.323065.pricedetail1111.5976X22GX22GM0&commodityCode=ossbag&request=%7B%22region%22%3A%22china-common%22%7D#/buy)。",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.1,
+        "xPos": 0.0816634676903391,
+        "yPos": 2.738636381818182,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储(本地冗余)容量\"  |select round(arbitrary(PretaxAmount),3) as pretaxamount , round(arbitrary(usage),3) as usage ,max_by(size, saved_m1) as size_m1, round(max(saved_m1),3) as max_m1  ,max_by(size, saved_m6) as size_m6, round(max(saved_m6),3) as max_m6  ,max_by(size, saved_m12) as size_m12, round(max(saved_m12),3) as max_m12    from(  select *, PretaxAmount - (ondemand+m1) as saved_m1, PretaxAmount - (ondemand+m6/6) as saved_m6, PretaxAmount - (ondemand+m12/12) as saved_m12  from (select size,  PretaxAmount ,ondemand,m1 ,m6,m12, usage/24 as Usage  from( select size, sum(ondemand) as ondemand, sum(PretaxAmount) as PretaxAmount ,avg(usage) as usage, arbitrary(m1) as m1, arbitrary(list_price),arbitrary(m6) as m6, arbitrary(m12) as m12 from(   select t, case when usage > size*24 then (usage-size*24)*0.000167 else 0  end  as ondemand,PretaxAmount,size,m1,m6,m12 ,list_price,usage  from (select date_trunc('day',__time__) as t, sum(Usage) as usage ,sum(PretaxAmount) as PretaxAmount from log  group by t order by t ) join (select * from (values(0,0,0,0,0),(40,4.8,1,5,9), (100,12,11,55,99), (500,60,54,270,486), (1024,122.88,111,555,999), (2048,245.76,221,1105,1989), (5120,614.4,553,2765,4977), (10240,1228.8,1106,5530,9954), (20480,2457.6,2212,11060,19908), (30720,3686.4,3318,16524,29862), (51200,6144,5530,27650,49770), (71680,8601.6,7742,38556,69678), (102400,12288,11059,55295,99531), (153600,18432,16590,82618,149310), (204800,24576,22118,110590,199062), (307200,36864,33178,165890,298602), (512000,61440,55296,276480,497664)) as t(size,list_price, m1,m6,m12)) on 1=1) group by size) order by size))",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "yunlei-bill1584001502588",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 2.238636363636364,
+        "markdownStr": "本月OSS归档存储(本地冗余)存储空间为${usage}GB ,按量付费账单为${pretaxamount}元\n若购买资源包，可节省的费用如下(若节省费用出现负值，代表您已享受最佳折扣，无需购买资源包):\n\n1月包建议购买${size_m1}GB规格， 每月可节省${max_m1}元，\n\n半年包建议购买${size_m6}GB规格，每月可节省${max_m6}元\n\n整年包建议购买${size_m12}GB规格，每月可节省${max_m12}元。\n\n资源包[购买地址](https://common-buy.aliyun.com/?spm=5176.8064714.323065.pricedetail1111.5976X22GX22GM0&commodityCode=ossbag&request=%7B%22region%22%3A%22china-common%22%7D#/buy)。 ",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.093788819875776,
+        "xPos": 0.08397498657863485,
+        "yPos": 8.80685078014027,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and BillingItem: \"低频访问(本地冗余)/归档存储容量\" and InstanceID: archive |select round(arbitrary(PretaxAmount),3) as pretaxamount , round(arbitrary(usage),3) as usage ,max_by(size, saved_m1) as size_m1, round(max(saved_m1),3) as max_m1  ,max_by(size, saved_m6) as size_m6, round(max(saved_m6),3) as max_m6  ,max_by(size, saved_m12) as size_m12, round(max(saved_m12),3) as max_m12    from(  select *, PretaxAmount - (ondemand+m1) as saved_m1, PretaxAmount - (ondemand+m6/6) as saved_m6, PretaxAmount - (ondemand+m12/12) as saved_m12  from (select size,  PretaxAmount ,ondemand,m1 ,m6,m12, usage/24 as Usage  from( select size, sum(ondemand) as ondemand, sum(PretaxAmount) as PretaxAmount ,avg(usage) as usage, arbitrary(m1) as m1, arbitrary(list_price),arbitrary(m6) as m6, arbitrary(m12) as m12 from(   select t, case when usage > size*24 then (usage-size*24)*list_price else 0  end  as ondemand,PretaxAmount,size,m1,m6,m12 ,list_price,usage  from (select date_trunc('day',__time__) as t, sum(Usage) as usage ,sum(PretaxAmount) as PretaxAmount, avg(ListPrice) as list_price from log  group by t order by t ) join (select * from ( values (0,0,0,0,0), (100,3.3,3,15,27), (500,16.5,15,75,135), (1024,33.792,30,149,270), (2048,67.584,61,304,549), (5120,168.96,152,757,1368), (10240,337.92,304,1514,2736), (20480,675.84,608,3028,5472), (51200,1689.6,1521,7575,13689), (102400,3379.2,3041,15144,27369), (204800,6758.4,6083,30293,54747), (204800,6758.4,9124,45438,82116), (512000,16896,15206,75726,136854)) as t(size,list_price1, m1,m6,m12)) on 1=1) group by size) order by size))",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "yunlei-bill1584001502589",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 2.261363636363636,
+        "markdownStr": "本月OSS低频存储(本地冗余)存储空间为${usage}GB ,按量付费账单为${pretaxamount}元\n若购买资源包，可节省的费用如下(若节省费用出现负值，代表您已享受最佳折扣，无需购买资源包):\n\n1月包建议购买${size_m1}GB规格， 每月可节省${max_m1}元，\n\n半年包建议购买${size_m6}GB规格，每月可节省${max_m6}元\n\n整年包建议购买${size_m12}GB规格，每月可节省${max_m12}元。\n\n资源包[购买地址](https://common-buy.aliyun.com/?spm=5176.8064714.323065.pricedetail1111.5976X22GX22GM0&commodityCode=ossbag&request=%7B%22region%22%3A%22china-common%22%7D#/buy)。 ",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 6.093788819875776,
+        "xPos": 0.08635782182465586,
+        "yPos": 11.10227272727272,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and BillingItem: \"低频访问(本地冗余)/归档存储容量\"  and   InstanceID: IA |select round(arbitrary(PretaxAmount),3) as pretaxamount , round(arbitrary(usage),3) as usage ,max_by(size, saved_m1) as size_m1, round(max(saved_m1),3) as max_m1  ,max_by(size, saved_m6) as size_m6, round(max(saved_m6),3) as max_m6  ,max_by(size, saved_m12) as size_m12, round(max(saved_m12),3) as max_m12    from(  select *, PretaxAmount - (ondemand+m1) as saved_m1, PretaxAmount - (ondemand+m6/6) as saved_m6, PretaxAmount - (ondemand+m12/12) as saved_m12  from (select size,  PretaxAmount ,ondemand,m1 ,m6,m12, usage/24 as Usage  from( select size, sum(ondemand) as ondemand, sum(PretaxAmount) as PretaxAmount ,avg(usage) as usage, arbitrary(m1) as m1, arbitrary(list_price),arbitrary(m6) as m6, arbitrary(m12) as m12 from(   select t, case when usage > size*24 then (usage-size*24)*list_price else 0  end  as ondemand,PretaxAmount,size,m1,m6,m12 ,list_price,usage  from (select date_trunc('day',__time__) as t, sum(Usage) as usage ,sum(PretaxAmount) as PretaxAmount, avg(ListPrice) as list_price from log  group by t order by t ) join (select * from (values (0,0,0,0,0), (100.00,15.00,7.20,35.86,64.80), (500.00,75.00,36.00,179.28,324.00), (1024.00,153.60,73.70,367.03,663.30), (2048.00,307.20,147.40,734.05,1326.60), (5120.00,768.00,368.50,1835.13,3316.50), (10240.00,1536.00,737.00,3670.26,6633.00), (20480.00,3072.00,1474.00,7340.52,13266.00), (51200.00,7680.00,3685.00,18351.30,33165.00), (102400.00,15360.00,7370.00,36702.60,66330.00), (204800.00,30720.00,14740.00,73405.20,132660.00), (204800.00,30720.00,22110.00,110107.80,198990.00), (512000.00,76800.00,36850.00,183513.00,331650.00)) as t(size,list_price1, m1,m6,m12)) on 1=1) group by size) order by size))",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "yunlei-bill1584001502590",
+      "type": "markdown"
+    }
+  ],
+  "dashboardName": "bill_optimize_cn",
+  "description": "",
+  "displayName": "账单优化建议"
+}

@@ -1,0 +1,298 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "产品名称": {
+          "type": "disabled"
+        },
+        "代金券支付": {
+          "type": "disabled"
+        },
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "原始金额": {
+          "type": "disabled"
+        },
+        "应付金额": {
+          "type": "disabled"
+        },
+        "折扣%": {},
+        "未结清金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "产品费用",
+        "formatType": "milli",
+        "height": 8.147727272727273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "width": 10.05004541326067,
+        "xPos": -0.03168658005602196,
+        "yPos": -0.05668917569247127,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill | select ProductDetail as \"产品名称\", PretaxGrossAmount as \"原始金额\", InvoiceDiscount as \"优惠金额\" , PretaxAmount as \"应付金额\", DeductedByCashCoupons as \"代金券支付\", OutstandingAmount as \"未结清金额\", round(100*PretaxAmount/PretaxGrossAmount,3) as \"折扣%\" from( select ProductDetail, round( sum(PretaxGrossAmount),3) as PretaxGrossAmount, round(sum(InvoiceDiscount),3) as InvoiceDiscount, round(sum(PretaxAmount),3) as PretaxAmount, round(sum(DeductedByCashCoupons),3) as DeductedByCashCoupons, round(sum(OutstandingAmount),3) as OutstandingAmount group by ProductDetail )  order by PretaxAmount desc limit 1000",
+        "start": "previousmonth",
+        "tokenQuery": "source:bill | select ProductDetail as \"产品名称\", PretaxGrossAmount as \"原始金额\", InvoiceDiscount as \"优惠金额\" , PretaxAmount as \"应付金额\", DeductedByCashCoupons as \"代金券支付\", OutstandingAmount as \"未结清金额\" from( select ProductDetail, round( sum(PretaxGrossAmount),3) as PretaxGrossAmount, round(sum(InvoiceDiscount),3) as InvoiceDiscount, round(sum(PretaxAmount),3) as PretaxAmount, round(sum(DeductedByCashCoupons),3) as DeductedByCashCoupons, round(sum(OutstandingAmount),3) as OutstandingAmount group by ProductDetail )  order by PretaxAmount desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1589425657287",
+      "type": "table"
+    },
+    {
+      "action": {
+        "产品": {
+          "type": "disabled"
+        },
+        "产品总金额": {
+          "type": "disabled"
+        },
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "使用量": {
+          "type": "disabled"
+        },
+        "单价": {
+          "type": "disabled"
+        },
+        "原始金额": {
+          "type": "disabled"
+        },
+        "应付金额": {
+          "type": "disabled"
+        },
+        "折扣%": {
+          "type": "disabled"
+        },
+        "计费项": {
+          "type": "disabled"
+        },
+        "资源包抵扣用量": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "使用量和费用",
+        "formatType": "milli",
+        "height": 5.477272727272728,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "width": 10.0548532731377,
+        "xPos": -0.04041577850322145,
+        "yPos": 8.102272727272727,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(PretaxAmount,3) as \"应付金额\", round(pretaxAmount/PretaxGrossAmount *100,3) as \"折扣%\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(InvoiceDiscount) as InvoiceDiscount,  sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from log group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+        "start": "previousmonth",
+        "tokenQuery": "source:instance_bill | select case when rank_by_product = 1 then ProductName else '' end as \"产品\",case when rank_by_product = 1 then cast(round(pretaxAmountProduct,3) as varchar) else '' end as \"产品总金额\" ,  case when rank_by_product_item =1 then item else '' end as \"计费项\", ListPrice as \"单价\", round(usage,3) as \"使用量\",round(coalesce(DeductedByResourcePackage,0)) as \"资源包抵扣用量\",round(PretaxGrossAmount ,3)as \"原始金额\",round(InvoiceDiscount,3) as \"优惠金额\", round(PretaxAmount,3) as \"应付金额\", round(100-pretaxAmount/PretaxGrossAmount *100,3) as \"折扣%\" from(select *, rank() over(partition by ProductName order by PretaxAmount desc) as rank_by_product,rank() over(partition by productname,item order by pretaxAmount desc ) as rank_by_product_item  from( select *, sum(pretaxAmount) over(partition by productname) as pretaxAmountProduct,sum(pretaxAmount) over(partition by productname,item) as pretaxAmountItem from (select ProductName, concat(BillingItem , '(',UsageUnit,')') as item, ListPrice, sum(Usage) as usage,sum(DeductedByResourcePackage) as DeductedByResourcePackage, sum(InvoiceDiscount) as InvoiceDiscount,  sum(PretaxAmount) as PretaxAmount ,sum(PretaxGrossAmount) as PretaxGrossAmount  from log group by productname, item, listprice))) order by PretaxAmountProduct desc,PretaxAmountitem desc, pretaxamount  desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1589426394371",
+      "type": "table"
+    },
+    {
+      "action": {
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "单价": {
+          "type": "disabled"
+        },
+        "原价": {
+          "type": "disabled"
+        },
+        "实例规格": {},
+        "应付金额": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "行标签": {},
+        "计费项": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "SLB月报",
+        "formatType": "milli",
+        "height": 5.386363636363637,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "width": 10.05,
+        "xPos": -0.04,
+        "yPos": 13.57954545454546,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill  and ProductCode:  slb | select \"行标签\",round(\"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\", round(\"优惠金额\",3) as \"优惠金额\", round(\"应付金额\",3) as \"应付金额\" from(  select concat(array[concat(' ',billingitem)], listprice) as listprice,concat(array[usagePerbillingitem], usage) as usage,concat(array[PretaxGrossAmountPerBillingItem], PretaxGrossAmount) as gross,concat(array[InvoiceDiscountPerBillingItem], InvoiceDiscount) as invoice,concat(array[PretaxAmountPerBillingItem], PretaxAmount) as pretax  from(  select billingitem, array_agg(concat('     ',cast(listprice as varchar)) ) as listprice,array_agg(usage) as usage, array_agg(PretaxGrossAmount) as PretaxGrossAmount,array_agg(InvoiceDiscount) as  InvoiceDiscount, array_agg(PretaxAmount) as PretaxAmount ,sum(usage) as usagePerbillingItem, sum(PretaxGrossAmount)  as PretaxGrossAmountPerBillingItem, sum(InvoiceDiscount)  as InvoiceDiscountPerBillingItem, sum(PretaxAmount) as PretaxAmountPerBillingItem from(  select  billingitem  ,ListPrice   ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,ListPrice) group by billingitem)),unnest(listprice,usage,gross,invoice,pretax) as t(\"行标签\",\"用量\",\"原价\",\"优惠金额\", \"应付金额\")",
+        "start": "previousmonth",
+        "tokenQuery": "source:instance_bill  and ProductCode:  slb | select coalesce(\"计费项\",'') as \"计费项\", coalesce(cast(\"单价\" as varchar),'') as \"单价\", round( \"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\",round(\"优惠金额\",3) as \"优惠金额\",round(\"应付金额\",3)  as \"应付金额\" from(select *, reduce(usage,cast(0 as double), (s,x) -> s+x, s -> s) as totalUsage , reduce(pretaxamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxAmount, reduce(pretaxGrossamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxGrossAmount, reduce(InvoiceDiscount,cast(0 as double), (s,x) -> s+x, s -> s) as totalInvoiceDiscount  from(select array_agg(billingitem) as billingitem, array_agg(listPrice) as listPrice, array_agg(PretaxAmount) as PretaxAmount, array_agg(InvoiceDiscount) as InvoiceDiscount, array_agg(PretaxGrossAmount) as PretaxGrossAmount ,array_agg(usage) as usage from(  select  billingitem  ,ListPrice ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,ListPrice))), unnest(billingitem, listprice, concat(pretaxGrossamount,array[totalPretaxGrossAmount]) , concat(usage, array[totalusage]) , concat(InvoiceDiscount, array[totalInvoiceDiscount]), concat(PretaxAmount,array[totalPretaxAmount]))  as t(\"计费项\", \"单价\", \"用量\",\"原价\",\"优惠金额\",\"应付金额\")",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1589442703481",
+      "type": "table"
+    },
+    {
+      "action": {
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "单价": {
+          "type": "disabled"
+        },
+        "原价": {
+          "type": "disabled"
+        },
+        "应付金额": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "计费项": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "OSS月报",
+        "formatType": "milli",
+        "height": 5.579545454545454,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "width": 10.05820271682341,
+        "xPos": -0.03946139057601881,
+        "yPos": 18.85240173339844,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill  and ProductCode:  OSS | select coalesce(\"计费项\",'总计') as \"计费项\", coalesce(cast(\"单价\" as varchar),'') as \"单价\", round( \"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\",round(\"优惠金额\",3) as \"优惠金额\",round(\"应付金额\",3)  as \"应付金额\" from(select *, reduce(usage,cast(0 as double), (s,x) -> s+x, s -> s) as totalUsage , reduce(pretaxamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxAmount, reduce(pretaxGrossamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxGrossAmount, reduce(InvoiceDiscount,cast(0 as double), (s,x) -> s+x, s -> s) as totalInvoiceDiscount  from(select array_agg(billingitem) as billingitem, array_agg(listPrice) as listPrice, array_agg(PretaxAmount) as PretaxAmount, array_agg(InvoiceDiscount) as InvoiceDiscount, array_agg(PretaxGrossAmount) as PretaxGrossAmount ,array_agg(usage) as usage from(  select  billingitem  ,ListPrice ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,ListPrice))), unnest(billingitem, listprice, concat(pretaxGrossamount,array[totalPretaxGrossAmount]) , concat(usage, array[totalusage]) , concat(InvoiceDiscount, array[totalInvoiceDiscount]), concat(PretaxAmount,array[totalPretaxAmount]))  as t(\"计费项\", \"单价\",\"原价\", \"用量\",\"优惠金额\",\"应付金额\")",
+        "start": "previousmonth",
+        "tokenQuery": "source:instance_bill  and ProductCode:  OSS | select coalesce(\"计费项\",'总计') as \"计费项\", coalesce(cast(\"单价\" as varchar),'') as \"单价\", round( \"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\",round(\"优惠金额\",3) as \"优惠金额\",round(\"应付金额\",3)  as \"应付金额\" from(select *, reduce(usage,cast(0 as double), (s,x) -> s+x, s -> s) as totalUsage , reduce(pretaxamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxAmount, reduce(pretaxGrossamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxGrossAmount, reduce(InvoiceDiscount,cast(0 as double), (s,x) -> s+x, s -> s) as totalInvoiceDiscount  from(select array_agg(billingitem) as billingitem, array_agg(listPrice) as listPrice, array_agg(PretaxAmount) as PretaxAmount, array_agg(InvoiceDiscount) as InvoiceDiscount, array_agg(PretaxGrossAmount) as PretaxGrossAmount ,array_agg(usage) as usage from(  select  billingitem  ,ListPrice ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,ListPrice))), unnest(billingitem, listprice, concat(pretaxGrossamount,array[totalPretaxGrossAmount]) , concat(usage, array[totalusage]) , concat(InvoiceDiscount, array[totalInvoiceDiscount]), concat(PretaxAmount,array[totalPretaxAmount]))  as t(\"计费项\", \"单价\", \"用量\",\"原价\",\"优惠金额\",\"应付金额\")",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1589442780425",
+      "type": "table"
+    },
+    {
+      "action": {
+        "优惠金额": {
+          "type": "disabled"
+        },
+        "原价": {
+          "type": "disabled"
+        },
+        "实例": {
+          "type": "disabled"
+        },
+        "应付金额": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "计费项": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "CDN月报",
+        "formatType": "milli",
+        "height": 5.306818181818182,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "width": 10.05820271682341,
+        "xPos": -0.04999968111203631,
+        "yPos": 24.34087996049361,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill  and ProductCode:  CDN | select coalesce(\"计费项\",'总计') as \"计费项\", coalesce(cast(\"实例\" as varchar),'') as \"实例\", round( \"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\",round(\"优惠金额\",3) as \"优惠金额\",round(\"应付金额\",3)  as \"应付金额\" from(select *, reduce(usage,cast(0 as double), (s,x) -> s+x, s -> s) as totalUsage , reduce(pretaxamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxAmount, reduce(pretaxGrossamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxGrossAmount, reduce(InvoiceDiscount,cast(0 as double), (s,x) -> s+x, s -> s) as totalInvoiceDiscount  from(select array_agg(billingitem) as billingitem, array_agg(instanceId) as instanceId, array_agg(PretaxAmount) as PretaxAmount, array_agg(InvoiceDiscount) as InvoiceDiscount, array_agg(PretaxGrossAmount) as PretaxGrossAmount ,array_agg(usage) as usage from(  select  billingitem  ,instanceId ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,instanceId))), unnest(billingitem, instanceId, concat(pretaxGrossamount,array[totalPretaxGrossAmount]) , concat(usage, array[totalusage]) , concat(InvoiceDiscount, array[totalInvoiceDiscount]), concat(PretaxAmount,array[totalPretaxAmount]))  as t(\"计费项\", \"实例\",\"原价\", \"用量\",\"优惠金额\",\"应付金额\")",
+        "start": "previousmonth",
+        "tokenQuery": "source:instance_bill  and ProductCode:  CDN | select coalesce(\"计费项\",'总计') as \"计费项\", coalesce(cast(\"实例\" as varchar),'') as \"实例\", round( \"用量\",3) as \"用量\",round(\"原价\",3) as \"原价\",round(\"优惠金额\",3) as \"优惠金额\",round(\"应付金额\",3)  as \"应付金额\" from(select *, reduce(usage,cast(0 as double), (s,x) -> s+x, s -> s) as totalUsage , reduce(pretaxamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxAmount, reduce(pretaxGrossamount,cast(0 as double), (s,x) -> s+x, s -> s) as totalPretaxGrossAmount, reduce(InvoiceDiscount,cast(0 as double), (s,x) -> s+x, s -> s) as totalInvoiceDiscount  from(select array_agg(billingitem) as billingitem, array_agg(instanceId) as instanceId, array_agg(PretaxAmount) as PretaxAmount, array_agg(InvoiceDiscount) as InvoiceDiscount, array_agg(PretaxGrossAmount) as PretaxGrossAmount ,array_agg(usage) as usage from(  select  billingitem  ,instanceId ,sum(usage) as usage, sum(PretaxGrossAmount) as PretaxGrossAmount , sum(InvoiceDiscount) as InvoiceDiscount, sum(PretaxAmount) as PretaxAmount from log group by billingitem,instanceId))), unnest(billingitem, instanceId, concat(pretaxGrossamount,array[totalPretaxGrossAmount]) , concat(usage, array[totalusage]) , concat(InvoiceDiscount, array[totalInvoiceDiscount]), concat(PretaxAmount,array[totalPretaxAmount]))  as t(\"计费项\", \"实例\", \"用量\",\"原价\",\"优惠金额\",\"应付金额\")",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-yunlei-test1589444164532",
+      "type": "table"
+    }
+  ],
+  "dashboardName": "month_report_cn",
+  "description": "",
+  "displayName": "财务月报"
+}
