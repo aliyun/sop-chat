@@ -1,0 +1,951 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "用量": {},
+        "计费项": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "标准型存储",
+        "height": 2.284090909090909,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "计费项": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 8.999999999999995,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "productcode:oss and source:instance_bill and instanceid:standard | select BillingItem as \"计费项\", round(sum(PretaxAmount),3) as \"费用\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"用量\" group by \"计费项\" order by \"费用\" desc",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select BillingItem as \"计费项\", round(sum(PretaxGrossAmount),3) as \"费用\" group by \"计费项\" order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692201",
+      "type": "table"
+    },
+    {
+      "action": {
+        "BillingItem": {},
+        "Region": {
+          "type": "disabled"
+        },
+        "RegionClassFee": {},
+        "_col3": {},
+        "_col4": {},
+        "_col5": {},
+        "class": {},
+        "regionFee": {},
+        "usage": {},
+        "同比上月": {},
+        "存储类型": {},
+        "用量": {},
+        "计费项": {},
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "地域分析",
+        "fixedTime": false,
+        "height": 6.25,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "Region": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "同比上月": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": true,
+            "highlightRules": [
+              {
+                "color": "rgba(208,2,27,1)",
+                "key": "同比上月",
+                "rule": ">",
+                "threshold": "10"
+              }
+            ],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "存储类型": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "计费项": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 17.02272727272728,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss | select Region, \"存储类型\", \"计费项\", case when \"用量\" is null then '0' else \"用量\" end as \"用量\", case when \"费用\" is null then 0.0 else \"费用\" end as \"费用\", case when \"同比上月\" is null then '0.0%' else \"同比上月\" end as \"同比上月\" from ( select case when rnk1 =1 then Region else '' end as Region , case when rnk2 = 1 then class else '' end  as \"存储类型\",BillingItem as \"计费项\", concat(cast( round(Usage,3) as varchar),' (' , UsageUnit,')') as\"用量\", \"费用\",concat(cast(round(feepercent,3) as varchar) ,'%') as \"同比上月\" from(  select *, sum(\"费用\") over(partition by Region) as regionFee,sum(\"费用\") over(partition by Region,class) as RegionClassFee , rank() over(partition by Region order by \"费用\" desc) as rnk1,rank() over(partition by Region, class order by \"费用\" desc) as rnk2  from ( select region,class, billingitem, usagediff[1] as Usage, usagediff[3]*100-100 as UsagePercent, usageunit, feediff[1] as \"费用\", case when is_nan( feediff[3]*100-100) then 0.0 else feediff[3]*100-100 end as feePercent from( select region,class, billingitem, compare(usage,2592000) as usagediff, arbitrary(usageUnit) as usageunit, compare(\"费用\",2592000) as feediff from( select Region ,split_part(InstanceId,';',2) as class, BillingItem, sum(Usage) as usage, arbitrary(UsageUnit) as UsageUnit, round(sum(PretaxAmount),3) as \"费用\"  from log group by Region,class,BillingItem  ) group by region,class,billingitem) ) )order by regionFee desc, RegionClassFee desc ,\"费用\" desc )  limit 1000",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select Region , round(sum(PretaxGrossAmount),3) as \"费用\" group by Region  order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692202",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "地域费用",
+        "formatType": "number",
+        "height": 2.613636363636364,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "inputVal": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 10,
+        "xAxis": [
+          "Region"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "费用"
+        ],
+        "yPos": 14.25,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss | select Region , round(sum(PretaxAmount),3) as \"费用\" group by Region  order by \"费用\" desc",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select Region , round(sum(PretaxGrossAmount),3) as \"费用\" group by Region  order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692203",
+      "type": "column"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "一周费用",
+        "formatType": "number",
+        "height": 2.340909090909091,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "width": 9.984955752212391,
+        "xAxis": [
+          "日期"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "金额"
+        ],
+        "yPos": 2.420454545454545,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692204",
+      "type": "column"
+    },
+    {
+      "action": {
+        "日期": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "1周费用",
+        "height": 2.079545454545455,
+        "highlight": false,
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "showZebra": false,
+        "sparkline": false,
+        "tableColumns": {
+          "日期": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "金额": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 4.886363636363637,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692205",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "6个月费用",
+        "formatType": "number",
+        "height": 2.318181818181818,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 4.951798010464441,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": 4.998201989535557,
+        "yAxis": [
+          "金额"
+        ],
+        "yPos": -0.05681818181818182,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:OSS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill and ProductCode:ECS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692206",
+      "type": "column"
+    },
+    {
+      "action": {
+        "时间": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "6个月费用",
+        "height": 1.738636363636364,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "时间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "金额": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 7.102272727272726,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:OSS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill and ProductCode:ECS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692207",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "存储空间每日变化",
+        "fixedTime": false,
+        "formatType": "file",
+        "height": 2.715909090909091,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 10,
+        "xAxis": [
+          "日期"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "存储空间"
+        ],
+        "yPos": 23.4318181818182,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and ( BillingItem: \"标准存储（本地冗余）容量\"  or BillingItem:\"低频访问(本地冗余)/归档存储容量\")| select date_format(__time__,'%Y-%m-%d') as \"日期\" , avg(Usage)*1024*1024*1024  as \"存储空间\" group by \"日期\" order by \"日期\" limit 10000",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储(本地冗余)容量\" | select date_format(__time__,'%Y-%m-%d') as \"日期\" , avg(Usage)*1024*1024*1024  as \"存储空间\" group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692208",
+      "type": "column"
+    },
+    {
+      "action": {
+        "存储空间": {
+          "type": "disabled"
+        },
+        "日期": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "存储空间每日变化",
+        "fixedTime": false,
+        "height": 2.181818181818182,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "存储空间": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "日期": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 9.984955752212391,
+        "xPos": -0.05,
+        "yPos": 26.34090909090909,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储（本地冗余）容量\" | select date_format(__time__,'%Y-%m-%d') as \"日期\" , concat(cast(round(avg(Usage),3) as varchar),'G')   as \"存储空间\" group by \"日期\" order by \"日期\"",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source: instance_bill and ProductCode:oss   and BillingItem: \"标准存储(本地冗余)容量\" | select date_format(__time__,'%Y-%m-%d') as \"日期\" , concat(cast(round(avg(Usage),3) as varchar),'G')   as \"存储空间\" group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692209",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Region": {
+          "type": "disabled"
+        },
+        "单价": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "外网流出流量/忙时/闲时",
+        "height": 3.522727272727273,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "Region": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "单价": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 28.71590909090909,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:oss and BillingItem:外网流出流量 | select r as Region,round(p,3) as \"单价\",concat(cast(round(u ,3) as varchar ), usageUnit) as \"用量\", round(a,3) as \"费用\"  from(select concat(regions,array['累计']) as regions, concat(price,array[total/usage]) as price, concat(amounts, array[total]) as amounts, concat(usages,array[usage]) as Usages,usageUnit   from( select * from( select array_agg(region) as regions, array_agg(ListPrice) as price, array_agg(amount) as amounts ,sum(Usage)  as usage,  array_agg(usage) as usages,sum(amount) as total  ,arbitrary(UsageUnit) as usageUnit  from(select  region, listPrice , sum(PretaxAmount) as amount ,sum(Usage) as usage ,arbitrary(UsageUnit) as usageUnit from log group by region,listprice order by amount  desc )))),unnest(regions,price, amounts,Usages) as t(r,p,a ,u)",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss and BillingItem:外网流出流量 | select r as Region,round(p,3) as \"单价\",concat(cast(round(u ,3) as varchar ), usageUnit) as \"用量\", round(a,3) as \"费用\"  from(select concat(regions,array['累计']) as regions, concat(price,array[total/usage]) as price, concat(amounts, array[total]) as amounts, concat(usages,array[usage]) as Usages,usageUnit   from( select * from( select array_agg(region) as regions, array_agg(ListPrice) as price, array_agg(amount) as amounts ,sum(Usage)  as usage,  array_agg(usage) as usages,sum(amount) as total  ,arbitrary(UsageUnit) as usageUnit  from(select  region, listPrice , sum(PretaxAmount) as amount ,sum(Usage) as usage ,arbitrary(UsageUnit) as usageUnit from log group by region,listprice order by amount  desc )))),unnest(regions,price, amounts,Usages) as t(r,p,a ,u)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692210",
+      "type": "table"
+    },
+    {
+      "action": {
+        "用量": {},
+        "计费项": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "归档型存储",
+        "height": 2.625,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "计费项": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 4.918584070796459,
+        "xPos": -0.05,
+        "yPos": 11.45454545454546,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "productcode:oss and source:instance_bill and instanceid:archive | select BillingItem as \"计费项\", round(sum(PretaxAmount),3) as \"费用\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"用量\" group by \"计费项\" order by \"费用\" desc",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select BillingItem as \"计费项\", round(sum(PretaxGrossAmount),3) as \"费用\" group by \"计费项\" order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692211",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "昨日金额/环比增加",
+        "descriptionSize": 12,
+        "displayName": "昨日金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.4,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": -0.05681818181818182,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and PretaxAmount> 0 and ProductCode:OSS | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "yesterday",
+        "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692212",
+      "type": "number"
+    },
+    {
+      "action": {
+        "用量": {},
+        "计费项": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "低频访问型存储",
+        "height": 2.625,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "计费项": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 4.951798010464441,
+        "xPos": 4.998201989535557,
+        "yPos": 11.45454545454546,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "productcode:oss and source:instance_bill and instanceid:IA | select BillingItem as \"计费项\", round(sum(PretaxAmount),3) as \"费用\", concat(cast(round(sum(Usage),3) as varchar),' ',arbitrary(UsageUnit)) as \"用量\" group by \"计费项\" order by \"费用\" desc",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select BillingItem as \"计费项\", round(sum(PretaxGrossAmount),3) as \"费用\" group by \"计费项\" order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692213",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本月金额/同比增加",
+        "descriptionSize": 12,
+        "displayName": "本月金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.4,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": 2.488938053097345,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": -0.05681818181818182,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:OSS| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "thismonth",
+        "tokenQuery": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501634558692214",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "oss_analysis_cn",
+  "description": "",
+  "displayName": "OSS费用分析"
+}

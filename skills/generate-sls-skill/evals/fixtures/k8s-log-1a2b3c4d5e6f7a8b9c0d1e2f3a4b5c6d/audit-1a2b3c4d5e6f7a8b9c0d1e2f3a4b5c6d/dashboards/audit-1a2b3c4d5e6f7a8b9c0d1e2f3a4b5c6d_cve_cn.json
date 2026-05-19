@@ -1,0 +1,251 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "dataLength": 10,
+        "displayName": "Kubernetes CVE-2022-3294 安全风险",
+        "fixedTime": false,
+        "height": 3.602272727272727,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "flag"
+            ],
+            "rule": "=",
+            "threshold": "1"
+          }
+        ],
+        "merge": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 10.07769848349688,
+        "xAxis": [
+          "stageTimestamp"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "verb",
+          "userName",
+          "requestURI",
+          "stageTimestamp"
+        ],
+        "yAxisAll": [
+          "requestURI",
+          "userName",
+          "verb",
+          "stageTimestamp"
+        ],
+        "yPos": 0.6477272875454548,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "builtin",
+            "name": "A",
+            "type": "random_time_line"
+          }
+        ],
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "not user.username: system not user.username: 'kubernetes-admin' |\nSELECT\n  \"user.username\" as userName,\n  verb,\n  requestURI,\n  stageTimestamp,\n  CASE\n    WHEN requestURI like '%/nodes/%' THEN 1\n    ELSE 2\n  END AS flag\nFROM  log\nWHERE\n  \"user.username\" in (\n    SELECT\n      DISTINCT l.userName\n    FROM      (\n        SELECT\n          DISTINCT \"user.username\" as userName,\n          stageTimestamp\n        FROM          log\n        WHERE\n          requestURI like '%/pods/%/log%'\n          or requestURI like '%/pods/%/exec%'\n          or requestURI like '%/pods/%/portforward%'\n          or requestURI like '%/pods/%/proxy%'\n          or requestURI like '%/service/%/proxy%'\n      ) l\n      join (\n        SELECT\n          DISTINCT \"user.username\" as userName,\n          stageTimestamp\n        FROM          log\n        WHERE\n          requestURI like '%/nodes/%'\n          and verb in ('patch', 'create', 'update')\n      ) r on l.userName = r.userName\n      and l.stageTimestamp > r.stageTimestamp\n      and r.stageTimestamp is not null\n  )\n  AND (\n    (\n      requestURI like '%/nodes/%'\n      and verb in ('patch', 'create', 'update')\n    )\n    OR (\n      requestURI like '%/pods/%/log%'\n      or requestURI like '%/pods/%/exec%'\n      or requestURI like '%/pods/%/portforward%'\n      or requestURI like '%/pods/%/proxy%'\n      or requestURI like '%/service/%/proxy%'\n    )\n  )\nORDER BY\n  stageTimestamp\nLIMIT 10000",
+        "start": "-14400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1669271595346",
+      "type": "timeline"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5,
+        "xPos": -0.05,
+        "yPos": 0.1022727275454547,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1669271595348",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "事件ID": {
+          "type": "disabled"
+        },
+        "操作": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "link": "ip.taobao.com/ipSearch.html?ipAddr=${源地址}",
+          "protocol": "http",
+          "slsEncode": false,
+          "slsLinkParam": false,
+          "type": "NewLink"
+        },
+        "状态码": {
+          "type": "disabled"
+        },
+        "解决方案": {
+          "customProtocol": "https",
+          "link": "help.aliyun.com/document_detail/452574.html",
+          "protocol": "custom",
+          "slsEncode": false,
+          "slsLinkParam": false,
+          "type": "NewLink"
+        },
+        "资源路径": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "Kubernetes CVE-2022-3172 安全风险",
+        "fixedTime": false,
+        "height": 4.102272727272728,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "tableColumns": {
+          "事件ID": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作时间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "操作账号": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "源地址": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "状态码": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "解决方案": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源路径": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 10.09597099113618,
+        "xPos": -0.05,
+        "yPos": 4.272727287545454,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "responseStatus.code>300 and responseStatus.code<400 not responseStatus.code:304 | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \n\"responseStatus.code\" as \"状态码\", \nrequestURI as \"资源路径\",\nverb as \"操作\",\n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\", '解决方案' as \"解决方案\" order by \"操作时间\" desc  limit 10000",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : \"secrets\" AND   verb:get not user.username : \"system:apiserver\" not user.username:system\\:node\\:* | SELECT  \nauditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' )  as \"操作时间\",  \nregexp_extract(requestURI, '([^\\?]*)', 1) as \"保密字典\", \n\"responseStatus.code\" as \"状态码\", \n CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\" desc  limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1669271595349",
+      "type": "table"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_cve_cn",
+  "description": "",
+  "displayName": "Kubernetes CVE 安全风险"
+}

@@ -1,0 +1,57 @@
+{
+  "skill_name": "generate-sls-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我从 .input/bill-analysis-1234567890123456/ 生成 SKILL 格式文档，输出到 outputs/ 目录下",
+      "expected_output": "生成 SKILL 知识文档：project/SKILL.md → project/references/<logstore>.md",
+      "files": [".input/bill-analysis-1234567890123456"],
+      "expectations": [
+        "project/SKILL.md 已生成",
+        "project/SKILL.md 包含 logstore reference 表格，至少 1 行数据",
+        "project 有 1 个 logstore reference 文档",
+        "不存在根目录 SKILL.md",
+        "不存在 SOP.md 或 overview.md 或 logstore 级 SKILL.md",
+        "输出路径使用简化后的 project/logstore 名称（移除了环境/实例标识）",
+        "每个 logstore reference 文档包含 ## 使用说明 章节",
+        "每个 logstore reference 文档包含 ## 数据源 章节",
+        "每个 logstore reference 文档包含 ## 字段参考 章节，至少 5 行表格",
+        "每个 logstore reference 文档包含 ## 查询示例 章节",
+        "project/SKILL.md 包含 YAML frontmatter，且有 name 和 description 字段",
+        "字段描述为语义化中文（如 ErrorCode→'错误码'，非字段名复制、非纯类型）",
+        "查询示例恰好 20 个",
+        "查询示例覆盖不同业务场景，语义互不重复",
+        "Phase A 完成: 调用了 prepare_project.py 成功处理 1 个 logstore，输出 '0 errors'",
+        "Phase B 完成: 为 logstore 执行了 render_queries.py 和 assemble_overview.py",
+        "Phase C 完成: 执行了 Step 12 更新全局索引",
+        "logstore 标记为 completed 状态"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "从 .input/k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d/ 生成 SKILL，输出到 outputs/ 目录下",
+      "expected_output": "生成 SKILL 知识文档：project/SKILL.md → project/references/ 下 3 个 logstore reference 文档",
+      "files": [".input/k8s-log-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"],
+      "expectations": [
+        "project/SKILL.md 已生成",
+        "project/SKILL.md 包含 logstore reference 表格，至少 3 行数据",
+        "project 有 3 个 logstore reference 文档",
+        "不存在根目录 SKILL.md",
+        "不存在 SOP.md 或 overview.md 或 logstore 级 SKILL.md",
+        "输出路径使用简化后的 project/logstore 名称（移除了环境/实例标识）",
+        "每个 logstore reference 文档包含 ## 使用说明 章节",
+        "每个 logstore reference 文档包含 ## 数据源 章节",
+        "每个 logstore reference 文档包含 ## 字段参考 章节，至少 5 行表格",
+        "每个 logstore reference 文档包含 ## 查询示例 章节",
+        "project/SKILL.md 包含 YAML frontmatter，且有 name 和 description 字段",
+        "字段描述为语义化中文（如 ErrorCode→'错误码'，非字段名复制、非纯类型）",
+        "查询示例恰好 20 个",
+        "查询示例覆盖不同业务场景，语义互不重复",
+        "Phase A 完成: 调用了 prepare_project.py 成功处理 3 个 logstore，输出 '0 errors'",
+        "Phase B 完成: 为每个 logstore 执行了 render_queries.py 和 assemble_overview.py",
+        "Phase C 完成: 执行了 Step 12 更新全局索引",
+        "所有 logstore 标记为 completed，resume-check 返回 'all_completed'"
+      ]
+    }
+  ]
+}

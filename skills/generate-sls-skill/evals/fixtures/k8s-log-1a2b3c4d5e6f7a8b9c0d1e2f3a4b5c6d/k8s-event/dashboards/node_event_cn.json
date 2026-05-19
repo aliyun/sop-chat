@@ -1,0 +1,281 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "dataLength": 6,
+        "displayName": "Node生命周期",
+        "fixedTime": false,
+        "height": 4.8522725,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(247,191,193,1)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          },
+          {
+            "color": "rgba(245,166,35,0.55)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning"
+          },
+          {
+            "color": "rgba(126,211,33,0.44)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Normal"
+          }
+        ],
+        "merge": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "width": 9.989706,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 0.04476978597147949,
+        "yAxis": [
+          "类型",
+          "等级"
+        ],
+        "yAxisAll": [
+          "time",
+          "等级",
+          "事件源",
+          "类型",
+          "详细内容"
+        ],
+        "yPos": 1.031125709090909,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.involvedObject.kind:Node | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\",  reason as \"类型\",  message as \"详细内容\" from log order by time asc  limit 100",
+        "start": "-604800s",
+        "tokenQuery": "eventId.involvedObject.name : ${PodName} and eventId.involvedObject.namespace : ${PodNamespace} and eventId.involvedObject.kind:Pod | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\",  reason as \"类型\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time asc  limit 100",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1575292836893",
+      "type": "timeline"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "node",
+        "filterData": [
+          {
+            "alias": "Node",
+            "filterMode": false,
+            "key": "eventId.source.host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.5340909090909091,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 3.005588151944995,
+        "xPos": 0.02979250600000001,
+        "yPos": 0.4970348,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "eventId.involvedObject.kind:Node | SELECT distinct \"eventId.source.host\" having \"eventId.source.host\" is not null ",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1575293978848",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "namespace": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 242,
+          "Namespace": 102,
+          "Pod名": 102,
+          "time": 174,
+          "事件源": 148,
+          "事件目标": 102,
+          "总数": 102,
+          "目标Namespace": 102,
+          "目标名": 152,
+          "等级": 123,
+          "类型": 183,
+          "组件": 102,
+          "详细内容": 952,
+          "详细内容采样": 102
+        },
+        "displayName": "事件列表",
+        "fixedTime": false,
+        "height": 6.113636499999999,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "time": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "事件源": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "等级": {
+            "highlight": true,
+            "highlightRules": [
+              {
+                "color": "rgba(255,249,223,1)",
+                "key": "等级",
+                "rule": "=",
+                "threshold": "Warning",
+                "wholeline": true
+              },
+              {
+                "color": "rgba(252,198,200,1)",
+                "key": "等级",
+                "rule": "=",
+                "threshold": "Error"
+              }
+            ],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "类型": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "详细内容": {
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "width": 9.992618,
+        "xPos": 0.05738199999999902,
+        "yPos": 5.88339820909091,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.involvedObject.kind:Node | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\",  reason as \"类型\",  message as \"详细内容\" from log order by time asc  limit 100",
+        "start": "-604800s",
+        "tokenQuery": "eventId.involvedObject.name : ${PodName} and eventId.involvedObject.namespace : ${PodNamespace} and eventId.involvedObject.kind:Pod | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\",  reason as \"类型\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time asc  limit 100",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1575294372638",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "level",
+        "filterData": [
+          {
+            "alias": "事件等级",
+            "key": "level",
+            "list": [
+              "Normal",
+              "Warning",
+              "Error"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.5424893727272727,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.310338680926916,
+        "xPos": 3.02450721765979,
+        "yPos": 0.4886363363636363,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.reason\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577022672715",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "node_event_cn",
+  "description": "",
+  "displayName": "Kubernetes Node事件监控"
+}

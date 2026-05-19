@@ -1,0 +1,859 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543508257",
+        "height": 1.839415,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUwNTQzMjE2MDk2IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMzkgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjcyMzUiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAyLjkyOTY4NzUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik01MTguOTk4Nzk2IDYyLjM3MjY4OUw4OS41MjY1NjcgMjk2LjkyMzAxMiA1MTguOTk4Nzk2IDUwNy42ODQ2OGw0MjkuNDg2NzM0LTIxMC43NjE2Njh6IG0xOC41NjY3NTQtNTkuNDcxNjM0bDQ4Mi43MzU2MDQgMjU5LjkzNDU1N2EzOC4zOTU0NjcgMzguMzk1NDY3IDAgMCAxIDAgNjYuODQwMzE0TDUzNy41NjU1NSA1NzAuOTI3Njg2YTUxLjUyMjc0MiA1MS41MjI3NDIgMCAwIDEtMzMuMzYyMTM2IDBMMjEuNDA5Nzg4IDMyOS41NTk4ODRhMzguMzk1NDY3IDM4LjM5NTQ2NyAwIDAgMSAwLTY2Ljg0MDMxNWw0ODIuNzM1NjA1LTI1OS45MzQ1NTZjNy40MjY3MDItMy43MTMzNTEgMjIuMjgwMTA1LTMuNzEzMzUxIDMzLjM2MjEzNiAwek01MS4xMTY1OTUgNTA1LjY2ODQ0N0w1MTguOTk4Nzk2IDcyMS4yMDIzNTFsNDY3Ljg4MjIwMS0yMTUuNTMzOTA0YzE4LjU2Njc1NC02Ljk0ODAyNyA0MC44NDY4NTkgMCA0OC4yNzM1NjEgMTcuNDA2MzMyczAgMzguMjUwNDE0LTE4LjU2Njc1NCA0NS4xOTg0NDFsLTQ5Ny41MzA5ODcgMjMyLjkxMTIyNi00OTcuNTMwOTg3LTIzMi45MTEyMjZDMi45MDEwNTUgNTYxLjM1NDIwNC00LjU4MzY2NyA1NDAuNDIzMDg5IDIuOTAxMDU1IDUyMy4wNDU3NjhjMTEuMTQwMDUyLTE3LjQwNjMzMiAzMy4zNjIxMzYtMjQuMzM5ODU0IDQ4LjI3MzU2MS0xNy40MDYzMzJ6IG0wIDIyMy4wMTg2MjdMNTE4Ljk5ODc5NiA5NDQuMDYxNDIxbDQ2Ny44ODIyMDEtMjE1LjM3NDM0N2MxOC41NjY3NTQtNi45NDgwMjcgNDAuODQ2ODU5IDAgNDguMjczNTYxIDE3LjQwNjMzMnMwIDM4LjIyMTQwNC0xOC41NjY3NTQgNDUuMTY5NDMxbC00OTcuNTMwOTg3IDIzMi43MzcxNjMtNDk3LjUzMDk4Ny0yMzIuNzM3MTYzQzIuOTAxMDU1IDc4NC4yNzEyOTQtNC41ODM2NjcgNzYzLjQyNzIxMiAyLjkwMTA1NSA3NDYuMDQ5ODljMTEuMTQwMDUyLTE3LjQwNjMzMiAzMy4zNjIxMzYtMjQuMzEwODQ0IDQ4LjI3MzU2MS0xNy40MDYzMzJ6IiBwLWlkPSI3MjM2IiBmaWxsPSIjMTI5NmRiIj48L3BhdGg+PC9zdmc+",
+        "width": 1.2556522,
+        "xPos": 4.465091,
+        "yPos": 2.803417,
+        "zIndex": 5
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543508257",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(255,255,255,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 10,
+          "borderStyle": "solid",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 5.438896,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "",
+        "width": 2.8722906,
+        "xPos": 0.3418003,
+        "yPos": 1.8172579,
+        "zIndex": 6
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543541395",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543576750",
+        "height": 1.8147608,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUwNTQzNDE2NzcxIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjUwNjQiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNMzQuOTkwNjU0MDYgNTA1LjA4NDExMjIzbDgwNy40NzY2MzUzIDBMODQyLjQ2NzI4OTM4IDU3OS44NTA0Njc1NSAzNC45OTA2NTQwNiA1NzkuODUwNDY3NTVsMC03NC43NjYzNTUzMnoiIGZpbGw9IiMzMzdhYjciIHAtaWQ9IjUwNjUiPjwvcGF0aD48cGF0aCBkPSJNODAzLjU4ODc4NDY5IDQzMC4zMTc3NTY5Mkw5OTIgNTQwLjk3MTk2Mjg2bC0xODguNDExMjE1MzEgMTEzLjY0NDg2IDAtMjI0LjI5OTA2NTk0eiIgZmlsbD0iIzMzN2FiNyIgcC1pZD0iNTA2NiI+PC9wYXRoPjwvc3ZnPg==",
+        "width": 1.3875473,
+        "xPos": 3.1775444,
+        "yPos": 2.8527236,
+        "zIndex": 7
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543576750",
+      "type": "svg"
+    },
+    {
+      "action": {
+        "Name": {
+          "type": "disabled"
+        },
+        "Namespace": {
+          "type": "disabled"
+        },
+        "事件ID": {
+          "dashboardFilter": "${事件ID}",
+          "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_network_policy_op_cn",
+          "dashboardToken": [],
+          "filterInherit": false,
+          "timeRange": -1,
+          "type": "NewDashboard"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "创建事件列表",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 4.3863635,
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "width": 4.9,
+        "xAxis": [
+          "responseObject"
+        ],
+        "xPos": 5.1402173,
+        "yPos": 7.590909,
+        "zIndex": 2
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and verb : create NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager       | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.name\" as \"Name\", \"objectRef.namespace\" as \"Namespace\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\"",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : \"networkpolicies\" and verb : create NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager       | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.name\" as \"Name\", \"objectRef.namespace\" as \"Namespace\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550545343101",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 2.850228,
+        "markdownStr": "\n<h3 style=\"text-align: center;\"><span style=\"color: #3366ff;\">${All}</span>&nbsp;</h3>\n<p style=\"text-align: left;\">Match Labels:</p>\n<p style=\"text-align: center;\"><font size=\"4\" color=\"#3366ff\">${matchLabels}</font></p>\n<p style=\"text-align: left;\">Match Expressions:</p>\n<p style=\"text-align: center;\"><font size=\"4\" color=\"#3366ff\">${matchExpressions}</font>&nbsp;</p>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.5965858,
+        "xPos": 3.7695043,
+        "yPos": 4.5785027,
+        "zIndex": 8
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT case when json_size(\"responseObject\", '$.spec.podSelector') = 0 then '匹配所有pods' else '匹配部分pods' end as All,  case when json_size(\"responseObject\", '$.spec.podSelector') = 0 then '无' when json_extract(\"responseObject\", '$.spec.podSelector.matchLabels') is null then '无' else json_format(json_extract(\"responseObject\", '$.spec.podSelector.matchLabels')) end as matchLabels, case when json_size(\"responseObject\", '$.spec.podSelector') = 0 then '无'  when json_extract(\"responseObject\", '$.spec.podSelector.matchExpressions') is null then '无' else json_format(json_extract(\"responseObject\", '$.spec.podSelector.matchExpressions')) end as matchExpressions, responseObject from (SELECT max_by(responseObject, __time__) as responseObject, max_by(auditID, __time__) as auditID from log )",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550545763889",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 0.8863636,
+        "markdownStr": "\n\n<p style=\"text-align: left;\"><font size=\"4\" color=\"666666\">Name: ${name}</font>&nbsp;</p>\n<p style=\"text-align: left;\"><font size=\"4\" color=\"666666\">Namespace: ${namespace}</font>&nbsp;</p>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.6294117,
+        "xPos": 3.7847648,
+        "yPos": 2.0867226,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT max_by(\"objectRef.name\", __time__ ) as name,  max_by(\"objectRef.namespace\", __time__)  as namespace ",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550547030102",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 234,
+          "g": 115,
+          "r": 13
+        },
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550547534496",
+        "fontSize": 24,
+        "height": 0.85325575,
+        "isBold": true,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "NetworkPolicy",
+        "width": 1.7800922,
+        "xPos": 0.40414527,
+        "yPos": 0.51059693,
+        "zIndex": 9
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550547534496",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 0.48344606,
+        "markdownStr": "<p  style=\"text-align: left;\" ><font size=\"4\" color=\"#3366ff\"  >${ingress}</font></p>\n\n",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 1.448969,
+        "xPos": 1.6158639,
+        "yPos": 1.3981395,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT  \ncase when json_array_contains(json_extract(\"responseObject\", '$.spec.policyTypes'), 'Ingress') then  ( case when json_extract(\"responseObject\", '$.spec.ingress') is null then 'Deny all' when json_format(json_extract(\"responseObject\", '$.spec.ingress')) = '[{}]' then 'Allow all' else concat('策略数: ', cast (json_size(\"responseObject\", '$.spec.ingress')  as varchar)) end ) else 'Empty' end as ingress ,\ncase when json_array_contains(json_extract(\"responseObject\", '$.spec.policyTypes'), 'Egress') then  ( case when json_extract(\"responseObject\", '$.spec.egress') is null then 'Deny all' when json_format(json_extract(\"responseObject\", '$.spec.egress')) = '[{}]' then 'Allow all' else concat('策略数: ', cast (json_size(\"responseObject\", '$.spec.egress')  as varchar)) end ) else 'Empty' end  as egress from  (SELECT max_by(responseObject, __time__) as responseObject, max_by(auditID, __time__) as auditID from log )",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550548492743",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550547534496",
+        "fontSize": 20,
+        "height": 0.6313699,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "IngressPolicy",
+        "width": 1.5445653,
+        "xPos": 0.24601911,
+        "yPos": 1.2502162,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550548679892",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(255,255,255,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 10,
+          "borderStyle": "solid",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 5.438896,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "",
+        "width": 2.8829126,
+        "xPos": 6.9142594,
+        "yPos": 1.8295846,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550548723958",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550547534496",
+        "fontSize": 20,
+        "height": 0.6313699,
+        "lineHeight": 1.5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "EgressPolicy",
+        "width": 1.5445653,
+        "xPos": 6.988057,
+        "yPos": 1.2502162,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550548723960",
+      "type": "text"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.5454545,
+        "markdownStr": "<font size=\"2\" color=\"000000\">事件ID: ${事件ID}</font> <br>\n<font size=\"2\" color=\"000000\">操作类型: ${操作类型}</font> <br>\n<font size=\"2\" color=\"000000\">操作账号: ${操作账号}</font> <br>\n<font size=\"2\" color=\"000000\">操作时间: ${操作时间}</font> <br>\n<font size=\"2\" color=\"000000\">源地址: ${源地址}</font> <br>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": false,
+        "width": 3.1735294,
+        "xPos": 3.394235,
+        "yPos": 0.51155955,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT  max_by(auditID, __time__) as \"事件ID\", date_format(from_unixtime(max(__time__)), '%Y-%m-%d %T' )  as \"操作时间\", max_by(\"requestURI\", __time__) as \"资源\", max_by(\"responseStatus.code\", __time__) as \"状态码\",\n CASE \n WHEN max_by(\"user.username\", __time__) != 'kubernetes-admin' then max_by(\"user.username\", __time__)\n WHEN max_by(\"user.username\", __time__) = 'kubernetes-admin' and regexp_like(max_by(\"annotations.authorization.k8s.io/reason\", __time__), 'RoleBinding') then regexp_extract(max_by(\"annotations.authorization.k8s.io/reason\", __time__), ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(max_by(sourceIPs, __time__)) = 1 then json_format(json_array_get(max_by(sourceIPs, __time__), 0)) ELSE  max_by(sourceIPs, __time__) END\nas \"源地址\", max_by(verb, __time__) as \"操作类型\"",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550548899197",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "align": "left",
+        "basicStyle": {
+          "backgroundColor": "rgba(50,138,242,0.1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 0,
+          "borderStyle": "dashed",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 7.238636,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "",
+        "width": 9.850816,
+        "xPos": 0.11412424,
+        "yPos": 0.37500003,
+        "zIndex": 0
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550549926089",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550543576750",
+        "height": 1.8147608,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUwNTQzNDE2NzcxIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjUwNjQiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNMzQuOTkwNjU0MDYgNTA1LjA4NDExMjIzbDgwNy40NzY2MzUzIDBMODQyLjQ2NzI4OTM4IDU3OS44NTA0Njc1NSAzNC45OTA2NTQwNiA1NzkuODUwNDY3NTVsMC03NC43NjYzNTUzMnoiIGZpbGw9IiMzMzdhYjciIHAtaWQ9IjUwNjUiPjwvcGF0aD48cGF0aCBkPSJNODAzLjU4ODc4NDY5IDQzMC4zMTc3NTY5Mkw5OTIgNTQwLjk3MTk2Mjg2bC0xODguNDExMjE1MzEgMTEzLjY0NDg2IDAtMjI0LjI5OTA2NTk0eiIgZmlsbD0iIzMzN2FiNyIgcC1pZD0iNTA2NiI+PC9wYXRoPjwvc3ZnPg==",
+        "width": 1.3875473,
+        "xPos": 5.5861998,
+        "yPos": 2.8527236,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550550551602",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": " ",
+        "filterData": [
+          {
+            "alias": "事件ID",
+            "filterMode": false,
+            "key": "AuditID",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.5568182,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.6652174,
+        "xPos": -0.05,
+        "yPos": -0.056818217,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550550620347",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 5.215909,
+        "markdownStr": "<p  style=\"text-align: center\"> <input type=\"button\" value=\"查看详情\" onClick=\"var text = document.getElementById('show_ingress').innerText; var result = JSON.stringify(JSON.parse(text), null, 1);document.getElementById('out_ingress').innerText= result ;console.log(result);\"> </p>\n\n\n\n<pre id=\"out_ingress\"></pre>\n\n<p  style=\"text-align: left;\" hidden ><font size=\"4\" color=\"#3366ff\" id=\"show_ingress\" >${ingress}</font></p>\n\n\n",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.79,
+        "xPos": 0.37,
+        "yPos": 1.9431819,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT  \njson_format(json_extract(\"responseObject\", '$.spec.ingress')) as ingress ,\njson_format(json_extract(\"responseObject\", '$.spec.egress'))  as egress from  (SELECT max_by(responseObject, __time__) as responseObject, max_by(auditID, __time__) as auditID from log )",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550569616277",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 0.47111905,
+        "markdownStr": "<p  style=\"text-align: left;\" ><font size=\"4\" color=\"#3366ff\"  >${egress}</font></p>\n\n",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 1.4914563,
+        "xPos": 8.312034,
+        "yPos": 1.4104674,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT  \ncase when json_array_contains(json_extract(\"responseObject\", '$.spec.policyTypes'), 'Ingress') then  ( case when json_extract(\"responseObject\", '$.spec.ingress') is null then 'Deny all' when json_format(json_extract(\"responseObject\", '$.spec.ingress')) = '[{}]' then 'Allow all' else concat('策略数: ', cast (json_size(\"responseObject\", '$.spec.ingress')  as varchar)) end ) else 'Empty' end as ingress ,\ncase when json_array_contains(json_extract(\"responseObject\", '$.spec.policyTypes'), 'Egress') then  ( case when json_extract(\"responseObject\", '$.spec.egress') is null then 'Deny all' when json_format(json_extract(\"responseObject\", '$.spec.egress')) = '[{}]' then 'Allow all' else concat('策略数: ', cast (json_size(\"responseObject\", '$.spec.egress')  as varchar)) end ) else 'Empty' end  as egress from  (SELECT max_by(responseObject, __time__) as responseObject, max_by(auditID, __time__) as auditID from log )",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550569925367",
+      "type": "markdown"
+    },
+    {
+      "action": {
+        "Name": {
+          "type": "disabled"
+        },
+        "Namespace": {
+          "type": "disabled"
+        },
+        "事件ID": {
+          "dashboardFilter": "${事件ID}",
+          "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_network_policy_op_cn",
+          "dashboardToken": [],
+          "filterInherit": false,
+          "timeRange": -1,
+          "type": "NewDashboard"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "更新事件列表",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 4.3863635,
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "width": 5.2413044,
+        "xAxis": [
+          "responseObject"
+        ],
+        "xPos": -0.0065217186,
+        "yPos": 11.909091,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb : update or verb : put or verb : patch) NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager       | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.name\" as \"Name\", \"objectRef.namespace\" as \"Namespace\",  \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\"",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550575546435",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Name": {
+          "type": "disabled"
+        },
+        "Namespace": {
+          "type": "disabled"
+        },
+        "事件ID": {
+          "type": "disabled"
+        },
+        "操作时间": {
+          "type": "disabled"
+        },
+        "操作账号": {
+          "type": "disabled"
+        },
+        "源地址": {
+          "type": "disabled"
+        },
+        "状态码": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "删除事件列表",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 4.3863635,
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "width": 4.9,
+        "xAxis": [
+          "responseObject"
+        ],
+        "xPos": 5.14,
+        "yPos": 11.909091,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager       | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.name\" as \"Name\", \"objectRef.namespace\" as \"Namespace\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\"",
+        "start": "-604800s",
+        "tokenQuery": "objectRef.resource : \"networkpolicies\" and verb : delete NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager       | SELECT auditID as \"事件ID\", date_format(from_unixtime(__time__), '%Y-%m-%d %T' ) as \"操作时间\", \"objectRef.name\" as \"Name\", \"objectRef.namespace\" as \"Namespace\", \"responseStatus.code\" as \"状态码\",\n CASE WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1) ELSE 'kubernetes-admin' END  \n as \"操作账号\", \nCASE WHEN json_array_length(sourceIPs) = 1 then json_format(json_array_get(sourceIPs, 0)) ELSE  sourceIPs END\nas \"源地址\" order by \"操作时间\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550575555870",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggAxis": [
+          "操作"
+        ],
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "chartType": "line",
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "操作轨迹",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "height": 4.3863635,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          68,
+          "auto",
+          "auto"
+        ],
+        "numberType": "number",
+        "showBackgroud": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "width": 5.2413044,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": -0.012391749,
+        "yAxis": [
+          "v"
+        ],
+        "yPos": 7.590909,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb:create or verb:patch or verb:update or verb:delete) | select case when \"操作\" is null then '无' else \"操作\" end as \"操作\", \"时间\", v  from (  select  verb  as \"操作\", time_series(__time__, '1h', '%y-%m-%d %H', '0') as \"时间\", count(1) as v from log  group by  \"操作\", \"时间\" order by \"时间\" asc   limit 10000)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550575852018",
+      "type": "agg"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 5.2170105,
+        "markdownStr": "<p  style=\"text-align: center\"> <input type=\"button\" value=\"查看详情\" onClick=\"var text = document.getElementById('show_egress').innerText; var result = JSON.stringify(JSON.parse(text), null, 1);document.getElementById('out_egress').innerText= result ;console.log(result);\"> </p>\n\n\n\n<pre id=\"out_egress\"></pre>\n\n<p  style=\"text-align: left;\" hidden ><font size=\"4\" color=\"#3366ff\" id=\"show_egress\" >${egress}</font></p>\n\n\n",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.8191817,
+        "xPos": 6.9791703,
+        "yPos": 1.9528545,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "objectRef.resource : \"networkpolicies\" and (verb: create or verb:patch or verb:update or verb :delete)  | SELECT  \njson_format(json_extract(\"responseObject\", '$.spec.ingress')) as ingress ,\njson_format(json_extract(\"responseObject\", '$.spec.egress'))  as egress from  (SELECT max_by(responseObject, __time__) as responseObject, max_by(auditID, __time__) as auditID from log )",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550582593421",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": "状态码（可选）",
+            "key": "responseStatus.code",
+            "list": [
+              "404",
+              "403",
+              "200",
+              "201",
+              "202"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.5568182,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.085294,
+        "xPos": 7.719744,
+        "yPos": -0.056818184,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31550583815451",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "  ",
+        "filterData": [
+          {
+            "filterMode": true,
+            "key": "子账号ID（可选）",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.53409094,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.9161766,
+        "xPos": 2.510294,
+        "yPos": -0.03409091,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "* NOT  user.username: node NOT  user.username: serviceaccount NOT  user.username: apiserver NOT  user.username: kube-scheduler NOT  user.username: kube-controller-manager | select \"操作账号\" from (  select  CASE \n WHEN \"user.username\" != 'kubernetes-admin' then \"user.username\"\n WHEN \"user.username\" = 'kubernetes-admin' and regexp_like(\"annotations.authorization.k8s.io/reason\", 'RoleBinding') then regexp_extract(\"annotations.authorization.k8s.io/reason\", ' to User \"([^\"]+)\"', 1)\n ELSE 'kubernetes-admin' END  \n as \"操作账号\", count(1) as total  from log where regexp_like(\"user.username\", '^[\\w\\-_]+$') group by \"操作账号\"   HAVING \"操作账号\" != 'kubernetes-admin' order by total desc  limit 100)",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551504971360",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "过滤器",
+        "filterData": [
+          {
+            "alias": " Namespace（可选）",
+            "key": "objectRef.namespace",
+            "list": [],
+            "mode": false,
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "width": 2.5338235,
+        "xPos": 5.238236,
+        "yPos": -0.056818184,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "query": "verb : create or verb : patch or verb : update or verb : put or verb:delete | select DISTINCT ( case when \"objectRef.namespace\" is null then '__all__' else \"objectRef.namespace\" end )  as ns  HAVING ns != '__all__'  limit 10000",
+        "start": "-604800s",
+        "topic": ""
+      },
+      "title": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31551509566340",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "audit-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d_network_policy_op_cn",
+  "description": "",
+  "displayName": "Kubernetes网络策略审计"
+}

@@ -1,0 +1,313 @@
+{
+  "attribute": {
+    "type": "grid"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "K8s集群费用",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "pay",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "milli"
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnAlign"
+                ],
+                "value": "right"
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnMinWidth"
+                ],
+                "value": 20
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "region",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnMinWidth"
+                ],
+                "value": 30
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "k8s",
+            "newAdd": true,
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnMinWidth"
+                ],
+                "value": 120
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 19,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 15,
+        "xPos": 9,
+        "yPos": 0
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source: instance_bill\nand ecs |\nselect\n  region,\n  regexp_extract(tag, 'value:(\\w{32})', 1) as k8s,\n  round(sum(PretaxAmount), 0) as pay\nfrom(\n    select\n      region,\n      regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr,\n      PretaxAmount\n    FROM      log\n  ),\n  unnest(arr) as t(tag)\nwhere\n  tag like 'key:ack.aliyun.com%'\ngroup by\n  region,\n  k8s\norder by\n  pay desc\nlimit\n  1000",
+            "tokenQuery": "source: instance_bill\nand ecs |\nselect\n  region,\n  regexp_extract(tag, 'value:(\\w{32})', 1) as k8s,\n  round(sum(PretaxAmount), 0) as pay\nfrom(\n    select\n      region,\n      regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr,\n      PretaxAmount\n    FROM      log\n  ),\n  unnest(arr) as t(tag)\nwhere\n  tag like 'key:ack.aliyun.com%'\ngroup by\n  region,\n  k8s\norder by\n  pay desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "previousmonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561662093627041",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "付费类型统计",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "按量付费",
+            "newAdd": true,
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "KMB"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "decimals"
+                ],
+                "value": 0
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnAlign"
+                ],
+                "value": "right"
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "包年包月",
+            "newAdd": true,
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "KMB"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "decimals"
+                ],
+                "value": 0
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnAlign"
+                ],
+                "value": "right"
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "总计",
+            "newAdd": true,
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "KMB"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "decimals"
+                ],
+                "value": 0
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "columnAlign"
+                ],
+                "value": "right"
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 19,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 9,
+        "xPos": 0,
+        "yPos": 0
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(\n  source: instance_bill\n  and ecs\n) |\nselect\n  Region,\n  round(sum(PostPaid), 0) as \"按量付费\",\n  round(sum(PrePaid), 0) as \"包年包月\",\n  round(sum(PostPaid + PrePaid), 0) as \"总计\"\nFROM  (\n    select\n      Region,\n      if(ProductDetail = '云服务器ECS-按量付费', PaymentAmount, 0) as PostPaid,\n      if(\n        ProductDetail != '云服务器ECS-按量付费',\n        PaymentAmount,\n        0\n      ) as PrePaid\n    FROM      log\n  )\ngroup by\n  region\norder by\n  \"总计\" desc\nlimit\n  1000",
+            "tokenQuery": "(\n  source: instance_bill\n  and ecs\n) |\nselect\n  Region,\n  round(sum(PostPaid), 0) as \"按量付费\",\n  round(sum(PrePaid), 0) as \"包年包月\",\n  round(sum(PostPaid + PrePaid), 0) as \"总计\"\nFROM  (\n    select\n      Region,\n      if(ProductDetail = '云服务器ECS-按量付费', PaymentAmount, 0) as PostPaid,\n      if(\n        ProductDetail != '云服务器ECS-按量付费',\n        PaymentAmount,\n        0\n      ) as PrePaid\n    FROM      log\n  )\ngroup by\n  region\norder by\n  \"总计\" desc\nlimit\n  1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "previousmonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561662100098461",
+      "type": "tablepro"
+    }
+  ],
+  "dashboardName": "dashboard-1662093627042-299106",
+  "description": "",
+  "displayName": "ETL费用分析"
+}

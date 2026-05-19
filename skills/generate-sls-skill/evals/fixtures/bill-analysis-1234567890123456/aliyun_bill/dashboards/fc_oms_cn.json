@@ -1,0 +1,435 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "region": {},
+        "同比上月": {},
+        "用量": {},
+        "计费项": {},
+        "费用": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "计费项分析",
+        "height": 5.727272727272728,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "region": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "同比上月": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "计费项": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 9.97837837837838,
+        "xPos": -0.05,
+        "yPos": 13.44318181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:fc | SELECT\n         CASE\n                  WHEN rnk1 =1 THEN region\n                  ELSE ''\n         END AS region ,\n         billingitem                                                            AS \"计费项\",\n                  Concat(Cast( Round(usage,3) AS VARCHAR),' (' , usageunit,')') AS \"用量\",\n         \"费用\",\n                  Concat(Cast(Round(feepercent,3) AS VARCHAR) ,'%') AS \"同比上月\"\nFROM    (\n                  SELECT   *,\n                           Sum(\"费用\") OVER(partition BY region)                        AS regionfee,\n                           Rank() OVER(partition BY region ORDER BY \"费用\" DESC)        AS rnk1\n                  FROM     (\n                                  SELECT region,\n                                         billingitem,\n                                         usagediff[1]         as usage,\n                                         usagediff[3]*100-100 AS usagepercent,\n                                         usageunit,\n                                         feediff[1]         AS \"费用\",\n                                         feediff[3]*100-100 AS feepercent\n                                  FROM  (\n                                                  SELECT   region,\n                                                           billingitem,\n                                                           compare(usage,2592000)    AS usagediff,\n                                                           Arbitrary(usageunit)      AS usageunit,\n                                                           Compare(\"费用\",2592000) AS feediff\n                                                  from    (\n                                                                    SELECT   region ,\n                                                                             billingitem,\n                                                                             sum(usage)                 AS usage,\n                                                                             arbitrary(usageunit)       AS usageunit,\n                                                                             round(sum(pretaxamount),3) AS \"费用\"\n                                                                    FROM     log\n                                                                    GROUP BY region,\n                                                                             billingitem )\n                                                  GROUP BY region,\n                                                           billingitem ) ) )\nORDER BY regionfee DESC,\n         \"费用\" DESC limit 1000",
+        "start": "-2592000s",
+        "tokenQuery": "source: instance_bill and ProductCode:fc | SELECT\n         CASE\n                  WHEN rnk1 =1 THEN region\n                  ELSE ''\n         END AS region ,\n         billingitem                                                            AS \"计费项\",\n                  Concat(Cast( Round(usage,3) AS VARCHAR),' (' , usageunit,')') AS \"用量\",\n         \"费用\",\n                  Concat(Cast(Round(feepercent,3) AS VARCHAR) ,'%') AS \"同比上月\"\nFROM    (\n                  SELECT   *,\n                           Sum(\"费用\") OVER(partition BY region)                        AS regionfee,\n                           Rank() OVER(partition BY region ORDER BY \"费用\" DESC)        AS rnk1\n                  FROM     (\n                                  SELECT region,\n                                         billingitem,\n                                         usagediff[1]         as usage,\n                                         usagediff[3]*100-100 AS usagepercent,\n                                         usageunit,\n                                         feediff[1]         AS \"费用\",\n                                         feediff[3]*100-100 AS feepercent\n                                  FROM  (\n                                                  SELECT   region,\n                                                           billingitem,\n                                                           compare(usage,2592000)    AS usagediff,\n                                                           Arbitrary(usageunit)      AS usageunit,\n                                                           Compare(\"费用\",2592000) AS feediff\n                                                  from    (\n                                                                    SELECT   region ,\n                                                                             billingitem,\n                                                                             sum(usage)                 AS usage,\n                                                                             arbitrary(usageunit)       AS usageunit,\n                                                                             round(sum(pretaxamount),3) AS \"费用\"\n                                                                    FROM     log\n                                                                    GROUP BY region,\n                                                                             billingitem )\n                                                  GROUP BY region,\n                                                           billingitem ) ) )\nORDER BY regionfee DESC,\n         \"费用\" DESC limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444483",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "地域费用",
+        "fixedTime": false,
+        "formatType": "number",
+        "height": 2.613636363636364,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 10,
+        "xAxis": [
+          "Region"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "费用"
+        ],
+        "yPos": 10.60227272727272,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source: instance_bill and ProductCode:fc | select Region , round(sum(PretaxAmount),3) as \"费用\" group by Region  order by \"费用\" desc",
+        "start": "thismonth",
+        "tokenQuery": "source: instance_bill and ProductCode:oss | select Region , round(sum(PretaxGrossAmount),3) as \"费用\" group by Region  order by \"费用\" desc",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444487",
+      "type": "column"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "一周费用",
+        "fixedTime": false,
+        "formatType": "number",
+        "height": 3,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 10,
+        "xAxis": [
+          "日期"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "金额"
+        ],
+        "yPos": 2.329545454545455,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:fc | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444488",
+      "type": "column"
+    },
+    {
+      "action": {
+        "日期": {
+          "type": "disabled"
+        },
+        "金额": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "1周费用",
+        "fixedTime": false,
+        "height": 2.079545454545455,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "日期": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "金额": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 5.284090909090909,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:fc | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill  and  ProductCode:oss | select  date_format(__time__,'%Y-%m-%d') as \"日期\",  round(sum(PretaxAmount),3)  as \"金额\"  group by \"日期\" order by \"日期\"",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444489",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "axisNumb": 15,
+        "displayName": "6个月费用",
+        "fixedTime": false,
+        "formatType": "number",
+        "height": 3.034090909090909,
+        "inputMaxY": "",
+        "inputMinY": "",
+        "legendMaxWidth": 80,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "stacking": false,
+        "version": 2,
+        "whetherLabel": false,
+        "width": 10,
+        "xAxis": [
+          "时间"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "金额"
+        ],
+        "yPos": 7.329545454545454,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and ProductCode:fc | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:bill and ProductCode:ECS | select t as  \"时间\", \"金额\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%Y-%m') as t,  round(sum(PretaxAmount),3)  as \"金额\"  from log group by t order by t)) where t > mt",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444490",
+      "type": "column"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "昨日金额/环比增加",
+        "descriptionSize": 12,
+        "displayName": "昨日金额",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.4,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "percent"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": -0.05681818181818182,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and PretaxAmount> 0 and ProductCode:fc | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "yesterday",
+        "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444492",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本月金额/同比增加",
+        "descriptionSize": 12,
+        "displayName": "本月金额",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.4,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": 2.4870228302837,
+        "yAxis": [
+          "percent"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": -0.05681818181818182,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:fc| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "thismonth",
+        "tokenQuery": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-16542189653430501616393444493",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "fc_oms_cn",
+  "description": "",
+  "displayName": "FC账单分析"
+}
