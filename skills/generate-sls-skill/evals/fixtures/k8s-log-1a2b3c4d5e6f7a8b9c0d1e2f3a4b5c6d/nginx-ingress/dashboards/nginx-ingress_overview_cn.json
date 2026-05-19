@@ -1,0 +1,2180 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "displayName": "今日访问PV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.965909,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.057509503731343,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 9.170454636363637,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 300) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-1440m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550335",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "7天访问PV",
+        "height": 2.965909,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.057509503731343,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 4.967210996268657,
+        "yAxis": [
+          "近7天",
+          "前7天"
+        ],
+        "yAxisRight": [],
+        "yPos": 9.170454636363637,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"近7天\", d[2] as \"前7天\"  from( select t, ts_compare(pv, 604800 ) as d from(select from_unixtime(__time__ - __time__ % 600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550336",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "访问地域分布",
+        "height": 3.2954545,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.057509503731343,
+        "xAxis": [
+          "province"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 5.988636499999999,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_province(x_forward_for) as province, count(1) as total group by province limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_province(x_forward_for) as province, count(1) as total group by province limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550337",
+      "type": "map"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "访问地域分布",
+        "height": 3.2954545,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.057509503731343,
+        "xAxis": [
+          "country"
+        ],
+        "xPos": 4.967210996268657,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 5.988636499999999,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_country(x_forward_for) as country, count(1) as total group by country limit 1000",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_country(x_forward_for) as country, count(1) as total group by country limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550338",
+      "type": "world-map"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "TOP10访问省份",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.554565630597015,
+        "xAxis": [
+          "province"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "访问次数"
+        ],
+        "yPos": 14.988636,
+        "zIndex": 22
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_province(x_forward_for) as province, count(1) as \"访问次数\" group by province HAVING province <> '-1' order by \"访问次数\" desc  limit 10",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_province(x_forward_for) as province, count(1) as \"访问次数\" group by province HAVING province <> '-1' order by \"访问次数\" desc  limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550339",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "displayName": "TOP10访问城市",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.554565630597015,
+        "xAxis": [
+          "city"
+        ],
+        "xPos": 2.464267123134328,
+        "yAxis": [
+          "请求数"
+        ],
+        "yPos": 14.988636,
+        "zIndex": 23
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select ip_to_city(x_forward_for) as city, count(1) as \"请求数\" group by city HAVING  city <> '-1' order by \"请求数\" desc  limit 10",
+        "start": "-86400s",
+        "tokenQuery": "* | select ip_to_city(x_forward_for) as city, count(1) as \"请求数\" group by city HAVING  city <> '-1' order by \"请求数\" desc  limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550340",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "访问PV",
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.79,
+        "xAxis": [
+          "pv"
+        ],
+        "xPos": 6.26,
+        "yAxis": [],
+        "yPos": 0.54545456,
+        "zIndex": 24
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select count(1) as pv",
+        "start": "-60s",
+        "tokenQuery": "* | select count(1) as pv",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550341",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "访问成功率",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.8,
+        "xAxis": [
+          "count"
+        ],
+        "xPos": 6.26,
+        "yPos": 1.6136364,
+        "zIndex": 25
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select sum(case when status < 400 then 1 else 0 end) * 100.0 / count(1) as count",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550342",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "500错误比例",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "%",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.7788321,
+        "xAxis": [
+          "count"
+        ],
+        "xPos": 8.112116,
+        "yPos": 1.6193181,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 3) as count",
+        "start": "-60s",
+        "tokenQuery": "* | select round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 3) as count",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550343",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "平均延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.79,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.26,
+        "yPos": 3.7386363,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  round( avg(request_time) * 1000.0, 3 ) as total",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550344",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "P9999延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.78,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.1,
+        "yPos": 4.8295455,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  round( approx_percentile(request_time, 0.9999) * 1000.0, 3 ) as total",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550345",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "P99延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.79,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 6.26,
+        "yPos": 4.8295455,
+        "zIndex": 17
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  round( approx_percentile(request_time, 0.99) * 1000.0, 3 ) as total",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550346",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "P95延迟",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "ms",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.78,
+        "xAxis": [
+          "total"
+        ],
+        "xPos": 8.1,
+        "yPos": 3.7386363,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  round( approx_percentile(request_time, 0.95) * 1000.0, 3 ) as total",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550347",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "访问UV",
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.78,
+        "xAxis": [
+          "uv"
+        ],
+        "xPos": 8.1,
+        "yAxis": [],
+        "yPos": 0.54545456,
+        "zIndex": 21
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select  approx_distinct(x_forward_for) as uv",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550348",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Service",
+            "filterMode": true,
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "logic": "and",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.3608696,
+        "xPos": 2.4861395,
+        "yPos": -0.05681818181818182,
+        "zIndex": 26
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "nginx-ingress",
+        "query": "* | select  DISTINCT (case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end ) as service limit 100",
+        "start": "-300s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550353",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "URL",
+            "key": "url",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.4206522,
+        "xPos": 4.742482,
+        "yPos": -0.05681818181818182,
+        "zIndex": 27
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT url from ( select  (url_extract_path(url))  as url, count(1) as total from log  group by url  order by total desc   limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550354",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Status",
+            "key": "status",
+            "list": [
+              "200",
+              "404",
+              "500",
+              "502",
+              "401"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.8717391,
+        "xPos": 7.063377,
+        "yPos": -0.05681818181818182,
+        "zIndex": 28
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550355",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "Markdown文本",
+        "height": 0.90909094,
+        "markdownStr": "#### <a href=\"https://www.alibabacloud.com/help/zh/doc-detail/86532.htm\" target=\"_blank\">帮助文档</a>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.0836957,
+        "xPos": 8.961026,
+        "yPos": 0.1590909,
+        "zIndex": 29
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550356",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "移动端占比",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.554565630597015,
+        "xAxis": [
+          "type"
+        ],
+        "xPos": 4.978534246268657,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 14.988636,
+        "zIndex": 30
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select case when regexp_like(lower(http_user_agent), 'iphone|ipod|android|ios') then 'Mobile' else 'PC' end as type , count(1) as total group by  type",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550357",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "Android/IOS占比",
+        "height": 3.2954545,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ],
+        "pieType": "normal",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 2.554565630597015,
+        "xAxis": [
+          "type"
+        ],
+        "xPos": 7.492801369402985,
+        "yAxis": [
+          "total"
+        ],
+        "yPos": 14.988636,
+        "zIndex": 31
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select case when regexp_like(lower(http_user_agent), 'iphone|ipod|ios') then 'IOS' when http_user_agent like '%Android%' then 'Android' else 'other' end as type , count(1) as total group by  type HAVING type != 'other'",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550358",
+      "type": "pie"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547378512901",
+        "height": 1.4886364,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mzc4MTY3MTU3IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjEzNzMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDMwLjI5MzMzMyA2NjQuOTZMNDkwLjY2NjY2NyA3MjUuMzMzMzMzbDIxMy4zMzMzMzMtMjEzLjMzMzMzMy0yMTMuMzMzMzMzLTIxMy4zMzMzMzMtNjAuMzczMzM0IDYwLjM3MzMzM0w1NDAuNTg2NjY3IDQ2OS4zMzMzMzNIMTI4djg1LjMzMzMzNGg0MTIuNTg2NjY3bC0xMTAuMjkzMzM0IDExMC4yOTMzMzN6TTgxMC42NjY2NjcgMTI4SDIxMy4zMzMzMzNjLTQ3LjE0NjY2NyAwLTg1LjMzMzMzMyAzOC4xODY2NjctODUuMzMzMzMzIDg1LjMzMzMzM3YxNzAuNjY2NjY3aDg1LjMzMzMzM3YtMTcwLjY2NjY2N2g1OTcuMzMzMzM0djU5Ny4zMzMzMzRIMjEzLjMzMzMzM3YtMTcwLjY2NjY2N0gxMjh2MTcwLjY2NjY2N2MwIDQ3LjE0NjY2NyAzOC4xODY2NjcgODUuMzMzMzMzIDg1LjMzMzMzMyA4NS4zMzMzMzNoNTk3LjMzMzMzNGM0Ny4xNDY2NjcgMCA4NS4zMzMzMzMtMzguMTg2NjY3IDg1LjMzMzMzMy04NS4zMzMzMzNWMjEzLjMzMzMzM2MwLTQ3LjE0NjY2Ny0zOC4xODY2NjctODUuMzMzMzMzLTg1LjMzMzMzMy04NS4zMzMzMzN6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSIxMzc0Ij48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.83513516,
+        "xPos": 2.500801,
+        "yPos": 1.3068179,
+        "zIndex": 35
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550364",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547378524803",
+        "height": 1.4886364,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mjc4MzEyNjU1IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjQ1MDYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNzkxLjExMDk1OSA2ODUuMDU2ODAxYTIxOS4xNDQzMSAyMTkuMTQ0MzEgMCAxIDAtMjY4LjA4NjUzOSAwQTM2NS4yNDA1MTcgMzY1LjI0MDUxNyAwIDAgMCAyOTIuMTkyNDEzIDEwMjRoNzMuMDQ4MTA0YTI5Mi4xOTI0MTMgMjkyLjE5MjQxMyAwIDAgMSA1ODQuMzg0ODI2IDBoNzMuMDQ4MTAzYTM2NS4yNDA1MTcgMzY1LjI0MDUxNyAwIDAgMC0yMzEuNTYyNDg3LTMzOC45NDMxOTl6TTY1Ny40MzI5MyA2NTguNzU5NDgzYTE0Ni4wOTYyMDcgMTQ2LjA5NjIwNyAwIDEgMSAxNDYuMDk2MjA2LTE0Ni4wOTYyMDYgMTQ2LjA5NjIwNyAxNDYuMDk2MjA3IDAgMCAxLTE0Ni4wOTYyMDYgMTQ2LjA5NjIwNnpNMzkyLjI2ODMxNSAzOTEuNDAzNDI1YTI5Mi4xOTI0MTMgMjkyLjE5MjQxMyAwIDAgMSAzOC43MTU0OTUtNjEuMzYwNDA3bC0xOC4yNjIwMjYtMTAuMjI2NzM0YTE4Mi42MjAyNTggMTgyLjYyMDI1OCAwIDEgMC0yNDEuMDU4NzQxIDBBMjkyLjE5MjQxMyAyOTIuMTkyNDEzIDAgMCAwIDAgNTg1LjcxMTM4aDczLjA0ODEwM2EyMTkuMTQ0MzEgMjE5LjE0NDMxIDAgMCAxIDIxOS4xNDQzMS0yMTkuMTQ0MzEgMjE5LjE0NDMxIDIxOS4xNDQzMSAwIDAgMSAxMDAuMDc1OTAyIDI0LjgzNjM1NXpNMTgyLjYyMDI1OCAxODMuOTQ2ODEyQTEwOS41NzIxNTUgMTA5LjU3MjE1NSAwIDEgMSAyOTIuMTkyNDEzIDI5My41MTg5NjdhMTA5LjU3MjE1NSAxMDkuNTcyMTU1IDAgMCAxLTEwOS41NzIxNTUtMTA5LjU3MjE1NXoiIHAtaWQ9IjQ1MDciIGZpbGw9IiMxMjk2ZGIiPjwvcGF0aD48L3N2Zz4=",
+        "version": 2,
+        "width": 0.8135135,
+        "xPos": 0.6184481400000001,
+        "yPos": 1.2954549,
+        "zIndex": 36
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550365",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547378538055",
+        "height": 1.7272727,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mzc4MzQ2NTY0IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjkzOTUiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDQxLjYgMjIwLjhIMjY0Yy0yNCAwLTQzLjIgMTkuMi00My4yIDQzLjJ2MTc3LjZjMCAyNCAxOS4yIDQzLjIgNDMuMiA0My4yaDE3Ny42YzI0IDAgNDMuMi0xOS4yIDQzLjItNDMuMlYyNjIuNGMwLTIyLjQtMTkuMi00MS42LTQzLjItNDEuNnogbTMuMiAyMjAuOGMwIDEuNi0xLjYgMy4yLTMuMiAzLjJIMjY0Yy0xLjYgMC0zLjItMS42LTMuMi0zLjJWMjYyLjRjMC0xLjYgMS42LTMuMiAzLjItMy4yaDE3Ny42YzEuNiAwIDMuMiAxLjYgMy4yIDMuMnYxNzkuMnpNNzYxLjYgMjIwLjhINTg0Yy0yNCAwLTQzLjIgMTkuMi00My4yIDQzLjJ2MTc3LjZjMCAyNCAxOS4yIDQzLjIgNDMuMiA0My4yaDE3Ny42YzI0IDAgNDMuMi0xOS4yIDQzLjItNDMuMlYyNjIuNGMwLTIyLjQtMTkuMi00MS42LTQzLjItNDEuNnogbTMuMiAyMjAuOGMwIDEuNi0xLjYgMy4yLTMuMiAzLjJINTg0Yy0xLjYgMC0zLjItMS42LTMuMi0zLjJWMjYyLjRjMC0xLjYgMS42LTMuMiAzLjItMy4yaDE3Ny42YzEuNiAwIDMuMiAxLjYgMy4yIDMuMnYxNzkuMnpNNDQxLjYgNTQwLjhIMjY0Yy0yNCAwLTQzLjIgMTkuMi00My4yIDQzLjJ2MTc3LjZjMCAyNCAxOS4yIDQzLjIgNDMuMiA0My4yaDE3Ny42YzI0IDAgNDMuMi0xOS4yIDQzLjItNDMuMlY1ODIuNGMwLTIyLjQtMTkuMi00MS42LTQzLjItNDEuNnogbTMuMiAyMjAuOGMwIDEuNi0xLjYgMy4yLTMuMiAzLjJIMjY0Yy0xLjYgMC0zLjItMS42LTMuMi0zLjJWNTgyLjRjMC0xLjYgMS42LTMuMiAzLjItMy4yaDE3Ny42YzEuNiAwIDMuMiAxLjYgMy4yIDMuMnYxNzkuMnpNNjcyIDU0MC44Yy03MiAwLTEzMS4yIDU5LjItMTMxLjIgMTMxLjJzNTkuMiAxMzEuMiAxMzEuMiAxMzEuMiAxMzEuMi01OS4yIDEzMS4yLTEzMS4yLTU3LjYtMTMxLjItMTMxLjItMTMxLjJ6IG0wIDIyNGMtNTEuMiAwLTkyLjgtNDEuNi05Mi44LTkyLjhzNDEuNi05Mi44IDkyLjgtOTIuOCA5Mi44IDQxLjYgOTIuOCA5Mi44LTQxLjYgOTIuOC05Mi44IDkyLjh6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSI5Mzk2Ij48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.95405406,
+        "xPos": 4.313321,
+        "yPos": 1.1704545,
+        "zIndex": 37
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550366",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547378551955",
+        "height": 1.2613636,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mzc4MjcxMDQ2IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjY0ODAiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNMTAyMy45NjcgNTExLjU4NUMxMDIzLjk2NyAyMjkuMDQ1IDc5NC43NTMgMCA1MTIuMDA0IDAgMjI5LjI0NyAwIDAuMDMgMjI5LjA0MyAwLjAzIDUxMS41ODVjMCAyNjAuOTk4IDE5NS41ODUgNDc2LjMzIDQ0OC4yODQgNTA3LjY2MyAxNC4yNDYgMy4wMDIgMzEuNTk3IDQuNzUxIDUyLjI2MiA0Ljc1MSA1LjgwMSAwIDExLjM5Ny0wLjMwNSAxNi44LTAuODU5IDI4MC4yNzQtMi44NzggNTA2LjU5MS0yMzAuNzk3IDUwNi41OTEtNTExLjU1NXogbS03My4yMDUgNy4yMzljLTEuNDcyLTI1LjUyNS00Ljg0NS01MC41MTEtOS45OC03NC43OTMgMC40NTYtOC42NzIgMC41OC0xNi44ODYgMC4zNDgtMjQuNTIzIDYuMzQ4IDI5LjY5IDkuNjk3IDYwLjQ5MyA5LjY5NyA5Mi4wNzcgMC4wMDIgMi40MTgtMC4wMjYgNC44MjktMC4wNjUgNy4yMzl6IG0tODc3LjU5My03LjIzOWMwLTMxLjAwOCAzLjIyOS02MS4yNjIgOS4zNTQtOTAuNDUyIDE4Ljk1MSAyMC4yNjggNjMuNjE4IDE5Ljc5IDc0LjUxMS0xMC40OTMgMTkuNDkgMTEuNjE2IDQ1LjY4MyAxMy43MyA0NS42ODMgMzYuOTQ5IDAgNzYuNjI4IDIuNzI5IDE1OC43NzcgNzIuMzUzIDE2MC4wNDcgMS45NiAwLjAyNCAzOC44MjcgMTMuOTcgNTYuMzcyIDU5LjQ3NSA2LjA2OCAxNS43MjcgMzAuMDY0IDAgNTYuMzggMCAxMy4xMzcgMCAwIDIyLjEzMiAwIDY5Ljk5MSAwIDQ3LjY3NCAxMDIuNzgyIDEyMS4wOCAxMDIuNzgyIDEyMS4wOC0wLjQ3NiAzMS41NTcgMC44MiA1Ny4wNzQgMy40NDYgNzcuNDYtMjMuMi0wLjQyNi00Mi43NTMgMi42NDgtNTguMTE0IDcuODc3QzIyOS44MzMgOTA3LjUzIDczLjE3IDcyNy44NDYgNzMuMTcgNTExLjU4NXogbTU0Ni44NjggNDI1LjExMmMtMi4yNzUtMTEuMTM4LTEyLjIyOS0xNy4yMzgtMzAuMzg3LTEyLjQ2NCAxNC40ODgtNjEuNzAyIDIxLjUzMi05Ni4yNjYgNTEuNzgtMTIyLjUxIDQzLjc2My0zNy45MzYgNS4yMTItODAuMTIzLTI4LjA5Mi03NS4xNTItMjYuMjQ4IDMuOTY1LTkuNjYtMzIuNDk5LTMzLjA5LTM0LjUxNi0yMy40MjctMS45Ni01NC4wMjItNDguNTYtODcuNzQtNjQuNTk0LTE3Ljg3My04LjQ4OC0zNS40MzctMzEuMjM1LTYzLjAwMi0zMi4yNTUtMjQuNDMyLTAuOTQ3LTYwLjEzNyAyMC42NTktNjAuMTM3IDQuMDA1IDAtNTMuNjQ1LTUuNDMyLTkxLjkyNS02LjU0OS0xMDcuMjExLTAuOS0xMi4yODMtOC4wMjgtNC4xMzYgMjUtMy4zNDMgMTcuOTc1IDAuNDgyIDkuMTk1LTM2LjEwMyAyNi45ODYtMzcuNTMzIDE3LjQ3NC0xLjM4MiA1OS4xMTEgMTYuMzU4IDY5LjcyIDkuMjg3IDkuODU1LTYuNTg0IDcyLjQ0NSAxNjQuMjkgNzIuNDQ1IDI4LjI0NCAwLTE2LjE0My04LjM2LTQ0LjIwOCAwLTU5LjQ5NiAzMy4wNjMtNjAuNDEzIDY0LjAxNS0xMDkuNjUgNjEuMjM2LTExNi44NTEtMS41NzgtNC4wNTYtMzMuODI2LTcuNDA0LTU5LjYzIDEuMjU0LTguNzA4IDIuOTA4IDIuNzcgMTYuNTQ3LTkuNzM2IDE5LjQ2LTQ2Ljg2MyAxMC44MTgtODguMjY0LTEyLjYzNS03My43NjUtMzQuNjggMTQuODQ2LTIyLjU5NCA2OC42MzgtOS44NTcgNzMuMzU0LTU1LjE4IDIuNzE0LTI1Ljk2MiA0Ljk2MS01Ni4wMyA2LjQ2Ni03OC4zNzcgNjMuMDY5IDkuODYyIDU2LjEyNi04MS44NS0zNy42NS05MS42NjdDNzA2Ljk2MSA3NS4zMzggODY3LjcyNCAxOTcuODYgOTI2LjcxNyAzNjcuOWMtMi45ODQtMi43MjEtNi40NTUtNC4zNzYtMTAuNDY0LTQuNzgtMjguMzUyLTcwLjgyLTk3LjE3Mi0xOS41NjctNzMuODI2IDQyLjg5OC0xMjUuMDg1IDk2LjE1NC05My4wNjcgMTYzLjIxNS01MS45NyAyMDEuNjE5IDIxLjYyNSAyMC4xODYgNDIuMjQyIDUwLjU0NyA1NS42NjYgNzIuMzUtMTQuNjEgNDIuNjA1IDUzLjgzNSAyNS41NDUgODcuNTktNDYuNzU3LTQyLjkzNiAxNDguOTEzLTE2Mi43MTggMjY1LjI3OC0zMTMuNjc2IDMwMy40Njd6IiBwLWlkPSI2NDgxIiBmaWxsPSIjMTI5NmRiIj48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.5540541,
+        "xPos": 0.3836716,
+        "yPos": 4.0227275,
+        "zIndex": 38
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550367",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547378671909",
+        "height": 1.1136364,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mzc4NjA5NzEyIiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9Ijk3OTEiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNDc4LjYwODY5NiAwaDM1Ni4xNzM5MTNhNjYuNzgyNjA5IDY2Ljc4MjYwOSAwIDAgMSA2Ni43ODI2MDggNjYuNzgyNjA5djg5MC40MzQ3ODJhNjYuNzgyNjA5IDY2Ljc4MjYwOSAwIDAgMS02Ni43ODI2MDggNjYuNzgyNjA5SDQ3OC42MDg2OTZhNjYuNzgyNjA5IDY2Ljc4MjYwOSAwIDAgMS02Ni43ODI2MDktNjYuNzgyNjA5VjY2Ljc4MjYwOWE2Ni43ODI2MDkgNjYuNzgyNjA5IDAgMCAxIDY2Ljc4MjYwOS02Ni43ODI2MDl6IG0wIDIyLjI2MDg3YTQ0LjUyMTczOSA0NC41MjE3MzkgMCAwIDAtNDQuNTIxNzM5IDQ0LjUyMTczOXY4OTAuNDM0NzgyYTQ0LjUyMTczOSA0NC41MjE3MzkgMCAwIDAgNDQuNTIxNzM5IDQ0LjUyMTczOWgzNTYuMTczOTEzYTQ0LjUyMTczOSA0NC41MjE3MzkgMCAwIDAgNDQuNTIxNzM5LTQ0LjUyMTczOVY2Ni43ODI2MDlhNDQuNTIxNzM5IDQ0LjUyMTczOSAwIDAgMC00NC41MjE3MzktNDQuNTIxNzM5SDQ3OC42MDg2OTZ6IG0tNjYuNzgyNjA5IDExMS4zMDQzNDdIMTg5LjIxNzM5MWE0NC41MjE3MzkgNDQuNTIxNzM5IDAgMCAwLTQ0LjUyMTczOSA0NC41MjE3NHY3NzkuMTMwNDM0YTQ0LjUyMTczOSA0NC41MjE3MzkgMCAwIDAgNDQuNTIxNzM5IDQ0LjUyMTczOWgyMjIuNjA4Njk2VjE3OC4wODY5NTdIMjU2YTIyLjI2MDg3IDIyLjI2MDg3IDAgMCAxLTIyLjI2MDg3LTIyLjI2MDg3Yy0wLjA2Njc4My02Ljk4OTkxMy0yLjA0OC0xMi40NDM4MjYtNS45NDM2NTItMTYuMzE3MjE3QzIyMy45NDQzNDggMTM1LjYxMzIxNyAyMTguNDY4MTc0IDEzMy42MzIgMjExLjQ3ODI2MSAxMzMuNTY1MjE3aDIwMC4zNDc4MjZ6IG0xODkuMjE3MzkxLTExMS4zMDQzNDdhMTEuMTMwNDM1IDExLjEzMDQzNSAwIDEgMCAwIDIyLjI2MDg2OWg2Ni43ODI2MDlhMTEuMTMwNDM1IDExLjEzMDQzNSAwIDEgMCAwLTIyLjI2MDg2OUg4MTIuNTIxNzM5Yy02Ljk4OTkxMyAwLjA2Njc4My0xMi40NDM4MjYgMi4wNDgtMTYuMzE3MjE3IDUuOTQzNjUyLTMuODk1NjUyIDMuODczMzkxLTUuODc2ODcgOS4zMjczMDQtNS45NDM2NTIgMTYuMzE3MjE3YTIyLjI2MDg3IDIyLjI2MDg3IDAgMCAxLTIyLjI2MDg3IDIyLjI2MDg3SDU0NS4zOTEzMDRhMjIuMjYwODcgMjIuMjYwODcgMCAwIDEtMjIuMjYwODY5LTIyLjI2MDg3Yy0wLjA2Njc4My02Ljk4OTkxMy0yLjA0OC0xMi40NDM4MjYtNS45NDM2NTItMTYuMzE3MjE3LTMuODczMzkxLTMuODk1NjUyLTkuMzI3MzA0LTUuODc2ODctMTYuMzE3MjE4LTUuOTQzNjUyaDEwMC4xNzM5MTN6IG0xMTEuMzA0MzQ4IDBhMTEuMTMwNDM1IDExLjEzMDQzNSAwIDEgMCAwIDIyLjI2MDg2OSAxMS4xMzA0MzUgMTEuMTMwNDM1IDAgMCAwIDAtMjIuMjYwODY5ek0xODkuMjE3MzkxIDExMS4zMDQzNDhoMjQ0Ljg2OTU2NnY4OTAuNDM0NzgybDQ0LjUyMTczOSAyMi4yNjA4N0gxODkuMjE3MzkxYTY2Ljc4MjYwOSA2Ni43ODI2MDkgMCAwIDEtNjYuNzgyNjA4LTY2Ljc4MjYwOVYxNzguMDg2OTU3YTY2Ljc4MjYwOSA2Ni43ODI2MDkgMCAwIDEgNjYuNzgyNjA4LTY2Ljc4MjYwOXogbTEyMi40MzQ3ODMgMjIuMjYwODY5YTExLjEzMDQzNSAxMS4xMzA0MzUgMCAxIDAgMCAyMi4yNjA4N2g2Ni43ODI2MDlhMTEuMTMwNDM1IDExLjEzMDQzNSAwIDEgMCAwLTIyLjI2MDg3aC02Ni43ODI2MDl6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSI5NzkyIj48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.66756755,
+        "xPos": 2.2251651,
+        "yPos": 4.090909,
+        "zIndex": 39
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550368",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 0.79545456,
+        "markdownStr": "\n<center><font color=green>用户请求PV：<b>${pv}</b>，UV：<b>${uv}</b></font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.494834,
+        "xPos": 0.23405851,
+        "yPos": 0.7499993,
+        "zIndex": 40
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select count(1) as pv, approx_distinct(x_forward_for) as uv",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550369",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.125,
+        "markdownStr": "\n<center><font color=green>Ingress入流量：<b>${inflow}</b> MB，出流量：<b>${outflow}</b>MB，请求平均延迟：<b>${latency}</b>ms</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.4152174,
+        "xPos": 1.7780267,
+        "yPos": 0.6931819999999999,
+        "zIndex": 41
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select round( sum(request_length) / 1024.0/1024.0, 3) as inflow, round( sum(body_bytes_sent) / 1024.0/1024.0, 3) as outflow, round(1000* avg(request_time),2) as latency",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550370",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c7b729e7ea122425182133bc2c3eab8c31547380462120",
+        "height": 1.1931819,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTQ3Mzc4Mjk0MDY2IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjcyNDAiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj48L3N0eWxlPjwvZGVmcz48cGF0aCBkPSJNNTEyIDgzLjU3NzgxNmMtMjM3LjI4OTMxNyAwLTQyOS42NTAxOTYgMTkyLjM2MDg3OS00MjkuNjUwMTk2IDQyOS42NTAxOTZzMTkyLjM2MDg3OSA0MjkuNjUwMTk2IDQyOS42NTAxOTYgNDI5LjY1MDE5NlM5NDEuNjUwMTk2IDc1MC41MTczMjkgOTQxLjY1MDE5NiA1MTMuMjI4MDEyIDc0OS4yODkzMTcgODMuNTc3ODE2IDUxMiA4My41Nzc4MTZ6IG0zNC4wMTYzMzIgNjQ0LjQ2OTI5NEg0NzcuOTg0NjY4di02OC4wMzE2NjVoNjguMDMxNjY0djY4LjAzMTY2NXogbTAtODkuNDc2ODc0SDQ3Ny45ODQ2NjhsLTE3LjczNDE3My0zNDAuMTYwMzIyaDEwMy41MDEwMWwtMTcuNzM1MTczIDM0MC4xNjAzMjJ6IiBmaWxsPSIjMTI5NmRiIiBwLWlkPSI3MjQxIj48L3BhdGg+PC9zdmc+",
+        "version": 2,
+        "width": 0.57567567,
+        "xPos": 4.0911627,
+        "yPos": 4.011364,
+        "zIndex": 42
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550371",
+      "type": "svg"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 0.8522727499999999,
+        "markdownStr": "\n\n<center><font color=green>微服务数：<b>${service}个</b>，有效PV：<b>${pv}</b>，后端平均响应延迟：<b>${latency}</b>ms</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.217647,
+        "xPos": 3.7353792,
+        "yPos": 2.6704545,
+        "zIndex": 43
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select count(1) as pv, count(DISTINCT proxy_upstream_name) as service, round(avg(upstream_response_time) * 1000, 2) as latency from log where length(proxy_upstream_name) > 3",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550372",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.0909091,
+        "markdownStr": "\n<center><font color=green>来自<b>${total}</b>个国家和地区，请求数最多的国家是<b>${country}</b>（请求数：<b>${maxpv}</b>）</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.1489131,
+        "xPos": 0.11832249,
+        "yPos": 2.7954535,
+        "zIndex": 44
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select count(1) as total, max_by(country, total) as country, max(total) as maxpv from (select  ip_to_country(x_forward_for) as country, count(1) as total from log where length(proxy_upstream_name) > 3 group by country having country != '-1') ",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550373",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.1477273,
+        "markdownStr": "\n<center><font color=blue>移动端用户占比<b>${mobile}%</b>，其中IOS在移动端中占比<b>${ios}%</b></font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.4649636,
+        "xPos": 2.7296367,
+        "yPos": 4.159091,
+        "zIndex": 45
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select round(sum(case when regexp_like(lower(http_user_agent), 'iphone|ipod|android|ios') then 1 else 0 end) * 100.0 / count(1), 2) as mobile, round(sum(case when regexp_like(lower(http_user_agent), 'iphone|ipod|ios') then 1 else 0 end) * 100.0 / sum(case when regexp_like(lower(http_user_agent), 'iphone|ipod|android|ios') then 1 else 0 end), 2) as ios from log WHERE length(proxy_upstream_name) > 3",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550374",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.4431819,
+        "markdownStr": "\n<center><font color=gree>来自<b>${total}</b>个省份（全球），请求数Top3 <b>${p1}:${pv1}，${p2}:${pv2}，${p3}:${pv3}</b></font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.4868613,
+        "xPos": 0.84047085,
+        "yPos": 4.159091,
+        "zIndex": 46
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select total, CASE when cardinality(province) > 0 then province[1] else '' end as p1, CASE when cardinality(province) > 1 then province[2] else '' end as p2, CASE when cardinality(province) > 2 then province[3] else '' end as p3, CASE when cardinality(pv) > 0 then pv[1] else 0 end as pv1, CASE when cardinality(pv) > 1 then pv[2] else 0 end as pv2, CASE when cardinality(pv) > 2 then pv[3] else 0 end as pv3 from(select count(1) as total, max_by(province, total, 3) as province, max_by(total, total, 3) as pv from (select  ip_to_province(x_forward_for) as province, count(1) as total from log where length(proxy_upstream_name) > 3 group by province HAVING province != '-1' ) )",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550375",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown文本",
+        "height": 1.1590909,
+        "markdownStr": "\n<center><font color=red>404比例<b>${notfound}%</b>，5XX比例<b>${servererror}%</b></font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 0.9594595,
+        "xPos": 4.66041,
+        "yPos": 4.136363,
+        "zIndex": 47
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | select round(sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1), 2) as notfound, round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 2) as servererror ",
+        "start": "today",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550376",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "今日访问UV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.965909,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.066609003731343,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "今天",
+          "昨天",
+          "上周"
+        ],
+        "yAxisRight": [],
+        "yPos": 12.09090836363636,
+        "zIndex": 48
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(uv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 300) as t, approx_distinct(x_forward_for) as uv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-1440m",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550377",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "filter",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "host",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.54545456,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.5945652,
+        "xPos": 0.002265412600000003,
+        "yPos": -0.05681818181818182,
+        "zIndex": 49
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "* | SELECT host from ( select  host  as host, count(1) as total from log  group by host  order by total desc   limit 100 ) having host is not null ",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550378",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "7天访问UV",
+        "formatType": "number",
+        "formatTypeRight": "number",
+        "height": 2.965909,
+        "intervalArray": [
+          ""
+        ],
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.066609003731343,
+        "xAxis": [
+          "time"
+        ],
+        "xPos": 4.976310496268657,
+        "yAxis": [
+          "近7天",
+          "前7天"
+        ],
+        "yAxisRight": [],
+        "yPos": 12.09090836363636,
+        "zIndex": 50
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "nginx-ingress",
+        "query": "* |  select date_format(t, '%Y-%m-%d %H:%i') as time , d[1] as \"近7天\", d[2] as \"前7天\"  from( select t, ts_compare(uv, 604800 ) as d from(select from_unixtime(__time__ - __time__ % 600) as t, approx_distinct(x_forward_for) as uv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+        "start": "-168h",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550379",
+      "type": "line"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10访问UserAgent",
+        "formatType": "number",
+        "height": 4.2613635,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "version": 2,
+        "width": 2.553903955597015,
+        "xAxis": [
+          "UserAgent"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "PV"
+        ],
+        "yPos": 18.23863618181818,
+        "zIndex": 51
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  http_user_agent as UserAgent, count(1) as PV group by UserAgent order by PV desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550380",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10访问Host",
+        "formatType": "number",
+        "height": 4.2613635,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "version": 2,
+        "width": 2.553903955597015,
+        "xAxis": [
+          "Host"
+        ],
+        "xPos": 2.463605448134328,
+        "yAxis": [
+          "PV"
+        ],
+        "yPos": 18.23863618181818,
+        "zIndex": 52
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  host as Host, count(1) as PV group by Host order by PV desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550381",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10延迟(ms)Host",
+        "formatType": "milli",
+        "height": 4.2613635,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "version": 2,
+        "width": 2.553903955597015,
+        "xAxis": [
+          "Host"
+        ],
+        "xPos": 4.977210896268656,
+        "yAxis": [
+          "Latency"
+        ],
+        "yPos": 18.23863618181818,
+        "zIndex": 53
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  host as Host, avg(request_time) * 1000 as \"Latency\" group by Host order by Latency desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550382",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "displayName": "TOP10 5xx(%) Host",
+        "formatType": "number",
+        "height": 4.2613635,
+        "highlight": false,
+        "legendPosition": "right",
+        "margin": [
+          "auto",
+          100,
+          "auto",
+          "auto"
+        ],
+        "pageSize": 20,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "showZebra": false,
+        "transpose": false,
+        "version": 2,
+        "width": 2.553903955597015,
+        "xAxis": [
+          "Host"
+        ],
+        "xPos": 7.490816344402986,
+        "yAxis": [
+          "5xx比例"
+        ],
+        "yPos": 18.23863618181818,
+        "zIndex": 54
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  host as Host, sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1) as \"5xx比例\" group by Host order by \"5xx比例\" desc limit 10",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550383",
+      "type": "horizontalColumn"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "Markdown",
+        "height": 0.6818182,
+        "markdownStr": "<center><font color=grey>统计时间（今日累计）</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.8621621,
+        "xPos": 4.202993,
+        "yPos": 0.7368608000000001,
+        "zIndex": 57
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550384",
+      "type": "markdown"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(255,220,220,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 10,
+          "borderStyle": "solid",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 5.568182,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": true,
+        "text": "",
+        "version": 2,
+        "width": 3.9,
+        "xPos": 6.1247205,
+        "yPos": 0.4659091000000002,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620691533",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "connectPoints": [
+          {
+            "x": 328.593616,
+            "y": 180.4999768
+          },
+          {
+            "x": 436.3321,
+            "y": 178.9999948
+          }
+        ],
+        "connectStyle": "solid",
+        "connectType": "straight",
+        "displayName": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621585383",
+        "end": {
+          "chartDirc": "W",
+          "chartTitle": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550366",
+          "percent": 0.5,
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "isModify": false,
+        "lineColor": "rgba(74,144,226,1)",
+        "lineWidth": 6,
+        "showTitle": true,
+        "start": {
+          "chartDirc": "E",
+          "chartTitle": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550364",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 32
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621585383",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "connectPoints": [
+          {
+            "x": 138.196164,
+            "y": 179.5000328
+          },
+          {
+            "x": 255.0801,
+            "y": 180.4999768
+          }
+        ],
+        "connectStyle": "solid",
+        "connectType": "straight",
+        "displayName": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621609593",
+        "end": {
+          "chartDirc": "W",
+          "chartTitle": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550364",
+          "percent": 0.5,
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "height": 0,
+        "isModify": false,
+        "lineColor": "rgba(74,144,226,1)",
+        "lineWidth": 6,
+        "showTitle": true,
+        "start": {
+          "chartDirc": "E",
+          "chartTitle": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550365",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 33
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621609593",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(220,220,255,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 10,
+          "borderStyle": "solid",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 5.568182,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": true,
+        "text": "",
+        "version": 2,
+        "width": 6.07,
+        "xPos": -0.05,
+        "yPos": 0.4659091,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621834243",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicStyle": {
+          "backgroundColor": "rgba(255,255,255,1)",
+          "borderColor": "rgba(102,102,102,1)",
+          "borderRadius": 0,
+          "borderStyle": "dashed",
+          "borderWidth": 2,
+          "opacity": 1
+        },
+        "basicType": "rect",
+        "displayName": "rect",
+        "fontSize": 12,
+        "height": 1.8977273,
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "text": "",
+        "version": 2,
+        "width": 5.829927000000001,
+        "xPos": 0.11500105,
+        "yPos": 3.7613637,
+        "zIndex": 55
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570621835645",
+      "type": "basic_graphics"
+    },
+    {
+      "action": {},
+      "display": {
+        "connectPoints": [
+          {
+            "x": 291.8368580000001,
+            "y": 240.9999784
+          },
+          {
+            "x": 291.5129,
+            "y": 328
+          }
+        ],
+        "connectStyle": "dashed",
+        "connectType": "straight",
+        "displayName": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570622812998",
+        "end": {
+          "chartDirc": "E",
+          "type": "point",
+          "x": 291.5129,
+          "y": 328
+        },
+        "height": 0,
+        "isModify": false,
+        "lineColor": "rgba(13,174,228,1)",
+        "lineWidth": 6,
+        "showTitle": true,
+        "start": {
+          "chartDirc": "S",
+          "chartTitle": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570620550364",
+          "type": "chart",
+          "x": 0,
+          "y": 0
+        },
+        "version": 2,
+        "width": 0,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 34
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570622812998",
+      "type": "connect"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "499请求数",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.8,
+        "xAxis": [
+          "count"
+        ],
+        "xPos": 6.26,
+        "yPos": 2.6704545,
+        "zIndex": 59
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "status : 499 | select count(1) as count",
+        "start": "-60s",
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570625829403",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "504请求数",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 1.1022727,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "version": 2,
+        "width": 1.7788321,
+        "xAxis": [
+          "count"
+        ],
+        "xPos": 8.112116,
+        "yPos": 2.659091,
+        "zIndex": 61
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "status : 504 | select count(1) as count",
+        "start": "-60s",
+        "tokenQuery": "* | select round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 3) as count",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570625923995",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Service": {
+          "type": "disabled"
+        },
+        "URL(ARMS排查)": {
+          "link": "arms.console.aliyun.com/#/ingress/note?regionId=${sls_region}&startTime=${sls_start_time}&endTime=${sls_end_time}&urlName=${URL(ARMS排查)}&ingressServiceName=${Service}",
+          "protocol": "http",
+          "type": "NewLink"
+        },
+        "延迟(ms)": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "TOP10延迟URL",
+        "height": 4.2727275,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "Service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "URL(ARMS排查)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "延迟(ms)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 2.553453755597015,
+        "xPos": 2.463155248134329,
+        "yPos": 22.420454,
+        "zIndex": 56
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as Service, avg(request_time) * 1000.0 as \"延迟(ms)\" group by \"URL(ARMS排查)\", Service order by \"延迟(ms)\" desc limit 10",
+        "start": "-3600s",
+        "tokenQuery": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", proxy_upstream_name as Service, avg(request_time) * 1000.0 as \"延迟(ms)\" group by \"URL(ARMS排查)\", Service order by \"延迟(ms)\" desc limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570626312504",
+      "type": "table"
+    },
+    {
+      "action": {
+        "PV": {
+          "type": "disabled"
+        },
+        "Service": {
+          "type": "disabled"
+        },
+        "URL(ARMS排查)": {
+          "link": "arms.console.aliyun.com/#/ingress/note?regionId=${sls_region}&startTime=${sls_start_time}&endTime=${sls_end_time}&urlName=${URL(ARMS排查)}&ingressServiceName=${Service}",
+          "protocol": "http",
+          "type": "NewLink"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "TOP10访问URL",
+        "height": 4.2727275,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "PV": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "Service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "URL(ARMS排查)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 2.553453755597015,
+        "xPos": -0.05,
+        "yPos": 22.420454,
+        "zIndex": 58
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as \"Service\", count(1) as PV group by \"URL(ARMS排查)\", Service order by PV desc limit 10",
+        "start": "-3600s",
+        "tokenQuery": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", proxy_upstream_name as \"Service\", count(1) as PV group by \"URL(ARMS排查)\", Service order by PV desc limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570626312505",
+      "type": "table"
+    },
+    {
+      "action": {
+        "5xx比例(%)": {
+          "type": "disabled"
+        },
+        "PV总数": {
+          "type": "disabled"
+        },
+        "Service": {
+          "type": "disabled"
+        },
+        "URL(ARMS排查)": {
+          "link": "arms.console.aliyun.com/#/ingress/note?regionId=${sls_region}&startTime=${sls_start_time}&endTime=${sls_end_time}&urlName=${URL(ARMS排查)}&ingressServiceName=${Service}",
+          "protocol": "http",
+          "type": "NewLink"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "TOP10 5xx URL",
+        "height": 4.2727275,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "5xx比例(%)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "PV总数": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "Service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "URL(ARMS排查)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 2.553453755597015,
+        "xPos": 4.976310496268657,
+        "yPos": 22.420454,
+        "zIndex": 60
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as Service, round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 2) as \"5xx比例(%)\", count(1) as \"PV总数\" group by \"URL(ARMS排查)\", Service having \"5xx比例(%)\" > 0 order by \"PV总数\" desc limit 10",
+        "start": "-3600s",
+        "tokenQuery": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", proxy_upstream_name as Service, round(sum(case when status >= 500 then 1 else 0 end) * 100.0 / count(1), 2) as \"5xx比例(%)\", count(1) as \"PV总数\" group by \"URL(ARMS排查)\", Service having \"5xx比例(%)\" > 0 order by \"PV总数\" desc limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570626312506",
+      "type": "table"
+    },
+    {
+      "action": {
+        "404比例(%)": {
+          "type": "disabled"
+        },
+        "PV总数": {
+          "type": "disabled"
+        },
+        "Service": {
+          "type": "disabled"
+        },
+        "URL(ARMS排查)": {
+          "link": "arms.console.aliyun.com/#/ingress/note?regionId=${sls_region}&startTime=${sls_start_time}&endTime=${sls_end_time}&urlName=${URL}&ingressServiceName=${Service}",
+          "protocol": "http",
+          "type": "NewLink"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closedKeys": [],
+        "displayName": "TOP10 404 URL",
+        "height": 4.2727275,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": false,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "tableColumns": {
+          "404比例(%)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "PV总数": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "Service": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "URL(ARMS排查)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 2.553453755597015,
+        "xPos": 7.489465744402985,
+        "yPos": 22.420454,
+        "zIndex": 62
+      },
+      "search": {
+        "end": "now",
+        "logstore": "nginx-ingress",
+        "query": "url:* | select  url_extract_path(url) as \"URL(ARMS排查)\", case when length(proxy_alternative_upstream_name) > 0 then proxy_alternative_upstream_name else proxy_upstream_name end  as Service, round(sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1), 2) as \"404比例(%)\", count(1) as \"PV总数\" group by \"URL(ARMS排查)\", Service HAVING  \"404比例(%)\" > 0 order by \"PV总数\" desc limit 10",
+        "start": "-3600s",
+        "tokenQuery": "url:* | select  url_extract_path(url) as URL, proxy_upstream_name as Service, round(sum(case when status = 404 then 1 else 0 end) * 100.0 / count(1), 2) as \"404比例(%)\", count(1) as \"PV总数\" group by URL, Service HAVING  \"404比例(%)\" > 0 order by \"PV总数\" desc limit 10",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c073c9708a8bc400e86cd9b93a964c89d1570626312507",
+      "type": "table"
+    }
+  ],
+  "dashboardName": "nginx-ingress_overview_cn",
+  "description": "",
+  "displayName": "Ingress概览V1.2"
+}

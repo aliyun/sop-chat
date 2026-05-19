@@ -1,0 +1,1136 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Monthly Bill Details by Product",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071129591",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "Product_expense_percentage",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_last_month (discounted_expenses)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "background"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "colorSchame"
+                ],
+                "value": {
+                  "color": "#0070cc",
+                  "schema": "threshold"
+                }
+              },
+              {
+                "optionKeys": [
+                  "thresholdOption",
+                  "thresholds"
+                ],
+                "value": [
+                  {
+                    "color": "transparent",
+                    "rule": ">",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgb(232, 136, 147)",
+                    "rule": ">",
+                    "value": 10
+                  },
+                  {
+                    "color": "rgb(92, 183, 74)",
+                    "rule": "<",
+                    "value": -10
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_last_month (original_expenses)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "30-Day_expense_trend",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "line"
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 4.5795455,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 10.05,
+        "xPos": 0.0004555000000007592,
+        "yPos": -0.05681818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  productname as \"Product_name\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"Product_expense_percentage\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar) as \"Compared_with_last_month (discounted_expenses)\",\n  round(diffgross [1], 3) as \"Original_expenses\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar) as \"Compared_with_last_month (original_expenses)\",\n  (days) as \"30-Day_expense_trend\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(pretaxAmount) as days\n        from(\n            select\n              productname,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              productname,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  productname as \"Product_name\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"Product_expense_percentage\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar) as \"Compared_with_last_month (discounted_expenses)\",\n  round(diffgross [1], 3) as \"Original_expenses\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar) as \"Compared_with_last_month (original_expenses)\",\n  (days) as \"30-Day_expense_trend\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(pretaxAmount) as days\n        from(\n            select\n              productname,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              productname,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984677",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Billing Details (Current Month)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071129592",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "Percentage",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_last_month (discounted_expenses)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_last_month (original_expenses)",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Consumption_trend",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "line"
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 3.5227273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.7392755,
+        "yPos": 7.863506634181817,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*|\nselect\n  productname as \"Billing_method\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"Percentage\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar)as \"Compared_with_last_month (discounted_expenses)\",\n  round(diffgross [1], 3) as \"Original_expenses\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar)as \"Compared_with_last_month (original_expenses)\",\n  (days) as \"Consumption_trend\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(PretaxAmount) as days\n        from(\n            select\n              SubscriptionType as ProductName,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              SubscriptionType,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "*|\nselect\n  productname as \"Billing_method\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"Percentage\",\n    cast(round(diffreal [3] * 100 -100, 2) as varchar)as \"Compared_with_last_month (discounted_expenses)\",\n  round(diffgross [1], 3) as \"Original_expenses\",\n    cast(round(diffgross [3] * 100 -100, 2) as varchar)as \"Compared_with_last_month (original_expenses)\",\n  (days) as \"Consumption_trend\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 2592000) as diffreal,\n      compare(PretaxGrossAmount, 2592000) as diffgross,\n      arbitrary(days) as days\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount) as PretaxGrossAmount,\n          array_agg(PretaxAmount) as days\n        from(\n            select\n              SubscriptionType as ProductName,\n              sum(PretaxAmount) as PretaxAmount,\n              sum(PretaxGrossAmount) as PretaxGrossAmount,\n              date_trunc('day', __time__) as t\n            FROM              instance_bill\n            group by\n              SubscriptionType,\n              t\n            order by\n              t\n          )\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984678",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1671090954794-734396",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchFilter": "",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "name",
+                      "value": "Product_name"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Product_name",
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "Points in time when bill exceptions occur. Click the product name to view details.",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071129593",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 3.5227273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 4.7459626,
+        "xPos": 0.006119172599999985,
+        "yPos": 12.20580663418182,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select name as \"Product_name\", date_format(from_unixtime(r.t),'%Y-%m-%d %H:%i:%s') as \"Exception_time\",round(r.d,3) as \"Actual_expenses\", round(r.pred,3) as \"Expected_expenses\", round( r.pred-r.d,3) as \"Difference\" from(select res.name,filter(cast(zip(res.ts, res.probs,res.ds,res.preds) as array(row(t double, prob double, d double, pred double))), r -> r.prob >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, filter(array_distinct(array_agg(ProductCode) over()),x -> x is not null) as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from instance_bill group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(r) order by r.t desc",
+            "tokenQuery": "* | select name as \"Product_name\", date_format(from_unixtime(r.t),'%Y-%m-%d %H:%i:%s') as \"Exception_time\",round(r.d,3) as \"Actual_expenses\", round(r.pred,3) as \"Expected_expenses\", round( r.pred-r.d,3) as \"Difference\" from(select res.name,filter(cast(zip(res.ts, res.probs,res.ds,res.preds) as array(row(t double, prob double, d double, pred double))), r -> r.prob >=1) as anormly from ( select ts_anomaly_filter(cast(ProductCode as varchar), res[1], res[2], res[3], res[6], 100, 0) as res from ( select ProductCode, array_transpose(ts_predicate_arma(time, num, 5, 1, 1)) as res from ( select time, ProductCode, num from( select time,map_concat(m, map(diff,transform(diff, x -> 0)))all from( select time,m,array_except(all_keys,map_keys(m)) as diff from( select time, map_agg(ProductCode, num) as m , arbitrary(all_keys) as all_keys from( select time, ProductCode, num, filter(array_distinct(array_agg(ProductCode) over()),x -> x is not null) as all_keys from( select to_unixtime(time) as time , productcode,num from(select (time_series(__time__,'1d','%Y-%m-%d','0')) as time, ProductCode , sum(pretaxamount) as num from instance_bill group by time, ProductCode order by time ))) group by time))), unnest(all) as t(ProductCode,num)) group by ProductCode ) )), unnest(anormly) as t(r) order by r.t desc"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-80d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984679",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "Exception Details",
+        "fixedTime": false,
+        "height": 3.5227273,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 5.31,
+        "xPos": 4.74,
+        "yPos": 12.19318163418182,
+        "zIndex": 11
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "*| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from instance_bill where ProductCode='oss' group by time order by time)) limit 10000",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "tokenQuery": "ProductCode:${name}| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%b %e, %Y','0')) as time , sum(pretaxamount) as num from log group by time order by time)) limit 10000",
+        "tokenQueryMap": {
+          "0": "*| select ts_predicate_arma(time, num, 5, 1, 1) from ( select to_unixtime(time) as time, num from( select (time_series(__time__,'1d','%Y-%m-%d','0')) as time , sum(pretaxamount) as num from instance_bill where ProductCode='${{name|oss}}' group by time order by time)) limit 10000"
+        },
+        "tokens": [
+          {
+            "end": 15,
+            "key": "name",
+            "mode": "global",
+            "start": 12,
+            "value": "oss"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984680",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Yesterday's Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071129597",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "Product_expense_percentage",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_1_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              },
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "cellMode"
+                ],
+                "value": "background"
+              },
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "colorSchame"
+                ],
+                "value": {
+                  "color": "#0070cc",
+                  "schema": "threshold"
+                }
+              },
+              {
+                "optionKeys": [
+                  "thresholdOption",
+                  "thresholds"
+                ],
+                "value": [
+                  {
+                    "color": "transparent",
+                    "rule": ">",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgb(255, 147, 173)",
+                    "rule": ">",
+                    "value": 10
+                  },
+                  {
+                    "color": "rgb(92, 183, 74)",
+                    "rule": "<",
+                    "value": -10
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_2_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_3_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 6.806818000000001,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 4.7446446,
+        "xPos": 0.00870255199999999,
+        "yPos": 4.568278934181818,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  productname as \"Product_name\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"Product_expense_percentage\",\n    cast(\n      coalesce(round(diffreal [5] * 100 -100), 2) as varchar\n    )as \"Compared_with_1_day_ago\",\n    cast(\n      round(coalesce(diffreal [6] * 100 -100, 2)) as varchar\n    )as \"Compared_with_2_day_ago\",\n    cast(\n      round(coalesce(diffreal [7] * 100 -100), 2) as varchar\n    )as \"Compared_with_3_day_ago\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount)\n        FROM          instance_bill\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  productname as \"Product_name\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    )as \"Product_expense_percentage\",\n    cast(\n      coalesce(round(diffreal [5] * 100 -100), 2) as varchar\n    )as \"Compared_with_1_day_ago\",\n    cast(\n      round(coalesce(diffreal [6] * 100 -100, 2)) as varchar\n    )as \"Compared_with_2_day_ago\",\n    cast(\n      round(coalesce(diffreal [7] * 100 -100), 2) as varchar\n    )as \"Compared_with_3_day_ago\"\nfrom(\n    select\n      productname,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          productname,\n          sum(PretaxAmount) as PretaxAmount,\n          sum(PretaxGrossAmount)\n        FROM          instance_bill\n        group by\n          productname\n      )\n    group by\n      productname\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "daybeforeyesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984683",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Billing Details (Yesterday)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-12345678901234561671071129598",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "Percentage",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_1_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_2_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          },
+          {
+            "name": "Compared_with_3_day_ago",
+            "overrides": [
+              {
+                "optionKeys": [
+                  "standardOption",
+                  "format"
+                ],
+                "value": "percent"
+              },
+              {
+                "optionKeys": [
+                  "valueMappingOption"
+                ],
+                "value": [
+                  {
+                    "matchType": "value",
+                    "matchValue": "NaN",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  },
+                  {
+                    "matchType": "value",
+                    "matchValue": "null",
+                    "replaceText": "0%",
+                    "replaceType": "text"
+                  }
+                ]
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 3.2727273,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {}
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceIcon": "",
+            "replaceText": "0.0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 5.31118,
+        "xPos": 4.7393894,
+        "yPos": 4.568310634181818,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  item as \"Billing_method\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"Percentage\",\n    cast(round(diffreal [5] * 100 -100, 2) as varchar)as \"Compared_with_1_day_ago\",\n    cast(round(diffreal [6] * 100 -100, 2) as varchar) as \"Compared_with_2_day_ago\",\n    cast(round(diffreal [7] * 100 -100, 2) as varchar) as \"Compared_with_3_day_ago\"\nfrom(\n    select\n      item,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          item,\n          sum(PretaxAmount) as PretaxAmount\n        FROM          instance_bill\n        group by\n          item\n      )\n    group by\n      item\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  item as \"Billing_method\",\n  round(diffreal [1], 3) as \"Discounted_expenses\",\n    cast(\n      round(diffreal [1] / sum(diffreal [1]) over() * 100, 2) as varchar\n    ) as \"Percentage\",\n    cast(round(diffreal [5] * 100 -100, 2) as varchar)as \"Compared_with_1_day_ago\",\n    cast(round(diffreal [6] * 100 -100, 2) as varchar) as \"Compared_with_2_day_ago\",\n    cast(round(diffreal [7] * 100 -100, 2) as varchar) as \"Compared_with_3_day_ago\"\nfrom(\n    select\n      item,\n      compare(pretaxamount, 86400, 172800, 259200) as diffreal\n    from(\n        select\n          item,\n          sum(PretaxAmount) as PretaxAmount\n        FROM          instance_bill\n        group by\n          item\n      )\n    group by\n      item\n  )\norder by\n  diffreal [1] desc\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671090984684",
+      "type": "tablepro"
+    }
+  ],
+  "dashboardName": "dashboard-1671090954794-734396",
+  "description": "",
+  "displayName": "Bill Detail(v2)"
+}

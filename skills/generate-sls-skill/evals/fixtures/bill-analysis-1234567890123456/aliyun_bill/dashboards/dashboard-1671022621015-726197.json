@@ -1,0 +1,935 @@
+{
+  "attribute": {
+    "remark": "修改图表",
+    "type": "grid",
+    "update": 1698630000687,
+    "version": "76949258"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "产品筛选",
+        "filterData": [
+          {
+            "alias": "产品筛选",
+            "filterMode": true,
+            "key": "ProductCode",
+            "list": [],
+            "listAlias": [],
+            "showType": "select",
+            "type": "token"
+          }
+        ],
+        "height": 1,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "absolute",
+        "isInheritFilter": false,
+        "logstore": "aliyun_bill",
+        "query": "* |  select  ProductCode as pro   from(select DISTINCT  ProductCode   as ProductCode  from instance_bill)",
+        "start": "daybeforeyesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898233",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "昨日消费",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日消费  /  同比上月",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 10,
+            "descriptionFormat": "milli",
+            "showField": [
+              "_col0"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgb(85,85,85)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#333333",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 20,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 7,
+        "xPos": 0,
+        "yPos": 2,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*|  select round(diff[1],2),round(diff[2] ,2), round(diff[3]*100-100,2)  from(select compare(\"昨日消费\",2592000) as diff from(  select round(coalesce(sum(PretaxAmount),0),3) as \"昨日消费\" from instance_bill where productcode like '%%'))",
+            "tokenQuery": "*|  select round(diff[1],2),round(diff[2] ,2), round(diff[3]*100-100,2)  from(select compare(\"昨日消费\",2592000) as diff from(  select round(coalesce(sum(PretaxAmount),0),3) as \"昨日消费\" from instance_bill where productcode like '${{ProductCode|%%}}'))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898234",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "最大日消费",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "_col2",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "最高日消费 / 同比上月",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 10,
+            "descriptionFormat": "milli",
+            "showField": [
+              "_col0"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgb(85,85,85)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#FFFFFF",
+          "customValueColor": "#333333",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textFontSize": 20,
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 7,
+        "xPos": 7,
+        "yPos": 2,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*|  select  coalesce(cast( round(diff[1],2) as varchar),'无数据'),round(diff[2] ,2),round(diff[3]*100-100,2)  from( select compare(\"最大日消费\",2592000) as diff from( select round(max(this_month),2) as \"最大日消费\" from ( select  date_trunc('day',__time__) as day,  sum(  PretaxAmount ) as \"this_month\" from instance_bill where productcode like '%%' group by day)))",
+            "tokenQuery": "*|  select  coalesce(cast( round(diff[1],2) as varchar),'无数据'),round(diff[2] ,2),round(diff[3]*100-100,2)  from( select compare(\"最大日消费\",2592000) as diff from( select round(max(this_month),2) as \"最大日消费\" from ( select  date_trunc('day',__time__) as day,  sum(  PretaxAmount ) as \"this_month\" from instance_bill where productcode like '${{ProductCode|%%}}' group by day)))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898235",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "分布",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757590",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "bottom",
+          "show": false
+        },
+        "pieOption": {
+          "chartType": "DountChart",
+          "labelType": "type_percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "PretaxAmount",
+            "showFieldKey": "ProductName",
+            "xAxisConcatKeys": []
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": 14,
+        "yPos": 2,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select case when rnk > 6 or pretaxamount <=0  then '其他' else ProductName end as ProductName ,  sum(PretaxAmount)  as PretaxAmount from(select * ,row_number() over(order by pretaxamount desc )as rnk from( select ProductName, sum(PretaxAmount) as PretaxAmount  from instance_bill where productcode like '%%' group by ProductName) ) group by ProductName order by PretaxAmount desc limit 1000",
+            "tokenQuery": "* | select case when rnk > 6 or pretaxamount <=0  then '其他' else ProductName end as ProductName ,  sum(PretaxAmount)  as PretaxAmount from(select * ,row_number() over(order by pretaxamount desc )as rnk from( select ProductName, sum(PretaxAmount) as PretaxAmount  from instance_bill where productcode like '${{ProductCode|%%}}' group by ProductName) ) group by ProductName order by PretaxAmount desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898236",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "本月每日消费及趋势预测",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757595",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "linear",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "auto"
+        },
+        "height": 4,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKeys": [
+              "预测消费",
+              "实际消费"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 24,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 5,
+        "zIndex": 18
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |   select date_format(res.stamp,'%Y-%m-%d') as time ,res.real as \"实际消费\",case when is_nan(res.real) then res.pred else null end  as \"预测消费\",res.instances from(select sls_inner_ts_regression(cast(day as bigint), total, array['total'],86400,60) as res from ( select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total  from instance_bill where productcode like '%%' group by day  order by day)  ) where day < lastday )) limit 1000",
+            "tokenQuery": "* |   select date_format(res.stamp,'%Y-%m-%d') as time ,res.real as \"实际消费\",case when is_nan(res.real) then res.pred else null end  as \"预测消费\",res.instances from(select sls_inner_ts_regression(cast(day as bigint), total, array['total'],86400,60) as res from ( select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total  from instance_bill where productcode like '${{ProductCode|%%}}' group by day  order by day)  ) where day < lastday )) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898237",
+      "type": "linepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "一周消费",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "bill-analysis-12345678901234561678444898238",
+        "fieldOptions": [],
+        "height": 4,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 24,
+        "xPos": 0,
+        "yPos": 9,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(__time__,'%Y-%m-%d') as \"日期\", round(sum(pretaxamount),3)  as \"金额\"    from instance_bill where productcode like '%%' group by \"日期\" order by \"日期\"",
+            "tokenQuery": "* | select date_format(__time__,'%Y-%m-%d') as \"日期\", round(sum(pretaxamount),3)  as \"金额\"    from instance_bill where productcode like '${{ProductCode|%%}}' group by \"日期\" order by \"日期\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561678444898238",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "最近3个月每日账单和增长比例",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757596",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "linear",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "auto"
+        },
+        "height": 5,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "day",
+            "yAxisKeys": [
+              "日消费（元）"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 14,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |   select date_format(day,'%Y-%m-%d') as day, total as \"日消费（元）\" from( select date_trunc('day',__time__) as day , sum(PretaxAmount) as total from instance_bill where productcode like '%%' group by day order by day)",
+            "tokenQuery": "* |   select date_format(day,'%Y-%m-%d') as day, total as \"日消费（元）\" from( select date_trunc('day',__time__) as day , sum(PretaxAmount) as total from instance_bill where productcode like '${{ProductCode|%%}}' group by day order by day)"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-90d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898239",
+      "type": "linepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "各产品最近3个月费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-12345678901234561671022757583",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 5,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "ProductName",
+            "name": "A",
+            "xAxisKey": "day",
+            "yAxisKey": "total"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tooltipOption": {
+          "mode": "all",
+          "sortOrder": "none"
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "format": {
+            "value": "auto"
+          },
+          "show": true,
+          "zoomTarget": "global"
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 14,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select day, round(sum(total),3) as total, case when rnk <=5 then ProductName else '其他' end as ProductName from(select day,total,ProductName, rank() over(partition by day order by total desc) as rnk from(select date_format(day,'%Y-%m-%d') as day, total,ProductName from( select date_trunc('day',__time__) as day , sum(PretaxAmount) as total,ProductName from instance_bill where productcode like '%%' group by day,ProductName order by day)))  group by day, ProductName order by day  limit 10000",
+            "tokenQuery": "* | select day, round(sum(total),3) as total, case when rnk <=5 then ProductName else '其他' end as ProductName from(select day,total,ProductName, rank() over(partition by day order by total desc) as rnk from(select date_format(day,'%Y-%m-%d') as day, total,ProductName from( select date_trunc('day',__time__) as day , sum(PretaxAmount) as total,ProductName from instance_bill where productcode like '${{ProductCode|%%}}' group by day,ProductName order by day)))  group by day, ProductName order by day  limit 10000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898240",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "近三个月每月费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757594",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 5,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "productname",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "PretaxAmount"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 19,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select t, sum(PretaxAmount) as PretaxAmount, case when rnk <=5 then productname else '其他' end as productname from( select t, PretaxAmount, productname, rank() over(partition by t order by PretaxAmount desc) as rnk from(select date_format(t,'%Y-%m') as t , PretaxAmount, productname from( select date_trunc('month',__time__) as t, sum(PretaxAmount) as pretaxamount , productname from instance_bill where productcode like '%%' group by t, productname having t >= date_add('month', -2, date_trunc('month',now()))) order by t)) group by t, productname order by t limit 1000",
+            "tokenQuery": "* | select t, sum(PretaxAmount) as PretaxAmount, case when rnk <=5 then productname else '其他' end as productname from( select t, PretaxAmount, productname, rank() over(partition by t order by PretaxAmount desc) as rnk from(select date_format(t,'%Y-%m') as t , PretaxAmount, productname from( select date_trunc('month',__time__) as t, sum(PretaxAmount) as pretaxamount , productname from instance_bill where productcode like '${{ProductCode|%%}}' group by t, productname having t >= date_add('month', -2, date_trunc('month',now()))) order by t)) group by t, productname order by t limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898241",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "付费类型",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757586",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 5,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "付费类型",
+            "name": "A",
+            "xAxisKey": "day",
+            "yAxisKey": "total"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 19,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(day,'%Y-%m-%d') as day, total,case when Item ='PayAsYouGoBill' then '后付费' when item = 'SubscriptionOrder' then '预付费' when item = 'Refund' then '退款' when item = 'Adjustment' then  '调账' else item end as \"付费类型\" from( select date_trunc('month',__time__) as day , sum(PretaxAmount) as total,Item from instance_bill where productcode like '%%' group by day,Item order by day) limit 10000",
+            "tokenQuery": "* | select date_format(day,'%Y-%m-%d') as day, total,case when Item ='PayAsYouGoBill' then '后付费' when item = 'SubscriptionOrder' then '预付费' when item = 'Refund' then '退款' when item = 'Adjustment' then  '调账' else item end as \"付费类型\" from( select date_trunc('month',__time__) as day , sum(PretaxAmount) as total,Item from instance_bill where productcode like '${{ProductCode|%%}}' group by day,Item order by day) limit 10000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898242",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "日账单异常检测（蓝线为实际值，红线为预期值，圈点为异常点）",
+        "fixedTime": false,
+        "height": 5,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "width": 12,
+        "xPos": 0,
+        "yPos": 24,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "* |   select ts_predicate_arma(day, total, 5, 1, 1, 1, 'avg') from  (\n select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from instance_bill where productcode like '%%' group by day  order by day limit 1000)  ) where day < lastday \n)",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "token": [],
+        "tokenQuery": "* |   select ts_predicate_arma(day, total, 5, 1, 1, 1, 'avg') from  (\n select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(AmountPayable) as total     from log group by day  order by day limit 1000)  ) where day < lastday \n)",
+        "tokenQueryMap": {
+          "0": "* |   select ts_predicate_arma(day, total, 5, 1, 1, 1, 'avg') from  (\n select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from instance_bill where productcode like '${{ProductCode|%%}}' group by day  order by day limit 1000)  ) where day < lastday \n)"
+        },
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898243",
+      "type": "timeseries"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "未来三个月预测费用汇总",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671022757592",
+        "height": 5,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "预测费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 24,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(from_unixtime(time),'%Y-%m') as t, sum(predict) as \"预测费用\" from(select * from (select res.stamp as time, res.real as src, res.pred as predict  from  ( select sls_inner_ts_regression(cast(day as bigint), total, array['total'], cast(86400 as bigint), cast(90 as bigint)) as res from (select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from instance_bill where productcode like '%%' group by day  order by day )  ) where day < lastday)))   where  time >=to_unixtime(date_trunc('month',now()) )  and time < to_unixtime(date_add('month',3,date_trunc('month',now()) ))) group by t order by t   limit 100000",
+            "tokenQuery": "* | select date_format(from_unixtime(time),'%Y-%m') as t, sum(predict) as \"预测费用\" from(select * from (select res.stamp as time, res.real as src, res.pred as predict  from  ( select sls_inner_ts_regression(cast(day as bigint), total, array['total'], cast(86400 as bigint), cast(90 as bigint)) as res from (select * from ( select *, max(day) over() as lastday  from (select to_unixtime( date_trunc('day',__time__))  as day ,  sum(PretaxAmount) as total     from instance_bill where productcode like '${{ProductCode|%%}}' group by day  order by day )  ) where day < lastday)))   where  time >=to_unixtime(date_trunc('month',now()) )  and time < to_unixtime(date_add('month',3,date_trunc('month',now()) ))) group by t order by t   limit 100000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-100d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561678444898244",
+      "type": "barpro"
+    }
+  ],
+  "dashboardName": "dashboard-1671022621015-726197",
+  "description": "",
+  "displayName": "账单总览和预测"
+}

@@ -1,0 +1,1733 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "昨日金额",
+          "fixedTime": true,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 1.806818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "昨日金额/环比增加",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": "",
+            "descriptionFormat": "none",
+            "showField": [
+              "当天费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgb(85,85,85)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 1.702052451539339,
+        "xPos": -0.05,
+        "yPos": -0.05681818181818182,
+        "zIndex": 30
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill not abcd and PretaxAmount> 0 and sls | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+            "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and sls | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561655371517371",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "本月金额",
+          "fixedTime": true,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": true
+        },
+        "displayName": "",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 1.806818181818182,
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "本月金额/同比增加",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": "",
+            "descriptionFormat": "none",
+            "showField": [
+              "当天费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "rgb(85,85,85)",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "textAlignment": "center",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "mean",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 1.656442417331813,
+        "xPos": 1.609064994298746,
+        "yPos": -0.05681818181818182,
+        "zIndex": 31
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill  and  ProductCode:sls| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+            "tokenQuery": "source:bill  and  ProductCode:sls| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561655371620271",
+      "type": "statpro"
+    },
+    {
+      "action": {
+        "type": "disabled",
+        "用量": {}
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "最新存储空间",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "formatType": "file",
+        "height": 2.215909090909091,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "用量"
+        ],
+        "xPos": 3.222519954389966,
+        "yPos": -0.05681818181818182,
+        "zIndex": 32
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and  (BillingItem:\"存储空间\" or billingItem:storage)  |select round(max_by(usage,t),3) as \"用量\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log group by t )",
+        "start": "-2592000s",
+        "tokenQuery": "source:instance_bill and productcode:sls and BillingItem:\"存储空间\" |select concat(cast(round(sum(usage),3) as varchar),'GB') as \"用量\" from( select instanceid, max_by(Usage,__time__) as usage  from log group by instanceid )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561655372002481",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Logstore": {},
+        "Project": {},
+        "fee": {
+          "type": "disabled"
+        },
+        "id": {
+          "type": "disabled"
+        },
+        "instanceId": {},
+        "同比上月": {},
+        "存储空间(资源包抵扣)": {},
+        "存储空间累积": {},
+        "最新存储空间": {},
+        "索引流量": {},
+        "索引流量(资源包抵扣)": {},
+        "费用": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "Logstore Top费用",
+        "height": 5.840909090909091,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "Logstore": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "同比上月": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "存储空间(资源包抵扣)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "最新存储空间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "索引流量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "索引流量(资源包抵扣)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 5,
+        "xPos": 5.000000000000001,
+        "yPos": 37.11363636363637,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls |select Project as Logstore,concat(cast(round(diff1[1],3) as varchar),'(GB)') as \"索引流量\",concat(cast(round(diffindexPack[1],3) as varchar),'(GB)') as \"索引流量(资源包抵扣)\",concat(cast(round(diff2[1],3)as varchar) ,' (GB*day)') as \"最新存储空间\",concat(cast(round(diffStorPack[1],3)as varchar) ,' (GB*day)') as \"存储空间(资源包抵扣)\",round(diff3[1],3) as \"费用\",concat(cast(round(diff3[3]*100-100,3) as varchar),'%') as \"同比上月\" from(  select project, compare(indexUsage,2592000) as diff1, compare(storageusage,2592000) as diff2 ,compare(\"费用\",2592000) as diff3, compare(indexUsagePackge, 2592000) as diffindexPack, compare(storageUsagePackge, 2592000) as diffStorPack  from(select project, sum(\"费用\")  as \"费用\",sum(indexUsage) as indexUsage, sum(indexUsagePackge) as indexUsagePackge, max_by(storageUsage,__time__) as storageUsage, max_by(storageUsagePackge,__time__) as storageUsagePackge from( select  array_join(slice(split(InstanceId,';'),2,2),',')   as project ,  sum(PretaxAmount)  as \"费用\" ,sum(case when billingitem ='Index Size' or billingItem='索引流量' or billingItem='索引流量-时序索引' then Usage+DeductedByResourcePackage/1024./1024/1024  else 0 end) as indexUsage,sum(case when billingitem ='Index Size' or billingItem='索引流量' or billingItem='索引流量-时序索引' then  DeductedByResourcePackage/1024./1024/1024  else 0 end) as indexUsagePackge,sum(case when\n  billingitem ='Storage' or billingItem='存储空间' or billingItem='存储空间-时序存储' then Usage+ DeductedByResourcePackage/1024./1024/1024  else 0 end) as storageUsage,sum(case when\n billingitem ='Storage' or billingItem='存储空间' or billingItem='存储空间-时序存储' then  DeductedByResourcePackage/1024./1024/1024  else 0 end) as storageUsagePackge,__time__  from log group by project ,__time__  )group by project) group by project) order by  \"费用\" desc limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls | select  \"实例ID\" as id , sum(\"应付金额\") as fee group by id order by  fee desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286478",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "近7日费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.988636363636364,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 6.715909090909091,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:bill and productcode:sls | select date_format(__time__,'%Y-%m-%d')  as \"日期\",   round(sum(PretaxAmount),3) as \"费用\" group by \"日期\" order by \"日期\"   limit 1000",
+            "tokenQuery": "source:bill and productcode:sls | select date_format(__time__,'%Y-%m-%d')  as \"日期\",   round(sum(PretaxAmount),3) as \"费用\" group by \"日期\" order by \"日期\"   limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286479",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "日期": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "近7日费用",
+        "height": 1.784090909090909,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 9.670454545454543,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill and productcode:sls | select date_format(__time__,'%Y-%m-%d')  as \"日期\",   round(sum(PretaxAmount),3) as \"费用\" group by \"日期\" order by \"日期\"   limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls | select date_trunc('day',__time__)  as \"日期\",   sum(\"应付金额\") as \"费用\" group by \"日期\" order by \"日期\"   limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286480",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Project": {},
+        "_col1": {},
+        "_col2": {},
+        "_col3": {},
+        "_col4": {},
+        "diff2": {},
+        "indexUsage": {},
+        "project": {
+          "type": "disabled"
+        },
+        "storageUsage": {},
+        "同比上月": {},
+        "存储空间(资源包抵扣)": {},
+        "存储空间累积": {},
+        "最新存储空间": {},
+        "用量": {},
+        "索引流量": {},
+        "索引流量(资源包抵扣)": {},
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "Top Project",
+        "height": 5.852272727272728,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "Project": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "同比上月": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "存储空间(资源包抵扣)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "最新存储空间": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "索引流量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "索引流量(资源包抵扣)": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": false,
+        "version": 2,
+        "width": 5,
+        "xPos": 0.002732858598602661,
+        "yPos": 37.11363636363637,
+        "zIndex": 13
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls |select Project,concat(cast(round(diff1[1],3) as varchar),'(GB)') as \"索引流量\",concat(cast(round(diffindexPack[1],3) as varchar),'(GB)') as \"索引流量(资源包抵扣)\",concat(cast(round(diff2[1],3)as varchar) ,' (GB*day)') as \"最新存储空间\",concat(cast(round(diffStorPack[1],3)as varchar) ,' (GB*day)') as \"存储空间(资源包抵扣)\",round(diff3[1],3) as \"费用\",concat(cast(round(diff3[3]*100-100,3) as varchar),'%') as \"同比上月\" from(  select project, compare(indexUsage,2592000) as diff1, compare(storageusage,2592000) as diff2 ,compare(\"费用\",2592000) as diff3, compare(indexUsagePackge, 2592000) as diffindexPack, compare(storageUsagePackge, 2592000) as diffStorPack  from(select project, sum(\"费用\")  as \"费用\",sum(indexUsage) as indexUsage, sum(indexUsagePackge) as indexUsagePackge, max_by(storageUsage,__time__) as storageUsage, max_by(storageUsagePackge,__time__) as storageUsagePackge from( select  split_part(InstanceId,';',2)  as project ,  sum(PretaxAmount)  as \"费用\" ,sum(case when billingitem ='Index Size' or billingItem='索引流量' or billingItem='索引流量-时序索引' then Usage+DeductedByResourcePackage/1024./1024/1024 else 0 end) as indexUsage,sum(case when billingitem ='Index Size' or billingItem='索引流量' or billingItem='索引流量-时序索引' then  DeductedByResourcePackage/1024./1024/1024 else 0 end) as indexUsagePackge,sum(case when\n billingitem ='Storage' or billingItem='存储空间' or billingItem='存储空间-时序存储' then Usage+ DeductedByResourcePackage/1024./1024/1024 else 0 end) as storageUsage,sum(case when\n billingitem ='Storage' or billingItem='存储空间' or billingItem='存储空间-时序存储' then  DeductedByResourcePackage/1024./1024/1024 else 0 end) as storageUsagePackge,__time__  from log group by project ,__time__  )group by project) group by project) order by  \"费用\" desc limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls | select  split_part(\"实例ID\",';',2)  as project ,  round(sum(\"应付金额\"),3)  as \"费用\" group by project order by  \"费用\" desc limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286481",
+      "type": "table"
+    },
+    {
+      "action": {
+        "用量": {
+          "type": "disabled"
+        },
+        "计费项": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "计费项用量和单位(资源包抵扣后)",
+        "height": 2.034090909090909,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 11.43181818181818,
+        "zIndex": 14
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls | select  \"计费项\"  , concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select  BillingItem   \"计费项\"  , arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  \"计费项\"  order by  \"费用\" desc limit 1000)",
+        "start": "-2592000s",
+        "tokenQuery": "产品Code:  sls | select  \"计费项\"  , concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select  \"计费项\"  , arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  \"计费项\"  order by  \"费用\" desc limit 1000)",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286482",
+      "type": "table"
+    },
+    {
+      "action": {
+        "t": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        },
+        "资源包抵扣": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一周存储用量",
+        "height": 2.5,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "t": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源包抵扣": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 15.78409090909091,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and  (BillingItem:\"存储空间\" or billingItem:storage) | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\",concat(cast(\"资源包抵扣\" as varchar),\"用量单位\") as \"资源包抵扣\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"用量\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"资源包抵扣\", round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls and 计费项:存储空间 | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  t   order by  \"费用\" desc )limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286483",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周存储费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.465909090909091,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 13.42045454545454,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:instance_bill and productcode:sls and  (BillingItem:\"存储空间\" or billingItem:storage)  | select   t,   \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "source:instance_bill and productcode:sls and  (BillingItem:\"存储空间\" or billingItem:storage)  | select   t,   \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286484",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周活跃shard租用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.75,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 32.28409090909092,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:instance_bill and productcode:sls and (BillingItem:\"活跃shard租用\" or billingitem:\"Shard Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "source:instance_bill and productcode:sls and (BillingItem:\"活跃shard租用\" or billingitem:\"Shard Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286485",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "t": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        }
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一周活跃shard租用",
+        "height": 2.113636363636364,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "t": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 35.01136363636362,
+        "zIndex": 18
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and (BillingItem:\"活跃shard租用\" or billingitem:\"Shard Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls and 计费项:活跃Shard租用 | select   t,  \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  t   order by  \"费用\" desc )limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286486",
+      "type": "table"
+    },
+    {
+      "action": {
+        "t": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        },
+        "资源包抵扣": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一周读写次数",
+        "height": 2.5,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "t": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源包抵扣": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 29.86363636363636,
+        "zIndex": 19
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and  ( BillingItem:\"读写次数\" or BillingItem:\"Read Write Count\") |source:instance_bill and productcode:sls and BillingItem:\"读写流量\" | select t, concat(cast(\"用量\" as varchar),'百万次') as \"用量\",concat(cast(\"资源包抵扣\" as varchar),\"用量单位\") as \"资源包抵扣\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t, arbitrary(UsageUnit)\"用量单位\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"用量\", round(sum(DeductedByResourcePackage/1000/1000),3) as \"资源包抵扣\", round(sum(PretaxAmount),3) as \"费用\" from log group by t order by t )limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls and 计费项:读写次数 | select   t,  \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  t   order by  \"费用\" desc )limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286487",
+      "type": "table"
+    },
+    {
+      "action": {
+        "t": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        },
+        "资源包抵扣": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一周读写流量",
+        "height": 2.5,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "t": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源包抵扣": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 25.26136363636364,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and  (BillingItem:\"读写流量\" or BillingItem:\"Read Write Flow\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\",concat(cast(\"资源包抵扣\" as varchar),\"用量单位\") as \"资源包抵扣\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"用量\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"资源包抵扣\", round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls and 计费项:读写流量 | select   t,   concat(cast(\"用量\" as varchar),\"用量单位\") as  \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  t   order by  t desc )limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286488",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周读写费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.409090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 22.875,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:instance_bill and productcode:sls and  (BillingItem:\"读写流量\" or BillingItem:\"Read Write Flow\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "source:instance_bill and productcode:sls and  (BillingItem:\"读写流量\" or BillingItem:\"Read Write Flow\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286489",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "t": {
+          "type": "disabled"
+        },
+        "用量": {
+          "type": "disabled"
+        },
+        "费用": {
+          "type": "disabled"
+        },
+        "资源包抵扣": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "displayName": "一周索引流量",
+        "height": 2.5,
+        "highlight": false,
+        "indexScreening": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "sparkline": false,
+        "tableColumns": {
+          "t": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "用量": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "费用": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          },
+          "资源包抵扣": {
+            "closeSearch": false,
+            "closeSort": false,
+            "highlight": false,
+            "highlightRules": [],
+            "sparkline": {
+              "type": "line",
+              "visible": false
+            }
+          }
+        },
+        "transpose": true,
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 20.43181818181818,
+        "zIndex": 12
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and (BillingItem:\"索引流量\" or billingItem:\"Index Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\",concat(cast(\"资源包抵扣\" as varchar),\"用量单位\") as \"资源包抵扣\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage+DeductedByResourcePackage/1024/1024/1024),3) as \"用量\",  round(sum(DeductedByResourcePackage/1024/1024/1024),3) as \"资源包抵扣\", round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "tokenQuery": "产品Code:  sls and 计费项:索引流量 | select   t,  \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(\"用量单位\")\"用量单位\",round(sum(\"用量\"),3) as \"用量\",  round(sum(\"应付金额\"),3) as \"费用\" from log  group by  t   order by  \"费用\" desc )limit 1000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286490",
+      "type": "table"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周索引费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.329545454545455,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 18.22727203369141,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:instance_bill and productcode:sls and (BillingItem:\"索引流量\" or billingItem:\"Index Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "source:instance_bill and productcode:sls and (BillingItem:\"索引流量\" or billingItem:\"Index Size\")  | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286491",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "一周读写次数费用",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "height": 2.204545454545455,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "费用"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 27.70454545454546,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "source:instance_bill and productcode:sls and  ( BillingItem:\"读写次数\" or BillingItem:\"Read Write Count\") | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000",
+            "tokenQuery": "source:instance_bill and productcode:sls and  ( BillingItem:\"读写次数\" or BillingItem:\"Read Write Count\") | select   t,  concat(cast(\"用量\" as varchar),\"用量单位\") as \"用量\" , \"费用\" from(select date_format(__time__,'%Y-%m-%d') as t,   arbitrary(UsageUnit)\"用量单位\",round(sum(Usage),3) as \"用量\",  round(sum(PretaxAmount),3) as \"费用\" from log  group by  t   order by  t    )limit 1000"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-8d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580803286492",
+      "type": "barpro"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "昨日金额/环比增加",
+        "descriptionSize": 12,
+        "displayName": "昨日金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.215909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": 4.443181818181818,
+        "zIndex": 15
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "source:bill not abcd and PretaxAmount> 0 and sls | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "yesterday",
+        "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580804561438",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "本月金额/同比增加",
+        "descriptionSize": 12,
+        "displayName": "本月金额",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 2.215909090909091,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "当天费用"
+        ],
+        "xPos": 1.995341713472923,
+        "yAxis": [
+          "percent"
+        ],
+        "yPos": 4.443181818181818,
+        "zIndex": 16
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:bill  and  ProductCode:sls| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "start": "thismonth",
+        "tokenQuery": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"当天费用\",di[2] as \"前日费用\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580804561439",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled",
+        "用量": {}
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "最新存储空间",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "formatType": "file",
+        "height": 2.215909090909091,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "用量"
+        ],
+        "xPos": 3.990683426945846,
+        "yPos": 4.443181818181818,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and  (BillingItem:\"存储空间\" or billingItem:storage)  |select round(max_by(usage,t),3) as \"用量\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log group by t )",
+        "start": "-2592000s",
+        "tokenQuery": "source:instance_bill and productcode:sls and BillingItem:\"存储空间\" |select concat(cast(round(sum(usage),3) as varchar),'GB') as \"用量\" from( select instanceid, max_by(Usage,__time__) as usage  from log group by instanceid )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580805513608",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "索引流量",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "formatType": "file",
+        "height": 2.215909090909091,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "用量"
+        ],
+        "xPos": 5.986025140418768,
+        "yPos": 4.443181818181818,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and (BillingItem:\"索引流量\" or billingItem:\"Index Size\") |select round(max_by(usage,t),3) as \"用量\" from( select sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t from log group by t )",
+        "start": "-2592000s",
+        "tokenQuery": "source:instance_bill and productcode:sls and BillingItem:\"索引流量\" |select concat(cast(round(max_by(usage,t),3) as varchar),'GB') as \"用量\" from( select instanceid, sum(Usage) as usage ,date_trunc('day',__time__) as t  from log group by instanceid,t )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580806108975",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "读写流量",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "formatType": "file",
+        "height": 2.215909090909091,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.02,
+        "xAxis": [
+          "用量"
+        ],
+        "xPos": 7.981366853891692,
+        "yPos": 4.443181818181818,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "source:instance_bill and productcode:sls and (BillingItem:\"读写流量\" or BillingItem:\"Read Write Flow\") |select round(max_by(usage,t),3) as \"用量\" from( select  sum(Usage*1024*1024*1024+DeductedByResourcePackage) as usage ,date_trunc('day',__time__) as t  from log group by t )",
+        "start": "-2592000s",
+        "tokenQuery": "source:instance_bill and productcode:sls and BillingItem:\"读写流量\" |select concat(cast(round(max_by(usage,t),3) as varchar),'GB') as \"用量\" from( select instanceid, sum(Usage) as usage ,date_trunc('day',__time__) as t  from log group by instanceid,t )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-sls-test-chengdu1580806256847",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "sls_analysis_cn",
+  "description": "",
+  "displayName": "SLS 账单分析(old)"
+}

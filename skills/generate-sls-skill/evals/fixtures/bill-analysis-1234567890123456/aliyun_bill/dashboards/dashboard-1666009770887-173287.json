@@ -1,0 +1,1437 @@
+{
+  "attribute": {
+    "remark": "修改图表",
+    "type": "grid",
+    "update": 1735284867709,
+    "version": "17127995"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Project",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": false,
+          "showTitle": false
+        },
+        "bindQuery": true,
+        "displayName": "bill-analysis-12345678901234561712837225944",
+        "dropListOption": {
+          "alias": "",
+          "key": "Project",
+          "list": [],
+          "listAlias": [],
+          "multipleToken": false,
+          "multipleTokenKey": "",
+          "showType": "select",
+          "tokenDefault": [],
+          "type": "token"
+        },
+        "height": 1,
+        "showDropListChart": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 15
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "",
+            "tokenQuery": "* | select DISTINCT split_part(InstanceID, ';', 2) from instance_bill where (ProductCode = 'sls' or ProductCode = 'slsingest') and split_part(InstanceID, ';', 2) is not null and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}' limit 10000"
+          }
+        ],
+        "dataSourceType": "mixed",
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "timeSpanType": "",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225944",
+      "type": "droplistpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Logstore",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": false,
+          "showTitle": false
+        },
+        "bindQuery": true,
+        "displayName": "bill-analysis-12345678901234561712837225945",
+        "dropListOption": {
+          "alias": "",
+          "key": "Logstore",
+          "list": [],
+          "listAlias": [],
+          "multipleToken": false,
+          "multipleTokenKey": "",
+          "showType": "select",
+          "tokenDefault": [],
+          "type": "token"
+        },
+        "height": 1,
+        "showDropListChart": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 0,
+        "zIndex": 16
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "",
+            "tokenQuery": "* | select DISTINCT split_part(InstanceID, ';', 3) from instance_bill where  (ProductCode = 'sls' or ProductCode = 'slsingest') and split_part(InstanceID, ';', 3) is not null and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and OwnerId like '${{OwnerId|%%}}' limit 10000"
+          }
+        ],
+        "dataSourceType": "mixed",
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "timeSpanType": "",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225945",
+      "type": "droplistpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Region",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": false,
+          "showTitle": false
+        },
+        "bindQuery": true,
+        "displayName": "bill-analysis-12345678901234561712837207937",
+        "dropListOption": {
+          "alias": "",
+          "key": "Region",
+          "list": [],
+          "listAlias": [],
+          "multipleToken": false,
+          "multipleTokenKey": "",
+          "showType": "select",
+          "tokenDefault": [],
+          "type": "token"
+        },
+        "height": 1,
+        "showDropListChart": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 0,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "",
+            "tokenQuery": "* | select DISTINCT split_part(InstanceID, ';', 4) from instance_bill where  (ProductCode = 'sls' or ProductCode = 'slsingest') and split_part(InstanceID, ';', 4) is not null and OwnerId like '${{OwnerId|%%}}'"
+          }
+        ],
+        "dataSourceType": "mixed",
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "timeSpanType": "",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225946",
+      "type": "droplistpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "OwnerId",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": false,
+          "showTitle": false
+        },
+        "bindQuery": true,
+        "displayName": "bill-analysis-12345678901234561712837225947",
+        "dropListOption": {
+          "alias": "",
+          "key": "OwnerId",
+          "list": [],
+          "listAlias": [],
+          "multipleToken": false,
+          "multipleTokenKey": "",
+          "showType": "select",
+          "tokenDefault": [],
+          "type": "token"
+        },
+        "height": 1,
+        "showDropListChart": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 0,
+        "zIndex": 17
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "",
+            "tokenQuery": "* | select DISTINCT OwnerId from instance_bill where  (ProductCode = 'sls' or ProductCode = 'slsingest') "
+          }
+        ],
+        "dataSourceType": "mixed",
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "@",
+        "query": "@",
+        "start": "-604800s",
+        "timeSpanType": "",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225947",
+      "type": "droplistpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses Yesterday",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 6,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "associatedField": "percent",
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "percent",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 14,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "Expenses Yesterday"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 0,
+        "yPos": 1,
+        "zIndex": 18
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select t, cost as \"Expenses Yesterday\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"percent\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%' and OwnerId like '%%'  group by t order by t asc) limit 1000",
+            "tokenQuery": "* | select t, cost as \"Expenses Yesterday\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"percent\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}'  group by t order by t asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225948",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Expenses This Month",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561661949051199",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 6,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "percent",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "percent",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 12,
+            "descriptionFormat": "none",
+            "showField": [
+              "Expenses This Month"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 6,
+        "yPos": 1,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select t, cost as \"Expenses This Month\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"percent\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%' group by t order by t asc) limit 1000",
+            "tokenQuery": "* | select t, cost as \"Expenses This Month\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"percent\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}' group by t order by t asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-180d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225949",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Data Transformation",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-16542189653430501661948352112",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Data Transformation"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte_ies",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#ffffff",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 1,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Data Transformation\" ,date_trunc('day',__time__) as t  from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%数据加工%' or BillingItem like '%Data Transformation%') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%' and OwnerId like '%%' group by t order by t asc limit 1000",
+            "tokenQuery": "* |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Data Transformation\" ,date_trunc('day',__time__) as t  from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%数据加工%' or BillingItem like '%Data Transformation%') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}' group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225950",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Storage Space Usage",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561658997178333",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Storage Space Usage"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte_ies",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 1,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*  |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Storage Space Usage\" ,date_trunc('day',__time__) as t  from instance_bill where  (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%存储空间%' or BillingItem like '%Storage%') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%' group by t order by t asc limit 1000",
+            "tokenQuery": "*  |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Storage Space Usage\" ,date_trunc('day',__time__) as t  from instance_bill where  (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%存储空间%' or BillingItem like '%Storage%') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}' group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225951",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Indexing Traffic",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-16542189653430501661948352110",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Indexing Traffic"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte_ies",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 4,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Indexing Traffic\" ,date_trunc('day',__time__) as t from instance_bill where  (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%索引流量%' or BillingItem like '%Index%') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%' and OwnerId like '%%' group by t order by t asc limit 1000",
+            "tokenQuery": "* | select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Indexing Traffic\" ,date_trunc('day',__time__) as t from instance_bill where  (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%索引流量%' or BillingItem like '%Index%') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}' group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225952",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Read/Write Traffic",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-16542189653430501661948352111",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 3,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "Read/Write Traffic"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte_ies",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 18,
+        "yPos": 4,
+        "zIndex": 13
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Read/Write Traffic\" ,date_trunc('day',__time__) as t  from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%' and OwnerId like '%%' group by t order by t asc limit 1000",
+            "tokenQuery": "* | select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"Read/Write Traffic\" ,date_trunc('day',__time__) as t  from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}' group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225953",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "area"
+        },
+        "barOptions": {
+          "barWidth": 0.9,
+          "fillOpacity": 85,
+          "gradientMode": "none",
+          "groupWidth": 0.7,
+          "lineWidth": 1,
+          "orientation": "vertical",
+          "showValues": "auto",
+          "stackingMode": "none",
+          "valueSize": 12
+        },
+        "basicOptions": {
+          "displayName": "Billing Items Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-13234318156223491658992537650",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "showPoint": "never"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "single",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "name": "A",
+            "xAxisKey": "date",
+            "yAxisKey": "cost"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "fillOpacity": 40
+        },
+        "tooltipOption": {
+          "labelFormat": "",
+          "mode": "all",
+          "sortOrder": "desc"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "format": {
+            "value": "auto"
+          },
+          "show": true,
+          "timeRangeMode": "searchTime",
+          "zoomTarget": "global"
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 7,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*  | select date_trunc('day', __time__)  as \"date\", billingItem, round(sum(PretaxAmount),3) as \"cost\" from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%' and OwnerId like '%%'  group by \"date\",billingItem order by \"date\"   limit 1000",
+            "tokenQuery": "*  | select date_trunc('day', __time__)  as \"date\", billingItem, round(sum(PretaxAmount),3) as \"cost\" from instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}' and OwnerId like '${{OwnerId|%%}}'  group by \"date\",billingItem order by \"date\"   limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225954",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "Billing Items Usage",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-12345678901234561662016640766",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "none"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "name": "A",
+            "xAxisKey": "date",
+            "yAxisKey": "Usage"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "thresholdOption": {
+          "fillOpacity": 40
+        },
+        "tooltipOption": {
+          "labelFormat": "",
+          "mode": "all",
+          "sortOrder": "none"
+        },
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "format": {
+            "value": "auto"
+          },
+          "show": true,
+          "timeRangeMode": "searchTime",
+          "zoomTarget": "global"
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 7,
+        "zIndex": 20
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |\nselect\n  date_trunc('day', __time__) as \"date\",\n  round(sum(Usage), 3) as \"Usage\",\n  case\n    when UsageUnit = '' then billingItem\n    else concat(billingItem, ' (', UsageUnit, ')')\n  end as billingItem\nfrom instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\ngroup by\n  \"date\",\n  billingItem\norder by\n  \"date\"\nlimit\n  1000",
+            "tokenQuery": "* |\nselect\n  date_trunc('day', __time__) as \"date\",\n  round(sum(Usage), 3) as \"Usage\",\n  case\n    when UsageUnit = '' then billingItem\n    else concat(billingItem, ' (', UsageUnit, ')')\n  end as billingItem\nfrom instance_bill where (ProductCode='sls' or ProductCode='slsingest') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\ngroup by\n  \"date\",\n  billingItem\norder by\n  \"date\"\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225955",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1664176223272-266292",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Project",
+                      "value": "Project"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Project",
+            "newAdd": true,
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1664176223272-266292",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Region",
+                      "value": "Region"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Region",
+            "newAdd": true,
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "Top Project",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "center",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true,
+          "showAll": false
+        },
+        "displayName": "bill-analysis-16542189653430501662126435028",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 14,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {
+            "aggField": "BillingItem",
+            "name": "A",
+            "xAxisKeys": [
+              "Region",
+              "Project",
+              "Expenses (USD)",
+              "Expenses/Month-on-Month Increase (%)",
+              "Expenses Deducted By ResourcePackage",
+              "Storage Space(Hot Storage)(GB)",
+              "Storage Size(IA Storage)(GB)",
+              "Storage Size(Archive Storage)(GB)",
+              "Storage Size(Time Series)(GB)"
+            ],
+            "yAxisKey": "Usage"
+          }
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 3,
+          "format": "milli",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "-Infinity",
+            "replaceIcon": "",
+            "replaceText": "0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 24,
+        "xPos": 0,
+        "yPos": 15,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(\n  *\n) | with \nt1 as (\nselect             split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project\nFROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%' group by Region,Project\n),\n\nt2 as (\n  select\n    Region,\n    Project,\n    round(di [1], 3) as \"Expenses\",\n    concat(\n      cast(round(di [3] * 100 -100, 3) as varchar),\n      '%'\n    ) \"Expenses/Month-on-Month Increase\"\n  from(\n      select\n        Region,\n        Project,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n            sum(PretaxAmount) as cost\n          FROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            Region,\n            Project\n        )\n      group by\n        Region,\n        Project\n    )\n),\nt3 as (\n  select\n    Region,\n    Project,\n    max_by(\"Storage Space(Hot Storage)(GB)\", t) as \"Storage Space(Hot Storage)(GB)\",\nmax_by(\"Storage Size(IA Storage)(GB)\", t) as \"Storage Size(IA Storage)(GB)\",\nmax_by(\"Storage Size(Archive Storage)(GB)\", t) as \"Storage Size(Archive Storage)(GB)\",\nmax_by(\"Storage Size(Time Series)(GB)\", t) as \"Storage Size(Time Series)(GB)\"\n  FROM    (\n      select\n        t,\n\t\t\tsplit_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n        round(sum(\"Storage Space(Hot Storage)(GB)\"), 2) as \"Storage Space(Hot Storage)(GB)\",\n round(sum(\"Storage Size(IA Storage)(GB)\"), 2) as \"Storage Size(IA Storage)(GB)\", \nround(sum(\"Storage Size(Archive Storage)(GB)\"), 2) as \"Storage Size(Archive Storage)(GB)\",\nround(sum(\"Storage Size(Time Series)(GB)\"), 2) as \"Storage Size(Time Series)(GB)\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n\t\t\tInstanceID,\n          \tcase\n              when (BillingItem ='存储空间' or BillingItem='存储空间-日志存储' or BillingItem ='Storage Usage of Log Data' or BillingItem ='Used Storage Space of Log Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Space(Hot Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志低频存储' or BillingItem = 'Storage Usage of IA Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(IA Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志归档存储' or BillingItem = 'Storage Usage of Archive Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Archive Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-时序存储' or BillingItem = 'Used Storage Space of Time Series Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Time Series)(GB)\"\n          FROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            t,\n\t\t\tInstanceID,\n            \"Storage Space(Hot Storage)(GB)\",\n\"Storage Size(IA Storage)(GB)\",\n\"Storage Size(Archive Storage)(GB)\",\n\"Storage Size(Time Series)(GB)\"\n        )\n      group by\n        t,\n        Region,\n        Project\n      order by\n        t asc\n    )\n  group by\n    Region,\n    Project\n),\nt4 as (\n  select\n    Region,\n    Project,\n\t\"Expenses Deducted By ResourcePackage\"\n  from(\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"Expenses Deducted By ResourcePackage\"\n          FROM            instance_bill\n          where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            Region,\n            Project\n)\n      group by\n        Region,\n        Project,\n\"Expenses Deducted By ResourcePackage\"\n),t5 as (\n  select\n    Region,\n    Project,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        instance_bill\n      where\n\t\t(ProductCode='sls' or ProductCode='slsingest')\n        and BillingItem not like '%存储空间%'\n        and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n      group by\n        Project,\n        Region,\n        UsageUnit,\n        BillingItem\n    )\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t5.BillingItem as BillingItem,\n  t5.Usage as Usage,\n  t2.\"Expenses\" as \"Expenses (USD)\",\n  t2.\"Expenses/Month-on-Month Increase\" as \"Expenses/Month-on-Month Increase (%)\",\n  t3.\"Storage Space(Hot Storage)(GB)\" as \"Storage Space(Hot Storage)(GB)\",\n  t3.\"Storage Size(IA Storage)(GB)\" as \"Storage Size(IA Storage)(GB)\",\n  t3.\"Storage Size(Archive Storage)(GB)\" as \"Storage Size(Archive Storage)(GB)\",\n  t3.\"Storage Size(Time Series)(GB)\" as \"Storage Size(Time Series)(GB)\",\n  t4.\"Expenses Deducted By ResourcePackage\" as \"Expenses Deducted By ResourcePackage\"\nFROM  t1\n  left join t2 on t1.Project = t2.Project and t1.Region = t2.Region\n  left join t3 on t1.Project = t3.Project and t1.Region = t3.Region\n  left join t4 on t1.Project = t4.Project and t1.Region = t4.Region\n  left join t5 on t1.Project = t5.Project and t1.Region = t5.Region\norder by\n \"Expenses (USD)\" desc\nlimit\n  150",
+            "tokenQuery": "(\n  *\n) | with \nt1 as (\nselect             split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project\nFROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}' group by Region,Project\n),\n\nt2 as (\n  select\n    Region,\n    Project,\n    round(di [1], 3) as \"Expenses\",\n    concat(\n      cast(round(di [3] * 100 -100, 3) as varchar),\n      '%'\n    ) \"Expenses/Month-on-Month Increase\"\n  from(\n      select\n        Region,\n        Project,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n            sum(PretaxAmount) as cost\n          FROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            Region,\n            Project\n        )\n      group by\n        Region,\n        Project\n    )\n),\nt3 as (\n  select\n    Region,\n    Project,\n    max_by(\"Storage Space(Hot Storage)(GB)\", t) as \"Storage Space(Hot Storage)(GB)\",\nmax_by(\"Storage Size(IA Storage)(GB)\", t) as \"Storage Size(IA Storage)(GB)\",\nmax_by(\"Storage Size(Archive Storage)(GB)\", t) as \"Storage Size(Archive Storage)(GB)\",\nmax_by(\"Storage Size(Time Series)(GB)\", t) as \"Storage Size(Time Series)(GB)\"\n  FROM    (\n      select\n        t,\n\t\t\tsplit_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n        round(sum(\"Storage Space(Hot Storage)(GB)\"), 2) as \"Storage Space(Hot Storage)(GB)\",\n round(sum(\"Storage Size(IA Storage)(GB)\"), 2) as \"Storage Size(IA Storage)(GB)\", \nround(sum(\"Storage Size(Archive Storage)(GB)\"), 2) as \"Storage Size(Archive Storage)(GB)\",\nround(sum(\"Storage Size(Time Series)(GB)\"), 2) as \"Storage Size(Time Series)(GB)\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n\t\t\tInstanceID,\n          \tcase\n              when (BillingItem ='存储空间' or BillingItem='存储空间-日志存储' or BillingItem ='Storage Usage of Log Data' or BillingItem ='Used Storage Space of Log Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Space(Hot Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志低频存储' or BillingItem = 'Storage Usage of IA Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(IA Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志归档存储' or BillingItem = 'Storage Usage of Archive Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Archive Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-时序存储' or BillingItem = 'Used Storage Space of Time Series Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Time Series)(GB)\"\n          FROM            instance_bill\n\t\t  where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            t,\n\t\t\tInstanceID,\n            \"Storage Space(Hot Storage)(GB)\",\n\"Storage Size(IA Storage)(GB)\",\n\"Storage Size(Archive Storage)(GB)\",\n\"Storage Size(Time Series)(GB)\"\n        )\n      group by\n        t,\n        Region,\n        Project\n      order by\n        t asc\n    )\n  group by\n    Region,\n    Project\n),\nt4 as (\n  select\n    Region,\n    Project,\n\t\"Expenses Deducted By ResourcePackage\"\n  from(\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"Expenses Deducted By ResourcePackage\"\n          FROM            instance_bill\n          where (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            Region,\n            Project\n)\n      group by\n        Region,\n        Project,\n\"Expenses Deducted By ResourcePackage\"\n),t5 as (\n  select\n    Region,\n    Project,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        instance_bill\n      where\n\t\t(ProductCode='sls' or ProductCode='slsingest')\n        and BillingItem not like '%存储空间%'\n        and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n      group by\n        Project,\n        Region,\n        UsageUnit,\n        BillingItem\n    )\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t5.BillingItem as BillingItem,\n  t5.Usage as Usage,\n  t2.\"Expenses\" as \"Expenses (USD)\",\n  t2.\"Expenses/Month-on-Month Increase\" as \"Expenses/Month-on-Month Increase (%)\",\n  t3.\"Storage Space(Hot Storage)(GB)\" as \"Storage Space(Hot Storage)(GB)\",\n  t3.\"Storage Size(IA Storage)(GB)\" as \"Storage Size(IA Storage)(GB)\",\n  t3.\"Storage Size(Archive Storage)(GB)\" as \"Storage Size(Archive Storage)(GB)\",\n  t3.\"Storage Size(Time Series)(GB)\" as \"Storage Size(Time Series)(GB)\",\n  t4.\"Expenses Deducted By ResourcePackage\" as \"Expenses Deducted By ResourcePackage\"\nFROM  t1\n  left join t2 on t1.Project = t2.Project and t1.Region = t2.Region\n  left join t3 on t1.Project = t3.Project and t1.Region = t3.Region\n  left join t4 on t1.Project = t4.Project and t1.Region = t4.Region\n  left join t5 on t1.Project = t5.Project and t1.Region = t5.Region\norder by\n \"Expenses (USD)\" desc\nlimit\n  150"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225956",
+      "type": "crosstable"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1664176223272-266292",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Project",
+                      "value": "Project"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Project",
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1664176223272-266292",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Logstore",
+                      "value": "Logstore"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Logstore",
+            "newAdd": true,
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1664176223272-266292",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Region",
+                      "value": "Region"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Region",
+            "newAdd": true,
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "Top Logstore",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "center",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true,
+          "showAll": false
+        },
+        "displayName": "bill-analysis-16542189653430501662126435028",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [
+          {
+            "name": "Project",
+            "newAdd": true,
+            "overrides": [
+              {
+                "optionKeys": [
+                  "columnOptions",
+                  "searchAccurate"
+                ],
+                "value": true
+              }
+            ],
+            "queryName": "A"
+          }
+        ],
+        "height": 16,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {
+            "aggField": "BillingItem",
+            "name": "A",
+            "xAxisKeys": [
+              "Region",
+              "Project",
+              "Logstore",
+              "Expenses (USD)",
+              "Expenses/Month-on-Month Increase (%)",
+              "Expenses Deducted By ResourcePackage",
+              "Storage Space(Hot Storage)(GB)",
+              "Storage Size(IA Storage)(GB)",
+              "Storage Size(Archive Storage)(GB)",
+              "Storage Size(Time Series)(GB)"
+            ],
+            "yAxisKey": "Usage"
+          }
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 3,
+          "format": "milli",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "-Infinity",
+            "replaceIcon": "",
+            "replaceText": "0",
+            "replaceType": "text"
+          }
+        ],
+        "version": 2,
+        "width": 24,
+        "xPos": 0,
+        "yPos": 29,
+        "zIndex": 22
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(*) | with \nt1 as (\nselect\nsplit_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore\nFROM            instance_bill\n          where\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            InstanceID\n),\n\nt2 as (\n  select\n    InstanceID,\n    round(di [1], 3) as \"Expenses\",\n    concat(cast(round(di [3] * 100 -100, 3) as varchar), '%') \"Expenses/Month-on-Month Increase\"\n  from(\n      select\n        InstanceID,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            InstanceID,\n            round(sum(PretaxAmount), 2) as cost\n          FROM            instance_bill\n          where\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            InstanceID\n        )\n      group by\n        InstanceID\n    )\n),\nt3 as (\n  select\n    InstanceID,\n    max_by(\"Storage Space(Hot Storage)(GB)\", t) as \"Storage Space(Hot Storage)(GB)\",\nmax_by(\"Storage Size(IA Storage)(GB)\", t) as \"Storage Size(IA Storage)(GB)\",\nmax_by(\"Storage Size(Archive Storage)(GB)\", t) as \"Storage Size(Archive Storage)(GB)\",\nmax_by(\"Storage Size(Time Series)(GB)\", t) as \"Storage Size(Time Series)(GB)\"\n  FROM    (\n      select\n        t,\n        InstanceID,\n        round(sum(\"Storage Space(Hot Storage)(GB)\"), 2) as \"Storage Space(Hot Storage)(GB)\",\n        round(sum(\"Storage Size(IA Storage)(GB)\"), 2) as \"Storage Size(IA Storage)(GB)\",\n        round(sum(\"Storage Size(Archive Storage)(GB)\"), 2) as \"Storage Size(Archive Storage)(GB)\",\n        round(sum(\"Storage Size(Time Series)(GB)\"), 2) as \"Storage Size(Time Series)(GB)\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n          \tcase\n              when (BillingItem ='存储空间' or BillingItem='存储空间-日志存储' or BillingItem ='Storage Usage of Log Data' or BillingItem ='Used Storage Space of Log Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Space(Hot Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志低频存储' or BillingItem = 'Storage Usage of IA Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(IA Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志归档存储' or BillingItem = 'Storage Usage of Archive Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Archive Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-时序存储' or BillingItem = 'Used Storage Space of Time Series Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Time Series)(GB)\"\n          FROM            instance_bill\n          WHERE\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n            t,\n            InstanceID,\n            \"Storage Space(Hot Storage)(GB)\",\n\"Storage Size(IA Storage)(GB)\",\n\"Storage Size(Archive Storage)(GB)\",\n\"Storage Size(Time Series)(GB)\"\n        )\n      group by\n        t,\n        InstanceID\n      order by\n        t asc\n    )\n  group by\n    InstanceID\n),\nt4 as (\n  select\n    InstanceID,\n\t\"Expenses Deducted By ResourcePackage\"\n  from(\n          select\n    \t\t\tInstanceID,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"Expenses Deducted By ResourcePackage\"\n          FROM            instance_bill\n          where (ProductCode='sls' or ProductCode='slsingest') and \n split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n          group by\n    InstanceID\n)\n      group by\n    InstanceID,\n\"Expenses Deducted By ResourcePackage\"\n),t5 as (\n  select\n    Region,\n    Project,\n    Logstore,\n    InstanceID,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        instance_bill\n      where\n        (ProductCode='sls' or ProductCode='slsingest')\n        and BillingItem not like '%存储空间%' and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'and split_part(InstanceID, ';', 4) like '%%'and OwnerId like '%%'\n      group by\n        InstanceID,\n        UsageUnit,\n        BillingItem\n    )\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.Logstore as Logstore,\n  t5.BillingItem as BillingItem,\n  t5.Usage as Usage,\n  t2.\"Expenses\" as \"Expenses (USD)\",\n  t2.\"Expenses/Month-on-Month Increase\" as \"Expenses/Month-on-Month Increase (%)\",\n  t3.\"Storage Space(Hot Storage)(GB)\" as \"Storage Space(Hot Storage)(GB)\",\n  t3.\"Storage Size(IA Storage)(GB)\" as \"Storage Size(IA Storage)(GB)\",\n  t3.\"Storage Size(Archive Storage)(GB)\" as \"Storage Size(Archive Storage)(GB)\",\n  t3.\"Storage Size(Time Series)(GB)\" as \"Storage Size(Time Series)(GB)\",\n  t4.\"Expenses Deducted By ResourcePackage\" as \"Expenses Deducted By ResourcePackage\"\nFROM  t1\n  left join t2 on t1.InstanceID = t2.InstanceID\n  left join t3 on t1.InstanceID = t3.InstanceID\n  left join t4 on t1.InstanceID = t4.InstanceID\n  left join t5 on t1.InstanceID = t5.InstanceID\norder by \"Expenses (USD)\" desc\nlimit\n  150000\n",
+            "tokenQuery": "(*) | with \nt1 as (\nselect\nsplit_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore\nFROM            instance_bill\n          where\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            InstanceID\n),\n\nt2 as (\n  select\n    InstanceID,\n    round(di [1], 3) as \"Expenses\",\n    concat(cast(round(di [3] * 100 -100, 3) as varchar), '%') \"Expenses/Month-on-Month Increase\"\n  from(\n      select\n        InstanceID,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            InstanceID,\n            round(sum(PretaxAmount), 2) as cost\n          FROM            instance_bill\n          where\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            InstanceID\n        )\n      group by\n        InstanceID\n    )\n),\nt3 as (\n  select\n    InstanceID,\n    max_by(\"Storage Space(Hot Storage)(GB)\", t) as \"Storage Space(Hot Storage)(GB)\",\nmax_by(\"Storage Size(IA Storage)(GB)\", t) as \"Storage Size(IA Storage)(GB)\",\nmax_by(\"Storage Size(Archive Storage)(GB)\", t) as \"Storage Size(Archive Storage)(GB)\",\nmax_by(\"Storage Size(Time Series)(GB)\", t) as \"Storage Size(Time Series)(GB)\"\n  FROM    (\n      select\n        t,\n        InstanceID,\n        round(sum(\"Storage Space(Hot Storage)(GB)\"), 2) as \"Storage Space(Hot Storage)(GB)\",\n        round(sum(\"Storage Size(IA Storage)(GB)\"), 2) as \"Storage Size(IA Storage)(GB)\",\n        round(sum(\"Storage Size(Archive Storage)(GB)\"), 2) as \"Storage Size(Archive Storage)(GB)\",\n        round(sum(\"Storage Size(Time Series)(GB)\"), 2) as \"Storage Size(Time Series)(GB)\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n          \tcase\n              when (BillingItem ='存储空间' or BillingItem='存储空间-日志存储' or BillingItem ='Storage Usage of Log Data' or BillingItem ='Used Storage Space of Log Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Space(Hot Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志低频存储' or BillingItem = 'Storage Usage of IA Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(IA Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-日志归档存储' or BillingItem = 'Storage Usage of Archive Storage Tier') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Archive Storage)(GB)\",\n            case\n              when (BillingItem = '存储空间-时序存储' or BillingItem = 'Used Storage Space of Time Series Data') then Usage + DeductedByResourcePackage\n              else 0\n            end as \"Storage Size(Time Series)(GB)\"\n          FROM            instance_bill\n          WHERE\n            (ProductCode='sls' or ProductCode='slsingest')\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n            t,\n            InstanceID,\n            \"Storage Space(Hot Storage)(GB)\",\n\"Storage Size(IA Storage)(GB)\",\n\"Storage Size(Archive Storage)(GB)\",\n\"Storage Size(Time Series)(GB)\"\n        )\n      group by\n        t,\n        InstanceID\n      order by\n        t asc\n    )\n  group by\n    InstanceID\n),\nt4 as (\n  select\n    InstanceID,\n\t\"Expenses Deducted By ResourcePackage\"\n  from(\n          select\n    \t\t\tInstanceID,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"Expenses Deducted By ResourcePackage\"\n          FROM            instance_bill\n          where (ProductCode='sls' or ProductCode='slsingest') and \n split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n          group by\n    InstanceID\n)\n      group by\n    InstanceID,\n\"Expenses Deducted By ResourcePackage\"\n),t5 as (\n  select\n    Region,\n    Project,\n    Logstore,\n    InstanceID,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        instance_bill\n      where\n        (ProductCode='sls' or ProductCode='slsingest')\n        and BillingItem not like '%存储空间%' and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'and split_part(InstanceID, ';', 4) like '${{Region|%%}}'and OwnerId like '${{OwnerId|%%}}'\n      group by\n        InstanceID,\n        UsageUnit,\n        BillingItem\n    )\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.Logstore as Logstore,\n  t5.BillingItem as BillingItem,\n  t5.Usage as Usage,\n  t2.\"Expenses\" as \"Expenses (USD)\",\n  t2.\"Expenses/Month-on-Month Increase\" as \"Expenses/Month-on-Month Increase (%)\",\n  t3.\"Storage Space(Hot Storage)(GB)\" as \"Storage Space(Hot Storage)(GB)\",\n  t3.\"Storage Size(IA Storage)(GB)\" as \"Storage Size(IA Storage)(GB)\",\n  t3.\"Storage Size(Archive Storage)(GB)\" as \"Storage Size(Archive Storage)(GB)\",\n  t3.\"Storage Size(Time Series)(GB)\" as \"Storage Size(Time Series)(GB)\",\n  t4.\"Expenses Deducted By ResourcePackage\" as \"Expenses Deducted By ResourcePackage\"\nFROM  t1\n  left join t2 on t1.InstanceID = t2.InstanceID\n  left join t3 on t1.InstanceID = t3.InstanceID\n  left join t4 on t1.InstanceID = t4.InstanceID\n  left join t5 on t1.InstanceID = t5.InstanceID\norder by \"Expenses (USD)\" desc\nlimit\n  150000\n"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561712837225957",
+      "type": "crosstable"
+    }
+  ],
+  "dashboardName": "dashboard-1666009770887-173287",
+  "description": "",
+  "displayName": "Log Service Bill Analysis"
+}
