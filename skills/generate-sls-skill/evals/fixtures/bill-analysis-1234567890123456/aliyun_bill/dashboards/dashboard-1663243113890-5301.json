@@ -1,0 +1,1169 @@
+{
+  "attribute": {
+    "type": "grid"
+  },
+  "charts": [
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "area"
+        },
+        "barOptions": {
+          "barWidth": 0.9,
+          "fillOpacity": 85,
+          "gradientMode": "none",
+          "groupWidth": 0.7,
+          "lineWidth": 1,
+          "orientation": "vertical",
+          "showValues": "auto",
+          "stackingMode": "none",
+          "valueSize": 12
+        },
+        "basicOptions": {
+          "displayName": "计费项费用趋势(资源包抵扣后)",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-13234318156223491658992537650",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "never"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "single",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKey": "费用"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "fillOpacity": 40
+        },
+        "tooltipOption": {
+          "mode": "all",
+          "sortOrder": "desc"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 12,
+        "xAxisOption": {
+          "format": {
+            "value": "auto"
+          },
+          "show": true,
+          "zoomTarget": "global"
+        },
+        "xPos": 0,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 4,
+        "zIndex": 14
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode:sls | select date_trunc('day', __time__)  as \"日期\", billingItem, round(sum(PretaxAmount),3) as \"费用\" from log where  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'  group by \"日期\",billingItem order by \"日期\"   limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode:sls | select date_trunc('day', __time__)  as \"日期\", billingItem, round(sum(PretaxAmount),3) as \"费用\" from log where  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'  group by \"日期\",billingItem order by \"日期\"   limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561663243137237",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "line"
+        },
+        "basicOptions": {
+          "displayName": "计费项用量趋势(资源包抵扣后)",
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "dataOption": {
+          "autoFill": false,
+          "autoFillNumber": 0,
+          "maxClassifyGroupNum": 50
+        },
+        "displayName": "bill-analysis-12345678901234561662016640766",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "none"
+        },
+        "height": 8,
+        "innerTokenOption": [],
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "billingItem",
+            "name": "A",
+            "xAxisKey": "日期",
+            "yAxisKey": "Usage"
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "builtin"
+          },
+          "decimals": 2,
+          "format": "milli",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "thresholdOption": {
+          "fillOpacity": 40
+        },
+        "tooltipOption": {
+          "mode": "all",
+          "sortOrder": "none"
+        },
+        "version": "2",
+        "width": 12,
+        "xAxisOption": {
+          "show": true,
+          "zoomTarget": "global"
+        },
+        "xPos": 12,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "none"
+        },
+        "yPos": 4
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode:sls|\nselect\n  date_trunc('day', __time__) as \"日期\",\n  round(sum(Usage), 3) as \"Usage\",\n  case\n    when UsageUnit = '' then billingItem\n    else concat(billingItem, ' (', UsageUnit, ')')\n  end as billingItem\nFROM  log\nwhere  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' \ngroup by\n  \"日期\",\n  billingItem\norder by\n  \"日期\"\nlimit\n  1000",
+            "tokenQuery": "* and instance_bill and ProductCode:sls|\nselect\n  date_trunc('day', __time__) as \"日期\",\n  round(sum(Usage), 3) as \"Usage\",\n  case\n    when UsageUnit = '' then billingItem\n    else concat(billingItem, ' (', UsageUnit, ')')\n  end as billingItem\nFROM  log\nwhere  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' \ngroup by\n  \"日期\",\n  billingItem\norder by\n  \"日期\"\nlimit\n  1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561663317405141",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1663243113890-5301",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Project",
+                      "value": "Project"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Project",
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1663243113890-5301",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Region",
+                      "value": "Region"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Region",
+            "newAdd": true,
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1663243113890-5301",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Logstore",
+                      "value": "Logstore"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Logstore",
+            "newAdd": true,
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "Top Logstore用量明细",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "center",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-16542189653430501662126435028",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 14,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {
+            "aggField": "BillingItem",
+            "name": "A",
+            "xAxisKeys": [
+              "Region",
+              "Project",
+              "Logstore",
+              "费用 (元)",
+              "同比上月 (%)",
+              "资源包抵扣费用",
+              "存储空间（GB）"
+            ],
+            "yAxisKey": "Usage"
+          }
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 3,
+          "format": "milli",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "-Infinity",
+            "replaceIcon": "",
+            "replaceText": "0",
+            "replaceType": "text"
+          }
+        ],
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 26
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(* and source:instance_bill and productcode:sls) | with t1 as (\n  select\n    Region,\n    Project,\n    Logstore,\n    InstanceID,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        log\n      where\n BillingItem not like '%存储空间%' and BillingItem not like '%Storage%'\nand  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' \n      group by\n        InstanceID,\n        UsageUnit,\n        BillingItem\n    )\n),\nt2 as (\n  select\n    InstanceID,\n    round(di [1], 3) as \"费用\",\n    concat(cast(round(di [3] * 100 -100, 3) as varchar), '%') \"同比上月\"\n  from(\n      select\n        InstanceID,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            InstanceID,\n            round(sum(PretaxAmount), 2) as cost\n          FROM     log\nwhere  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' \n          group by\n            InstanceID\n        )\n      group by\n        InstanceID\n    )\n),\nt3 as (\n  select\n    InstanceID,\n    max_by(\"存储空间（GB）\", t) as \"存储空间（GB）\"\n  FROM    (\n      select\n        t,\n        InstanceID,\n        round(sum(\"存储空间（GB）\"), 2) as \"存储空间（GB）\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n            case\n              when BillingItem like '%存储空间%'\n              or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage\n              else 0\n            end as \"存储空间（GB）\"\n          FROM     log\nwhere   split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' \n          group by\n            t,\n            InstanceID,\n            \"存储空间（GB）\"\n        )\n      group by\n        t,\n        InstanceID\n      order by\n        t asc\n    )\n  group by\n    InstanceID\n),\nt4 as (\n  select\n    InstanceID,\n\t\"资源包抵扣费用\"\n  from(\n          select\n    \t\t\tInstanceID,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"资源包抵扣费用\"\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'\n          group by\n    InstanceID\n)\n      group by\n    InstanceID,\n\"资源包抵扣费用\"\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.Logstore as Logstore,\n  t1.BillingItem as BillingItem,\n  t1.Usage as Usage,\n  t2.\"费用\" as \"费用 (元)\",\n  t2.\"同比上月\" as \"同比上月 (%)\",\n  t3.\"存储空间（GB）\" as \"存储空间（GB）\",\n  t4.\"资源包抵扣费用\" as \"资源包抵扣费用\"\nFROM  t1\n  left join t2 on t1.InstanceID = t2.InstanceID\n  left join t3 on t1.InstanceID = t3.InstanceID\n  left join t4 on t1.InstanceID = t4.InstanceID\norder by \"费用 (元)\" desc\nlimit\n  100000",
+            "tokenQuery": "(* and source:instance_bill and productcode:sls) | with t1 as (\n  select\n    Region,\n    Project,\n    Logstore,\n    InstanceID,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        InstanceID,\n        split_part(InstanceID, ';', 3) as Logstore,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        log\n      where\n BillingItem not like '%存储空间%' and BillingItem not like '%Storage%'\nand  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' \n      group by\n        InstanceID,\n        UsageUnit,\n        BillingItem\n    )\n),\nt2 as (\n  select\n    InstanceID,\n    round(di [1], 3) as \"费用\",\n    concat(cast(round(di [3] * 100 -100, 3) as varchar), '%') \"同比上月\"\n  from(\n      select\n        InstanceID,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            InstanceID,\n            round(sum(PretaxAmount), 2) as cost\n          FROM     log\nwhere  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' \n          group by\n            InstanceID\n        )\n      group by\n        InstanceID\n    )\n),\nt3 as (\n  select\n    InstanceID,\n    max_by(\"存储空间（GB）\", t) as \"存储空间（GB）\"\n  FROM    (\n      select\n        t,\n        InstanceID,\n        round(sum(\"存储空间（GB）\"), 2) as \"存储空间（GB）\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n            case\n              when BillingItem like '%存储空间%'\n              or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage\n              else 0\n            end as \"存储空间（GB）\"\n          FROM     log\nwhere   split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' \n          group by\n            t,\n            InstanceID,\n            \"存储空间（GB）\"\n        )\n      group by\n        t,\n        InstanceID\n      order by\n        t asc\n    )\n  group by\n    InstanceID\n),\nt4 as (\n  select\n    InstanceID,\n\t\"资源包抵扣费用\"\n  from(\n          select\n    \t\t\tInstanceID,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"资源包抵扣费用\"\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'\n          group by\n    InstanceID\n)\n      group by\n    InstanceID,\n\"资源包抵扣费用\"\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.Logstore as Logstore,\n  t1.BillingItem as BillingItem,\n  t1.Usage as Usage,\n  t2.\"费用\" as \"费用 (元)\",\n  t2.\"同比上月\" as \"同比上月 (%)\",\n  t3.\"存储空间（GB）\" as \"存储空间（GB）\",\n  t4.\"资源包抵扣费用\" as \"资源包抵扣费用\"\nFROM  t1\n  left join t2 on t1.InstanceID = t2.InstanceID\n  left join t3 on t1.InstanceID = t3.InstanceID\n  left join t4 on t1.InstanceID = t4.InstanceID\norder by \"费用 (元)\" desc\nlimit\n  100000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561663318142001",
+      "type": "crosstable"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "昨日金额",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051198",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 4,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "同比前一天费用",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "同比",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 12,
+            "descriptionFormat": "KMB",
+            "showField": [
+              "昨日费用"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 6,
+        "xPos": 0,
+        "yPos": 0,
+        "zIndex": 21
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls' | select t, cost as \"昨日费用\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"同比前一天费用\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM log where  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'   group by t order by t asc) limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls' | select t, cost as \"昨日费用\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"同比前一天费用\" FROM  (select sum(PretaxAmount) as cost, date_format(__time__, '%Y-%m-%d') as t FROM log where  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'   group by t order by t asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177601164",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "本月金额",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561661949051199",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 4,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "同比前一月费用",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "customUnit": "%",
+              "unit": "custom"
+            },
+            "compareValueDescription": "同比",
+            "descriptionDecimals": 2,
+            "descriptionFontSize": 12,
+            "descriptionFormat": "none",
+            "showField": [
+              "本月费用"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#333333",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 6,
+        "xPos": 6,
+        "yPos": 0,
+        "zIndex": 23
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls'| select t, cost as \"本月费用\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"同比前一月费用\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  log where  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'  group by t order by t asc) limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls'| select t, cost as \"本月费用\", (cost-lag(cost, 1, 0) over())/lag(cost, 1, 0) over()*100 as \"同比前一月费用\" FROM  (select sum(PretaxAmount) as cost, date_trunc('month', __time__)  as t FROM  log where  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'  group by t order by t asc) limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-180d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177613627",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "存储空间",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-12345678901234561658997178333",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 2,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "存储空间"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value_and_name"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": 2,
+        "width": 6,
+        "xPos": 12,
+        "yPos": 0,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls' |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"存储空间\" ,date_trunc('day',__time__) as t  from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%') and split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'  group by t order by t asc limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls' |select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"存储空间\" ,date_trunc('day',__time__) as t  from log where (BillingItem like '%存储空间%' or BillingItem like '%Storage%') and split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177621802",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "索引流量",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-16542189653430501661948352110",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 2,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "索引流量"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "value_and_name"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 6,
+        "xPos": 12,
+        "yPos": 2,
+        "zIndex": 11
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls'| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"索引流量\" ,date_trunc('day',__time__) as t from log where  (BillingItem like '%索引流量%' or BillingItem like '%Index%') and  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'  group by t order by t asc limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls'| select sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"索引流量\" ,date_trunc('day',__time__) as t from log where  (BillingItem like '%索引流量%' or BillingItem like '%Index%') and  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177633018",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "读写流量",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": false,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-16542189653430501661948352112",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 2,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "数据加工流量"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#ffffff",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 6,
+        "xPos": 18,
+        "yPos": 0,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls'|select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"数据加工流量\" ,date_trunc('day',__time__) as t  from log where  (BillingItem like '%数据加工%' or BillingItem like '%Data Transformation%') and  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'  group by t order by t asc limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls'|select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"数据加工流量\" ,date_trunc('day',__time__) as t  from log where  (BillingItem like '%数据加工%' or BillingItem like '%Data Transformation%') and  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'  group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177643327",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "读写流量",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": false
+        },
+        "displayName": "bill-analysis-16542189653430501661948352111",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "height": 2,
+        "innerTokenOption": [],
+        "isTimeSeries": false,
+        "queryOptionMap": {
+          "A": {
+            "compareField": "",
+            "compareThreshold": 0,
+            "compareUnit": {
+              "unit": "none"
+            },
+            "compareValueDescription": "",
+            "descriptionDecimals": 2,
+            "descriptionFormat": "none",
+            "showField": [
+              "读写流量"
+            ]
+          }
+        },
+        "standardOption": {
+          "colorSchame": {
+            "color": "#0070cc",
+            "schema": "single"
+          },
+          "decimals": 2,
+          "format": "byte",
+          "unit": "none"
+        },
+        "statStyleOptions": {
+          "colorMode": "value",
+          "customBackgroundColor": "#ffffff",
+          "customValueColor": "#555555",
+          "graphMode": "area",
+          "textAlignment": "auto",
+          "textMode": "auto"
+        },
+        "statValueOption": {
+          "calculationType": "last",
+          "layoutOrientation": "auto",
+          "limitCount": 25,
+          "minItemHeight": 50,
+          "minItemWidth": 50,
+          "showMode": "calculate"
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [],
+        "version": "2",
+        "width": 6,
+        "xPos": 18,
+        "yPos": 2,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* and instance_bill and ProductCode : 'sls' | select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"读写流量\" ,date_trunc('day',__time__) as t  from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') and  split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%' group by t order by t asc limit 1000",
+            "tokenQuery": "* and instance_bill and ProductCode : 'sls' | select  sum(Usage*1024*1024*1024+DeductedByResourcePackage*1024*1024*1024) as \"读写流量\" ,date_trunc('day',__time__) as t  from log where (BillingItem like '%读写流量%' or BillingItem like '%Read Write Flow%' or BillingItem like '%Read/write Traffic%') and  split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}' group by t order by t asc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561664177647917",
+      "type": "statpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1663243113890-5301",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Project",
+                      "value": "Project"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Project",
+            "queryName": "A"
+          },
+          {
+            "events": [
+              {
+                "event": "dashboard",
+                "values": {
+                  "blank": false,
+                  "dashboardName": "dashboard-1663243113890-5301",
+                  "filterInherit": true,
+                  "name": "打开仪表盘",
+                  "project": "bill-analysis-1234567890123456",
+                  "searchStaticToken": [],
+                  "searchToken": [
+                    {
+                      "key": "Region",
+                      "value": "Region"
+                    }
+                  ],
+                  "timeRange": -2,
+                  "tokenInherit": true
+                }
+              }
+            ],
+            "name": "Region",
+            "queryName": "A"
+          }
+        ],
+        "basicOptions": {
+          "displayName": "Top Project用量明细",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "center",
+          "columnMinWidth": 100,
+          "fontSize": 12,
+          "searchAccurate": false,
+          "searchMode": "search",
+          "searchMultiple": true
+        },
+        "displayName": "bill-analysis-16542189653430501662126435028",
+        "documentLinkOption": {
+          "documentLinks": [],
+          "showIcon": true
+        },
+        "fieldOptions": [],
+        "height": 14,
+        "innerTokenOption": [],
+        "queryOptionMap": {
+          "A": {
+            "aggField": "BillingItem",
+            "name": "A",
+            "xAxisKeys": [
+              "Region",
+              "Project",
+              "费用 (元)",
+              "同比上月 (%)",
+              "资源包抵扣费用",
+              "存储空间（GB）"
+            ],
+            "yAxisKey": "Usage"
+          }
+        },
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 3,
+          "format": "milli",
+          "unit": "none"
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "rowHeight": 36,
+          "showGaugeTitle": true,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "sortField": "",
+          "sortMethod": "default",
+          "transparentBackground": false
+        },
+        "thresholdOption": {
+          "thresholdMode": "absolute"
+        },
+        "valueMappingOption": [
+          {
+            "matchType": "special",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "null",
+            "replaceText": "0",
+            "replaceType": "text"
+          },
+          {
+            "matchType": "value",
+            "matchValue": "-Infinity",
+            "replaceIcon": "",
+            "replaceText": "0",
+            "replaceType": "text"
+          }
+        ],
+        "version": "2",
+        "width": 24,
+        "xPos": 0,
+        "yPos": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "当前查询",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "(\n  (\n    *\n    and source :instance_bill\n    and productcode :sls\n  )\n) | with t1 as (\n  select\n    Region,\n    Project,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        log\n      where\n        BillingItem not like '%存储空间%'\n        and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'\n      group by\n        Project,\n        Region,\n        UsageUnit,\n        BillingItem\n    )\n),\nt2 as (\n  select\n    Region,\n    Project,\n    round(di [1], 3) as \"费用\",\n    concat(\n      cast(round(di [3] * 100 -100, 3) as varchar),\n      '%'\n    ) \"同比上月\"\n  from(\n      select\n        Region,\n        Project,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n            round(sum(PretaxAmount), 2) as cost\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'\n          group by\n            Region,\n            Project\n        )\n      group by\n        Region,\n        Project\n    )\n),\nt3 as (\n  select\n    Region,\n    Project,\n    max_by(\"存储空间（GB）\", t) as \"存储空间（GB）\"\n  FROM    (\n      select\n        t,\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        round(sum(\"存储空间（GB）\"), 2) as \"存储空间（GB）\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n            case\n              when BillingItem like '%存储空间%'\n              or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage\n              else 0\n            end as \"存储空间（GB）\"\n          FROM            log\n          where\nsplit_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'\n          group by\n            t,\n            InstanceID,\n            \"存储空间（GB）\"\n        )\n      group by\n        t,\n        Region,\n        Project\n      order by\n        t asc\n    )\n  group by\n    Region,\n    Project\n),\nt4 as (\n  select\n    Region,\n    Project,\n\t\"资源包抵扣费用\"\n  from(\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"资源包抵扣费用\"\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '%%' and split_part(InstanceID, ';', 2) like '%%'\n          group by\n            Region,\n            Project\n)\n      group by\n        Region,\n        Project,\n\"资源包抵扣费用\"\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.BillingItem as BillingItem,\n  t1.Usage as Usage,\n  t2.\"费用\" as \"费用 (元)\",\n  t2.\"同比上月\" as \"同比上月 (%)\",\n  t4.\"资源包抵扣费用\" as \"资源包抵扣费用\",\n  t3.\"存储空间（GB）\" as \"存储空间（GB）\"\nFROM  t1\n  left join t2 on t1.Project = t2.Project and t1.Region = t2.Region\n  left join t3 on t1.Project = t3.Project and t1.Region = t3.Region\n  left join t4 on t1.Project = t4.Project and t1.Region = t4.Region\norder by\n  \"费用 (元)\" desc\nlimit\n  100000",
+            "tokenQuery": "(\n  (\n    *\n    and source :instance_bill\n    and productcode :sls\n  )\n) | with t1 as (\n  select\n    Region,\n    Project,\n    concat(BillingItem, ' (', Unit, ')') BillingItem,\n    Usage\n  from(\n      select\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        BillingItem,\n        arbitrary(UsageUnit) as Unit,\n        sum(Usage + DeductedByResourcePackage) as Usage\n      FROM        log\n      where\n        BillingItem not like '%存储空间%'\n        and BillingItem not like '%Storage%'\nand split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'\n      group by\n        Project,\n        Region,\n        UsageUnit,\n        BillingItem\n    )\n),\nt2 as (\n  select\n    Region,\n    Project,\n    round(di [1], 3) as \"费用\",\n    concat(\n      cast(round(di [3] * 100 -100, 3) as varchar),\n      '%'\n    ) \"同比上月\"\n  from(\n      select\n        Region,\n        Project,\n        compare(cost, 2592000) as di\n      FROM        (\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n            round(sum(PretaxAmount), 2) as cost\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'\n          group by\n            Region,\n            Project\n        )\n      group by\n        Region,\n        Project\n    )\n),\nt3 as (\n  select\n    Region,\n    Project,\n    max_by(\"存储空间（GB）\", t) as \"存储空间（GB）\"\n  FROM    (\n      select\n        t,\n        split_part(InstanceID, ';', 4) as Region,\n        split_part(InstanceID, ';', 2) as Project,\n        round(sum(\"存储空间（GB）\"), 2) as \"存储空间（GB）\"\n      from(\n          select\n            date_trunc('day', __time__) as t,\n            InstanceID,\n            case\n              when BillingItem like '%存储空间%'\n              or BillingItem like '%Storage%' then Usage + DeductedByResourcePackage\n              else 0\n            end as \"存储空间（GB）\"\n          FROM            log\n          where\nsplit_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'\n          group by\n            t,\n            InstanceID,\n            \"存储空间（GB）\"\n        )\n      group by\n        t,\n        Region,\n        Project\n      order by\n        t asc\n    )\n  group by\n    Region,\n    Project\n),\nt4 as (\n  select\n    Region,\n    Project,\n\t\"资源包抵扣费用\"\n  from(\n          select\n            split_part(InstanceID, ';', 4) as Region,\n            split_part(InstanceID, ';', 2) as Project,\n             round(sum(DeductedByResourcePackage * ListPrice), 2) as \"资源包抵扣费用\"\n          FROM            log\n          where\n split_part(InstanceID, ';', 3) like '${{Logstore|%%}}' and split_part(InstanceID, ';', 2) like '${{Project|%%}}'\n          group by\n            Region,\n            Project\n)\n      group by\n        Region,\n        Project,\n\"资源包抵扣费用\"\n)\nselect\n  t1.Region as Region,\n  t1.Project as Project,\n  t1.BillingItem as BillingItem,\n  t1.Usage as Usage,\n  t2.\"费用\" as \"费用 (元)\",\n  t2.\"同比上月\" as \"同比上月 (%)\",\n  t4.\"资源包抵扣费用\" as \"资源包抵扣费用\",\n  t3.\"存储空间（GB）\" as \"存储空间（GB）\"\nFROM  t1\n  left join t2 on t1.Project = t2.Project and t1.Region = t2.Region\n  left join t3 on t1.Project = t3.Project and t1.Region = t3.Region\n  left join t4 on t1.Project = t4.Project and t1.Region = t4.Region\norder by\n  \"费用 (元)\" desc\nlimit\n  100000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "@",
+        "start": "yesterday",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561667289404599",
+      "type": "crosstable"
+    }
+  ],
+  "dashboardName": "dashboard-1663243113890-5301",
+  "description": "",
+  "displayName": "SLS账单分析"
+}

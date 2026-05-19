@@ -1,0 +1,2494 @@
+{
+  "attribute": {},
+  "charts": [
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "PS Hung告警",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029638558997023,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 6.80447773090909,
+        "zIndex": 79
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : PSProcessIsHung |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1585205929203",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Markdown",
+        "height": 0.5113636363636364,
+        "markdownStr": "<center><font color=grey>事件总数：${total}</font></center>",
+        "queryTimeType": 2,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.554054054054054,
+        "xPos": 0.2067567567567565,
+        "yPos": 2.940841367272728,
+        "zIndex": 80
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "* | SELECT count(1) as total",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1585206763178",
+      "type": "markdown"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "GPU Xid告警",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029638558997023,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.9635724933754,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 6.80447773090909,
+        "zIndex": 81
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NodeHasNvidiaXidError |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1586744365585",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 119,
+          "Namespace": 100,
+          "Pod名": 100,
+          "time": 146,
+          "事件源": 188,
+          "事件目标": 121,
+          "总数": 100,
+          "目标Namespace": 100,
+          "目标名": 235,
+          "等级": 100,
+          "类型": 127,
+          "组件": 100,
+          "详细内容": 844,
+          "详细内容采样": 100
+        },
+        "displayName": "GPU Xid告警",
+        "height": 4.306818,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(248,231,28,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "version": 2,
+        "width": 9.959459,
+        "xPos": -0.05,
+        "yPos": 30.57720500363637,
+        "zIndex": 82
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NodeHasNvidiaXidError  | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,  component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1586744715643",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "时间同步异常",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 8.429477730909088,
+        "zIndex": 83
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NTPIsDown |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1595316315008",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "VSwitch IP不足",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.971763556964444,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 8.429477730909088,
+        "zIndex": 84
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "InvalidVSwitchId.IpNotEnough or IpNotEnough |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1595316322784",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "网络资源异常",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.955156045803826,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.429477730909088,
+        "zIndex": 75
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ResourceInvalid |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1610942522565",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "网络资源分配失败",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.938548534643207,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.429477730909088,
+        "zIndex": 76
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : AllocResourceFailed |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1610942535808",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "网络资源释放失败",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 7.921941023482589,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 8.429477730909088,
+        "zIndex": 77
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DisposeResourceFailed |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1610942542907",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Conntrack Full",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 10.02038683090909,
+        "zIndex": 58
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : ConntrackFull |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c0ae5df15fbf34b47ba3a9684e6ee2bee1611747309593",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Warning事件趋势",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "auto"
+        },
+        "height": 2.2045455,
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKeys": [
+              "今天",
+              "昨天",
+              "上周"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.990511,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 3.781208524324323,
+        "yAxisOption": {
+          "min": "0",
+          "position": 3,
+          "show": true
+        },
+        "yPos": 0.974931958181818,
+        "zIndex": 51
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "k8s-event",
+            "name": "A",
+            "project": "k8s-log-cc6ac4865cdd64e789b0992deb8cb8d84",
+            "query": "level : Warning | select t as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 3600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+            "tokenQuery": "level : Warning | select t as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 3600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-24h",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "fieldName": "time",
+            "format": "%Y-%m-%d %H:%M:%S",
+            "name": "TA",
+            "type": "parseTimestamp"
+          }
+        ]
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658753",
+      "type": "linepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "namespace",
+        "filterData": [
+          {
+            "alias": "Namespace",
+            "key": "eventId.involvedObject.namespace",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.81901735,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.9702048,
+        "xPos": 6.093141824324324,
+        "yPos": -0.05681818181818182,
+        "zIndex": 52
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.involvedObject.namespace\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658754",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "name",
+        "filterData": [
+          {
+            "alias": "Name",
+            "key": "eventId.involvedObject.name",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.81901735,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.8483908,
+        "xPos": 8.112261324324324,
+        "yPos": -0.05681818181818182,
+        "zIndex": 53
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.involvedObject.name\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658755",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "reason",
+        "filterData": [
+          {
+            "alias": "事件类型",
+            "key": "eventId.reason",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.81901735,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 2.1421778,
+        "xPos": 1.838321524324324,
+        "yPos": -0.05681818181818182,
+        "zIndex": 54
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": true,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.reason\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658756",
+      "type": "droplist"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Error事件趋势",
+          "fixedTime": false,
+          "showBackground": false,
+          "showBorder": false,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 40,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "lineWidth": 2,
+          "pointSize": 5,
+          "seriesStyle": "lines",
+          "showPoint": "auto"
+        },
+        "height": 2.2045455,
+        "isTimeSeries": true,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "time",
+            "yAxisKeys": [
+              "今天",
+              "昨天",
+              "上周"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 2.7058394,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": 7.032795324324323,
+        "yAxisOption": {
+          "min": "0",
+          "position": 3,
+          "show": true
+        },
+        "yPos": 0.963568558181818,
+        "zIndex": 55
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "logstore": "k8s-event",
+            "name": "A",
+            "project": "k8s-log-cc6ac4865cdd64e789b0992deb8cb8d84",
+            "query": "level : Error | select t as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 3600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time",
+            "tokenQuery": "level : Error | select t as time , d[1] as \"今天\", d[2] as \"昨天\", d[3] as \"上周\"  from( select t, ts_compare(pv, 86400,604800 ) as d from(select from_unixtime(__time__ - __time__ % 3600) as t, count(1) as pv from log group by t order by t limit 1440  ) group by t ) HAVING time is not  null order by time"
+          }
+        ],
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-24h",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "fieldName": "time",
+            "format": "%Y-%m-%d %H:%M:%S",
+            "name": "TA",
+            "type": "parseTimestamp"
+          }
+        ]
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658757",
+      "type": "linepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "host",
+        "filterData": [
+          {
+            "alias": "Host",
+            "key": "hostname",
+            "list": [],
+            "type": "filter"
+          }
+        ],
+        "height": 0.81901735,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.998867,
+        "xPos": 4.041882324324323,
+        "yPos": -0.05681818181818182,
+        "zIndex": 56
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"hostname\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-86400s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658758",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "资源不足",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.027423356756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 5.179477958181818,
+        "zIndex": 57
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : FailedScheduling and Insufficient | SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : FailedScheduling and Insufficient |  SELECT diff[1] as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658759",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "驱逐",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.026756756756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 3.588568858181818,
+        "zIndex": 58
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "* | \nSELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as  diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname , max_by(\"eventId.reason\", __time__) as reason from log  where \"eventId.reason\" like '%Evict%') )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658760",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "镜像拉取失败",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.026756756756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.955135135135136,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 3.588568858181818,
+        "zIndex": 59
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : Failed and eventId.message : ImagePullBackOff |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : Failed and eventId.message : ImagePullBackOff |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658764",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 119,
+          "Namespace": 100,
+          "Pod名": 100,
+          "time": 146,
+          "事件源": 188,
+          "事件目标": 121,
+          "总数": 100,
+          "目标Namespace": 100,
+          "目标名": 235,
+          "等级": 100,
+          "类型": 127,
+          "组件": 100,
+          "详细内容": 844,
+          "详细内容采样": 100
+        },
+        "displayName": "Pod驱逐事件列表",
+        "height": 4.306818,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(248,231,28,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "version": 2,
+        "width": 9.959459,
+        "xPos": -0.05,
+        "yPos": 21.66811445818182,
+        "zIndex": 61
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NodeControllerEviction  | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,  component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658766",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "namespace": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 115,
+          "Namespace": 115,
+          "Pod名": 115,
+          "time": 148,
+          "事件源": 187,
+          "事件目标": 120,
+          "总数": 115,
+          "目标Namespace": 115,
+          "目标名": 233,
+          "等级": 115,
+          "类型": 125,
+          "组件": 115,
+          "详细内容": 848,
+          "详细内容采样": 115
+        },
+        "displayName": "Pod OOM事件列表",
+        "height": 5.2045455,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(248,231,28,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "version": 2,
+        "width": 9.948648,
+        "xPos": -0.05,
+        "yPos": 16.31584145818182,
+        "zIndex": 62
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : OOMKilling or eventId.reason : PodOOMKilling | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,  component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658767",
+      "type": "table"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 142,
+          "Namespace": 100,
+          "Pod名": 100,
+          "time": 146,
+          "事件源": 188,
+          "事件目标": 121,
+          "总数": 100,
+          "目标Namespace": 100,
+          "目标名": 188,
+          "等级": 100,
+          "类型": 162,
+          "组件": 100,
+          "详细内容": 764,
+          "详细内容采样": 100
+        },
+        "displayName": "重要事件列表",
+        "height": 5.0113635,
+        "highlight": false,
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": false,
+        "transpose": false,
+        "version": 2,
+        "width": 9.954054,
+        "xPos": -0.05,
+        "yPos": 35.02038682181817,
+        "zIndex": 63
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Warning or level : Error  | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time, level as \"等级\", component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576224658768",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,0)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,0)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "",
+        "description": "Warning事件数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "警告事件数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 1.102272727272727,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.943243243243243,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.595569672455659,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 0.958782235303622,
+        "zIndex": 64
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Warning | SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "-86400s",
+        "tokenQuery": "level : Warning | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576225574856",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareColors": [
+          {
+            "color": "rgba(245,34,45,1)"
+          },
+          {
+            "color": "rgba(255,255,255,0)"
+          },
+          {
+            "color": "rgba(55,214,122,1)"
+          },
+          {
+            "color": "rgba(255,255,255,0)"
+          }
+        ],
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "Error事件数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "错误事件数",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 1.079545454545455,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "version": 2,
+        "width": 1.943243243243243,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.598127210462415,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 2.085149630878018,
+        "zIndex": 65
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "level : Error | SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "-86400s",
+        "tokenQuery": "level : Error | select diff[1] as total, round(100.0*  (diff[1] - diff[2]) / diff[2], 2) as delta from (select compare(total, 86400) as diff from  ( select count(1) as total from log ))",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576225574857",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Pod OOM",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.026756756756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.935945945945946,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 3.588568858181818,
+        "zIndex": 66
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : OOMKilling or eventId.reason : PodOOMKilling  |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message from ( SELECT compare(total, 86400) as  diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname  from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576398777896",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Pod Pending",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "fontSizeAdaptive": false,
+        "formatType": "number",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 14,
+        "version": 2,
+        "width": 2.026756756756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.916756756756755,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 3.588568858181818,
+        "zIndex": 68
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "* | SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, namespace, name, 'PodPending' as reason from  ( SELECT compare(total, 86400) as  diff, arbitrary(namespace) as namespace, arbitrary(name) as name from ( SELECT COUNT(*) as total, max_by(\"object-namespace\", schedule_time) as namespace, max_by(\"object-name\", schedule_time) as name from (SELECT \"object-namespace\", \"object-name\", max(CASE WHEN \"reason\" = 'Started' then __time__ ELSE  0 end) as start_time, max(CASE WHEN \"reason\" = 'Scheduled' then __time__ ELSE  0 end) as schedule_time from log group by \"object-namespace\", \"object-name\" HAVING  start_time = 0 and schedule_time > 0 and cast(to_unixtime(now()) as bigint) - schedule_time > 60 order by schedule_time)))",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576398998341",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点OOM",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.027423356756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.955801735135135,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 5.179477958181818,
+        "zIndex": 69
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : SystemOOM |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576399739413",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "DockerHung",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.026756756756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 7.897567567567568,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 3.588568858181818,
+        "zIndex": 67
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : DockerHung |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : Failed and eventId.message : ImagePullBackOff |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576400188729",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Pod启动失败",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.027423356756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.937279145945946,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 5.179477958181818,
+        "zIndex": 70
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : Failed and eventId.involvedObject.kind : Pod not eventId.message : ImagePullBackOff |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : FailedScheduling and Insufficient |  SELECT diff[1] as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576400210338",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点重启",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.027423356756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.918756556756756,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 5.179477958181818,
+        "zIndex": 71
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "(eventId.reason : NodeRebooted or eventId.reason : Rebooted) |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : FailedScheduling and Insufficient |  SELECT diff[1] as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576400216493",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点磁盘空间不足",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.027423356756757,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 7.900233967567568,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 5.179477958181818,
+        "zIndex": 72
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NodeHasDiskPressure |   SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576400225606",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点FD不足",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029638558997023,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 3.947265106426477,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 6.80447773090909,
+        "zIndex": 73
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : NodeHasFDPressure |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1576400236975",
+      "type": "number"
+    },
+    {
+      "action": {
+        "blank": true,
+        "filterInherit": false,
+        "logStoreFilter": "eventId.reason : ${reason}",
+        "logStoreName": "k8s-event",
+        "slsLinkParam": false,
+        "timeRange": -1,
+        "type": "NewLogstore"
+      },
+      "display": {
+        "displayName": "Top 10重要事件趋势",
+        "height": 4.704545527272731,
+        "showBackground": true,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "version": 2,
+        "width": 9.924845545445352,
+        "xAxis": [
+          "Time"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "reason"
+        ],
+        "yPos": 11.61129593090909,
+        "zAxis": "总数",
+        "zIndex": 74
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "not level :Normal  | select Time, \"reason\", \"总数\" from (select time_series(__time__, '1h', '%m-%d %H', '0') as Time , reason as reason, count(1) as \"总数\" from log group by Time, reason  order by Time asc )  HAVING reason is not null and  reason in (select reason from log where reason != 'Normal' group by reason order by count(1) desc limit 10) limit 10000",
+        "start": "-86400s",
+        "tokenQuery": "* | select Time, Level, \"总数\" from (select time_series(__time__, '1h', '%Y-%m-%d %H:%i:%S', '0') as Time , level as Level, count(1) as \"总数\" from log group by Time, Level   order by Time asc ) having Level is not null limit 10000",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577022089101",
+      "type": "colorblock"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": false,
+        "displayName": "level",
+        "filterData": [
+          {
+            "alias": "事件等级",
+            "key": "level",
+            "list": [
+              "Normal",
+              "Warning",
+              "Error"
+            ],
+            "type": "filter"
+          }
+        ],
+        "height": 0.8181818,
+        "showBackground": true,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 1.8837838,
+        "xPos": -0.05,
+        "yPos": -0.05681818181818182,
+        "zIndex": 75
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "k8s-event",
+        "query": "* | select ns from ( select \"eventId.reason\" as ns, count(1) as total from log group by ns having ns is not null  order by total desc  limit 100 )",
+        "start": "-3600s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577022178979",
+      "type": "droplist"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Pod OOM",
+        "fontColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "fontSize": 24,
+        "formatType": "milli",
+        "height": 2.7954545,
+        "numberType": "number",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": false,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 9.950848,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": -0.05,
+        "yPos": 0.668114058181818,
+        "zIndex": 50
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : OOMKilling |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message from ( SELECT compare(total, 86400) as  diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname  from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577256947099",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "displayName": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577349887531",
+        "height": 1.920454545454546,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "svg": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDg0cHgiIGhlaWdodD0iNDg0cHgiIHZpZXdCb3g9IjAgMCA0ODQgNDg0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPCEtLSBHZW5lcmF0b3I6IFNrZXRjaCA2MCAoODgxMDMpIC0gaHR0cHM6Ly9za2V0Y2guY29tIC0tPgogICAgPHRpdGxlPjHlpIfku708L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0i6aG16Z2iLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSLmlrnmoYgy5pyb6L+c6ZWc5aSH5Lu9IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtOTYwLjAwMDAwMCwgLTI5OC4wMDAwMDApIiBmaWxsPSIjMDBDMkRDIiBmaWxsLXJ1bGU9Im5vbnplcm8iPgogICAgICAgICAgICA8cGF0aCBkPSJNMTIwMiwyOTggQzEzMzUuNjUyOTEsMjk4IDE0NDQsNDA2LjM0NzA5MSAxNDQ0LDU0MCBDMTQ0NCw2NzMuNjUyOTA5IDEzMzUuNjUyOTEsNzgyIDEyMDIsNzgyIEMxMDY4LjM0NzA5LDc4MiA5NjAsNjczLjY1MjkwOSA5NjAsNTQwIEM5NjAsNDA2LjM0NzA5MSAxMDY4LjM0NzA5LDI5OCAxMjAyLDI5OCBaIE0xMjAxLjk5OSwzMzAgQzEwODYuMDIwMiwzMzAgOTkyLDQyNC4wMjAyMDMgOTkyLDU0MCBDOTkyLDU2OS40MDAwODcgOTk4LjA0MTYyNCw1OTcuMzg5MDc3IDEwMDguOTUxMDcsNjIyLjc5MzE2MyBMMTA0My40OTc0Miw2MDIuODQ4MjQ5IEwxMDY4LjQ5NzQyLDY0Ni4xNDk1MTkgTDEwMzQuMDI0NDYsNjY2LjA1MzAxOCBDMTA0Ny4yMTMwOCw2ODMuNTk5OTEgMTA2My4wODcxLDY5OS4wMTMzNTggMTA4MS4wMzYyNCw3MTEuNjgzMDY2IEwxMTEyLjE2NTg3LDY1Ny43NjU0MjMgQzExMDkuNzA5MTUsNjU1Ljk0MzM5MyAxMTA4LjExNjkxLDY1My4wMjE3MTMgMTEwOC4xMTY5MSw2NDkuNzI4MTQ2IEMxMTA4LjExNjkxLDY0Ny40NjMwMjMgMTEwOC44NzAwMiw2NDUuMzczNzk5IDExMTAuMTM5NTEsNjQzLjY5NzIxIEwxMTA2LjExNjkxLDYzNi43MjgxNDYgTDExMTMuMDQ1MTIsNjMyLjcyODE0NiBMMTExNy4xMTQ4MSw2MzkuNzc3NzMgQzExMTcuNDQ0NCw2MzkuNzQ0OTM3IDExMTcuNzc4NjksNjM5LjcyODE0NiAxMTE4LjExNjkxLDYzOS43MjgxNDYgQzExMjMuNjM5NzYsNjM5LjcyODE0NiAxMTI4LjExNjkxLDY0NC4yMDUyOTggMTEyOC4xMTY5MSw2NDkuNzI4MTQ2IEMxMTI4LjExNjkxLDY1Mi44MDg2ODYgMTEyNi43MjM5OCw2NTUuNTYzODkxIDExMjQuNTMzNiw2NTcuMzk4Mjc0IEwxMTc3LjE1MzE0LDc0OC41NDU0NyBDMTE4NS4zMDE3NSw3NDkuNTA2MDA5IDExOTMuNTkzMTksNzUwIDEyMDIsNzUwIEMxMjU5Ljk4OTksNzUwIDEzMTIuNDg5OSw3MjYuNDk0OTQ5IDEzNTAuNDkyNDIsNjg4LjQ5MjQyNCBMMTIwMiw1NDAgTDEyMDEuOTk5LDMzMCBaIE0xMTIyLjU4MDkxLDY3MC4wMTkxNDYgTDExMjIuNTc5MjYsNzM0LjQ2MjMxMiBDMTEzNi43MTAzOSw3NDAuMjM5NjE4IDExNTEuNjExNjEsNzQ0LjUyMTM5MyAxMTY3LjA4NjE4LDc0Ny4xMTA4OTQgTDExMjIuNTgwOTEsNjcwLjAxOTE0NiBaIE0xMTE0LjU4MDkxLDY2OS41ODQxNDYgTDEwODcuNjc2Myw3MTYuMTgyOTgxIEMxMDk2LjIzMzg4LDcyMS43NDczMiAxMTA1LjIyMjE3LDcyNi43MDUwOCAxMTE0LjU4MDIxLDczMC45OTUzMTMgTDExMTQuNTgwOTEsNjY5LjU4NDE0NiBaIE0xMTE4LDY0NyBDMTExNi4zNDMxNSw2NDcgMTExNSw2NDguMzQzMTQ2IDExMTUsNjUwIEMxMTE1LDY1MS42NTY4NTQgMTExNi4zNDMxNSw2NTMgMTExOCw2NTMgQzExMTkuNjU2ODUsNjUzIDExMjEsNjUxLjY1Njg1NCAxMTIxLDY1MCBDMTEyMSw2NDguMzQzMTQ2IDExMTkuNjU2ODUsNjQ3IDExMTgsNjQ3IFogTTExMDcuMTI5NDYsNTU3LjA2MjE3OCBMMTE0MC4xMjk0Niw2MTQuMjE5ODU0IEwxMDc2LjA0MzU4LDY1MS4yMTk4NTQgTDEwNDMuMDQzNTgsNTk0LjA2MjE3OCBMMTEwNy4xMjk0Niw1NTcuMDYyMTc4IFogTTEzNTUuNSw2MTYgQzEzNTQuNjcxNTcsNjE2IDEzNTQsNjE2LjY3MTU3MyAxMzU0LDYxNy41IEMxMzU0LDYxOC4zMjg0MjcgMTM1NC42NzE1Nyw2MTkgMTM1NS41LDYxOSBDMTM1Ni4zMjg0Myw2MTkgMTM1Nyw2MTguMzI4NDI3IDEzNTcsNjE3LjUgQzEzNTcsNjE2LjY3MTU3MyAxMzU2LjMyODQzLDYxNiAxMzU1LjUsNjE2IFogTTExNzQuNjQzNTUsNTEwIEwxMjE0LjY0MzU1LDU3OS4yODIwMzIgTDExNDcuMDkzNTcsNjE4LjI4MjAzMiBMMTEwNy4wOTM1Nyw1NDkgTDExNzQuNjQzNTUsNTEwIFogTTEyOTguNSw1NzEgQzEyOTYuNTY3LDU3MSAxMjk1LDU3Mi41NjcwMDMgMTI5NSw1NzQuNSBDMTI5NSw1NzYuNDMyOTk3IDEyOTYuNTY3LDU3OCAxMjk4LjUsNTc4IEMxMzAwLjQzMyw1NzggMTMwMiw1NzYuNDMyOTk3IDEzMDIsNTc0LjUgQzEzMDIsNTcyLjU2NzAwMyAxMzAwLjQzMyw1NzEgMTI5OC41LDU3MSBaIE0xMTgzLjg3NTUsNTIxLjk5MDMyOSBDMTE4OS43NTM5NCw1MjQuOTg3Mjk5IDExOTYuMzUzMDYsNTMxLjcyNDY0NyAxMjAxLjUxODU5LDU0MC42NzE2MDYgQzEyMDYuNjg0MDYsNTQ5LjYxODQ2NiAxMjA5LjIxOTIyLDU1OC43MDIwNDEgMTIwOC44NzU1Miw1NjUuMjkxMzk0IEwxMTgzLjg3NTUsNTIxLjk5MDMyOSBaIE0xMzgyLjE3MTQzLDU0OCBMMTM4MS4wMjEsNTU0Ljk2NTg1MyBMMTM3Niw1NTYgTDEzODEuMDIxLDU1Ny4wMzQxNDcgTDEzODIuMTcxNDMsNTY0IEwxMzgzLjMyMTg1LDU1Ny4wMzQxNDcgTDEzODguMzQyODYsNTU2IEwxMzgzLjMyMTg1LDU1NC45NjU4NTMgTDEzODIuMTcxNDMsNTQ4IFogTTEzMjguNjU3MTQsNTEwIEwxMzI1LjkyNDg5LDUyNi41NDM5IEwxMzE0LDUyOSBMMTMyNS45MjQ4OSw1MzEuNDU2MSBMMTMyOC42NTcxNCw1NDggTDEzMzEuMzg5NCw1MzEuNDU2MSBMMTM0My4zMTQyOSw1MjkgTDEzMzEuMzg5NCw1MjYuNTQzOSBMMTMyOC42NTcxNCw1MTAgWiBNMTIzOC4xNzE0Myw0OTcgTDEyMzcuMjM2NzEsNTAyLjY1OTc1NSBMMTIzMy4xNTcxNCw1MDMuNSBMMTIzNy4yMzY3MSw1MDQuMzQwMjQ1IEwxMjM4LjE3MSw1MDkuOTk5IEwxMjM5LjEwNjE1LDUwNC4zNDAyNDUgTDEyNDMuMTg1NzEsNTAzLjUgTDEyMzkuMTA2MTUsNTAyLjY1OTc1NSBMMTIzOC4xNzE0Myw0OTcgWiBNMTI5OC41LDQ5MCBDMTI5Ni41NjcsNDkwIDEyOTUsNDkxLjU2NzAwMyAxMjk1LDQ5My41IEMxMjk1LDQ5NS40MzI5OTcgMTI5Ni41NjcsNDk3IDEyOTguNSw0OTcgQzEzMDAuNDMzLDQ5NyAxMzAyLDQ5NS40MzI5OTcgMTMwMiw0OTMuNSBDMTMwMiw0OTEuNTY3MDAzIDEzMDAuNDMzLDQ5MCAxMjk4LjUsNDkwIFogTTEzNzQuNSw0NjUgQzEzNzMuNjcxNTcsNDY1IDEzNzMsNDY1LjY3MTU3MyAxMzczLDQ2Ni41IEMxMzczLDQ2Ny4zMjg0MjcgMTM3My42NzE1Nyw0NjggMTM3NC41LDQ2OCBDMTM3NS4zMjg0Myw0NjggMTM3Niw0NjcuMzI4NDI3IDEzNzYsNDY2LjUgQzEzNzYsNDY1LjY3MTU3MyAxMzc1LjMyODQzLDQ2NSAxMzc0LjUsNDY1IFogTTEzNDMuNjcxNDMsNDEyIEwxMzQwLjAwNDQ1LDQzNC4yMDM2NTUgTDEzMjQsNDM3LjUgTDEzNDAuMDA0NDUsNDQwLjc5NjM0NSBMMTM0My42NzE0Myw0NjMgTDEzNDcuMzM4NCw0NDAuNzk2MzQ1IEwxMzYzLjM0Mjg2LDQzNy41IEwxMzQ3LjMzODQsNDM0LjIwMzY1NSBMMTM0My42NzE0Myw0MTIgWiBNMTI3MS41LDQ1NiBDMTI3MC42NzE1Nyw0NTYgMTI3MCw0NTYuNjcxNTczIDEyNzAsNDU3LjUgQzEyNzAsNDU4LjMyODQyNyAxMjcwLjY3MTU3LDQ1OSAxMjcxLjUsNDU5IEMxMjcyLjMyODQzLDQ1OSAxMjczLDQ1OC4zMjg0MjcgMTI3Myw0NTcuNSBDMTI3Myw0NTYuNjcxNTczIDEyNzIuMzI4NDMsNDU2IDEyNzEuNSw0NTYgWiBNMTIzOC42NTcxNCw0MTIgTDEyMzUuOTI0ODksNDI4LjU0MzkgTDEyMjQsNDMxIEwxMjM1LjkyNDg5LDQzMy40NTYxIEwxMjM4LjY1NzE0LDQ1MCBMMTI0MS4zODk0LDQzMy40NTYxIEwxMjUzLjMxNDI5LDQzMSBMMTI0MS4zODk0LDQyOC41NDM5IEwxMjM4LjY1NzE0LDQxMiBaIE0xMjMzLjUsMzY4IEMxMjMyLjY3MTU3LDM2OCAxMjMyLDM2OC42NzE1NzMgMTIzMiwzNjkuNSBDMTIzMiwzNzAuMzI4NDI3IDEyMzIuNjcxNTcsMzcxIDEyMzMuNSwzNzEgQzEyMzQuMzI4NDMsMzcxIDEyMzUsMzcwLjMyODQyNyAxMjM1LDM2OS41IEMxMjM1LDM2OC42NzE1NzMgMTIzNC4zMjg0MywzNjggMTIzMy41LDM2OCBaIE0xMjkwLDM2MiBDMTI4OS40NDc3MiwzNjIgMTI4OSwzNjIuNDQ3NzE1IDEyODksMzYzIEMxMjg5LDM2My41NTIyODUgMTI4OS40NDc3MiwzNjQgMTI5MCwzNjQgQzEyOTAuNTUyMjgsMzY0IDEyOTEsMzYzLjU1MjI4NSAxMjkxLDM2MyBDMTI5MSwzNjIuNDQ3NzE1IDEyOTAuNTUyMjgsMzYyIDEyOTAsMzYyIFoiIGlkPSIx5aSH5Lu9Ij48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=",
+        "version": 2,
+        "width": 1.421167883211678,
+        "xPos": 0.3371314158075589,
+        "yPos": 0.9522050036363632,
+        "zIndex": 75
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "",
+        "start": "-900s",
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1577349887531",
+      "type": "svg"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点Pid不足",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029638558997023,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 5.930957719477551,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 6.80447773090909,
+        "zIndex": 76
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : PIDPressure or eventId.reason : NodeHasPIDPressure  |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1579147216569",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "节点PLEG告警",
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": false,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "version": 2,
+        "width": 2.029638558997023,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 7.914650332528629,
+        "yAxis": [
+          "lastday"
+        ],
+        "yPos": 6.80447773090909,
+        "zIndex": 77
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.message : \"PLEG is not healthy\" |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1579147737036",
+      "type": "number"
+    },
+    {
+      "action": {
+        "Host": {},
+        "Namespace": {},
+        "Pod名": {},
+        "time": {},
+        "事件源": {},
+        "事件目标": {},
+        "总数": {
+          "type": "disabled"
+        },
+        "目标Namespace": {},
+        "目标名": {},
+        "等级": {
+          "type": "disabled"
+        },
+        "类型": {
+          "type": "disabled"
+        },
+        "组件": {
+          "type": "disabled"
+        },
+        "详细内容": {
+          "type": "disabled"
+        },
+        "详细内容采样": {}
+      },
+      "display": {
+        "closeDefault": false,
+        "closeSearch": false,
+        "closeSort": false,
+        "closedKeys": [],
+        "customColumnWidth": {
+          "Host": 119,
+          "Namespace": 100,
+          "Pod名": 100,
+          "time": 146,
+          "事件源": 188,
+          "事件目标": 121,
+          "总数": 100,
+          "目标Namespace": 100,
+          "目标名": 235,
+          "等级": 100,
+          "类型": 127,
+          "组件": 100,
+          "详细内容": 844,
+          "详细内容采样": 100
+        },
+        "displayName": "PLEG告警列表",
+        "height": 4.306818,
+        "highlight": true,
+        "highlightRules": [
+          {
+            "color": "rgba(248,231,28,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Warning",
+            "wholeline": true
+          },
+          {
+            "color": "rgba(244,68,74,0.5)",
+            "cols": [
+              "等级"
+            ],
+            "rule": "=",
+            "threshold": "Error"
+          }
+        ],
+        "pageSize": 20,
+        "realWidth": true,
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "sparkline": true,
+        "sparklineRules": [],
+        "transpose": false,
+        "version": 2,
+        "width": 9.959459,
+        "xPos": -0.05,
+        "yPos": 26.12266045818182,
+        "zIndex": 78
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.message : \"PLEG is not healthy\"  | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,  component as \"事件源\", \"object-kind\" as \"事件目标\", reason as \"类型\",  \"object-name\" as \"目标名\", \"hostname\" as \"Host\",  message as \"详细内容\" from log order by time desc limit 100",
+        "start": "-86400s",
+        "tokenQuery": "eventId.involvedObject.name : ${ObjectName} and eventId.involvedObject.namespace : ${ObjectNamespace} and eventId.involvedObject.kind : ${ObjectKind} | select date_format(__time__, '%Y-%m-%d %H:%i:%S') as time,level as \"等级\", reason as \"类型\",  message as \"详细内容\" from log order by time desc limit 100",
+        "tokens": [
+          {
+            "end": 52,
+            "key": "ObjectName",
+            "mode": "global",
+            "start": 30,
+            "value": "nginx-deployment-basic"
+          },
+          {
+            "end": 99,
+            "key": "ObjectNamespace",
+            "mode": "global",
+            "start": 92,
+            "value": "default"
+          },
+          {
+            "end": 144,
+            "key": "ObjectKind",
+            "mode": "global",
+            "start": 134,
+            "value": "Deployment"
+          }
+        ],
+        "topic": ""
+      },
+      "title": "k8s-log-c6171f8759d8d4ab5897c54d89d7d844c1579149239217",
+      "type": "table"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 0,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "次",
+        "description": "次数/对比昨天",
+        "descriptionSize": 12,
+        "displayName": "Spot ECI to be released",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "milli",
+        "height": 1.5909091,
+        "numberType": "compare",
+        "showBackground": false,
+        "showBorder": true,
+        "showTime": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "次",
+        "unitSize": 12,
+        "width": 2.029338434785328,
+        "xAxis": [
+          "today"
+        ],
+        "xPos": 1.971763556964444,
+        "yAxis": [
+          "lastday"
+        ],
+        "yAxisFormatType": "milli",
+        "yPos": 10.03175046727273,
+        "zIndex": 58
+      },
+      "search": {
+        "end": "now",
+        "logstore": "k8s-event",
+        "query": "eventId.reason : SpotToBeReleased |  SELECT cast(diff[1] as bigint) as today, cast((diff[1] - diff[2]) as bigint) as lastday, hostname, kind, namespace, name, message, reason from ( SELECT compare(total, 86400) as diff, arbitrary(hostname) as hostname, arbitrary(kind) as kind, arbitrary(namespace) as namespace, arbitrary(name) as name, arbitrary(message) as message, arbitrary(reason) as reason from (SELECT COUNT(*) as total, max_by(\"object-kind\", __time__) as kind, max_by(\"object-namespace\", __time__) as namespace, max_by(\"object-name\", __time__) as name, max_by(\"message\", __time__) as message, max_by(\"hostname\", __time__) as hostname, max_by(\"eventId.reason\", __time__) as reason from log) )",
+        "start": "today",
+        "tokenQuery": "eventId.reason : NodeControllerEviction |  SELECT cast (diff[1] as bigint) as today, round(100.0 * (diff[1] - diff[2]) / diff[2], 2) as delta from ( SELECT compare(total, 86400) as  diff from (SELECT COUNT(*) as total from log) )",
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "k8s-log-cc6ac4865cdd64e789b0992deb8cb8d841673349227824",
+      "type": "number"
+    }
+  ],
+  "dashboardName": "event_center_cn",
+  "description": "",
+  "displayName": "Kubernetes事件中心V1.6"
+}

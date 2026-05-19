@@ -1,0 +1,1424 @@
+{
+  "attribute": {
+    "type": "free"
+  },
+  "charts": [
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "Expenses/Day-to-Day Increase",
+        "descriptionSize": 12,
+        "displayName": "Expenses Yesterday",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 2.401223241590214,
+        "xAxis": [
+          "Expenses_today"
+        ],
+        "xPos": -0.05,
+        "yAxis": [
+          "percent"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 0.75,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "* | select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from instance_bill where productcode='ecs' and tag like '%%'))",
+        "start": "yesterday",
+        "tokenQuery": "source:bill not abcd and PretaxAmount> 0 and ecs | select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokenQueryMap": {
+          "0": "* | select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'))"
+        },
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410588",
+      "type": "number"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "compareSize": 16,
+        "compareUnit": "%",
+        "description": "Expenses/Month-on-Month Increase",
+        "descriptionSize": 12,
+        "displayName": "Expenses This Month",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "fontSizeAdaptive": true,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "compare",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "threshold": 0,
+        "unit": "",
+        "unitSize": 12,
+        "width": 2.47339380196523,
+        "xAxis": [
+          "Expenses_today"
+        ],
+        "xPos": 2.445810792511106,
+        "yAxis": [
+          "percent"
+        ],
+        "yAxisFormatType": "number",
+        "yPos": 0.75,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "*| select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from instance_bill where productcode='ecs' and tag like '%%'))",
+        "start": "thismonth",
+        "tokenQuery": "source:bill  and  ProductCode:ecs| select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",di[3]*100-100 as percent from(select compare(fee, 86400) as di  from(select  sum(PretaxAmount) as fee from log))",
+        "tokenQueryMap": {
+          "0": "*| select round(di[1],3) as \"Expenses_today\",di[2] as \"Expenses_yesterday\",round(di[3]*100-100,3) as percent from(select compare(fee, 2592000) as di  from(select  sum(PretaxAmount) as fee from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'))"
+        },
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410589",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410590",
+        "height": 2.977272727272727,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 3.022727272727273,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select  date_format(__time__,'%b %e, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%'  group by t order by t",
+            "tokenQuery": "* | select  date_format(__time__,'%b %e, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'  group by t order by t"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410590",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in 7 Days",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 1.647727272727273,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 5.977272727272728,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*| select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%' group by \"Date\" order by \"Date\"",
+            "tokenQuery": "*| select  date_format(__time__,'%b %e, %Y') as \"Date\",  round(sum(PretaxAmount),3)  as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by \"Date\" order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-7d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410591",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Expenses in 6 Months",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410592",
+        "height": 3.125,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 7.625,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select t, \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='ecs' and tag like '%%' group by t order by t)) where t > mt",
+            "tokenQuery": "* | select t, \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by t order by t)) where t > mt"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410592",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in 6 Months",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 1.840909090909091,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 10.76136363636364,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*| select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='ecs' and tag like '%%' group by t order by t)) where t > mt",
+            "tokenQuery": "*| select t as  \"Time\", \"Expenses\" from(select *,min(t) over() as mt from( select  date_format(__time__,'%b, %Y') as t,  round(sum(PretaxAmount),3)  as \"Expenses\"  from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by t order by t)) where t > mt"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "absolute",
+        "logstore": "@",
+        "query": "@",
+        "start": "-210d",
+        "timeSpanType": "custom",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410593",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Top 10 Instances",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.011363636363637,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 12.56818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select case when rnk =1 then instanceid else '' end as \"Instance\", billingitem as \"Billing_item\", concat(cast(Usage as varchar),'(',UsageUnit,')')  as \"Usage\", fee as \"Expenses\",concat(cast(round(Percent,3) as varchar),'%') as \"Compared_with_last_month\", case when rnk = 1 then cast(round(totalFee,3) as varchar) else '' end as \"Total_expenses\" from(select instanceId,fee, billingitem, rank() over(partition by instanceid order by fee desc) as rnk ,sum(fee) over(partition by instanceid)  as totalFee, Usage, Percent,UsageUnit  from(select instanceid, billingitem, d1[1] as Usage, d2[1] as fee, round(d2[3]*100-100,3) as percent, UsageUnit from( select instanceid, BillingItem,compare(usage,604800) as d1, compare(fee,604800) as d2, arbitrary(UsageUnit) as UsageUnit from(  select  BillingItem,InstanceID  , sum(Usage) as Usage ,round(sum(PretaxAmount),3)  as fee, arbitrary(UsageUnit) as UsageUnit from instance_bill where productcode='ecs' and tag like '%%' group by InstanceID,BillingItem   ) group by instanceid, BillingItem)))  where Usage is not null order by totalFee desc, rnk limit 1000",
+            "tokenQuery": "* | select case when rnk =1 then instanceid else '' end as \"Instance\", billingitem as \"Billing_item\", concat(cast(Usage as varchar),'(',UsageUnit,')')  as \"Usage\", fee as \"Expenses\",concat(cast(round(Percent,3) as varchar),'%') as \"Compared_with_last_month\", case when rnk = 1 then cast(round(totalFee,3) as varchar) else '' end as \"Total_expenses\" from(select instanceId,fee, billingitem, rank() over(partition by instanceid order by fee desc) as rnk ,sum(fee) over(partition by instanceid)  as totalFee, Usage, Percent,UsageUnit  from(select instanceid, billingitem, d1[1] as Usage, d2[1] as fee, round(d2[3]*100-100,3) as percent, UsageUnit from( select instanceid, BillingItem,compare(usage,604800) as d1, compare(fee,604800) as d2, arbitrary(UsageUnit) as UsageUnit from(  select  BillingItem,InstanceID  , sum(Usage) as Usage ,round(sum(PretaxAmount),3)  as fee, arbitrary(UsageUnit) as UsageUnit from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by InstanceID,BillingItem   ) group by instanceid, BillingItem)))  where Usage is not null order by totalFee desc, rnk limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410594",
+      "type": "tablepro"
+    },
+    {
+      "action": {
+        "type": "disabled"
+      },
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "Cumulative Instances in 30 Days",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 24,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 12,
+        "width": 2.47339380196523,
+        "xAxis": [
+          "Instances"
+        ],
+        "xPos": 4.994230757382488,
+        "yPos": 0.75,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "now",
+        "logstore": "aliyun_bill",
+        "query": "* |select count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs'and tag like '%%'",
+        "start": "-2592000s",
+        "tokenQuery": "ProductCode:ECS and source: instance_bill  |select count(distinct InstanceId) as \"Instances\"",
+        "tokenQueryMap": {
+          "0": "* |select count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs'and tag like '${{Tag|%%}}'"
+        },
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410595",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Instances per Day",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410596",
+        "height": 2.897727272727273,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Date",
+            "yAxisKeys": [
+              "Instances"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 17.56818181818182,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select  date_format(__time__,'%b %e, %Y') as \"Date\", count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs' and tag like '%%' group by \"Date\"  order by \"Date\"",
+            "tokenQuery": "* |select  date_format(__time__,'%b %e, %Y') as \"Date\", count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by \"Date\"  order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410596",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Instances per Day",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 1.863636363636364,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 20.46590909090909,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select  date_format(__time__,'%b %e, %Y') as \"Date\", count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs' and tag like '%%' group by \"Date\"  order by \"Date\"",
+            "tokenQuery": "* |select  date_format(__time__,'%b %e, %Y') as \"Date\", count(distinct InstanceId) as \"Instances\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by \"Date\"  order by \"Date\""
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410597",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bgColor": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "description": "",
+        "descriptionSize": 12,
+        "displayName": "Average Expenses per ECS Instance",
+        "fixedTime": false,
+        "fontColor": {
+          "a": 1,
+          "b": 85,
+          "g": 85,
+          "r": 85
+        },
+        "fontSize": 32,
+        "formatType": "number",
+        "height": 2.329545454545455,
+        "numberType": "number",
+        "showBackground": true,
+        "showBorder": true,
+        "showTitle": true,
+        "unit": "",
+        "unitSize": 14,
+        "width": 2.420483749055178,
+        "xAxis": [
+          "_col0"
+        ],
+        "xPos": 7.54265072225387,
+        "yPos": 0.75,
+        "zIndex": 10
+      },
+      "search": {
+        "end": "absolute",
+        "logstore": "aliyun_bill",
+        "query": "* | select round(sum(PretaxAmount)/ count(distinct(instanceid)),3) from instance_bill where productcode='ecs'and tag like '%%'",
+        "start": "-30d",
+        "timeSpanType": "custom",
+        "tokenQuery": "source:instance_bill | select sum(PretaxAmount)/ count(distinct(instanceid))",
+        "tokenQueryMap": {
+          "0": "* | select round(sum(PretaxAmount)/ count(distinct(instanceid)),3) from instance_bill where productcode='ecs'and tag like '${{Tag|%%}}'"
+        },
+        "tokens": [],
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410598",
+      "type": "number"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Instances and Expenses by Price Range",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410599",
+        "height": 2.909090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Price_range",
+            "yAxisKeys": [
+              "Instances"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 22.34090909090909,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"Price_range\" , counts as \"Instances\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low  from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top from(select m, sum(v) over( order by k ) as rnk  from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '%%'  group by InstanceId))),unnest(his) as t(k,v) order by k))))",
+            "tokenQuery": "* |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"Price_range\" , counts as \"Instances\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low  from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top from(select m, sum(v) over( order by k ) as rnk  from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'  group by InstanceId))),unnest(his) as t(k,v) order by k))))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410599",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "basicOptions": {
+          "displayName": "Regional Distribution of Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410600",
+        "height": 3,
+        "isTimeSeries": false,
+        "legendOption": {
+          "position": "right",
+          "show": true
+        },
+        "pieOption": {
+          "chartType": "PieChart",
+          "labelType": "type_percent",
+          "showLabel": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "numFieldKey": "amount",
+            "showFieldKey": "Region"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 3,
+        "xPos": -0.05,
+        "yPos": 27.45454545454544,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select Region, sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '%%' group by region order by amount desc limit 100",
+            "tokenQuery": "* | select Region, sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by region order by amount desc limit 100"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410600",
+      "type": "piepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses in Each Region",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 3,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 7.03,
+        "xPos": 2.93956138801474,
+        "yPos": 27.45454545454544,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select Region, round(sum(PretaxAmount),3) as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%' group by region order by \"Expenses\" desc limit 100",
+            "tokenQuery": "* | select Region, round(sum(PretaxAmount),3) as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by region order by \"Expenses\" desc limit 100"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410601",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Top 1000 ECS Instance Tags by Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.534090909090909,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 5.05,
+        "xPos": -0.05,
+        "yPos": 30.46590909090909,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select tag , round(sum(PretaxAmount),3) as \"Expenses\" from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr , PretaxAmount  from instance_bill where productcode='ecs' and tag like '%%' ) ,unnest(arr) as t(tag) group by  tag limit 1000",
+            "tokenQuery": "* |select tag , round(sum(PretaxAmount),3) as \"Expenses\" from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr , PretaxAmount  from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' ) ,unnest(arr) as t(tag) group by  tag limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410602",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Top 1000 ECS Instance Nicknames by Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 5.534090909090909,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 4.98,
+        "xPos": 4.98956138801474,
+        "yPos": 30.46590909090909,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select NickName, round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%' group by NickName order by  \"Expenses\" desc limit 1000",
+            "tokenQuery": "* |select NickName, round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by NickName order by  \"Expenses\" desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410603",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Expenses by Billing Method",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 1.772727272727273,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 39.15909090909091,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select case when SubscriptionType ='PayAsYouGo' then  'Pay-as-you-go' when  SubscriptionType='Subscription' then 'Subscription' else SubscriptionType end  as \"Billing_methods\", round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%' group by \"Billing_methods\" order by  \"Expenses\" desc limit 1000",
+            "tokenQuery": "* |select case when SubscriptionType ='PayAsYouGo' then  'Pay-as-you-go' when  SubscriptionType='Subscription' then 'Subscription' else SubscriptionType end  as \"Billing_methods\", round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by \"Billing_methods\" order by  \"Expenses\" desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410604",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "barOptions": {
+          "stackingMode": "none"
+        },
+        "basicOptions": {
+          "displayName": "Billing Methods",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410605",
+        "height": 3.193181818181818,
+        "isTimeSeries": false,
+        "legendOption": {
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "name": "A",
+            "xAxisKey": "Billing_methods",
+            "yAxisKeys": [
+              "Expenses"
+            ]
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true
+        },
+        "yPos": 35.97727272727273,
+        "zIndex": 10
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* |select case when SubscriptionType ='PayAsYouGo' then  'Pay-as-you-go' when  SubscriptionType='Subscription' then 'Subscription' else SubscriptionType end  as \"Billing_methods\", round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '%%' group by \"Billing_methods\" order by  \"Expenses\" desc limit 1000",
+            "tokenQuery": "* |select case when SubscriptionType ='PayAsYouGo' then  'Pay-as-you-go' when  SubscriptionType='Subscription' then 'Subscription' else SubscriptionType end  as \"Billing_methods\", round(sum(PretaxAmount),3)   as \"Expenses\" from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}' group by \"Billing_methods\" order by  \"Expenses\" desc limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410605",
+      "type": "barpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "actionOptions": [],
+        "basicOptions": {
+          "displayName": "Instances and Expenses by Price Range",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "columnOptions": {
+          "cellMode": "none",
+          "closeSearch": false,
+          "closeSort": false,
+          "columnAlign": "left",
+          "columnMinWidth": 100,
+          "fontSize": 12
+        },
+        "displayName": "",
+        "fieldOptions": [],
+        "height": 2.238636363636364,
+        "showTitle": true,
+        "standardOption": {
+          "format": "none",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "tableOptions": {
+          "pageSize": 20,
+          "showHeader": true,
+          "showMode": "pagination",
+          "showTotal": true,
+          "transparentBackground": false
+        },
+        "version": 2,
+        "width": 10,
+        "xPos": -0.05,
+        "yPos": 25.25,
+        "zIndex": 12
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "*  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"Price_range\" , counts as \"Instances\",round(total,3) as \"Expenses\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low ,total from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top,total from(select m, sum(v) over( order by k ) as rnk ,k*v as total from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '%%'  group by InstanceId))),unnest(his) as t(k,v) order by k))))",
+            "tokenQuery": "*  |  select concat('[',low, ',', coalesce(concat(top,')'),concat(low,']'))  ) as \"Price_range\" , counts as \"Instances\",round(total,3) as \"Expenses\" from(select cast(top as varchar) as top,counts , cast( lag(top,1,0) over(order by rnk) as varchar) as low ,total from(select rnk,rnk-  lag(rnk,1,0) over( order by rnk) as counts, round(element_at(m,rnk+1),3) as top,total from(select m, sum(v) over( order by k ) as rnk ,k*v as total from( select m, k,v from(select map_agg(rnk, amount) as m, arbitrary(his) as his from(  select  *, row_number() over(order by amount  )  as rnk , numeric_histogram(10, amount) over() as his   from( select  InstanceId,sum(PretaxAmount) as amount from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'  group by InstanceId))),unnest(his) as t(k,v) order by k))))"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "-2592000s",
+        "topic": "",
+        "transformers": [
+          {
+            "datasource": "A",
+            "name": "TA",
+            "type": "transposeRow"
+          }
+        ]
+      },
+      "title": "bill-analysis-12345678901234561671094410606",
+      "type": "tablepro"
+    },
+    {
+      "action": {},
+      "display": {
+        "aggChartOption": {
+          "chartType": "interval"
+        },
+        "basicOptions": {
+          "displayName": "Top 1000 ECS Instance Tags by Expenses",
+          "fixedTime": false,
+          "showBackground": true,
+          "showBorder": true,
+          "showTime": true,
+          "showTitle": true
+        },
+        "displayName": "bill-analysis-12345678901234561671094410607",
+        "graphOptions": {
+          "barStyle": "middle",
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "lineInterpolation": "smooth",
+          "lineWidth": 0,
+          "pointSize": 5,
+          "seriesStyle": "bars",
+          "showPoint": "auto"
+        },
+        "height": 5.534090909090909,
+        "isTimeSeries": false,
+        "legendOption": {
+          "actionMode": "toggle",
+          "maxContent": 30,
+          "position": "right",
+          "show": true
+        },
+        "queryOptionMap": {
+          "A": {
+            "aggField": "tag",
+            "name": "A",
+            "xAxisKey": "t",
+            "yAxisKey": "Expenses"
+          }
+        },
+        "showTitle": true,
+        "standardOption": {
+          "decimals": 8,
+          "format": "KMB",
+          "unit": {
+            "unit": "none"
+          }
+        },
+        "version": 2,
+        "width": 10,
+        "xAxisOption": {
+          "show": true
+        },
+        "xPos": -0.05,
+        "yAxisOption": {
+          "position": 3,
+          "show": true,
+          "stackingMode": "normal"
+        },
+        "yPos": 40.92045454545455,
+        "zIndex": 19
+      },
+      "search": {
+        "chartQueries": [
+          {
+            "datasource": "logstore",
+            "displayName": "A",
+            "logstore": "aliyun_bill",
+            "name": "A",
+            "project": "bill-analysis-1234567890123456",
+            "query": "* | select date_format(__time__,'%b %e, %Y') as t, round(sum(PretaxAmount),3) as \"Expenses\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from instance_bill where productcode='ecs' and tag like '%%'),unnest(arr) as t(tag) group by t,tag order by t  limit 1000",
+            "tokenQuery": "* | select date_format(__time__,'%b %e, %Y') as t, round(sum(PretaxAmount),3) as \"Expenses\" ,tag from( select __time__, regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr, PretaxAmount from instance_bill where productcode='ecs' and tag like '${{Tag|%%}}'),unnest(arr) as t(tag) group by t,tag order by t  limit 1000"
+          }
+        ],
+        "dataSourceType": "current",
+        "end": "now",
+        "logstore": "@",
+        "query": "@",
+        "start": "thismonth",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410607",
+      "type": "aggpro"
+    },
+    {
+      "action": {},
+      "display": {
+        "bindQuery": true,
+        "displayName": "Tag",
+        "filterData": [
+          {
+            "key": "Tag",
+            "list": [],
+            "showType": "select",
+            "type": "token"
+          }
+        ],
+        "height": 0.9204545454545454,
+        "showBackground": false,
+        "showBorder": false,
+        "showTitle": false,
+        "version": 2,
+        "width": 3.622617901828682,
+        "xPos": -0.05,
+        "yPos": -0.05681818181818182,
+        "zIndex": 20
+      },
+      "search": {
+        "end": "now",
+        "isInheritFilter": false,
+        "logstore": "aliyun_bill",
+        "query": "* | select concat(tag,'%') as tag from(select distinct(tag)   from(select  regexp_extract_all(tag, 'key:(\\S+)\\s+value:([^\\s;]+)') as arr   from instance_bill ) ,unnest(arr) as t(tag))  order by tag ",
+        "start": "-3d",
+        "timeSpanType": "custom",
+        "topic": ""
+      },
+      "title": "bill-analysis-12345678901234561671094410608",
+      "type": "droplist"
+    }
+  ],
+  "dashboardName": "dashboard-1671094375645-593466",
+  "description": "",
+  "displayName": "ECS Instance Bill Analysis"
+}

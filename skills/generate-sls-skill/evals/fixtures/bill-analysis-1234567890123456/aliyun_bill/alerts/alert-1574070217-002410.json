@@ -1,0 +1,48 @@
+{
+  "apiType": "Alert",
+  "configuration": {
+    "condition": "fee > 10000",
+    "dashboard": "bill_detail_cn",
+    "notificationList": [
+      {
+        "content": "所有产品当日累计账单大于10000",
+        "emailList": [
+          "yunlei.mayl@alibaba-inc.com"
+        ],
+        "subject": "日志服务告警",
+        "type": "Email"
+      }
+    ],
+    "notifyThreshold": 1,
+    "queryList": [
+      {
+        "chartTitle": "bill-chart",
+        "end": "now",
+        "logStore": "aliyun_bill",
+        "query": "* | select sum(PretaxAmount) as fee",
+        "start": "today",
+        "timeSpanType": "Today"
+      }
+    ],
+    "sendRecoveryMessage": false,
+    "tags": [],
+    "throttling": "5m"
+  },
+  "createTime": 1574070218,
+  "description": "",
+  "displayName": "all-day-exceed-value-10000",
+  "lastModifiedTime": 1585961226,
+  "name": "alert-1574070217-002410",
+  "recyclable": false,
+  "schedule": {
+    "delay": 0,
+    "interval": "1h",
+    "runImmediately": false,
+    "timeZone": "",
+    "type": "FixedRate"
+  },
+  "scheduleId": "f45d1f186bdc02c7e858391da8e3538f",
+  "state": "Enabled",
+  "status": "ENABLED",
+  "type": "Alert"
+}
