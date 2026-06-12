@@ -60,6 +60,8 @@ type QueryEmployeeOptions struct {
 	Request   *cmsclient.CreateChatRequest
 	// OnChunk 可选的流式回调，每次收到文本片段时调用，参数为累积的完整文本
 	OnChunk func(accumulated string)
+	// OnActivity 可选回调，每次从 SSE 流收到任何事件（含工具调用）时调用，用于重置空闲超时计时器
+	OnActivity func()
 }
 
 // QueryEmployeeResult 查询数字员工的结果
@@ -93,6 +95,9 @@ func QueryEmployee(ctx context.Context, opts *QueryEmployeeOptions) (*QueryEmplo
 			if !ok {
 				result.Text = strings.Join(textParts, "")
 				return result, nil
+			}
+			if opts.OnActivity != nil {
+				opts.OnActivity()
 			}
 			if response.StatusCode != nil && *response.StatusCode != 200 {
 				statusCode := *response.StatusCode
@@ -210,8 +215,7 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 使用带 Context 的 SSE 调用（与 NewSSERuntimeOptions 读超时、scheduler 一致）
-	ctx, cancel := context.WithTimeout(context.Background(), 31*time.Minute)
+	ctx, cancel, resetIdle := NewIdleTimeoutContext(context.Background(), DefaultSSEIdleTimeout)
 	defer cancel()
 	runtime := NewSSERuntimeOptions()
 	go c.CmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
@@ -226,6 +230,7 @@ func (c *Client) SendMessage(opts *ChatOptions, handler ChatMessageHandler) (*Ch
 				done = true
 				break
 			}
+			resetIdle()
 
 			// 检查响应状态码
 			if response.StatusCode != nil && *response.StatusCode != 200 {
