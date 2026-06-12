@@ -123,8 +123,7 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	responseChan := make(chan *cmsclient.CreateChatResponse)
 	errorChan := make(chan error)
 
-	// 使用带 Context 的 SSE 调用，支持客户端断开时取消（与 CMS SSE 读超时一致，避免长对话 5 分钟被掐断）
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 31*time.Minute)
+	ctx, cancel, resetIdle := sopchat.NewIdleTimeoutContext(c.Request.Context(), sopchat.DefaultSSEIdleTimeout)
 	defer cancel()
 	runtime := sopchat.NewSSERuntimeOptions()
 	go cmsClient.CreateChatWithSSECtx(ctx, request, make(map[string]*string), runtime, responseChan, errorChan)
@@ -138,7 +137,13 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	for !done {
 		select {
 		case <-clientGone:
-			log.Println("Client disconnected")
+			log.Println("Client disconnected, sending stop to CMS")
+			cancel()
+			go func() {
+				for range responseChan {
+				}
+			}()
+			s.stopChat(cmsClient, req.EmployeeName, req.ThreadId)
 			return
 
 		case response, ok := <-responseChan:
@@ -147,6 +152,7 @@ func (s *Server) handleChatStream(c *gin.Context) {
 				done = true
 				break
 			}
+			resetIdle()
 
 			// 检查响应状态码
 			if response.StatusCode != nil && *response.StatusCode != 200 {
@@ -191,7 +197,13 @@ func (s *Server) handleChatStream(c *gin.Context) {
 						// 检查客户端是否已断开
 						select {
 						case <-clientGone:
-							log.Println("Client disconnected")
+							log.Println("Client disconnected, sending stop to CMS")
+							cancel()
+							go func() {
+								for range responseChan {
+								}
+							}()
+							s.stopChat(cmsClient, req.EmployeeName, req.ThreadId)
 							return
 						default:
 						}
@@ -244,4 +256,50 @@ func (s *Server) handleChatStream(c *gin.Context) {
 	}
 
 	log.Println("Message sending completed")
+}
+
+// stopChat 向 CMS 发送 action=stop 请求，通知后端停止当前线程的处理
+func (s *Server) stopChat(cmsClient *cmsclient.Client, employeeName, threadId string) {
+	if threadId == "" {
+		return
+	}
+	stopReq := &cmsclient.CreateChatRequest{
+		DigitalEmployeeName: tea.String(employeeName),
+		ThreadId:            tea.String(threadId),
+		Action:              tea.String("stop"),
+	}
+	stopCtx, stopCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer stopCancel()
+	runtime := sopchat.NewSSERuntimeOptions()
+	responseChan := make(chan *cmsclient.CreateChatResponse)
+	errorChan := make(chan error)
+	go cmsClient.CreateChatWithSSECtx(stopCtx, stopReq, make(map[string]*string), runtime, responseChan, errorChan)
+
+	for {
+		select {
+		case <-stopCtx.Done():
+			log.Printf("Stop context done for thread %s: %v", threadId, stopCtx.Err())
+			return
+		case response, ok := <-responseChan:
+			if !ok {
+				log.Printf("Stop action SSE stream closed for thread %s", threadId)
+				return
+			}
+			// 打印 stop 请求的 SSE 响应，用于验证是否真的 stop 成功
+			statusCode := tea.Int32Value(response.StatusCode)
+			event := tea.StringValue(response.Event)
+			id := tea.StringValue(response.Id)
+			log.Printf("Stop action SSE event for thread %s: statusCode=%d event=%s id=%s", threadId, statusCode, event, id)
+			if response.Body != nil {
+				if bodyJSON, err := json.Marshal(response.Body); err == nil {
+					log.Printf("Stop action SSE body for thread %s: %s", threadId, string(bodyJSON))
+				}
+			}
+		case err, ok := <-errorChan:
+			if ok && err != nil {
+				log.Printf("Failed to send stop action to CMS: %v", err)
+				return
+			}
+		}
+	}
 }

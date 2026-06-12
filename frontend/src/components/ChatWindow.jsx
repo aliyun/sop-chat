@@ -432,16 +432,16 @@ const ChatWindow = () => {
   const handleSendMessage = async (content) => {
     // Create abort controller for this request
     abortControllerRef.current = new AbortController();
-    
+
     // Add user message to chat
-    const userMessage = { 
-      role: 'user', 
+    const userMessage = {
+      role: 'user',
       content
     };
     setMessages((prev) => [...prev, userMessage]);
     setError(null);
     setLoading(true);
-    
+
     // Reset scroll state for new message
     setAutoScroll(true);
     userInteractingRef.current = false;

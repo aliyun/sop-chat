@@ -31,5 +31,6 @@ Thumbs.db
 backend/__debug_bin*
 
 # Logs
+logs/
 backend/logs/
 .gocache/

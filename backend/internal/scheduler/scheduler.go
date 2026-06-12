@@ -292,17 +292,29 @@ func queryEmployee(clientCfg *config.ClientConfig, taskName, employeeName, messa
 	}
 
 	startSSE := time.Now()
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+	ctx, cancel, resetIdle := sopchat.NewIdleTimeoutContext(context.Background(), sopchat.DefaultSSEIdleTimeout)
 	defer cancel()
 
-	log.Printf("[Scheduler] queryEmployee 开始 SSE 流式请求: employee=%q threadId=%s product=%q 问题=%s timeout=30m", employeeName, threadId, product, msgLog)
+	log.Printf("[Scheduler] queryEmployee 开始 SSE 流式请求: employee=%q threadId=%s product=%q 问题=%s idleTimeout=%s", employeeName, threadId, product, msgLog, sopchat.DefaultSSEIdleTimeout)
 
 	// 使用统一的 QueryEmployeeWithRetry，空响应时自动重试
 	responseCount := 0
+	activityCount := 0
 	lastProgressAt := time.Now()
+	lastActivityLogAt := time.Now()
 	opts := &sopchat.QueryEmployeeOptions{
 		CMSClient: cms,
 		Request:   request,
+		OnActivity: func() {
+			resetIdle()
+			activityCount++
+			now := time.Now()
+			if now.Sub(lastActivityLogAt) >= 30*time.Second {
+				log.Printf("[Scheduler] queryEmployee SSE 活动: task=%q employee=%q product=%q activityCount=%d (含工具事件)",
+					taskName, employeeName, product, activityCount)
+				lastActivityLogAt = now
+			}
+		},
 		OnChunk: func(accumulated string) {
 			responseCount++
 			msgCount := len([]rune(accumulated))
