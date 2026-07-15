@@ -1149,12 +1149,13 @@ func (s *Server) handleTriggerTask(c *gin.Context) {
 	}
 }
 
-// handleTestAK 用提交的 AK 凭据向 apsara-ops 发送一条测试消息，验证凭据有效性和权限
+// handleTestAK 用提交的 AK 凭据向数字员工发送一条测试消息，验证凭据有效性和权限
 func (s *Server) handleTestAK(c *gin.Context) {
 	var req struct {
 		AccessKeyId     string `json:"accessKeyId"`
 		AccessKeySecret string `json:"accessKeySecret"`
 		Endpoint        string `json:"endpoint"`
+		EmployeeName    string `json:"employeeName"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "请求格式错误: " + err.Error()})
@@ -1168,6 +1169,11 @@ func (s *Server) handleTestAK(c *gin.Context) {
 	endpoint := req.Endpoint
 	if endpoint == "" {
 		endpoint = "cms.cn-beijing.aliyuncs.com"
+	}
+
+	employeeName := req.EmployeeName
+	if employeeName == "" {
+		employeeName = "apsara-ops"
 	}
 
 	sopClient, err := client.NewCMSClient(&client.Config{
@@ -1187,9 +1193,25 @@ func (s *Server) handleTestAK(c *gin.Context) {
 	done := make(chan testResult, 1)
 
 	go func() {
+		// CMS API 要求必须传有效 threadId，先创建一次性测试线程
+		threadTitle := fmt.Sprintf("[连通性测试] %s @ %s", employeeName, time.Now().Format("2006-01-02 15:04:05"))
+		threadResp, err := sopClient.CreateThread(&sopchat.ThreadConfig{
+			EmployeeName: employeeName,
+			Title:        threadTitle,
+		})
+		if err != nil {
+			done <- testResult{err: fmt.Errorf("创建测试线程失败: %w", err)}
+			return
+		}
+		if threadResp.Body == nil || threadResp.Body.ThreadId == nil || *threadResp.Body.ThreadId == "" {
+			done <- testResult{err: fmt.Errorf("CreateThread 返回了空的 ThreadId")}
+			return
+		}
+		threadId := *threadResp.Body.ThreadId
+
 		_, msgs, err := sopClient.SendMessageSync(&sopchat.ChatOptions{
-			EmployeeName: "apsara-ops",
-			ThreadId:     "",
+			EmployeeName: employeeName,
+			ThreadId:     threadId,
 			Message:      "现在几点了",
 		})
 		if err != nil {
